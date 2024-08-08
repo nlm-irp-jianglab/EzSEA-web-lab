@@ -27,6 +27,7 @@ const SkylignComponent = ({ logoData, name }) => {
           zoom: "1",
           height_toggle: true,
           name: name,
+          zoom_buttons: 'disabled', // Disabled zoom buttons, will re-enable when zoom can be applied to both logos
         });
 
         // Cleanup function

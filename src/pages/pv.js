@@ -84,9 +84,7 @@ const ProteinViewer = () => {
 
     return (
         <div>
-            <Navbar />
-            <h1>Protein Viewer</h1>
-            <br />
+            <Navbar pageId={"Protein Viewer"}/>
             <input type="file" accept=".pdb" onChange={handleFileChange} />
             <button
                 onClick={toggleRenderStyle}
@@ -111,16 +109,6 @@ const ProteinViewer = () => {
                     marginTop: '10px',
                 }}
             ></div>
-            <Rnd
-                default={{
-                    x: 200,
-                    y: 100,
-                    width: 320,
-                    height: 200,
-                }}
-            >
-                <div className="content" style={{backgroundColor: 'black', color:'white'}}>Draggable Content</div>
-            </Rnd>
         </div>
     );
 };

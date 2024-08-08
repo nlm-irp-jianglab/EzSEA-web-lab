@@ -29,6 +29,7 @@ const logoFiles = {
 
 const Tol = () => {
     const treeRef = useRef(null);
+    const logoPvRef = useRef(null);
     const [newickData, setNewickData] = useState(null); // Initial state is null
     const [logoContent, setLogoContent] = useState(null);
     const [pipVisible, setPipVisible] = useState(false);
@@ -40,7 +41,7 @@ const Tol = () => {
             try {
                 const response = await fetch(`${process.env.PUBLIC_URL}/in_ancestors.nwk`);
                 const text = await response.text();
-                console.log('Default tree fetched:', text);
+                //console.log('Default tree fetched:', text);
                 setNewickData(text);
             } catch (error) {
                 console.error("Error fetching the default tree:", error);
@@ -60,14 +61,16 @@ const Tol = () => {
 
             // Render the tree directly into the referenced div
             tree.render({
+                'container': treeRef.current,
                 'is-radial': false,
                 'selectable': true,
                 'zoom': true,
                 'align-tips': false,
                 'internal-names': true,
-                width: 2000,
+                width: 1000,
                 height: 2000,
                 'top-bottom-spacing': 'fixed-step',
+                'left-right-spacing': 'fixed-step',
                 'brush': false,
                 'restricted-select': {
                     "all-internal-branches": true,
@@ -75,7 +78,16 @@ const Tol = () => {
                 },
                 'draw-size-bubbles': true,
                 'show-scale': true,
-                'bubble-styler': d => { return 6 },
+                'bubble-styler': d => {
+                    // This allows each bubble to be sized individually 
+                    //console.log(d);
+                    if (d.data.name in logoFiles) {
+                        return 12;
+                    }
+                    return 6;
+                },
+                // Set background to light blue
+                'background-color': 'lightblue',
             });
 
             treeRef.current.appendChild(tree.display.show());
@@ -94,6 +106,7 @@ const Tol = () => {
                         console.error('No logo file found for:', source);
                         setLogoContent(null);
                         setPipVisible(false);
+                        treeRef.current.style.width = '100%';
                         return;
                     } else {
                         var data = {
@@ -102,6 +115,7 @@ const Tol = () => {
                             source: logoFiles[source],
                             target: logoFiles[target],
                         }
+                        treeRef.current.style.width = '50%';
                         setLogoContent(data);
                         setSelectBranch(branch);
                         setPipVisible(true);
@@ -133,61 +147,75 @@ const Tol = () => {
         };
     };
 
+    const getRightPosition = () => {
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+        const scrollX = window.scrollX;
+        const scrollY = window.scrollY;
+        const padding = 20; // Optional padding from the right edge
+
+        return {
+            x: scrollX + viewportWidth - 1200 - padding, // Position Rnd component on the right side
+            y: scrollY + (viewportHeight / 2) - 450, // Center vertically
+        };
+    };
+
+    /*
+    TODO: 
+        Refactor phylotree to it's own component
+
+    */
+
     return (
         <div>
-            <Navbar />
-            <h1>Phylogenetic Tree Viewer (unstable)</h1>
-            <br />
+            <Navbar pageId={"Phylogenetic Tree Viewer"} />
             <input type="file" accept=".nwk,.newick" onChange={handleFileChange} />
-            <div
-                id="tree"
-                ref={treeRef}
-                style={{ width: '2000px', height: '1000px', marginTop: '10px' }}
-            ></div>
-            {pipVisible && selectBranch && logoContent && (
-                <Rnd
-                    default={{
-                        ...getCenterPosition(),
-                        width: 1200,
-                        height: 800,
-                    }}
-                    enableResizing={{
-                        top: false,
-                        right: false,
-                        bottom: false,
-                        left: false,
-                        topRight: false,
-                        bottomRight: false,
-                        bottomLeft: false,
-                        topLeft: false
-                    }}
-                    disableDragging={true} // Scrolling on sequence logo also drags the Rnd, disabling for now
-                    bounds="window"
-                >
-                    <div className="logodiv">
-                        <button
-                            onClick={() => setPipVisible(false)}
-                            style={{
-                                position: 'absolute',
-                                top: '5px',
-                                right: '5px',
-                                backgroundColor: '#ff5c5c',
-                                color: '#fff',
-                                border: 'none',
-                                borderRadius: '50%',
-                                width: '20px',
-                                height: '20px',
-                                cursor: 'pointer',
-                                textAlign: 'center',
-                                lineHeight: '20px',
-                            }}
-                        >X</button>
-                        <SkylignComponent logoData={logoContent.source} name={logoContent.sourceName} />
-                        <SkylignComponent logoData={logoContent.target} name={logoContent.targetName} />
+            <div style={{ display: 'flex' }}>
+                <div // Tree goes here
+                    id="tree"
+                    className="tree-div"
+                    ref={treeRef}
+                    style={{ marginTop: '10px', width: '100%', height: '85vh', background: 'lightblue' }}
+                ></div>
+
+
+                {pipVisible && selectBranch && logoContent && (
+                    <div className="right-div">
+                        <div style={{ display: 'flex', 'flex-direction': 'column' }}>
+                            <div style={{ height: '50%', background: 'green' }}>
+                                <div className="logodiv">
+                                    <button
+                                        onClick={() => {
+                                            setPipVisible(false)
+                                            treeRef.current.style.width = '100%'; // Need to refactor this into it's own listener, this change occurs in two places. Ctrl+F "treeRef.current.style.width" to find the other place
+                                        }}
+                                        style={{
+                                            position: 'absolute',
+                                            top: '5px',
+                                            right: '5px',
+                                            backgroundColor: '#ff5c5c',
+                                            color: '#fff',
+                                            border: 'none',
+                                            borderRadius: '50%',
+                                            width: '20px',
+                                            height: '20px',
+                                            cursor: 'pointer',
+                                            textAlign: 'center',
+                                            lineHeight: '20px',
+                                        }}
+                                    >X</button>
+                                    <SkylignComponent logoData={logoContent.source} name={logoContent.sourceName} />
+                                    <SkylignComponent logoData={logoContent.target} name={logoContent.targetName} />
+                                </div>
+                            </div>
+                            <div>
+                                <h2>Protein Viewer Goes Here</h2>
+                            </div>
+                        </div>
                     </div>
-                </Rnd>
-            )}
-        </div>
+                )}
+            </div>
+        </div >
     );
 };
 

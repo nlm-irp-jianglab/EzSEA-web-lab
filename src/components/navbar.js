@@ -2,12 +2,17 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import "./navbar.css"; // Make sure to create this file for styling
 
-const Navbar = () => {
+const Navbar = (options) => {
   const [isMobile, setIsMobile] = useState(false);
 
   return (
     <nav className="navbar">
-      <h1 className="logo">ReactVis</h1>
+      {options.pageId ? (
+        <h1 className="logo">{options.pageId}</h1>
+      ) : (
+        <h1 className="logo">Reactvis</h1>
+      )
+      }
       <ul
         className={isMobile ? "nav-links-mobile" : "nav-links"}
         onClick={() => setIsMobile(false)}

@@ -1824,11 +1824,12 @@ const hmmLogo = function(logoElement, options = {}) {
 
   if (settings.children.length) {
     const settingsButton = document.createElement('button');
-    settingsButton.innerHTML = 'Settings';
-    settingsButton.classList.add("logo_settings_switch");
-    settingsButton.classList.add("button");
-    -controls.appendChild(settingsButton);
-    controls.appendChild(settings);
+    // EDIT: Removed settings button, only affects last created logo
+    //settingsButton.innerHTML = 'Settings';
+    //settingsButton.classList.add("logo_settings_switch");
+    //settingsButton.classList.add("button");
+    //-controls.appendChild(settingsButton);
+    //controls.appendChild(settings);
   }
 
   form.appendChild(controls);
