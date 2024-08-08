@@ -1,6 +1,5 @@
 import React from "react";
-// Importing Link from react-router-dom to 
-// navigate to different end points.
+import Molstar from "molstar-react";
 import Navbar from "../components/navbar.js";
 
 const Home = () => {

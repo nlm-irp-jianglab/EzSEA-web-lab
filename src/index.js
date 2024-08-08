@@ -6,6 +6,8 @@ import Home from "./pages/home";
 import App from "./App";
 import PV from "./pages/pv";
 import Tol from "./pages/tol";
+import Molstar from "./pages/molstar";
+import Playground from "./pages/playground";
 import {
     BrowserRouter as Router,
     Routes,
@@ -36,8 +38,12 @@ root.render(
                     element={<Tol />}
                 />
                 <Route
-                    exact path="/example"
-                    render={() => { window.location.href = "phylo-example.html" }}
+                    exact path="/molstar"
+                    element={<Molstar />}
+                />
+                <Route
+                    exact path="/playground"
+                    element={<Playground />}
                 />
                 <Route
                     path="*"

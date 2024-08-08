@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import pv from 'bio-pv';
 import Navbar from "../components/navbar";
+import { Rnd } from "react-rnd";
 
 const ProteinViewer = () => {
     const viewerRef = useRef(null);
@@ -37,6 +38,8 @@ const ProteinViewer = () => {
             reader.onload = (e) => {
                 const pdbContent = e.target.result;
                 const structure = pv.io.pdb(pdbContent);
+                setRenderStyle('cartoon');
+                setStructure(structure);
                 viewer.clear();
                 viewer.cartoon('protein', structure);
                 viewer.autoZoom();
@@ -108,6 +111,16 @@ const ProteinViewer = () => {
                     marginTop: '10px',
                 }}
             ></div>
+            <Rnd
+                default={{
+                    x: 200,
+                    y: 100,
+                    width: 320,
+                    height: 200,
+                }}
+            >
+                <div className="content" style={{backgroundColor: 'black', color:'white'}}>Draggable Content</div>
+            </Rnd>
         </div>
     );
 };

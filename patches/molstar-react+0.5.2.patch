@@ -1,0 +1,21 @@
+diff --git a/node_modules/molstar-react/dist/index.js b/node_modules/molstar-react/dist/index.js
+index 996f38e..8fd6eaf 100644
+--- a/node_modules/molstar-react/dist/index.js
++++ b/node_modules/molstar-react/dist/index.js
+@@ -1,6 +1,6 @@
+ import { DefaultPluginSpec } from 'molstar/lib/mol-plugin/spec';
+ import { DefaultPluginUISpec } from 'molstar/lib/mol-plugin-ui/spec';
+-import { createPluginAsync } from 'molstar/lib/mol-plugin-ui/index';
++import { createPluginUI } from 'molstar/lib/mol-plugin-ui/index';
+ import { PluginContext } from 'molstar/lib/mol-plugin/context';
+ import 'molstar/build/viewer/molstar.css';
+ import { ParamDefinition } from 'molstar/lib/mol-util/param-definition';
+@@ -3681,7 +3681,7 @@ var Molstar = function Molstar(props) {
+                 }
+               };
+               _context.next = 5;
+-              return createPluginAsync(parentRef.current, spec);
++              return createPluginUI(parentRef.current, spec);
+ 
+             case 5:
+               plugin.current = _context.sent;

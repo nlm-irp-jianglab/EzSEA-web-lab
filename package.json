@@ -19,11 +19,15 @@
     "bio-pv": "^1.8.1",
     "d3": "^7.9.0",
     "logojs-react": "^2.1.1",
+    "molstar-react": "^0.5.2",
     "phylotree": "^2.0.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-rnd": "^10.4.12",
     "react-router-dom": "^6.25.1",
-    "react-scripts": "^5.0.1"
+    "react-scripts": "^5.0.1",
+    "resizable-pip": "^0.1.1",
+    "skylign": "^1.0.4"
   },
   "browserslist": {
     "production": [
