@@ -24,7 +24,7 @@ const Navbar = (options) => {
           <li>Tree of Life</li>
         </Link>
         <Link to="/pv" className="pv">
-          <li>Protein Viewer</li>
+          <li>Mol*</li>
         </Link>
         <Link to="/prlogo" className="prlogo">
           <li>Seq Logo</li>

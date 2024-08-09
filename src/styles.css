@@ -4,7 +4,7 @@
 
 body {
     font-family: sans-serif;
-    margin: 20px;
+    margin: 0px;
     padding: 0;
 }
 
@@ -48,16 +48,6 @@ ul {
 
 * {
     box-sizing: border-box;
-}
-
-body {
-    font-family: sans-serif;
-    margin: 20px;
-    padding: 0;
-}
-
-nav {
-    margin-bottom: 25px;
 }
 
 .fa-rotate-45 {

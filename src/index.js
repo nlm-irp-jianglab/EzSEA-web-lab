@@ -6,7 +6,6 @@ import Home from "./pages/home";
 import App from "./App";
 import PV from "./pages/pv";
 import Tol from "./pages/tol";
-import Molstar from "./pages/molstar";
 import Playground from "./pages/playground";
 import {
     BrowserRouter as Router,
@@ -38,8 +37,8 @@ root.render(
                     element={<Tol />}
                 />
                 <Route
-                    exact path="/molstar"
-                    element={<Molstar />}
+                    exact path="/Protein Viewer"
+                    element={<PV />}
                 />
                 <Route
                     exact path="/playground"

@@ -1,9 +1,6 @@
 import React, { useEffect, useRef } from 'react';
-import Navbar from '../components/navbar';
-import MolstarViewer from '../components/molstar';
-import "../components/molstar.css";
 
-const ProteinViewer = () => {
+const MolstarViewer = () => {
   const viewerRef = useRef(null);
 
   useEffect(() => {
@@ -39,13 +36,19 @@ const ProteinViewer = () => {
   }, []);
 
   return (
-    <div>
-      <Navbar pageId="Mol* Viewer" />
-      <div style={{ width: '100%', height: '100%' }}>
-        <MolstarViewer />
+      <div style={{ width: '100%', height: '400px' }}>
+        <div
+          id="myViewer"
+          ref={viewerRef}
+          style={{
+            width: '100%', // Set width to 100% of its parent
+            height: '100%', // Set height to 100% of its parent
+            position: 'relative', // Ensure the viewer is positioned relative to its container
+            overflow: 'hidden', // Hide overflow to prevent scrolling
+          }}
+        ></div>
       </div>
-    </div>
   );
 };
 
-export default ProteinViewer;
+export default MolstarViewer;

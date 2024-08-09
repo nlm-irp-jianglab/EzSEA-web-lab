@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as pt from 'phylotree';
 import * as d3 from 'd3';
-import { Rnd } from "react-rnd";
 import Navbar from "../components/navbar";
 import "../components/phylotree.css";
 import SkylignComponent from "../components/skylign-component";
+import MolstarViewer from "../components/molstar";
 // Importing fasta files because I don't want to set up a server
 // In practice, this would either be hosted on a server or maybe stored in a csv?
 import n18 from '../components/task2/N18.json'
@@ -175,7 +175,7 @@ const Tol = () => {
                     id="tree"
                     className="tree-div"
                     ref={treeRef}
-                    style={{ marginTop: '10px', width: '100%', height: '85vh', background: 'lightblue' }}
+                    style={{ marginTop: '10px', marginLeft: '2px', width: '100%', height: '90vh', background: 'lightblue' }}
                 ></div>
 
 
@@ -208,8 +208,13 @@ const Tol = () => {
                                     <SkylignComponent logoData={logoContent.target} name={logoContent.targetName} />
                                 </div>
                             </div>
-                            <div>
-                                <h2>Protein Viewer Goes Here</h2>
+                            <div style={{
+                                width: '100%', // Set width to 100% of its parent
+                                height: '100%', // Set height to 100% of its parent
+                                position: 'relative', // Ensure the viewer is positioned relative to its container
+                                overflow: 'hidden', // Hide overflow to prevent scrolling
+                            }}>
+                                <MolstarViewer />
                             </div>
                         </div>
                     </div>

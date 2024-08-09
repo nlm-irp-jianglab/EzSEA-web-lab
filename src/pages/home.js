@@ -1,5 +1,4 @@
 import React from "react";
-import Molstar from "molstar-react";
 import Navbar from "../components/navbar.js";
 
 const Home = () => {

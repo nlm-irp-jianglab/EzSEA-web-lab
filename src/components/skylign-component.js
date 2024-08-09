@@ -22,12 +22,11 @@ const SkylignComponent = ({ logoData, name }) => {
       if (logoData) {
         const logo = new hmmLogo(logoDiv, {
           data: logoData,
-          height_toggle: true,
           column_info: false,
           zoom: "1",
-          height_toggle: true,
           name: name,
           zoom_buttons: 'disabled', // Disabled zoom buttons, will re-enable when zoom can be applied to both logos
+          height: 300, // Changing height does not scale letters, only the logo container
         });
 
         // Cleanup function
