@@ -29,11 +29,10 @@ const logoFiles = {
 
 const Tol = () => {
     const treeRef = useRef(null);
-    const logoPvRef = useRef(null);
-    const [newickData, setNewickData] = useState(null); // Initial state is null
-    const [logoContent, setLogoContent] = useState(null);
-    const [pipVisible, setPipVisible] = useState(false);
-    const [selectBranch, setSelectBranch] = useState(null);
+    const [newickData, setNewickData] = useState(null); // State var for tree data. Can allow user to upload a new tree
+    const [logoContent, setLogoContent] = useState(null); // Logo data
+    const [pipVisible, setPipVisible] = useState(false); // Toggle for logo popup
+    const [selectBranch, setSelectBranch] = useState(null); // State var for branch selection listener
 
     // Load the default Newick tree from the public folder
     useEffect(() => {
@@ -97,13 +96,15 @@ const Tol = () => {
                 .selectAll('.branch')
                 .on('click', async (event, branch) => {
                     console.log('Branch clicked:', branch);
+                    // Highlight the selected branch
+
                     // Set the source file for the selected branch
                     var source = branch.source.data.name;
                     var target = branch.target.data.name;
 
                     // Read the FASTA file content
                     if (!logoFiles[source] || !logoFiles[target]) {
-                        console.error('No logo file found for:', source);
+                        console.error('No logo file found for:', source, 'or', target);
                         setLogoContent(null);
                         setPipVisible(false);
                         treeRef.current.style.width = '100%';
@@ -124,100 +125,37 @@ const Tol = () => {
         }
     }, [newickData]);
 
-    const handleFileChange = (event) => {
-        const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                setNewickData(e.target.result);
-            };
-            reader.readAsText(file);
-        }
-    };
-
-    // Function to get the center position based on the current viewport and scroll position
-    const getCenterPosition = () => {
-        const viewportWidth = window.innerWidth;
-        const viewportHeight = window.innerHeight;
-        const scrollX = window.scrollX;
-        const scrollY = window.scrollY;
-        return {
-            x: scrollX + (viewportWidth / 2) - 600, // Subtract half of the Rnd width (1200/2)
-            y: scrollY + (viewportHeight / 2) - 400, // Subtract half of the Rnd height (800/2)
-        };
-    };
-
-    const getRightPosition = () => {
-        const viewportWidth = window.innerWidth;
-        const viewportHeight = window.innerHeight;
-        const scrollX = window.scrollX;
-        const scrollY = window.scrollY;
-        const padding = 20; // Optional padding from the right edge
-
-        return {
-            x: scrollX + viewportWidth - 1200 - padding, // Position Rnd component on the right side
-            y: scrollY + (viewportHeight / 2) - 450, // Center vertically
-        };
-    };
-
     /*
     TODO: 
         Refactor phylotree to it's own component
-
     */
 
     return (
         <div>
             <Navbar pageId={"Phylogenetic Tree Viewer"} />
-            <input type="file" accept=".nwk,.newick" onChange={handleFileChange} />
-            <div style={{ display: 'flex' }}>
+            <div style={{ display: 'flex', height: '100vh' }}>
                 <div // Tree goes here
-                    id="tree"
                     className="tree-div"
                     ref={treeRef}
-                    style={{ marginTop: '10px', marginLeft: '2px', width: '100%', height: '90vh', background: 'lightblue' }}
                 ></div>
 
-
+                {/* Right side content */}
                 {pipVisible && selectBranch && logoContent && (
                     <div className="right-div">
-                        <div style={{ display: 'flex', 'flex-direction': 'column' }}>
-                            <div style={{ height: '50%', background: 'green' }}>
-                                <div className="logodiv">
-                                    <button
-                                        onClick={() => {
-                                            setPipVisible(false)
-                                            treeRef.current.style.width = '100%'; // Need to refactor this into it's own listener, this change occurs in two places. Ctrl+F "treeRef.current.style.width" to find the other place
-                                        }}
-                                        style={{
-                                            position: 'absolute',
-                                            top: '5px',
-                                            right: '5px',
-                                            backgroundColor: '#ff5c5c',
-                                            color: '#fff',
-                                            border: 'none',
-                                            borderRadius: '50%',
-                                            width: '20px',
-                                            height: '20px',
-                                            cursor: 'pointer',
-                                            textAlign: 'center',
-                                            lineHeight: '20px',
-                                        }}
-                                    >X</button>
-                                    <SkylignComponent logoData={logoContent.source} name={logoContent.sourceName} />
-                                    <SkylignComponent logoData={logoContent.target} name={logoContent.targetName} />
-                                </div>
+                            <div className="logodiv">
+                                <button className="logo-close-btn"
+                                    onClick={() => {
+                                        setPipVisible(false);
+                                        treeRef.current.style.width = '100%'; // Need to refactor this into it's own listener, this change occurs in two places. Ctrl+F "treeRef.current.style.width" to find the other place
+                                    }}
+                                >X</button>
+                                <SkylignComponent logoData={logoContent.source} name={logoContent.sourceName} />
+                                <SkylignComponent logoData={logoContent.target} name={logoContent.targetName} />
                             </div>
-                            <div style={{
-                                width: '100%', // Set width to 100% of its parent
-                                height: '100%', // Set height to 100% of its parent
-                                position: 'relative', // Ensure the viewer is positioned relative to its container
-                                overflow: 'hidden', // Hide overflow to prevent scrolling
-                            }}>
+                            <div className="pvdiv">
                                 <MolstarViewer />
                             </div>
                         </div>
-                    </div>
                 )}
             </div>
         </div >

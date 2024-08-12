@@ -1,4 +1,4 @@
-import {EasyScroller} from 'easyscroller';
+import { EasyScroller } from 'easyscroller';
 
 const FEATURE_HEIGHT = 10;
 const MARGIN_TO_FEATURES = 10;
@@ -25,7 +25,7 @@ class Letter {
   }
 
   // eslint-disable-next-line max-params
-  draw (extCtx, targetHeight, targetWidth, x, y, color) {
+  draw(extCtx, targetHeight, targetWidth, x, y, color) {
     const hRatio = targetHeight / this.height;
     const wRatio = targetWidth / this.width;
     const prevFont = extCtx.font;
@@ -42,7 +42,7 @@ class Letter {
   };
 }
 
-const ConsensusColors = function() {
+const ConsensusColors = function () {
   this.grey = '#7a7a7a';
 
   // eslint-disable-next-line max-statements
@@ -79,13 +79,13 @@ const ConsensusColors = function() {
     return bestclass;
   };
 
-  this.check_PG = function(pos, consensuses, colorsRef) {
+  this.check_PG = function (pos, consensuses, colorsRef) {
     colorsRef[pos].P = '#ff1';
     colorsRef[pos].G = '#ff7f11';
     return 1;
   };
 
-  this.check_R = function(pos, consensuses, colorsRef) {
+  this.check_R = function (pos, consensuses, colorsRef) {
     colorsRef[pos].R = this.grey;
 
     const red = '#F99';
@@ -109,7 +109,7 @@ const ConsensusColors = function() {
     return 1;
   };
 
-  this.check_Q = function(pos, consensuses, colorsRef) {
+  this.check_Q = function (pos, consensuses, colorsRef) {
     colorsRef[pos].Q = this.grey;
 
     const green = '#9F9';
@@ -143,7 +143,7 @@ const ConsensusColors = function() {
     return 1;
   };
 
-  this.check_N = function(pos, consensuses, colorsRef) {
+  this.check_N = function (pos, consensuses, colorsRef) {
     colorsRef[pos].N = this.grey;
 
     const green = '#9F9';
@@ -161,7 +161,7 @@ const ConsensusColors = function() {
     return 1;
   };
 
-  this.check_K = function(pos, consensuses, colorsRef) {
+  this.check_K = function (pos, consensuses, colorsRef) {
     colorsRef[pos].K = this.grey;
 
     const red = '#F99';
@@ -185,7 +185,7 @@ const ConsensusColors = function() {
     return 1;
   };
 
-  this.check_E = function(pos, consensuses, colorsRef) {
+  this.check_E = function (pos, consensuses, colorsRef) {
     colorsRef[pos].E = this.grey;
 
     const red = '#F99';
@@ -219,7 +219,7 @@ const ConsensusColors = function() {
     return 1;
   };
 
-  this.check_D = function(pos, consensuses, colorsRef) {
+  this.check_D = function (pos, consensuses, colorsRef) {
     colorsRef[pos].D = this.grey;
 
     const red = '#F99';
@@ -253,7 +253,7 @@ const ConsensusColors = function() {
     return 1;
   };
 
-  this.check_ACFILMVW = function(pos, consensuses, colorsRef) {
+  this.check_ACFILMVW = function (pos, consensuses, colorsRef) {
     const aa = ['A', 'C', 'F', 'L', 'I', 'M', 'V', 'W'];
     const caa = [
       'A',
@@ -282,7 +282,7 @@ const ConsensusColors = function() {
     return 1;
   };
 
-  this.check_ST = function(pos, consensuses, colorsRef) {
+  this.check_ST = function (pos, consensuses, colorsRef) {
     colorsRef[pos].S = this.grey;
     colorsRef[pos].T = this.grey;
 
@@ -320,7 +320,7 @@ const ConsensusColors = function() {
     }
   };
 
-  this.check_HY = function(pos, consensuses, colorsRef) {
+  this.check_HY = function (pos, consensuses, colorsRef) {
     colorsRef[pos].H = this.grey;
     colorsRef[pos].Y = this.grey;
 
@@ -359,7 +359,7 @@ const ConsensusColors = function() {
   };
 
   // eslint-disable-next-line complexity, max-statements
-  this.color_map = function(probsArray) {
+  this.color_map = function (probsArray) {
     const thresholds = ['0.50', '0.60', '0.80', '0.85'];
     const hydro = {
       W: 1,
@@ -448,7 +448,7 @@ const ConsensusColors = function() {
 };
 
 // eslint-disable-next-line complexity, max-statements
-const HMMLogo = function(element, options = {}) {
+const HMMLogo = function (element, options = {}) {
   this.name = options.name || 'Model Position';
   this.column_width = options.column_width || 34;
   this.height = options.height || 300;
@@ -802,7 +802,7 @@ const HMMLogo = function(element, options = {}) {
 
   // the main render function that draws the logo based on the provided options.
   // eslint-disable-next-line complexity, max-statements
-  this.render = function(options = {}) {
+  this.render = function (options = {}) {
     if (!this.data) return;
     let zoom = options.zoom || this.zoom;
     let target = options.target || 1;
@@ -963,7 +963,7 @@ const HMMLogo = function(element, options = {}) {
     if (target !== 1) this.scrollme.reflow();
   };
 
-  this.render_x_axis_label = function() {
+  this.render_x_axis_label = function () {
     let label = this.name;
     if (this.display_ali_map) {
       label = 'Alignment Column';
@@ -987,7 +987,7 @@ const HMMLogo = function(element, options = {}) {
   };
 
   // eslint-disable-next-line max-statements
-  this.render_y_axis_label = function() {
+  this.render_y_axis_label = function () {
     // attach a canvas for the y-axis
     for (const yElement of this.called_on.getElementsByClassName(
       "logo_yaxis",
@@ -1065,7 +1065,7 @@ const HMMLogo = function(element, options = {}) {
   this.render_y_axis_label();
 
   // eslint-disable-next-line complexity, max-statements
-  this.render_with_text = function(start, end, contextNum, fontsize) {
+  this.render_with_text = function (start, end, contextNum, fontsize) {
     let x = 0;
     let columnNum = start;
     let columnLabel = null;
@@ -1244,7 +1244,7 @@ const HMMLogo = function(element, options = {}) {
     drawBorder(this.contexts[contextNum], 0, this.total_width);
   };
 
-  this.draw_column_divider = function(opts) {
+  this.draw_column_divider = function (opts) {
     const divX = opts.ralign ? opts.x + this.zoomed_column : opts.x;
     const numX = opts.ralign ? opts.x + 2 : opts.x;
     // draw column dividers
@@ -1270,7 +1270,7 @@ const HMMLogo = function(element, options = {}) {
   };
 
   // eslint-disable-next-line complexity, max-statements
-  this.render_with_rects = function(start, end, contextNum, borders) {
+  this.render_with_rects = function (start, end, contextNum, borders) {
     let x = 0;
     let columnNum = start;
     let columnLabel = null;
@@ -1405,7 +1405,7 @@ const HMMLogo = function(element, options = {}) {
       columnNum++;
     }
   };
-  this.render_active_sites = function(contextNum, i, x) {
+  this.render_active_sites = function (contextNum, i, x) {
     let track = 1;
     for (let j = 0; j < this.active_sites.length; j++) {
       const wtd = this.active_sites[j].controller.whatShouldBeDraw(i);
@@ -1416,7 +1416,7 @@ const HMMLogo = function(element, options = {}) {
           this.contexts[contextNum],
           x + 1,
           MARGIN_TO_FEATURES +
-            track * (PADDING_BETWEEN_TRACKS + FEATURE_HEIGHT),
+          track * (PADDING_BETWEEN_TRACKS + FEATURE_HEIGHT),
           this.zoomed_column - 2,
           color,
         );
@@ -1425,12 +1425,12 @@ const HMMLogo = function(element, options = {}) {
           this.contexts[contextNum],
           x,
           MARGIN_TO_FEATURES +
-            PADDING_BETWEEN_TRACKS * track +
-            (track + 0.5) * FEATURE_HEIGHT,
+          PADDING_BETWEEN_TRACKS * track +
+          (track + 0.5) * FEATURE_HEIGHT,
           x + this.zoomed_column,
           MARGIN_TO_FEATURES +
-            PADDING_BETWEEN_TRACKS * track +
-            (track + 0.5) * FEATURE_HEIGHT,
+          PADDING_BETWEEN_TRACKS * track +
+          (track + 0.5) * FEATURE_HEIGHT,
           color,
         );
       }
@@ -1438,7 +1438,7 @@ const HMMLogo = function(element, options = {}) {
     }
   };
 
-  this.toggle_visibility = function(element) {
+  this.toggle_visibility = function (element) {
     if (element.style.display !== 'none' && element.style.display) {
       element.style.display = 'none';
     } else {
@@ -1446,7 +1446,7 @@ const HMMLogo = function(element, options = {}) {
     }
   };
 
-  this.toggle_colorscheme = function(scheme) {
+  this.toggle_colorscheme = function (scheme) {
     // work out the current column we are on so we can return there
     const colTotal = this.current_column();
 
@@ -1477,7 +1477,7 @@ const HMMLogo = function(element, options = {}) {
     this.render();
   };
 
-  this.toggle_scale = function(scale) {
+  this.toggle_scale = function (scale) {
     // work out the current column we are on so we can return there
     const colTotal = this.current_column();
 
@@ -1513,7 +1513,7 @@ const HMMLogo = function(element, options = {}) {
     this.render();
   };
 
-  this.toggle_ali_map = function(coords) {
+  this.toggle_ali_map = function (coords) {
     // work out the current column we are on so we can return there
     const colTotal = this.current_column();
 
@@ -1546,7 +1546,7 @@ const HMMLogo = function(element, options = {}) {
     this.render();
   };
 
-  this.current_column = function() {
+  this.current_column = function () {
     const beforeLeft = this.scrollme.scroller.getValues().left;
     const colWidth = this.column_width * this.zoom;
     const colCount = beforeLeft / colWidth;
@@ -1559,7 +1559,7 @@ const HMMLogo = function(element, options = {}) {
   };
 
   // eslint-disable-next-line max-statements
-  this.change_zoom = function(options) {
+  this.change_zoom = function (options) {
     let zoomLevel = 0.3;
     if (options.target) {
       zoomLevel = options.target;
@@ -1614,10 +1614,10 @@ const HMMLogo = function(element, options = {}) {
     return this.zoom;
   };
 
-  this.columnFromCoordinates = function(x) {
+  this.columnFromCoordinates = function (x) {
     return Math.ceil(x / (this.column_width * this.zoom));
   };
-  this.coordinatesFromColumn = function(col) {
+  this.coordinatesFromColumn = function (col) {
     const newColumn = col - 1;
 
     return (
@@ -1626,7 +1626,7 @@ const HMMLogo = function(element, options = {}) {
     );
   };
 
-  this.scrollToColumn = function(num, animate) {
+  this.scrollToColumn = function (num, animate) {
     const halfView =
       this.called_on.getElementsByClassName("logo_container")[0]
         .clientWidth / 2;
@@ -1634,7 +1634,7 @@ const HMMLogo = function(element, options = {}) {
     this.scrollme.scroller.scrollTo(newLeft - halfView, 0, animate);
   };
 
-  this.refresh = function() {
+  this.refresh = function () {
     this.rendered = [];
     this.scrollme.reflow();
     this.render();
@@ -1642,7 +1642,7 @@ const HMMLogo = function(element, options = {}) {
 };
 
 // eslint-disable-next-line complexity, max-statements
-const hmmLogo = function(logoElement, options = {}) {
+const hmmLogo = function (logoElement, options = {}, onColumnClick) {
   // add some internal divs for scrolling etc.
   const logoGraphic = document.createElement('div');
   logoGraphic.classList.add("logo_graphic");
@@ -1706,9 +1706,9 @@ const hmmLogo = function(logoElement, options = {}) {
     outButton.classList.add("logo_zoomout");
     outButton.innerHTML = '-';
     outButton.addEventListener('click', e => {
-          e.preventDefault();
-          logo.change_zoom({ distance: 0.1, direction: '-' });
-        });
+      e.preventDefault();
+      logo.change_zoom({ distance: 0.1, direction: '-' });
+    });
 
     const inButton = document.createElement('button');
     inButton.classList.add("button");
@@ -1859,35 +1859,35 @@ const hmmLogo = function(logoElement, options = {}) {
   for (const matchedElement of controls.getElementsByClassName(
     "logo_scale",
   )) {
-    matchedElement.addEventListener('change', function() {
+    matchedElement.addEventListener('change', function () {
       logo.toggle_scale(this.value);
     });
   }
   for (const matchedElement of controls.getElementsByClassName(
     "logo_color",
   )) {
-    matchedElement.addEventListener('change', function() {
+    matchedElement.addEventListener('change', function () {
       logo.toggle_colorscheme(this.value);
     });
   }
   for (const matchedElement of controls.getElementsByClassName(
     "logo_ali_map",
   )) {
-    matchedElement.addEventListener('change', function() {
+    matchedElement.addEventListener('change', function () {
       logo.toggle_ali_map(this.value);
     });
   }
   for (const matchedElement of fieldset.getElementsByClassName(
     "logo_position",
   )) {
-    matchedElement.addEventListener('change', function(e) {
+    matchedElement.addEventListener('change', function (e) {
       if (!this.value.match(/^\d+$/m)) {
         return;
       }
       logo.scrollToColumn(this.value, 1);
     });
   }
-  logoGraphic.addEventListener('dblclick', function(e) {
+  logoGraphic.addEventListener('dblclick', function (e) {
     if (logo.zoom < 1) {
       logo.change_zoom({
         target: 1,
@@ -1909,6 +1909,7 @@ const hmmLogo = function(logoElement, options = {}) {
 
   if (options.column_info) {
     // eslint-disable-next-line max-statements
+    /*
     logoGraphic.addEventListener('click', e => {
       const infoTab = document.createElement('table');
       infoTab.classList.add("logo_col_info");
@@ -1931,6 +1932,7 @@ const hmmLogo = function(logoElement, options = {}) {
       let heightHeader = 'Probability';
 
       hmmLogo.column_clicked = col;
+      onColumnClick(col);
       hmmLogo.refresh();
 
       if (logo.data.height_calc && logo.data.height_calc === 'score') {
@@ -1998,8 +2000,32 @@ const hmmLogo = function(logoElement, options = {}) {
         existingColumnInfo.remove();
       }
       logoElement.appendChild(columnInfo);
-    });
+    }); */
   }
+  logoGraphic.addEventListener('click', e => {
+    const hmmLogo = logo;
+    const x = parseInt(e.offsetX, 10);
+    const col = hmmLogo.columnFromCoordinates(x);
+
+    if (options.column_info) {
+      const infoTab = document.createElement('table');
+      infoTab.classList.add("logo_col_info");
+      infoTab.classList.add("logo_col_hmm");
+
+      // Additional column information processing...
+
+      // If the onColumnClick callback is provided, call it with the column index
+      if (typeof onColumnClick === 'function') {
+        onColumnClick(col, {
+          probabilities: hmmLogo.data.probs_arr[col - 1],
+          heights: hmmLogo.data.height_arr ? hmmLogo.data.height_arr[col - 1] : null,
+          insertProbs: hmmLogo.data.insert_probs[col - 1],
+          insertLengths: hmmLogo.data.insert_lengths[col - 1],
+          deleteProbs: hmmLogo.data.delete_probs[col - 1],
+        });
+      }
+    }
+  });
 
   logoGraphic.addEventListener('mousemove', e => {
     const hmmLogo = logo;

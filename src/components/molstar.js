@@ -18,7 +18,7 @@ export function MolStarWrapper() {
         darkTheme: true,
       });
 
-      // Set the background color of the viewer to red
+      // Set the background color of the viewer to gray
       const renderer = window.molstar.canvas3d?.props.renderer;
       if (renderer) {
         PluginCommands.Canvas3D.SetSettings(window.molstar, {
@@ -31,20 +31,13 @@ export function MolStarWrapper() {
         });
       }
 
-      // Load and display the structure
-      const data = await window.molstar.builders.data.download(
-        { url: "https://files.rcsb.org/download/3PTB.pdb" }, // Replace with your URL
-        { state: { isGhost: true } }
-      );
-
-      var string = await fetch(GCA9).then((response) => response.text());
+      // Loading the default pdb file
+      var string = await fetch(`${process.env.PUBLIC_URL}/GCA_900167205.pdb`).then((response) => response.text());
 
       const myData = await window.molstar.builders.data.rawData({
-        data: string /* string or number[] */,
+        data: string, /* string or number[] */
         label: void 0 /* optional label */
       });
-
-      console.log(myData)
 
       const trajectory = await window.molstar.builders.structure.parseTrajectory(myData, "pdb");
       await window.molstar.builders.structure.hierarchy.applyPreset(
@@ -63,7 +56,14 @@ export function MolStarWrapper() {
   }, []);
 
   return (
-      <div ref={parent} style={{ width: '100%', height: '430.75px' }} />
+    <div 
+      ref={parent} 
+      style={{ 
+        width: '100%', 
+        height: '100%', // Ensure it fills the parent div's height
+        position: 'relative', // Allow the Mol* viewer to adjust inside the container
+      }} 
+    />
   );
 }
 
