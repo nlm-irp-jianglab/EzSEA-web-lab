@@ -42,7 +42,7 @@ const ProteinViewer = () => {
     <div>
       <Navbar pageId="Mol* Viewer" />
       <div style={{ width: '99vw', height: '90vh', overflow: 'hidden' }}>
-        <MolstarViewer />
+        <MolstarViewer selectedResidue={296}/>
       </div>
     </div>
   );

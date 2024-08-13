@@ -1887,6 +1887,8 @@ const hmmLogo = function (logoElement, options = {}, onColumnClick) {
       logo.scrollToColumn(this.value, 1);
     });
   }
+  // Removing doubleclick to zoom in/out functionality, rebinding doubleclick to column info
+  /*
   logoGraphic.addEventListener('dblclick', function (e) {
     if (logo.zoom < 1) {
       logo.change_zoom({
@@ -1906,6 +1908,7 @@ const hmmLogo = function (logoElement, options = {}, onColumnClick) {
       });
     }
   });
+  */
 
   if (options.column_info) {
     // eslint-disable-next-line max-statements
@@ -1932,7 +1935,6 @@ const hmmLogo = function (logoElement, options = {}, onColumnClick) {
       let heightHeader = 'Probability';
 
       hmmLogo.column_clicked = col;
-      onColumnClick(col);
       hmmLogo.refresh();
 
       if (logo.data.height_calc && logo.data.height_calc === 'score') {
@@ -2002,29 +2004,31 @@ const hmmLogo = function (logoElement, options = {}, onColumnClick) {
       logoElement.appendChild(columnInfo);
     }); */
   }
-  logoGraphic.addEventListener('click', e => {
-    const hmmLogo = logo;
+  // TODO: Working on tying logo to pv
+  logoGraphic.addEventListener('dblclick', e => {
     const x = parseInt(e.offsetX, 10);
-    const col = hmmLogo.columnFromCoordinates(x);
+    const col = logo.columnFromCoordinates(x);
+
+    logo.scrollToColumn(col, 0);
 
     if (options.column_info) {
       const infoTab = document.createElement('table');
       infoTab.classList.add("logo_col_info");
       infoTab.classList.add("logo_col_hmm");
 
-      // Additional column information processing...
-
       // If the onColumnClick callback is provided, call it with the column index
       if (typeof onColumnClick === 'function') {
         onColumnClick(col, {
-          probabilities: hmmLogo.data.probs_arr[col - 1],
-          heights: hmmLogo.data.height_arr ? hmmLogo.data.height_arr[col - 1] : null,
-          insertProbs: hmmLogo.data.insert_probs[col - 1],
-          insertLengths: hmmLogo.data.insert_lengths[col - 1],
-          deleteProbs: hmmLogo.data.delete_probs[col - 1],
+          probabilities: logo.data.probs_arr[col - 1],
+          heights: logo.data.height_arr ? logo.data.height_arr[col - 1] : null,
+          insertProbs: logo.data.insert_probs[col - 1],
+          insertLengths: logo.data.insert_lengths[col - 1],
+          deleteProbs: logo.data.delete_probs[col - 1],
         });
       }
+
     }
+    logo.refresh();
   });
 
   logoGraphic.addEventListener('mousemove', e => {

@@ -1,12 +1,12 @@
 import React, { useEffect, createRef } from "react";
 import { createPluginUI } from "molstar/lib/mol-plugin-ui";
 import { renderReact18 } from "molstar/lib/mol-plugin-ui/react18";
+import { DefaultPluginUISpec } from 'molstar/lib/mol-plugin-ui/spec';
 import { PluginCommands } from "molstar/lib/mol-plugin/commands";
 import { ColorNames } from "molstar/lib/mol-util/color/names";
 import "molstar/lib/mol-plugin-ui/skin/dark.scss";
-import GCA9 from "../components/task2/GCA_900167205.1_00854_ATOMS_section_With_ConSurf.pdb";
 
-export function MolStarWrapper() {
+export function MolStarWrapper({ selectedResidue }) {
   const parent = createRef();
 
   useEffect(() => {
@@ -15,11 +15,20 @@ export function MolStarWrapper() {
       window.molstar = await createPluginUI({
         target: parent.current,
         render: renderReact18,
+        spec: {
+          ...DefaultPluginUISpec(),
+          layout: {
+            initial: {
+              isExpanded: false,
+              showControls: false
+            }
+          },
+        },
         darkTheme: true,
       });
 
       // Set the background color of the viewer to gray
-      const renderer = window.molstar.canvas3d?.props.renderer;
+      const renderer = window.molstar.canvas3d.props.renderer;
       if (renderer) {
         PluginCommands.Canvas3D.SetSettings(window.molstar, {
           settings: {
@@ -32,7 +41,7 @@ export function MolStarWrapper() {
       }
 
       // Loading the default pdb file
-      var string = await fetch(`${process.env.PUBLIC_URL}/GCA_900167205.pdb`).then((response) => response.text());
+      const string = await fetch(`${process.env.PUBLIC_URL}/GCA_900167205.pdb`).then((response) => response.text());
 
       const myData = await window.molstar.builders.data.rawData({
         data: string, /* string or number[] */
@@ -55,14 +64,23 @@ export function MolStarWrapper() {
     };
   }, []);
 
+  useEffect(() => {
+    highlightResidue(selectedResidue);
+  }, [selectedResidue]);
+
+  const highlightResidue = async (residueNumber) => {
+    console.log("Highlighting residue", residueNumber);
+    // TODO: Highlight the selected residue
+  };
+
   return (
-    <div 
-      ref={parent} 
-      style={{ 
-        width: '100%', 
+    <div
+      ref={parent}
+      style={{
+        width: '100%',
         height: '100%', // Ensure it fills the parent div's height
-        position: 'relative', // Allow the Mol* viewer to adjust inside the container
-      }} 
+        position: 'relative',
+      }}
     />
   );
 }

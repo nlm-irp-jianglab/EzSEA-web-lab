@@ -1,9 +1,10 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
 import hmmLogo from './skylign.js';
 import css from './logo.css';
 
-const SkylignComponent = ({ logoData, name, onColumnClick}) => {
+const SkylignComponent = forwardRef(({ logoData, name, onColumnClick }, ref) => {
   const logoRef = useRef(null);
+  const logoInstanceRef = useRef(null); // Ref to store the hmmLogo instance
 
   useEffect(() => {
     const logoElement = logoRef.current;
@@ -20,19 +21,27 @@ const SkylignComponent = ({ logoData, name, onColumnClick}) => {
 
       // Render the logo using the provided data
       if (logoData) {
-        const logo = new hmmLogo(logoDiv, {
-          data: logoData,
-          column_info: true,
-          zoom: "1",
-          name: name,
-          zoom_buttons: 'disabled', // Disabled zoom buttons, will re-enable when zoom can be applied to both logos
-          height: 300, // Changing height does not scale letters, only the logo container
-        },
-          (col, columnData) => { 
+        const logo = new hmmLogo(
+          logoDiv,
+          {
+            data: logoData,
+            column_info: true,
+            zoom: "1",
+            name: name,
+            zoom_buttons: 'disabled',
+            height: 300,
+          },
+          (col, columnData) => {
             // Call the provided onColumnClick function
-            onColumnClick(col, columnData); // Needs this or will throw ERROR. TODO, implement check
+            if (onColumnClick) {
+              onColumnClick(col, columnData);
+            } else {
+              console.error("onColumnClick not provided");
+            }
           }
         );
+
+        logoInstanceRef.current = logo; // Store the hmmLogo instance
 
         // Cleanup function
         return () => {
@@ -44,7 +53,16 @@ const SkylignComponent = ({ logoData, name, onColumnClick}) => {
     }
   }, [logoData]);
 
+  // Expose the scrollToColumn method to the parent component via the ref
+  useImperativeHandle(ref, () => ({
+    scrollToColumn: (column) => {
+      if (logoInstanceRef.current) {
+        logoInstanceRef.current.scrollToColumn(column);
+      }
+    }
+  }));
+
   return <div ref={logoRef}></div>;
-};
+});
 
 export default SkylignComponent;
