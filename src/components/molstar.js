@@ -6,6 +6,8 @@ import { PluginCommands } from "molstar/lib/mol-plugin/commands";
 import { StructureSelection } from 'molstar/lib/mol-model/structure';
 import { ColorNames } from "molstar/lib/mol-util/color/names";
 import { Script } from 'molstar/lib/mol-script/script';
+import { setStructureOverpaint } from 'molstar/lib/mol-plugin-state/helpers/structure-overpaint';
+import { Color } from 'molstar/lib/mol-util/color';
 import "molstar/lib/mol-plugin-ui/skin/dark.scss";
 
 export function MolStarWrapper({ selectedResidue }) {
@@ -42,6 +44,7 @@ export function MolStarWrapper({ selectedResidue }) {
       }
 
       // Loading the default pdb file
+      // TODO: Make this dynamic
       const string = await fetch(`${process.env.PUBLIC_URL}/GCA_900167205.pdb`).then((response) => response.text());
 
       const myData = await window.molstar.builders.data.rawData({
@@ -65,8 +68,9 @@ export function MolStarWrapper({ selectedResidue }) {
     };
   }, []);
 
-  // Highlight the selected residue
   async function highlightResidue(residueNumber) {
+    if (residueNumber == null) return;
+
     if (!window.molstar || !window.molstar.managers.structure.hierarchy.current.structures.length) {
       console.error("Mol* plugin or structure data is not initialized.");
       return;
@@ -87,6 +91,17 @@ export function MolStarWrapper({ selectedResidue }) {
     const loci = StructureSelection.toLociWithSourceUnits(sel);
     //window.molstar.managers.interactivity.lociHighlights.highlightOnly({ loci }); // Highlights
     window.molstar.managers.interactivity.lociSelects.select({ loci });
+
+
+    // Overpaint the residue
+    await setStructureOverpaint(window.molstar, window.molstar.managers.structure.hierarchy.current.structures[0].components, Color(0xFF0000), (s) => {
+      const sel = Script.getStructureSelection(Q => Q.struct.generator.atomGroups({ // I have no idea what this call is
+        'residue-test': Q.core.rel.eq([Q.struct.atomProperty.macromolecular.label_seq_id(), seq_id]),
+        'group-by': Q.struct.atomProperty.macromolecular.residueKey()
+      }), s);
+      return StructureSelection.toLociWithSourceUnits(sel);
+    });
+
 
 
     console.log("Selected residue", residueNumber);

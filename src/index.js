@@ -37,10 +37,6 @@ root.render(
                     element={<Tol />}
                 />
                 <Route
-                    exact path="/Protein Viewer"
-                    element={<PV />}
-                />
-                <Route
                     exact path="/playground"
                     element={<Playground />}
                 />
