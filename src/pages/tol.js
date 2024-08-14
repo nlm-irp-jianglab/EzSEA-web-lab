@@ -5,6 +5,7 @@ import Navbar from "../components/navbar";
 import "../components/phylotree.css";
 import SkylignComponent from "../components/skylign-component";
 import MolstarViewer from "../components/molstar";
+import { Rnd } from 'react-rnd';
 // Importing fasta files because I don't want to set up a server
 // In practice, this would either be hosted on a server or maybe stored in a csv?
 import n18 from '../components/task2/N18.json'
@@ -29,10 +30,13 @@ const logoFiles = {
 
 const Tol = () => {
     const treeRef = useRef(null);
+    const logoRefTop = useRef(null); // TODO: This is a clunky way to ensure both logos are in sync. Refactor this into a single, double-SkylignComponent
+    const logoRefBot = useRef(null);
     const [newickData, setNewickData] = useState(null); // State var for tree data. Can allow user to upload a new tree
     const [logoContent, setLogoContent] = useState(null); // Logo data
     const [pipVisible, setPipVisible] = useState(false); // Toggle for logo popup
     const [selectBranch, setSelectBranch] = useState(null); // State var for branch selection listener
+    const [selectedResidue, setSelectedResidue] = useState(null); // State var for selected residue in Molstar viewer
 
     // Load the default Newick tree from the public folder
     useEffect(() => {
@@ -125,9 +129,22 @@ const Tol = () => {
         }
     }, [newickData]);
 
+    const handleColumnClickTop = (index, column) => {
+        console.log(`Column ${index} clicked`);
+        setSelectedResidue(index);
+        logoRefBot.current.scrollToColumn(index);
+    };
+
+    const handleColumnClickBot = (index, column) => {
+        console.log(`Column ${index} clicked`);
+        setSelectedResidue(index);
+        logoRefTop.current.scrollToColumn(index);
+    };
+
     /*
     TODO: 
         Refactor phylotree to it's own component
+        Add more intuitive resizability to LogoDiv: try Interact.js 
     */
 
     return (
@@ -142,20 +159,20 @@ const Tol = () => {
                 {/* Right side content */}
                 {pipVisible && selectBranch && logoContent && (
                     <div className="right-div">
-                            <div className="logodiv">
-                                <button className="logo-close-btn"
-                                    onClick={() => {
-                                        setPipVisible(false);
-                                        treeRef.current.style.width = '100%'; // Need to refactor this into it's own listener, this change occurs in two places. Ctrl+F "treeRef.current.style.width" to find the other place
-                                    }}
-                                >X</button>
-                                <SkylignComponent logoData={logoContent.source} name={logoContent.sourceName} />
-                                <SkylignComponent logoData={logoContent.target} name={logoContent.targetName} />
-                            </div>
-                            <div className="pvdiv">
-                                <MolstarViewer />
-                            </div>
+                        <div className="logodiv">
+                            <button className="logo-close-btn"
+                                onClick={() => {
+                                    setPipVisible(false);
+                                    treeRef.current.style.width = '100%'; // Need to refactor this into it's own listener, this change occurs in two places. Ctrl+F "treeRef.current.style.width" to find the other place
+                                }}
+                            >X</button>
+                            <SkylignComponent logoData={logoContent.source} name={logoContent.sourceName} onColumnClick={handleColumnClickTop} ref={logoRefTop} />
+                            <SkylignComponent logoData={logoContent.target} name={logoContent.targetName} onColumnClick={handleColumnClickBot} ref={logoRefBot} />
                         </div>
+                        <div className="pvdiv">
+                            <MolstarViewer selectedResidue={selectedResidue} />
+                        </div>
+                    </div>
                 )}
             </div>
         </div >

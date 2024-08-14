@@ -1,10 +1,12 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Navbar from '../components/navbar';
 import MolstarViewer from '../components/molstar';
 import "../components/molstar.css";
 
 const ProteinViewer = () => {
   const viewerRef = useRef(null);
+  const [selectedResidue, setSelectedResidue] = useState(null);
+  const [inputResidue, setInputResidue] = useState(""); // Default value for the input field
 
   useEffect(() => {
     // Load the external stylesheet
@@ -21,7 +23,6 @@ const ProteinViewer = () => {
       const viewerInstance = new window.PDBeMolstarPlugin();
 
       const options = {
-        moleculeId: '1cbs',
         // Optional: Other options to customize the viewer's behavior
       };
 
@@ -38,11 +39,39 @@ const ProteinViewer = () => {
     };
   }, []);
 
+  const handleInputChange = (e) => {
+    setInputResidue(e.target.value);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const residue = parseInt(inputResidue, 10);
+    if (!isNaN(residue)) {
+      setSelectedResidue(residue);
+    }
+  };
+
   return (
     <div>
       <Navbar pageId="Mol* Viewer" />
-      <div style={{ width: '99vw', height: '90vh', overflow: 'hidden' }}>
-        <MolstarViewer selectedResidue={296}/>
+      <div style={{ backgroundColor: '#f5f5f5' }}>
+        <form onSubmit={handleSubmit}>
+          <label>
+            Enter Residue Number to Highlight:
+            <input
+              type="number"
+              value={inputResidue}
+              onChange={handleInputChange}
+              style={{ marginLeft: '10px', padding: '5px' }}
+            />
+          </label>
+          <button type="submit" style={{ marginLeft: '10px', padding: '5px 10px' }}>
+            Highlight Residue
+          </button>
+        </form>
+      </div>
+      <div style={{ width: '100vw', height: '90vh', overflow: 'hidden' }}>
+        <MolstarViewer selectedResidue={selectedResidue} />
       </div>
     </div>
   );

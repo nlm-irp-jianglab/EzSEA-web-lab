@@ -1,32 +1,16 @@
-import React, { useRef } from 'react';
-import n18 from '../components/task2/N18.json'
-import SkylignComponent from "../components/skylign-component";
+// Playground.js
+import React from 'react';
 
-export const App = () => {
-  const logoRefTop = useRef(null);
-  const logoRefBot = useRef(null);
+const Playground = () => {
+    return (
+        <div style={{ width: '100%', height: '100%' }}>
+            <iframe
+                src="/basic-wrapper.html"
+                style={{ width: '100%', height: '100%', border: 'none' }}
+                title="Playground"
+            />
+        </div>
+    );
+};
 
-  const handleColumnClickTop = (index, column) => {
-    console.log(`Column ${index} clicked`, column);
-    logoRefBot.current.scrollToColumn(index);
-  };
-
-  const handleColumnClickBot = (index, column) => {
-    console.log(`Column ${index} clicked`, column);
-    logoRefTop.current.scrollToColumn(index);
-  };
-
-  return (
-    <div>
-      <p>Playground</p>
-      <div style={{ width: '900px', height: '900px', overflow: 'hidden' }}>
-        <SkylignComponent logoData={n18} name={"N18"} onColumnClick={handleColumnClickTop} ref={logoRefTop}/>
-        <SkylignComponent logoData={n18} name={"N18_dup"} onColumnClick={handleColumnClickBot} ref={logoRefBot} />
-      </div>
-    </div>
-  );
-
-
-}
-
-export default App;
+export default Playground;

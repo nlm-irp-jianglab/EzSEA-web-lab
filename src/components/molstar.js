@@ -3,7 +3,9 @@ import { createPluginUI } from "molstar/lib/mol-plugin-ui";
 import { renderReact18 } from "molstar/lib/mol-plugin-ui/react18";
 import { DefaultPluginUISpec } from 'molstar/lib/mol-plugin-ui/spec';
 import { PluginCommands } from "molstar/lib/mol-plugin/commands";
+import { StructureSelection } from 'molstar/lib/mol-model/structure';
 import { ColorNames } from "molstar/lib/mol-util/color/names";
+import { Script } from 'molstar/lib/mol-script/script';
 import "molstar/lib/mol-plugin-ui/skin/dark.scss";
 
 export function MolStarWrapper({ selectedResidue }) {
@@ -20,11 +22,10 @@ export function MolStarWrapper({ selectedResidue }) {
           layout: {
             initial: {
               isExpanded: false,
-              showControls: false
+              showControls: true,
             }
           },
         },
-        darkTheme: true,
       });
 
       // Set the background color of the viewer to gray
@@ -64,14 +65,37 @@ export function MolStarWrapper({ selectedResidue }) {
     };
   }, []);
 
+  // Highlight the selected residue
+  async function highlightResidue(residueNumber) {
+    if (!window.molstar || !window.molstar.managers.structure.hierarchy.current.structures.length) {
+      console.error("Mol* plugin or structure data is not initialized.");
+      return;
+    }
+
+    const structure = window.molstar.managers.structure.hierarchy.current.structures[0]?.cell?.obj?.data;
+    if (!structure) {
+      console.error("Structure data is not available.");
+      return;
+    }
+
+    // Highlight the residue
+    const seq_id = residueNumber;
+    const sel = Script.getStructureSelection(Q => Q.struct.generator.atomGroups({ // I have no idea what this call is
+      'residue-test': Q.core.rel.eq([Q.struct.atomProperty.macromolecular.label_seq_id(), seq_id]),
+      'group-by': Q.struct.atomProperty.macromolecular.residueKey()
+    }), structure);
+    const loci = StructureSelection.toLociWithSourceUnits(sel);
+    //window.molstar.managers.interactivity.lociHighlights.highlightOnly({ loci }); // Highlights
+    window.molstar.managers.interactivity.lociSelects.select({ loci });
+
+
+    console.log("Selected residue", residueNumber);
+  }
+
+
   useEffect(() => {
     highlightResidue(selectedResidue);
   }, [selectedResidue]);
-
-  const highlightResidue = async (residueNumber) => {
-    console.log("Highlighting residue", residueNumber);
-    // TODO: Highlight the selected residue
-  };
 
   return (
     <div

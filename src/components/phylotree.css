@@ -109,6 +109,9 @@
   position: relative;
   height: 35vh;
   width: 100%;
+  resize: vertical;
+  max-height: 790px;
+  min-height: 402.9px;
 }
 
 .pvdiv {
