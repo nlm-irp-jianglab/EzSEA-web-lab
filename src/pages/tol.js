@@ -65,7 +65,7 @@ const Tol = () => {
             // Render the tree directly into the referenced div
             tree.render({
                 'container': treeRef.current,
-                'is-radial': false,
+                'is-radial': true,
                 'selectable': true,
                 'zoom': true,
                 'align-tips': false,
@@ -84,11 +84,9 @@ const Tol = () => {
                 'bubble-styler': d => {
                     // This allows each bubble to be sized individually 
                     //console.log(d);
-                    if (d.data.name in logoFiles) {
-                        return 12;
-                    }
-                    return 6;
+                    return 2;
                 },
+                'font-size': 5,
                 // Set background to light blue
                 'background-color': 'lightblue',
             });
@@ -129,6 +127,15 @@ const Tol = () => {
                         setPipVisible(true);
                     }
                 });
+
+            // Use d3 to recolor selectable nodes
+            d3.select(treeRef.current)
+                .selectAll('.internal-node')
+                .filter(d => d.data.name in logoFiles)
+                .select('circle')
+                .style("fill", "red")
+                .attr("r", 3);
+
         }
     }, [newickData]);
 

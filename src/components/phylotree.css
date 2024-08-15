@@ -156,3 +156,7 @@
     text-align: center;
     line-height: 20px;
 }
+
+.phylotree-node-text {
+  font-size: 4px;
+}

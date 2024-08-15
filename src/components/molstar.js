@@ -6,7 +6,7 @@ import { PluginCommands } from "molstar/lib/mol-plugin/commands";
 import { StructureSelection } from 'molstar/lib/mol-model/structure';
 import { ColorNames } from "molstar/lib/mol-util/color/names";
 import { Script } from 'molstar/lib/mol-script/script';
-import { setStructureOverpaint, clearStructureOverpaint } from 'molstar/lib/mol-plugin-state/helpers/structure-overpaint';
+import { setStructureOverpaint } from 'molstar/lib/mol-plugin-state/helpers/structure-overpaint';
 import { Color } from 'molstar/lib/mol-util/color';
 import "molstar/lib/mol-plugin-ui/skin/dark.scss";
 
@@ -144,7 +144,7 @@ export function MolStarWrapper({ selectedResidue, colorFile }) {
       await setStructureOverpaint(window.molstar, window.molstar.managers.structure.hierarchy.current.structures[0].components, Color(colorArr[color]), (s) => {
         const sel = Script.getStructureSelection(Q => Q.struct.generator.atomGroups({
           'residue-test': Q.core.rel.eq([Q.struct.atomProperty.macromolecular.label_seq_id(), seq_id]),
-          'group-by': Q.struct.atomProperty.macromolecular.residueKey()
+          'group-by': Q.struct.atomProperty.macromolecular.residueKey(),
         }), s);
         return StructureSelection.toLociWithSourceUnits(sel);
       });
