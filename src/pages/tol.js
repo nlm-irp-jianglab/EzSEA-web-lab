@@ -5,7 +5,6 @@ import Navbar from "../components/navbar";
 import "../components/phylotree.css";
 import SkylignComponent from "../components/skylign-component";
 import MolstarViewer from "../components/molstar";
-import { Rnd } from 'react-rnd';
 // Importing fasta files because I don't want to set up a server
 // In practice, this would either be hosted on a server or maybe stored in a csv?
 import n18 from '../components/task2/N18.json'
@@ -37,6 +36,7 @@ const Tol = () => {
     const [pipVisible, setPipVisible] = useState(false); // Toggle for logo popup
     const [selectBranch, setSelectBranch] = useState(null); // State var for branch selection listener
     const [selectedResidue, setSelectedResidue] = useState(null); // State var for selected residue in Molstar viewer
+    const [colorFile, setColorFile] = useState(null); // State var for color file
 
     // Load the default Newick tree from the public folder
     useEffect(() => {
@@ -109,6 +109,8 @@ const Tol = () => {
                     // Read the FASTA file content
                     if (!logoFiles[source] || !logoFiles[target]) {
                         console.error('No logo file found for:', source, 'or', target);
+                        setSelectedResidue(null);
+                        setColorFile(null);
                         setLogoContent(null);
                         setPipVisible(false);
                         treeRef.current.style.width = '100%';
@@ -121,6 +123,7 @@ const Tol = () => {
                             target: logoFiles[target],
                         }
                         treeRef.current.style.width = '50%';
+                        setColorFile(`${source}_${target}.color.txt`);
                         setLogoContent(data);
                         setSelectBranch(branch);
                         setPipVisible(true);
@@ -143,8 +146,9 @@ const Tol = () => {
 
     /*
     TODO: 
-        Refactor phylotree to it's own component
         Add more intuitive resizability to LogoDiv: try Interact.js 
+        Combine the two SkylignComponents into a single component
+        Inherent issue with Skylign: fasta must be converted into a json object thru website. Cannot generate logos on the fly
     */
 
     return (
@@ -163,6 +167,7 @@ const Tol = () => {
                             <button className="logo-close-btn"
                                 onClick={() => {
                                     setPipVisible(false);
+                                    setSelectedResidue(null);
                                     treeRef.current.style.width = '100%'; // Need to refactor this into it's own listener, this change occurs in two places. Ctrl+F "treeRef.current.style.width" to find the other place
                                 }}
                             >X</button>
@@ -170,7 +175,7 @@ const Tol = () => {
                             <SkylignComponent logoData={logoContent.target} name={logoContent.targetName} onColumnClick={handleColumnClickBot} ref={logoRefBot} />
                         </div>
                         <div className="pvdiv">
-                            <MolstarViewer selectedResidue={selectedResidue} />
+                            <MolstarViewer selectedResidue={selectedResidue} colorFile={colorFile} />
                         </div>
                     </div>
                 )}

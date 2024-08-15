@@ -1,4 +1,4 @@
-import React, { useEffect, createRef } from "react";
+import React, { useEffect, useState, createRef } from "react";
 import { createPluginUI } from "molstar/lib/mol-plugin-ui";
 import { renderReact18 } from "molstar/lib/mol-plugin-ui/react18";
 import { DefaultPluginUISpec } from 'molstar/lib/mol-plugin-ui/spec';
@@ -6,12 +6,25 @@ import { PluginCommands } from "molstar/lib/mol-plugin/commands";
 import { StructureSelection } from 'molstar/lib/mol-model/structure';
 import { ColorNames } from "molstar/lib/mol-util/color/names";
 import { Script } from 'molstar/lib/mol-script/script';
-import { setStructureOverpaint } from 'molstar/lib/mol-plugin-state/helpers/structure-overpaint';
+import { setStructureOverpaint, clearStructureOverpaint } from 'molstar/lib/mol-plugin-state/helpers/structure-overpaint';
 import { Color } from 'molstar/lib/mol-util/color';
 import "molstar/lib/mol-plugin-ui/skin/dark.scss";
 
-export function MolStarWrapper({ selectedResidue }) {
+const colorArr = [
+  0x5A72DB,
+  0x6B6AC6,
+  0x7B61B0,
+  0x8C599B,
+  0x9D5185,
+  0xAD4870,
+  0xBE405A,
+  0xCE3745,
+  0xDF2F2F,
+]
+
+export function MolStarWrapper({ selectedResidue, colorFile }) {
   const parent = createRef();
+  const [isStructureLoaded, setIsStructureLoaded] = useState(false);
 
   useEffect(() => {
     async function init() {
@@ -44,7 +57,6 @@ export function MolStarWrapper({ selectedResidue }) {
       }
 
       // Loading the default pdb file
-      // TODO: Make this dynamic
       const string = await fetch(`${process.env.PUBLIC_URL}/GCA_900167205.pdb`).then((response) => response.text());
 
       const myData = await window.molstar.builders.data.rawData({
@@ -57,6 +69,9 @@ export function MolStarWrapper({ selectedResidue }) {
         trajectory,
         "default"
       );
+
+      // Set the structure as loaded
+      setIsStructureLoaded(true);
     }
 
     init();
@@ -68,8 +83,21 @@ export function MolStarWrapper({ selectedResidue }) {
     };
   }, []);
 
+  useEffect(() => {
+    if (isStructureLoaded) {
+      applyColorFile(colorFile);
+    }
+  }, [isStructureLoaded, colorFile]);
+
+  useEffect(() => {
+    if (isStructureLoaded) {
+      highlightResidue(selectedResidue);
+    }
+  }, [isStructureLoaded, selectedResidue]);
+
   async function highlightResidue(residueNumber) {
     if (residueNumber == null) return;
+    const seq_id = residueNumber;
 
     if (!window.molstar || !window.molstar.managers.structure.hierarchy.current.structures.length) {
       console.error("Mol* plugin or structure data is not initialized.");
@@ -83,34 +111,47 @@ export function MolStarWrapper({ selectedResidue }) {
     }
 
     // Highlight the residue
-    const seq_id = residueNumber;
-    const sel = Script.getStructureSelection(Q => Q.struct.generator.atomGroups({ // I have no idea what this call is
+    const sel = Script.getStructureSelection(Q => Q.struct.generator.atomGroups({ // Call to query the structure using residue number to get a Loci
       'residue-test': Q.core.rel.eq([Q.struct.atomProperty.macromolecular.label_seq_id(), seq_id]),
       'group-by': Q.struct.atomProperty.macromolecular.residueKey()
     }), structure);
     const loci = StructureSelection.toLociWithSourceUnits(sel);
-    //window.molstar.managers.interactivity.lociHighlights.highlightOnly({ loci }); // Highlights
-    window.molstar.managers.interactivity.lociSelects.select({ loci });
 
-
-    // Overpaint the residue
-    await setStructureOverpaint(window.molstar, window.molstar.managers.structure.hierarchy.current.structures[0].components, Color(0xFF0000), (s) => {
-      const sel = Script.getStructureSelection(Q => Q.struct.generator.atomGroups({ // I have no idea what this call is
-        'residue-test': Q.core.rel.eq([Q.struct.atomProperty.macromolecular.label_seq_id(), seq_id]),
-        'group-by': Q.struct.atomProperty.macromolecular.residueKey()
-      }), s);
-      return StructureSelection.toLociWithSourceUnits(sel);
-    });
-
-
+    // Clear previous selections
+    window.molstar.managers.interactivity.lociSelects.deselectAll();
+    window.molstar.managers.interactivity.lociSelects.select({ loci }); // Select the residue
 
     console.log("Selected residue", residueNumber);
   }
 
+  async function applyColorFile(colorFile) {
+    if (!colorFile) return;
 
-  useEffect(() => {
-    highlightResidue(selectedResidue);
-  }, [selectedResidue]);
+    if (!window.molstar || !window.molstar.managers.structure.hierarchy.current.structures.length) {
+      console.error("Mol* plugin or structure data is not initialized.");
+      return;
+    }
+
+    const string = await fetch(`${process.env.PUBLIC_URL}/${colorFile}`).then((response) => response.text());
+
+    // TODO: Even though the color file may not exist, fetch request returns HTML due to route handling. Handle this case and provide feedback.
+    // Delimit by tabs
+    const lines = string.split("\n");
+    for (const line of lines) {
+      const [residue, color] = line.split("\t");
+      const seq_id = parseInt(residue);
+      // Overpaint the residue, must await each query, maybe flip instead of search for residue, search for color then apply to all residues.
+      await setStructureOverpaint(window.molstar, window.molstar.managers.structure.hierarchy.current.structures[0].components, Color(colorArr[color]), (s) => {
+        const sel = Script.getStructureSelection(Q => Q.struct.generator.atomGroups({
+          'residue-test': Q.core.rel.eq([Q.struct.atomProperty.macromolecular.label_seq_id(), seq_id]),
+          'group-by': Q.struct.atomProperty.macromolecular.residueKey()
+        }), s);
+        return StructureSelection.toLociWithSourceUnits(sel);
+      });
+    }
+
+    console.log("Applied color file", colorFile);
+  }
 
   return (
     <div
