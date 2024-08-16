@@ -160,3 +160,7 @@
 .phylotree-node-text {
   font-size: 4px;
 }
+
+svg {
+  overflow: visible;
+}

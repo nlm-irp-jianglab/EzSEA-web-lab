@@ -22,7 +22,7 @@ const colorArr = [
   0xDF2F2F,
 ]
 
-export function MolStarWrapper({ selectedResidue, colorFile }) {
+export function MolStarWrapper({ selectedResidue, hoveredResidue, colorFile }) {
   const parent = createRef();
   const [isStructureLoaded, setIsStructureLoaded] = useState(false);
 
@@ -57,6 +57,7 @@ export function MolStarWrapper({ selectedResidue, colorFile }) {
       }
 
       // Loading the default pdb file
+      // TODO: Load PDB files dynamically
       const string = await fetch(`${process.env.PUBLIC_URL}/GCA_900167205.pdb`).then((response) => response.text());
 
       const myData = await window.molstar.builders.data.rawData({
@@ -91,11 +92,17 @@ export function MolStarWrapper({ selectedResidue, colorFile }) {
 
   useEffect(() => {
     if (isStructureLoaded) {
-      highlightResidue(selectedResidue);
+      selectResidue(selectedResidue);
     }
   }, [isStructureLoaded, selectedResidue]);
 
-  async function highlightResidue(residueNumber) {
+  useEffect(() => {
+    if (isStructureLoaded) {
+      selectResidue(hoveredResidue, true);
+    }
+  }, [isStructureLoaded, hoveredResidue]);
+
+  async function selectResidue(residueNumber, hovered = false) {
     if (residueNumber == null) return;
     const seq_id = residueNumber;
 
@@ -110,13 +117,16 @@ export function MolStarWrapper({ selectedResidue, colorFile }) {
       return;
     }
 
-    // Highlight the residue
     const sel = Script.getStructureSelection(Q => Q.struct.generator.atomGroups({ // Call to query the structure using residue number to get a Loci
       'residue-test': Q.core.rel.eq([Q.struct.atomProperty.macromolecular.label_seq_id(), seq_id]),
       'group-by': Q.struct.atomProperty.macromolecular.residueKey()
     }), structure);
     const loci = StructureSelection.toLociWithSourceUnits(sel);
 
+    if (hovered) {
+      window.molstar.managers.interactivity.lociHighlights.highlightOnly({ loci }); // Highlight the residue
+      return;
+    }
     // Clear previous selections
     window.molstar.managers.interactivity.lociSelects.deselectAll();
     window.molstar.managers.interactivity.lociSelects.select({ loci }); // Select the residue

@@ -2,7 +2,7 @@ import React, { useEffect, useRef, forwardRef, useImperativeHandle } from 'react
 import hmmLogo from './skylign.js';
 import css from './logo.css';
 
-const SkylignComponent = forwardRef(({ logoData, name, onColumnClick }, ref) => {
+const SkylignComponent = forwardRef(({ logoData, name, onColumnClick, onColumnHover }, ref) => {
   const logoRef = useRef(null);
   const logoInstanceRef = useRef(null); // Ref to store the hmmLogo instance
 
@@ -31,12 +31,18 @@ const SkylignComponent = forwardRef(({ logoData, name, onColumnClick }, ref) => 
             zoom_buttons: 'disabled',
             height: 300,
           },
-          (col, columnData) => {
+          (col, columnData) => { // TODO Ambiguous parameter passed to function
             // Call the provided onColumnClick function
             if (onColumnClick) {
               onColumnClick(col, columnData);
             } else {
               console.error("onColumnClick not provided");
+            }
+          },
+          (col) => {
+            // Call the provided onColumnHover function
+            if (onColumnHover) {
+              onColumnHover(col);
             }
           }
         );

@@ -3,8 +3,8 @@ import * as pt from 'phylotree';
 import * as d3 from 'd3';
 import Navbar from "../components/navbar";
 import "../components/phylotree.css";
-import SkylignComponent from "../components/skylign-component";
 import MolstarViewer from "../components/molstar";
+import OULogo from "../components/over-under-logo";
 // Importing fasta files because I don't want to set up a server
 // In practice, this would either be hosted on a server or maybe stored in a csv?
 import n18 from '../components/task2/N18.json'
@@ -29,14 +29,13 @@ const logoFiles = {
 
 const Tol = () => {
     const treeRef = useRef(null);
-    const logoRefTop = useRef(null); // TODO: This is a clunky way to ensure both logos are in sync. Refactor this into a single, double-SkylignComponent
-    const logoRefBot = useRef(null);
     const [newickData, setNewickData] = useState(null); // State var for tree data. Can allow user to upload a new tree
     const [logoContent, setLogoContent] = useState(null); // Logo data
     const [pipVisible, setPipVisible] = useState(false); // Toggle for logo popup
-    const [selectBranch, setSelectBranch] = useState(null); // State var for branch selection listener
-    const [selectedResidue, setSelectedResidue] = useState(null); // State var for selected residue in Molstar viewer
-    const [colorFile, setColorFile] = useState(null); // State var for color file
+    const [selectBranch, setSelectBranch] = useState(null); // Branch selection listener
+    const [selectedResidue, setSelectedResidue] = useState(null); // Selected residue in Molstar viewer
+    const [hoveredResidue, setHoveredResidue] = useState(null); // Highlights logo hovered residue in Molstar viewer 
+    const [colorFile, setColorFile] = useState(null); // For loading color file
 
     // Load the default Newick tree from the public folder
     useEffect(() => {
@@ -44,7 +43,6 @@ const Tol = () => {
             try {
                 const response = await fetch(`${process.env.PUBLIC_URL}/in_ancestors.nwk`);
                 const text = await response.text();
-                //console.log('Default tree fetched:', text);
                 setNewickData(text);
             } catch (error) {
                 console.error("Error fetching the default tree:", error);
@@ -80,10 +78,10 @@ const Tol = () => {
                     "all-leaf-nodes": true,
                 },
                 'draw-size-bubbles': true,
-                'show-scale': true,
+                'show-scale': false,
                 'bubble-styler': d => {
                     // This allows each bubble to be sized individually 
-                    //console.log(d);
+                    // d is node
                     return 2;
                 },
                 'font-size': 5,
@@ -139,24 +137,14 @@ const Tol = () => {
         }
     }, [newickData]);
 
-    const handleColumnClickTop = (index, column) => {
+    const handleColumnClick = (index, column) => {
         console.log(`Column ${index} clicked`);
         setSelectedResidue(index);
-        logoRefBot.current.scrollToColumn(index);
     };
 
-    const handleColumnClickBot = (index, column) => {
-        console.log(`Column ${index} clicked`);
-        setSelectedResidue(index);
-        logoRefTop.current.scrollToColumn(index);
-    };
-
-    /*
-    TODO: 
-        Add more intuitive resizability to LogoDiv: try Interact.js 
-        Combine the two SkylignComponents into a single component
-        Inherent issue with Skylign: fasta must be converted into a json object thru website. Cannot generate logos on the fly
-    */
+    const handleColumnHover = (index) => {
+        setHoveredResidue(index);
+    }
 
     return (
         <div>
@@ -178,11 +166,10 @@ const Tol = () => {
                                     treeRef.current.style.width = '100%'; // Need to refactor this into it's own listener, this change occurs in two places. Ctrl+F "treeRef.current.style.width" to find the other place
                                 }}
                             >X</button>
-                            <SkylignComponent logoData={logoContent.source} name={logoContent.sourceName} onColumnClick={handleColumnClickTop} ref={logoRefTop} />
-                            <SkylignComponent logoData={logoContent.target} name={logoContent.targetName} onColumnClick={handleColumnClickBot} ref={logoRefBot} />
+                            <OULogo data={logoContent} onOUColumnClick={handleColumnClick} onOUColumnHover={handleColumnHover} />
                         </div>
                         <div className="pvdiv">
-                            <MolstarViewer selectedResidue={selectedResidue} colorFile={colorFile} />
+                            <MolstarViewer selectedResidue={selectedResidue} colorFile={colorFile} hoveredResidue={hoveredResidue} />
                         </div>
                     </div>
                 )}

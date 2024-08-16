@@ -1642,7 +1642,7 @@ const HMMLogo = function (element, options = {}) {
 };
 
 // eslint-disable-next-line complexity, max-statements
-const hmmLogo = function (logoElement, options = {}, onColumnClick) {
+const hmmLogo = function (logoElement, options = {}, onColumnClick, onColumnHover) {
   // add some internal divs for scrolling etc.
   const logoGraphic = document.createElement('div');
   logoGraphic.classList.add("logo_graphic");
@@ -2037,6 +2037,10 @@ const hmmLogo = function (logoElement, options = {}, onColumnClick) {
     const col = hmmLogo.columnFromCoordinates(x);
     if (hmmLogo.column_hover !== col) {
       hmmLogo.column_hover = col;
+      // Callback for column hover
+      if (typeof onColumnHover === 'function') {
+        onColumnHover(col);
+      }
       hmmLogo.refresh();
     }
   });
