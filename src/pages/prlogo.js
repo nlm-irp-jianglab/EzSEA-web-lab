@@ -26,7 +26,7 @@ function LogoUpload() {
 // Generating logo throws a warning. Invalid property passed into the svg?
 const Logo = ({ fasta }) => {
     return (
-        <div> 
+        <div style={{overflow: "scroll"}}> 
             <ProteinLogo fasta={fasta} />
         </div>
     );

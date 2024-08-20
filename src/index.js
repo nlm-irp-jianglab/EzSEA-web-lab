@@ -45,7 +45,6 @@ root.render(
                     element={<Navigate to="/" />}
                 />
 
-
             </Routes>
         </Router>
     </>

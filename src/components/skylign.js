@@ -1649,12 +1649,13 @@ const hmmLogo = function (logoElement, options = {}, onColumnClick, onColumnHove
   const logoContainer = document.createElement('div');
   logoContainer.classList.add("logo_container");
 
-  const logoDivider = document.createElement('div');
-  logoDivider.classList.add("logo_divider");
+  // Removed this logo divider. I think it was pointing to the center of the logo, but it was not needed.
+  //const logoDivider = document.createElement('div');
+  //logoDivider.classList.add("logo_divider");
 
   logoElement.appendChild(logoContainer);
   logoContainer.appendChild(logoGraphic);
-  logoElement.appendChild(logoDivider);
+  //logoElement.appendChild(logoDivider);
 
   if (options.data === null) return;
 

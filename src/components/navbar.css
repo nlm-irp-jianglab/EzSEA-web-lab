@@ -9,6 +9,12 @@
   background-color: #333;
   padding: 10px;
   font-family: 'Montserrat', sans-serif;
+  position: fixed; /* Makes the navbar fixed at the top */
+  top: 0;
+  left: 0;
+  width: 100%; /* Ensures the navbar spans the full width of the screen */
+  z-index: 1000; /* Ensures the navbar stays above all other elements */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: adds a subtle shadow for better visibility */
 }
 
 .logo {
@@ -69,4 +75,9 @@
   .nav-links-mobile {
     display: flex;
   }
+}
+
+/* Additional padding to avoid content being hidden under the fixed navbar */
+body {
+  padding-top: 60px; /* Adjust based on the height of your navbar */
 }

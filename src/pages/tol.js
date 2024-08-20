@@ -149,7 +149,7 @@ const Tol = () => {
     return (
         <div>
             <Navbar pageId={"Phylogenetic Tree Viewer"} />
-            <div style={{ display: 'flex', height: '100vh' }}>
+            <div style={{ display: 'flex', height: '90vh' }}>
                 <div // Tree goes here
                     className="tree-div"
                     ref={treeRef}

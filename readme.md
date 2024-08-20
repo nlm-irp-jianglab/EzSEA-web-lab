@@ -4,6 +4,7 @@ Protein Viewer: Molstar
 Sequence Logos: Skylign
 
 # TODO:
+! Render PDB in Molstar based on ?. User inputs MSA fastas, then must detect corresponding PDB?
 Add summarize feature which combines all outputs into a file.
 Add more intuitive resizability to LogoDiv: try Interact.js 
 Inherent issue with Skylign: fasta must be converted into a json object thru website. Cannot generate logos on the fly.
