@@ -92,7 +92,7 @@
 }
 .xaxis_text {
   width: 10em;
-  margin: 1em auto;
+  /*margin: 1em auto;*/
 }
 .logo_yaxis {
   position: absolute;

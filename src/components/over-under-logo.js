@@ -1,5 +1,7 @@
+// over-under-logo.js
 import React, { useEffect, useRef, useState } from 'react';
 import SkylignComponent from "../components/skylign-component";
+import { EasyScroller } from 'easyscroller';
 
 export function OULogo({ data, onOUColumnClick, onOUColumnHover }) {
     const logoRefTop = useRef(null); 
@@ -12,15 +14,45 @@ export function OULogo({ data, onOUColumnClick, onOUColumnHover }) {
         }
     }, [data]); // This effect runs whenever `data` changes
 
+    useEffect(() => {
+        setTimeout(() => { //Hacky fix, better to reference the underlying scroller elem: SklignComp > hmmLogo > scrollme > scroller
+            const canvasTop = document.getElementsByClassName('logo_graphic')[0];
+            const canvasBot = document.getElementsByClassName('logo_graphic')[1];
+
+            const scrollerTop = new EasyScroller(canvasTop, {
+                scrollingX: true,
+                scrollingY: false,
+                animating: false,
+                bouncing: false,
+            });
+
+            const scrollerBot = new EasyScroller(canvasBot, {
+                scrollingX: true,
+                scrollingY: false,
+                animating: false,
+                bouncing: false,
+            });
+
+            const syncScroll = (left, top, zoom) => {
+                if (Math.floor(scrollerTop.scroller.__scrollLeft) != Math.floor(scrollerBot.scroller.__scrollLeft)) {
+                    console.log("Syncing top to bot");
+                    scrollerBot.scroller.__publish(Math.floor(left), 0, 1, true);
+                }
+            };
+
+            scrollerTop.scroller.__callback = syncScroll;
+        }, 1000);
+    }, [logoContent]);
+
     const handleColumnClickTop = (index, column) => {
-        logoRefBot.current.scrollToColumn(index);
+        // logoRefBot.current.scrollToColumn(index); // Removed, prefer to sync scrolling
         if (onOUColumnClick) {
             onOUColumnClick(index, column);
         }
     };
 
     const handleColumnClickBot = (index, column) => {
-        logoRefTop.current.scrollToColumn(index);
+        // logoRefTop.current.scrollToColumn(index); // Removed, prefer to sync scrolling
         if (onOUColumnClick) {
             onOUColumnClick(index, column);
         }

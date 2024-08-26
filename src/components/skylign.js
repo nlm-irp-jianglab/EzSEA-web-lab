@@ -956,6 +956,8 @@ const HMMLogo = function (element, options = {}) {
       this.scrollme = new EasyScroller(logoGraphic, {
         scrollingX: 1,
         scrollingY: 0,
+        animating: false,
+        bouncing: false,
         eventTarget: this.called_on,
       });
     }
@@ -976,10 +978,12 @@ const HMMLogo = function (element, options = {}) {
     }
     const axisDiv = document.createElement('div');
     axisDiv.classList.add("logo_xaxis");
+    /* Remove label from x-axis
     const axisP = document.createElement('p');
     axisP.classList.add("xaxis_text");
     axisP.innerHTML = label;
     axisDiv.appendChild(axisP);
+    */
     this.called_on.insertBefore(
       axisDiv,
       this.called_on.getElementsByClassName("logo_container")[0],
@@ -1003,7 +1007,8 @@ const HMMLogo = function (element, options = {}) {
       canvas.width = 55;
       xAxis.appendChild(canvas);
       let context = null;
-      let axisLabel = 'Information Content (bits)';
+      // let axisLabel = 'Information Content (bits)'; // Replacing y-axis label with title
+      let axisLabel = this.name;
 
       context = canvas.getContext('2d');
       // draw min/max tick marks
@@ -1662,6 +1667,7 @@ const hmmLogo = function (logoElement, options = {}, onColumnClick, onColumnHove
   options.dom_element = logoGraphic;
   options.called_on = logoElement;
 
+  /* Removing the jump-to-column input field
   const fieldset = document.createElement('fieldset');
 
   const label = document.createElement('label');
@@ -1685,11 +1691,11 @@ const hmmLogo = function (logoElement, options = {}, onColumnClick, onColumnHove
   form.classList.add("logo_form");
   form.addEventListener('submit', (e) => e.preventDefault);
   form.appendChild(fieldset);
-
+  
   const controls = document.createElement('div');
   controls.classList.add("logo_controls");
   form.appendChild(controls);
-
+  */
   const close = document.createElement('span');
   close.classList.add("close");
   close.innerHTML = 'x';
@@ -1697,7 +1703,8 @@ const hmmLogo = function (logoElement, options = {}, onColumnClick, onColumnHove
   const settings = document.createElement('div');
   settings.classList.add("logo_settings");
   settings.appendChild(close);
-  controls.appendChild(settings);
+  //controls.appendChild(settings);
+  
 
   const logo = new HMMLogo(logoElement, options);
   logo.render(options);
@@ -1822,19 +1829,19 @@ const hmmLogo = function (logoElement, options = {}, onColumnClick, onColumnHove
       settings.innerHTML += activeSites;
     }
   }
-
+  
+  /* EDIT: Removed settings button, only affects last created logo
   if (settings.children.length) {
     const settingsButton = document.createElement('button');
-    // EDIT: Removed settings button, only affects last created logo
-    //settingsButton.innerHTML = 'Settings';
-    //settingsButton.classList.add("logo_settings_switch");
-    //settingsButton.classList.add("button");
-    //-controls.appendChild(settingsButton);
-    //controls.appendChild(settings);
+    settingsButton.innerHTML = 'Settings';
+    settingsButton.classList.add("logo_settings_switch");
+    settingsButton.classList.add("button");
+    -controls.appendChild(settingsButton);
+    controls.appendChild(settings);
   }
+  */
 
-  form.appendChild(controls);
-  logoElement.appendChild(form);
+  /* Removing these settings
   for (const name of ["logo_settings_switch", "close"]) {
     for (const element of logoElement.getElementsByClassName(name)) {
       element.addEventListener('click', e => {
@@ -1888,6 +1895,8 @@ const hmmLogo = function (logoElement, options = {}, onColumnClick, onColumnHove
       logo.scrollToColumn(this.value, 1);
     });
   }
+  */
+
   // Removing doubleclick to zoom in/out functionality, rebinding doubleclick to column info
   /*
   logoGraphic.addEventListener('dblclick', function (e) {
@@ -2005,12 +2014,11 @@ const hmmLogo = function (logoElement, options = {}, onColumnClick, onColumnHove
       logoElement.appendChild(columnInfo);
     }); */
   }
-  // TODO: Working on tying logo to pv
   logoGraphic.addEventListener('dblclick', e => {
     const x = parseInt(e.offsetX, 10);
     const col = logo.columnFromCoordinates(x);
 
-    logo.scrollToColumn(col, 0);
+    //logo.scrollToColumn(col, 0);
 
     if (options.column_info) {
       const infoTab = document.createElement('table');
@@ -2031,6 +2039,7 @@ const hmmLogo = function (logoElement, options = {}, onColumnClick, onColumnHove
     }
     logo.refresh();
   });
+  
 
   logoGraphic.addEventListener('mousemove', e => {
     const hmmLogo = logo;

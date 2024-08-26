@@ -6,6 +6,8 @@ function LogoUpload() {
     const [status, setStatus] = useState("");  // State to track the status of the upload/fetch process
     const [uploadedFiles, setUploadedFiles] = useState([]);  // State to keep track of uploaded files' JSON data
     const [isUploaded, setIsUploaded] = useState(false);  // State to track if files have been uploaded
+    const [hoveredResidue, setHoveredResidue] = useState(null);
+    const [selectedResidue, setSelectedResidue] = useState(null);
     const logoRefs = useRef([]);
 
     const handleFileChange = (event) => {
@@ -26,7 +28,7 @@ function LogoUpload() {
 
         setStatus(`Generating logo for ${file.name}...`);  // Update status to indicate the logo is being generated
 
-        fetch('http://skylign.org', {
+        fetch('https://skylign.org', {
             method: 'POST',
             headers: {
                 "Accept": "application/json"
@@ -68,7 +70,12 @@ function LogoUpload() {
         logoRefs.current.forEach(logoRef => {
             logoRef.scrollToColumn(index);
         });
-    }
+        setSelectedResidue(index);
+    };
+
+    const handleColumnHover = (index) => {
+        setHoveredResidue(index);
+    };
 
     return (
         <div>
@@ -104,12 +111,13 @@ function LogoUpload() {
                                     logoData={file.data}
                                     name={file.fileName}
                                     onColumnClick={handleColumnClick}
+                                    onColumnHover={handleColumnHover} 
                                 />
                             </div>
                         ))}
                     </div>
                     <div className="pvdiv" style={{ alignItems: 'center' }}>
-                        <MolstarViewer />
+                        <MolstarViewer selectedResidue={selectedResidue} hoveredResidue={hoveredResidue} />
                     </div>
                 </div>
             )}

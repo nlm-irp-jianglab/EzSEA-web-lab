@@ -65,7 +65,10 @@ const SkylignComponent = forwardRef(({ logoData, name, onColumnClick, onColumnHo
       if (logoInstanceRef.current) {
         logoInstanceRef.current.scrollToColumn(column);
       }
-    }
+    },
+    getHmmLogo: () => {
+      return logoInstanceRef.current;
+    },
   }));
 
   return <div ref={logoRef}></div>;
