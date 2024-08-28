@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import * as pt from 'phylotree';
 import * as d3 from 'd3';
 import Navbar from "../components/navbar";
@@ -51,7 +51,8 @@ const Tol = () => {
 
         fetchDefaultTree();
     }, []);
-
+    
+    // Update Tree when new data is available
     useEffect(() => {
         if (treeRef.current && newickData) {
             // Clear previous tree content
@@ -137,6 +138,22 @@ const Tol = () => {
         }
     }, [newickData]);
 
+    // Listener for logo hover
+    const setLogoCallback = useCallback((node) => {
+        if (node !== null) {
+            const handleMouseEnter = () => {
+                node.style.height = '602px';
+            };
+    
+            const handleMouseLeave = () => {
+                node.style.height = '300px'; 
+            };
+    
+            node.addEventListener('mouseenter', handleMouseEnter);
+            node.addEventListener('mouseleave', handleMouseLeave);
+        }
+    }, []);
+
     const handleColumnClick = (index, column) => {
         console.log(`Column ${index} clicked`);
         setSelectedResidue(index);
@@ -158,7 +175,7 @@ const Tol = () => {
                 {/* Right side content */}
                 {pipVisible && selectBranch && logoContent && (
                     <div className="right-div">
-                        <div className="logodiv">
+                        <div className="logodiv" ref={setLogoCallback}>
                             <button className="logo-close-btn"
                                 onClick={() => {
                                     setPipVisible(false);

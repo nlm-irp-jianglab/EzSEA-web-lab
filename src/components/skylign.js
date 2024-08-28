@@ -1050,10 +1050,10 @@ const HMMLogo = function (element, options = {}) {
       }
 
       context.save();
-      context.translate(5, this.height / 2 - 20);
+      context.translate(15, this.height / 2 - 20);
       context.rotate(-Math.PI / 2);
       context.textAlign = 'center';
-      context.font = 'normal 12px Arial';
+      context.font = 'bold 18px Arial';
       context.fillText(axisLabel, 1, 0);
       context.restore();
 
@@ -1644,6 +1644,10 @@ const HMMLogo = function (element, options = {}) {
     this.scrollme.reflow();
     this.render();
   };
+
+  this.getScroller = function() {
+    return this.scrollme;
+  }
 };
 
 // eslint-disable-next-line complexity, max-statements

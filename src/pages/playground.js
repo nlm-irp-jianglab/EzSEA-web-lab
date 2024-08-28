@@ -39,7 +39,7 @@ const Playground = () => {
   };
 
   const handleColumnHover = (index) => {
-    console.log(`Column ${index} hovered`);
+    //console.log(`Column ${index} hovered`);
   };
 
   return (

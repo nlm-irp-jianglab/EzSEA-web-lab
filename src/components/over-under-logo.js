@@ -15,32 +15,43 @@ export function OULogo({ data, onOUColumnClick, onOUColumnHover }) {
     }, [data]); // This effect runs whenever `data` changes
 
     useEffect(() => {
-        setTimeout(() => { //Hacky fix, better to reference the underlying scroller elem: SklignComp > hmmLogo > scrollme > scroller
+        setTimeout(() => { // Hacky timeout, TODO: should be replaced with callback when ou is rendered
+            const scrollerTop = logoRefTop.current.getHmmLogo().getScroller();
+            const scrollerBot = logoRefBot.current.getHmmLogo().getScroller();
+
             const canvasTop = document.getElementsByClassName('logo_graphic')[0];
             const canvasBot = document.getElementsByClassName('logo_graphic')[1];
 
-            const scrollerTop = new EasyScroller(canvasTop, {
+            const backendScrollerTop = new EasyScroller(canvasTop, {
                 scrollingX: true,
                 scrollingY: false,
                 animating: false,
                 bouncing: false,
             });
 
-            const scrollerBot = new EasyScroller(canvasBot, {
+            const backendScrollerBot = new EasyScroller(canvasBot, {
                 scrollingX: true,
                 scrollingY: false,
                 animating: false,
                 bouncing: false,
             });
 
-            const syncScroll = (left, top, zoom) => {
-                if (Math.floor(scrollerTop.scroller.__scrollLeft) != Math.floor(scrollerBot.scroller.__scrollLeft)) {
-                    console.log("Syncing top to bot");
+            const syncScrollTop = (left, top, zoom) => {
+                if (Math.floor(left) != Math.floor(scrollerBot.scroller.__scrollLeft)) {
+                    backendScrollerBot.scroller.__scrollLeft = left;
                     scrollerBot.scroller.__publish(Math.floor(left), 0, 1, true);
                 }
             };
 
-            scrollerTop.scroller.__callback = syncScroll;
+            const syncScrollBot = (left, top, zoom) => {
+                if (Math.floor(left) != Math.floor(scrollerTop.scroller.__scrollLeft)) {
+                    backendScrollerTop.scroller.__scrollLeft = left;
+                    scrollerTop.scroller.__publish(Math.floor(left), 0, 1, true);
+                }
+            };
+
+            backendScrollerTop.scroller.__callback = syncScrollTop;
+            backendScrollerBot.scroller.__callback = syncScrollBot;
         }, 1000);
     }, [logoContent]);
 
