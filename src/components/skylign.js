@@ -2022,7 +2022,7 @@ const hmmLogo = function (logoElement, options = {}, onColumnClick, onColumnHove
     const x = parseInt(e.offsetX, 10);
     const col = logo.columnFromCoordinates(x);
 
-    //logo.scrollToColumn(col, 0);
+    logo.scrollToColumn(col, 0);
 
     if (options.column_info) {
       const infoTab = document.createElement('table');

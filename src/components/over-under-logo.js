@@ -22,14 +22,14 @@ export function OULogo({ data, onOUColumnClick, onOUColumnHover }) {
             const canvasTop = document.getElementsByClassName('logo_graphic')[0];
             const canvasBot = document.getElementsByClassName('logo_graphic')[1];
 
-            const backendScrollerTop = new EasyScroller(canvasTop, {
+            const frontScrollerTop = new EasyScroller(canvasTop, {
                 scrollingX: true,
                 scrollingY: false,
                 animating: false,
                 bouncing: false,
             });
 
-            const backendScrollerBot = new EasyScroller(canvasBot, {
+            const frontScrollerBot = new EasyScroller(canvasBot, {
                 scrollingX: true,
                 scrollingY: false,
                 animating: false,
@@ -37,33 +37,29 @@ export function OULogo({ data, onOUColumnClick, onOUColumnHover }) {
             });
 
             const syncScrollTop = (left, top, zoom) => {
-                if (Math.floor(left) != Math.floor(scrollerBot.scroller.__scrollLeft)) {
-                    backendScrollerBot.scroller.__scrollLeft = left;
-                    scrollerBot.scroller.__publish(Math.floor(left), 0, 1, true);
-                }
+                scrollerBot.scroller.__scrollLeft = left;
+                frontScrollerBot.scroller.__publish(Math.floor(left), 0, 1, true);
             };
 
             const syncScrollBot = (left, top, zoom) => {
-                if (Math.floor(left) != Math.floor(scrollerTop.scroller.__scrollLeft)) {
-                    backendScrollerTop.scroller.__scrollLeft = left;
-                    scrollerTop.scroller.__publish(Math.floor(left), 0, 1, true);
-                }
+                scrollerTop.scroller.__scrollLeft = left;
+                frontScrollerTop.scroller.__publish(Math.floor(left), 0, 1, true);
             };
 
-            backendScrollerTop.scroller.__callback = syncScrollTop;
-            backendScrollerBot.scroller.__callback = syncScrollBot;
+            scrollerTop.scroller.__callback = syncScrollTop;
+            scrollerBot.scroller.__callback = syncScrollBot;
         }, 1000);
     }, [logoContent]);
 
     const handleColumnClickTop = (index, column) => {
-        // logoRefBot.current.scrollToColumn(index); // Removed, prefer to sync scrolling
+        logoRefBot.current.scrollToColumn(index); 
         if (onOUColumnClick) {
             onOUColumnClick(index, column);
         }
     };
 
     const handleColumnClickBot = (index, column) => {
-        // logoRefTop.current.scrollToColumn(index); // Removed, prefer to sync scrolling
+        logoRefTop.current.scrollToColumn(index); 
         if (onOUColumnClick) {
             onOUColumnClick(index, column);
         }

@@ -8,9 +8,10 @@ import { ColorNames } from "molstar/lib/mol-util/color/names";
 import { Script } from 'molstar/lib/mol-script/script';
 import { setStructureOverpaint } from 'molstar/lib/mol-plugin-state/helpers/structure-overpaint';
 import { Color } from 'molstar/lib/mol-util/color';
+import { ViewportControls } from 'molstar/lib/mol-plugin-ui/viewport';
 import "molstar/lib/mol-plugin-ui/skin/dark.scss";
 
-const colorArr = [
+const colorArr = [ // Color gradient for adding color to residues
   0x5A72DB,
   0x6B6AC6,
   0x7B61B0,
@@ -162,14 +163,15 @@ export function MolStarWrapper({ selectedResidue, hoveredResidue, colorFile }) {
 
     console.log("Applied color file", colorFile);
   }
-
+  
   return (
     <div
       ref={parent}
       style={{
         width: '100%',
-        height: '100%', // Ensure it fills the parent div's height
+        height: '100%',
         position: 'relative',
+        zIndex: 1, // Matches z value of navbar
       }}
     />
   );

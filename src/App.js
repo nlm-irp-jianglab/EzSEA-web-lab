@@ -1,3 +1,5 @@
+// App.js
+// Ambiguous naming, rename
 import React from "react";
 import DNAUpload from "./pages/dnalogo";
 import Navbar from "./components/navbar";

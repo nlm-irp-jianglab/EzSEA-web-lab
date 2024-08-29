@@ -141,12 +141,15 @@ const Tol = () => {
     // Listener for logo hover
     const setLogoCallback = useCallback((node) => {
         if (node !== null) {
+            const pvdiv = node.parentNode.children[1]
             const handleMouseEnter = () => {
                 node.style.height = '602px';
+                pvdiv.style.height = 'calc(100% - 602px)';
             };
     
             const handleMouseLeave = () => {
-                node.style.height = '300px'; 
+                node.style.height = '300px';
+                pvdiv.style.height = 'calc(100% - 302px)';
             };
     
             node.addEventListener('mouseenter', handleMouseEnter);
@@ -165,7 +168,7 @@ const Tol = () => {
 
     return (
         <div>
-            <Navbar pageId={"Phylogenetic Tree Viewer"} />
+            <Navbar pageId={"Integrated Tree Viewer"} />
             <div style={{ display: 'flex', height: '90vh' }}>
                 <div // Tree goes here
                     className="tree-div"
