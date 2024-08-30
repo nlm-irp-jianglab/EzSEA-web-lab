@@ -29,8 +29,7 @@ const SkylignComponent = forwardRef(({ logoData, name, onColumnClick, onColumnHo
             zoom: "1",
             name: name,
             zoom_buttons: 'disabled',
-            height: 200,
-            debug: true,
+            height: 300,
           },
           (col, columnData) => { // TODO Ambiguous parameter passed to function
             // Call the provided onColumnClick function
