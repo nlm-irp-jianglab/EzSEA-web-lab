@@ -9,7 +9,7 @@
 }
 .logo_container {
   position: relative;
-  height: 300px;
+  height: 200px;
   overflow: hidden;
   margin-left: 55px;
   border: 1px solid #999;
@@ -17,7 +17,7 @@
 
 .logo_graphic {
   position: absolute;
-  height: 300px;
+  height: 200px;
   background-color: #e4f0c4;
   background-image: -webkit-gradient(
     linear,
@@ -96,7 +96,6 @@
 }
 .logo_yaxis {
   position: absolute;
-  draggable: true;
 }
 .logo_wrapper {
   background: #eee;
@@ -106,6 +105,7 @@
 .canvas_logo {
   position: absolute;
   top: 0;
+  z-index: -99;
 }
 .logo_divider {
   background: rgba(256, 0, 0, 0.1);

@@ -15,7 +15,7 @@ class Letter {
       this.width += (this.width * 30) / 100;
     }
 
-    this.height = parseInt(options.height, 10) || 100;
+    this.height = options.height || 300;
 
     this.color = options.color || '#000';
     // if the height and width are changed from the default, then
@@ -29,7 +29,7 @@ class Letter {
     const hRatio = targetHeight / this.height;
     const wRatio = targetWidth / this.width;
     const prevFont = extCtx.font;
-    extCtx.transform(wRatio, 0, 0, hRatio, x, y);
+    extCtx.transform(wRatio, 0, 0, hRatio, x, y-100);
     extCtx.fillStyle = color || this.color;
     extCtx.textAlign = 'center';
     extCtx.font = `bold ${this.fontSize}px Arial`;
@@ -1003,7 +1003,7 @@ const HMMLogo = function (element, options = {}) {
     )) {
       const canvas = document.createElement('canvas');
       canvas.classList.add("logo_yaxis");
-      canvas.height = 302;
+      canvas.height = 200;
       canvas.width = 55;
       xAxis.appendChild(canvas);
       let context = null;
@@ -1011,38 +1011,38 @@ const HMMLogo = function (element, options = {}) {
       let axisLabel = this.name;
 
       context = canvas.getContext('2d');
-      // draw min/max tick marks
-      context.beginPath();
-      context.moveTo(55, 1);
-      context.lineTo(40, 1);
+      // // draw min/max tick marks
+      // context.beginPath();
+      // context.moveTo(55, 1);
+      // context.lineTo(40, 1);
 
-      context.moveTo(55, this.info_content_height);
-      context.lineTo(40, this.info_content_height);
+      // context.moveTo(55, this.info_content_height);
+      // context.lineTo(40, this.info_content_height);
 
-      context.moveTo(55, this.info_content_height / 2);
-      context.lineTo(40, this.info_content_height / 2);
-      context.lineWidth = 1;
-      context.strokeStyle = '#666';
-      context.stroke();
+      // context.moveTo(55, this.info_content_height / 2);
+      // context.lineTo(40, this.info_content_height / 2);
+      // context.lineWidth = 1;
+      // context.strokeStyle = '#666';
+      // context.stroke();
 
       // draw the label text
-      context.fillStyle = '#666';
-      context.textAlign = 'right';
-      context.font = 'bold 10px Arial';
+      // context.fillStyle = '#666';
+      // context.textAlign = 'right';
+      // context.font = 'bold 10px Arial';
 
-      // draw the max label
-      context.textBaseline = 'top';
-      context.fillText(parseFloat(this.data.max_height).toFixed(1), 38, 0);
-      context.textBaseline = 'middle';
+      // // draw the max label
+      // context.textBaseline = 'top';
+      // context.fillText(parseFloat(this.data.max_height).toFixed(1), 38, 0);
+      // context.textBaseline = 'middle';
 
-      // draw the midpoint labels
-      context.fillText(
-        parseFloat(this.data.max_height / 2).toFixed(1),
-        38,
-        this.info_content_height / 2,
-      );
-      // draw the min label
-      context.fillText('0', 38, this.info_content_height);
+      // // draw the midpoint labels
+      // context.fillText(
+      //   parseFloat(this.data.max_height / 2).toFixed(1),
+      //   38,
+      //   this.info_content_height / 2,
+      // );
+      // // draw the min label
+      // context.fillText('0', 38, this.info_content_height);
 
       // draw the axis label
       if (this.data.height_calc === 'score') {
@@ -1050,7 +1050,7 @@ const HMMLogo = function (element, options = {}) {
       }
 
       context.save();
-      context.translate(15, this.height / 2 - 20);
+      context.translate(15, this.height / 2);
       context.rotate(-Math.PI / 2);
       context.textAlign = 'center';
       context.font = 'bold 18px Arial';

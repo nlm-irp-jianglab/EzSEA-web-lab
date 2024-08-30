@@ -4,6 +4,9 @@ Protein Viewer: Molstar
 Sequence Logos: Skylign
 
 # TODO:
+~Implement context menu on node click
+  - Rerooting/hiding tree rerenders the tree, removing click listeners and breaking page functionality
+!Shrink logos, maybe 200px tall?
 !Add summarize feature which combines all outputs into a file.
 Add more intuitive resizability to LogoDiv.
   - Hover now expands logo section

@@ -51,19 +51,67 @@ const Tol = () => {
 
         fetchDefaultTree();
     }, []);
-    
+
     // Update Tree when new data is available
     useEffect(() => {
         if (treeRef.current && newickData) {
             // Clear previous tree content
             treeRef.current.innerHTML = '';
 
+            function node_colorizer(element, data) {
+                console.log(element, data);
+                try {
+                    var count_class = 0;
+
+                    selection_set.forEach(function (d, i) {
+                        if (data[d]) {
+                            count_class++;
+                            element.style(
+                                "fill",
+                                color_scheme(i),
+                                i == current_selection_id ? "important" : null
+                            );
+                        }
+                    });
+
+                    if (count_class > 1) {
+                    } else {
+                        if (count_class == 0) {
+                            element.style("fill", null);
+                        }
+                    }
+                } catch (e) { console.error(e); }
+            }
+
+            function edge_colorizer(element, data) {
+                try {
+                    var count_class = 0;
+
+                    selection_set.forEach(function (d, i) {
+                        if (data[d]) {
+                            count_class++;
+                            element.style(
+                                "stroke",
+                                color_scheme(i),
+                                i == current_selection_id ? "important" : null
+                            );
+                        }
+                    });
+
+                    if (count_class > 1) {
+                        element.classed("branch-multiple", true);
+                    } else if (count_class == 0) {
+                        element.style("stroke", null).classed("branch-multiple", false);
+                    }
+                } catch (e) { }
+            }
+
             // Create a new tree
             const tree = new pt.phylotree(newickData);
 
             // Render the tree directly into the referenced div
             tree.render({
-                'container': treeRef.current,
+                'container': "#tree_container",
                 'is-radial': true,
                 'selectable': true,
                 'zoom': true,
@@ -74,11 +122,7 @@ const Tol = () => {
                 'top-bottom-spacing': 'fixed-step',
                 'left-right-spacing': 'fixed-step',
                 'brush': false,
-                'restricted-select': {
-                    "all-internal-branches": true,
-                    "all-leaf-nodes": true,
-                },
-                'draw-size-bubbles': true,
+                'draw-size-bubbles': false,
                 'show-scale': false,
                 'bubble-styler': d => {
                     // This allows each bubble to be sized individually 
@@ -88,6 +132,10 @@ const Tol = () => {
                 'font-size': 5,
                 // Set background to light blue
                 'background-color': 'lightblue',
+                // 'node-styler': node_colorizer,
+                // 'edge-styler': edge_colorizer,
+                'reroot': false, // broken functionality
+                'hide': false, // broken functionality
             });
 
             treeRef.current.appendChild(tree.display.show());
@@ -96,9 +144,18 @@ const Tol = () => {
             d3.select(treeRef.current)
                 .selectAll('.branch')
                 .on('click', async (event, branch) => {
-                    console.log('Branch clicked:', branch);
-                    // Highlight the selected branch
-
+                    console.log(event.target.classList);
+                    // Highlight the selected 
+                    if (branch.selected) {
+                        branch.selected = false;
+                        event.target.classList.remove('branch-selected');
+                        //Remove class selectedNode
+                    } else {
+                        branch.selected = true;
+                        event.target.classList.add('branch-selected');
+                        //Adds class selectedNode
+                    }
+                    
                     // Set the source file for the selected branch
                     var source = branch.source.data.name;
                     var target = branch.target.data.name;
@@ -144,14 +201,14 @@ const Tol = () => {
             const pvdiv = node.parentNode.children[1]
             const handleMouseEnter = () => {
                 node.style.height = '602px';
-                pvdiv.style.height = 'calc(100% - 602px)';
+                pvdiv.style.height = 'calc(100% - 605px)';
             };
-    
+
             const handleMouseLeave = () => {
                 node.style.height = '300px';
-                pvdiv.style.height = 'calc(100% - 302px)';
+                pvdiv.style.height = 'calc(100% - 305px)';
             };
-    
+
             node.addEventListener('mouseenter', handleMouseEnter);
             node.addEventListener('mouseleave', handleMouseLeave);
         }
@@ -171,6 +228,7 @@ const Tol = () => {
             <Navbar pageId={"Integrated Tree Viewer"} />
             <div style={{ display: 'flex', height: '90vh' }}>
                 <div // Tree goes here
+                    id="tree_container"
                     className="tree-div"
                     ref={treeRef}
                 ></div>
