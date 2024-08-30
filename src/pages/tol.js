@@ -5,8 +5,6 @@ import Navbar from "../components/navbar";
 import "../components/phylotree.css";
 import MolstarViewer from "../components/molstar";
 import OULogo from "../components/over-under-logo";
-// Importing fasta files because I don't want to set up a server
-// In practice, this would either be hosted on a server or maybe stored in a csv?
 import n18 from '../components/task2/N18.json'
 import n19 from '../components/task2/N19.json'
 import n24 from '../components/task2/N24.json'
@@ -29,15 +27,14 @@ const logoFiles = {
 
 const Tol = () => {
     const treeRef = useRef(null);
-    const [newickData, setNewickData] = useState(null); // State var for tree data. Can allow user to upload a new tree
-    const [logoContent, setLogoContent] = useState(null); // Logo data
-    const [pipVisible, setPipVisible] = useState(false); // Toggle for logo popup
-    const [selectBranch, setSelectBranch] = useState(null); // Branch selection listener
-    const [selectedResidue, setSelectedResidue] = useState(null); // Selected residue in Molstar viewer
-    const [hoveredResidue, setHoveredResidue] = useState(null); // Highlights logo hovered residue in Molstar viewer 
-    const [colorFile, setColorFile] = useState(null); // For loading color file
+    const [newickData, setNewickData] = useState(null);
+    const [logoContent, setLogoContent] = useState(null);
+    const [pipVisible, setPipVisible] = useState(false);
+    const [selectBranch, setSelectBranch] = useState(null);
+    const [selectedResidue, setSelectedResidue] = useState(null);
+    const [hoveredResidue, setHoveredResidue] = useState(null);
+    const [colorFile, setColorFile] = useState(null);
 
-    // Load the default Newick tree from the public folder
     useEffect(() => {
         const fetchDefaultTree = async () => {
             try {
@@ -52,64 +49,11 @@ const Tol = () => {
         fetchDefaultTree();
     }, []);
 
-    // Update Tree when new data is available
     useEffect(() => {
         if (treeRef.current && newickData) {
-            // Clear previous tree content
             treeRef.current.innerHTML = '';
 
-            function node_colorizer(element, data) {
-                console.log(element, data);
-                try {
-                    var count_class = 0;
-
-                    selection_set.forEach(function (d, i) {
-                        if (data[d]) {
-                            count_class++;
-                            element.style(
-                                "fill",
-                                color_scheme(i),
-                                i == current_selection_id ? "important" : null
-                            );
-                        }
-                    });
-
-                    if (count_class > 1) {
-                    } else {
-                        if (count_class == 0) {
-                            element.style("fill", null);
-                        }
-                    }
-                } catch (e) { console.error(e); }
-            }
-
-            function edge_colorizer(element, data) {
-                try {
-                    var count_class = 0;
-
-                    selection_set.forEach(function (d, i) {
-                        if (data[d]) {
-                            count_class++;
-                            element.style(
-                                "stroke",
-                                color_scheme(i),
-                                i == current_selection_id ? "important" : null
-                            );
-                        }
-                    });
-
-                    if (count_class > 1) {
-                        element.classed("branch-multiple", true);
-                    } else if (count_class == 0) {
-                        element.style("stroke", null).classed("branch-multiple", false);
-                    }
-                } catch (e) { }
-            }
-
-            // Create a new tree
             const tree = new pt.phylotree(newickData);
-
-            // Render the tree directly into the referenced div
             tree.render({
                 'container': "#tree_container",
                 'is-radial': true,
@@ -124,45 +68,27 @@ const Tol = () => {
                 'brush': false,
                 'draw-size-bubbles': false,
                 'show-scale': false,
-                'bubble-styler': d => {
-                    // This allows each bubble to be sized individually 
-                    // d is node
-                    return 2;
-                },
                 'font-size': 5,
-                // Set background to light blue
                 'background-color': 'lightblue',
-                // 'node-styler': node_colorizer,
-                // 'edge-styler': edge_colorizer,
-                'reroot': false, // broken functionality
-                'hide': false, // broken functionality
             });
 
             treeRef.current.appendChild(tree.display.show());
 
-            // Listener for branch click
             d3.select(treeRef.current)
                 .selectAll('.branch')
                 .on('click', async (event, branch) => {
-                    console.log(event.target.classList);
-                    // Highlight the selected 
                     if (branch.selected) {
                         branch.selected = false;
                         event.target.classList.remove('branch-selected');
-                        //Remove class selectedNode
                     } else {
                         branch.selected = true;
                         event.target.classList.add('branch-selected');
-                        //Adds class selectedNode
                     }
-                    
-                    // Set the source file for the selected branch
+
                     var source = branch.source.data.name;
                     var target = branch.target.data.name;
 
-                    // Read the FASTA file content
                     if (!logoFiles[source] || !logoFiles[target]) {
-                        console.error('No logo file found for:', source, 'or', target);
                         setSelectedResidue(null);
                         setColorFile(null);
                         setLogoContent(null);
@@ -184,7 +110,6 @@ const Tol = () => {
                     }
                 });
 
-            // Use d3 to recolor selectable nodes
             d3.select(treeRef.current)
                 .selectAll('.internal-node')
                 .filter(d => d.data.name in logoFiles)
@@ -195,10 +120,9 @@ const Tol = () => {
         }
     }, [newickData]);
 
-    // Listener for logo hover
     const setLogoCallback = useCallback((node) => {
         if (node !== null) {
-            const pvdiv = node.parentNode.children[1]
+            const pvdiv = node.parentNode.children[1];
             const handleMouseEnter = () => {
                 node.style.height = '602px';
                 pvdiv.style.height = 'calc(100% - 605px)';
@@ -215,7 +139,6 @@ const Tol = () => {
     }, []);
 
     const handleColumnClick = (index, column) => {
-        console.log(`Column ${index} clicked`);
         setSelectedResidue(index);
     };
 
@@ -223,17 +146,20 @@ const Tol = () => {
         setHoveredResidue(index);
     }
 
+    const handlePrint = () => {
+        window.print();
+    };
+
     return (
         <div>
             <Navbar pageId={"Integrated Tree Viewer"} />
             <div style={{ display: 'flex', height: '90vh' }}>
-                <div // Tree goes here
+                <div
                     id="tree_container"
                     className="tree-div"
                     ref={treeRef}
                 ></div>
 
-                {/* Right side content */}
                 {pipVisible && selectBranch && logoContent && (
                     <div className="right-div">
                         <div className="logodiv" ref={setLogoCallback}>
@@ -241,7 +167,7 @@ const Tol = () => {
                                 onClick={() => {
                                     setPipVisible(false);
                                     setSelectedResidue(null);
-                                    treeRef.current.style.width = '100%'; // Need to refactor this into it's own listener, this change occurs in two places. Ctrl+F "treeRef.current.style.width" to find the other place
+                                    treeRef.current.style.width = '100%';
                                 }}
                             >X</button>
                             <OULogo data={logoContent} onOUColumnClick={handleColumnClick} onOUColumnHover={handleColumnHover} />
@@ -251,6 +177,9 @@ const Tol = () => {
                         </div>
                     </div>
                 )}
+            </div>
+            <div style={{ textAlign: 'center', marginTop: '2px' }}>
+                <button onClick={handlePrint}>Print Page to PDF</button>
             </div>
         </div >
     );
