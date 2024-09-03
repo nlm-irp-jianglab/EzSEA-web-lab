@@ -7,6 +7,7 @@ import App from "./App";
 import PV from "./pages/pv";
 import Tol from "./pages/tol";
 import Playground from "./pages/playground";
+import NotFoundPage from "./pages/notfoundpage";
 import {
     BrowserRouter as Router,
     Routes,
@@ -42,7 +43,7 @@ root.render(
                 />
                 <Route
                     path="*"
-                    element={<Navigate to="/" />}
+                    element={<NotFoundPage />}
                 />
 
             </Routes>

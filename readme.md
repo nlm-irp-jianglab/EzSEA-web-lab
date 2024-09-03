@@ -9,7 +9,7 @@ Sequence Logos: Skylign
 
 
 
-!Add summarize feature which combines all outputs into a file.
+!Add summarize feature which exports outputs
 Add more intuitive resizability to LogoDiv.
 
   - Hover now expands logo section

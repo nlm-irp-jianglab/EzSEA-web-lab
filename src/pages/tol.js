@@ -27,6 +27,7 @@ const logoFiles = {
 
 const Tol = () => {
     const treeRef = useRef(null);
+    const pvdiv = useRef(null);
     const [newickData, setNewickData] = useState(null);
     const [logoContent, setLogoContent] = useState(null);
     const [pipVisible, setPipVisible] = useState(false);
@@ -34,6 +35,8 @@ const Tol = () => {
     const [selectedResidue, setSelectedResidue] = useState(null);
     const [hoveredResidue, setHoveredResidue] = useState(null);
     const [colorFile, setColorFile] = useState(null);
+    const [isLeftCollapsed, setIsLeftCollapsed] = useState(false);
+    const [isRightCollapsed, setIsRightCollapsed] = useState(false);
 
     useEffect(() => {
         const fetchDefaultTree = async () => {
@@ -93,6 +96,7 @@ const Tol = () => {
                         setColorFile(null);
                         setLogoContent(null);
                         setPipVisible(false);
+                        setSelectBranch(null);
                         treeRef.current.style.width = '100%';
                         return;
                     } else {
@@ -118,19 +122,18 @@ const Tol = () => {
                 .attr("r", 3);
 
         }
-    }, [newickData]);
+    }, [newickData, isLeftCollapsed]);
 
     const setLogoCallback = useCallback((node) => {
         if (node !== null) {
-            const pvdiv = node.parentNode.children[1];
             const handleMouseEnter = () => {
                 node.style.height = '602px';
-                pvdiv.style.height = 'calc(100% - 605px)';
+                pvdiv.current.style.height = 'calc(100% - 604px)';
             };
 
             const handleMouseLeave = () => {
                 node.style.height = '300px';
-                pvdiv.style.height = 'calc(100% - 305px)';
+                pvdiv.current.style.height = 'calc(100% - 304px)';
             };
 
             node.addEventListener('mouseenter', handleMouseEnter);
@@ -144,44 +147,74 @@ const Tol = () => {
 
     const handleColumnHover = (index) => {
         setHoveredResidue(index);
-    }
+    };
 
     const handlePrint = () => {
         window.print();
+    };
+
+    const toggleLeftCollapse = () => {
+        setIsLeftCollapsed(!isLeftCollapsed);
+    };
+
+    const toggleRightCollapse = () => {
+        setIsRightCollapsed(!isRightCollapsed);
+        isRightCollapsed ? setPipVisible(true) : setPipVisible(false);
     };
 
     return (
         <div>
             <Navbar pageId={"Integrated Tree Viewer"} />
             <div style={{ display: 'flex', height: '90vh' }}>
-                <div
-                    id="tree_container"
-                    className="tree-div"
-                    ref={treeRef}
-                ></div>
+                {!isLeftCollapsed && (
+                    <div
+                        id="tree_container"
+                        className="tree-div"
+                        ref={treeRef}
+                        style={{ width: pipVisible ? '50%' : '100%' }}
+                    ></div>
+                )}
 
-                {pipVisible && selectBranch && logoContent && (
-                    <div className="right-div">
-                        <div className="logodiv" ref={setLogoCallback}>
+                {selectBranch && (
+                    <div className="center-console">
+                        { !isRightCollapsed && (
+                            <button className="triangle-button" onClick={toggleLeftCollapse}>
+                                {isLeftCollapsed ? '▶' : '◀'}
+                            </button>
+                        )}
+                        { !isLeftCollapsed && (
+                        <button className="triangle-button" onClick={toggleRightCollapse}>
+                            {isRightCollapsed ? '◀' : '▶'}
+                        </button>
+                        )}
+                    </div>
+                )}
+
+                {pipVisible && selectBranch && logoContent && !isRightCollapsed && (
+                    <div className="right-div" style={{ width: isLeftCollapsed ? '100%' : '50%' }}>
+                        <div className="logodiv" ref={setLogoCallback}> 
                             <button className="logo-close-btn"
                                 onClick={() => {
                                     setPipVisible(false);
                                     setSelectedResidue(null);
-                                    treeRef.current.style.width = '100%';
+                                    setSelectBranch(null);
+                                    setIsLeftCollapsed(false);
                                 }}
                             >X</button>
                             <OULogo data={logoContent} onOUColumnClick={handleColumnClick} onOUColumnHover={handleColumnHover} />
                         </div>
-                        <div className="pvdiv">
+                        <div className="pvdiv" ref={pvdiv}>
                             <MolstarViewer selectedResidue={selectedResidue} colorFile={colorFile} hoveredResidue={hoveredResidue} />
                         </div>
                     </div>
                 )}
+
+
             </div>
             <div style={{ textAlign: 'center', marginTop: '2px' }}>
                 <button onClick={handlePrint}>Print Page to PDF</button>
             </div>
-        </div >
+        </div>
     );
 };
 

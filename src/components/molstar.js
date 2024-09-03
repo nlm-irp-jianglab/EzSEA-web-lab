@@ -143,11 +143,19 @@ export function MolStarWrapper({ selectedResidue, hoveredResidue, colorFile }) {
       return;
     }
 
-    const string = await fetch(`${process.env.PUBLIC_URL}/${colorFile}`).then((response) => response.text());
+    const string = await fetch(`${process.env.PUBLIC_URL}/${colorFile}`).then((response) => {
+      return response.text();
+    });
 
-    // TODO: Even though the color file may not exist, fetch request returns HTML due to route handling. Handle this case and provide feedback.
-    // Delimit by tabs
     const lines = string.split("\n");
+
+    // Due to catch-all routing to 404 page, fetching colorfile will always return 200 status code. We
+    // check if the color file is empty or does not exist by checking if first line res is html.
+    if (lines[0] == "<!DOCTYPE html>\r") {
+      console.error("No colors applied, color file is empty or does not exist.");
+      return;
+    }
+
     for (const line of lines) {
       const [residue, color] = line.split("\t");
       const seq_id = parseInt(residue);
@@ -163,7 +171,7 @@ export function MolStarWrapper({ selectedResidue, hoveredResidue, colorFile }) {
 
     console.log("Applied color file", colorFile);
   }
-  
+
   return (
     <div
       ref={parent}
