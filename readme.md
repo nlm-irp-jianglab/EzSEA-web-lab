@@ -7,9 +7,11 @@ Sequence Logos: Skylign
 ~Implement context menu on node click
   - Rerooting/hiding tree rerenders the tree, removing click listeners and breaking page functionality
 
-
+Re-implement collapse clade function
 
 !Add summarize feature which exports outputs
+  - Output data and svg of figures
+
 Add more intuitive resizability to LogoDiv.
 
   - Hover now expands logo section

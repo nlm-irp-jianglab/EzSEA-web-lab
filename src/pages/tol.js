@@ -69,7 +69,10 @@ const Tol = () => {
                 'top-bottom-spacing': 'fixed-step',
                 'left-right-spacing': 'fixed-step',
                 'brush': false,
-                'draw-size-bubbles': false,
+                'draw-size-bubbles': true,
+                'bubble-styler': d => {
+                    return 1.5;
+                },
                 'show-scale': false,
                 'font-size': 5,
                 'background-color': 'lightblue',
@@ -125,6 +128,7 @@ const Tol = () => {
     }, [newickData, isLeftCollapsed]);
 
     const setLogoCallback = useCallback((node) => {
+
         if (node !== null) {
             const handleMouseEnter = () => {
                 node.style.height = '602px';
@@ -165,7 +169,7 @@ const Tol = () => {
     return (
         <div>
             <Navbar pageId={"Integrated Tree Viewer"} />
-            <div style={{ display: 'flex', height: '90vh' }}>
+            <div style={{ display: 'flex', height: '90vh', margin: '0 20px' }}>
                 {!isLeftCollapsed && (
                     <div
                         id="tree_container"
@@ -177,37 +181,69 @@ const Tol = () => {
 
                 {selectBranch && (
                     <div className="center-console">
-                        { !isRightCollapsed && (
+                        {!isRightCollapsed && (
                             <button className="triangle-button" onClick={toggleLeftCollapse}>
                                 {isLeftCollapsed ? '▶' : '◀'}
                             </button>
                         )}
-                        { !isLeftCollapsed && (
-                        <button className="triangle-button" onClick={toggleRightCollapse}>
-                            {isRightCollapsed ? '◀' : '▶'}
-                        </button>
+                        {!isLeftCollapsed && (
+                            <button className="triangle-button" onClick={toggleRightCollapse}>
+                                {isRightCollapsed ? '◀' : '▶'}
+                            </button>
                         )}
                     </div>
                 )}
 
                 {pipVisible && selectBranch && logoContent && !isRightCollapsed && (
-                    <div className="right-div" style={{ width: isLeftCollapsed ? '100%' : '50%' }}>
-                        <div className="logodiv" ref={setLogoCallback}> 
-                            <button className="logo-close-btn"
-                                onClick={() => {
-                                    setPipVisible(false);
-                                    setSelectedResidue(null);
-                                    setSelectBranch(null);
-                                    setIsLeftCollapsed(false);
-                                }}
-                            >X</button>
-                            <OULogo data={logoContent} onOUColumnClick={handleColumnClick} onOUColumnHover={handleColumnHover} />
-                        </div>
-                        <div className="pvdiv" ref={pvdiv}>
-                            <MolstarViewer selectedResidue={selectedResidue} colorFile={colorFile} hoveredResidue={hoveredResidue} />
+                    <div
+                        className="right-div"
+                        style={{
+                            width: isLeftCollapsed ? '100%' : '50%',
+                            display: 'flex', // Use flexbox to control layout
+                            flexDirection: isLeftCollapsed ? 'row' : 'column', // Side by side if left is collapsed
+                        }}
+                    >
+                        {isLeftCollapsed ? (
+                            <div className="logodiv2" style={{ width: '50%', height: '100%' }}>
+                                <OULogo
+                                    data={logoContent}
+                                    onOUColumnClick={handleColumnClick}
+                                    onOUColumnHover={handleColumnHover}
+                                />
+                            </div>
+                        ) : (
+                            <div className="expandedRight">
+                                <div className="logodiv" ref={setLogoCallback} style={{ width: isLeftCollapsed ? '50%' : '100%', height: isLeftCollapsed ? '100%' : '300px' }}>
+                                    <button
+                                        className="logo-close-btn"
+                                        onClick={() => {
+                                            setPipVisible(false);
+                                            setSelectedResidue(null);
+                                            setSelectBranch(null);
+                                            setIsLeftCollapsed(false);
+                                        }}
+                                    >
+                                        X
+                                    </button>
+                                    <OULogo
+                                        data={logoContent}
+                                        onOUColumnClick={handleColumnClick}
+                                        onOUColumnHover={handleColumnHover}
+                                    />
+                                </div>
+                            </div>
+                        )}
+
+                        <div className="pvdiv" ref={pvdiv} style={{ width: isLeftCollapsed ? '50%' : '100%' }}>
+                            <MolstarViewer
+                                selectedResidue={selectedResidue}
+                                colorFile={colorFile}
+                                hoveredResidue={hoveredResidue}
+                            />
                         </div>
                     </div>
                 )}
+
 
 
             </div>

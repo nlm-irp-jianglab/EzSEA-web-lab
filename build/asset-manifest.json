@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/reactvis/static/css/main.0dd09a78.css",
-    "main.js": "/reactvis/static/js/main.f4a9e5f8.js",
+    "main.css": "/reactvis/static/css/main.b9706168.css",
+    "main.js": "/reactvis/static/js/main.adb81f29.js",
     "index.html": "/reactvis/index.html",
-    "main.0dd09a78.css.map": "/reactvis/static/css/main.0dd09a78.css.map",
-    "main.f4a9e5f8.js.map": "/reactvis/static/js/main.f4a9e5f8.js.map"
+    "main.b9706168.css.map": "/reactvis/static/css/main.b9706168.css.map",
+    "main.adb81f29.js.map": "/reactvis/static/js/main.adb81f29.js.map"
   },
   "entrypoints": [
-    "static/css/main.0dd09a78.css",
-    "static/js/main.f4a9e5f8.js"
+    "static/css/main.b9706168.css",
+    "static/js/main.adb81f29.js"
   ]
 }
