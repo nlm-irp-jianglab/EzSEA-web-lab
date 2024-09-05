@@ -26,6 +26,11 @@ root.render(
                     element={<Home />}
                 />
                 <Route
+                    exact
+                    path="/reactvis"
+                    element={<Home />}
+                />
+                <Route
                     path="/prlogo"
                     element={<App />}
                 />

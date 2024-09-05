@@ -204,7 +204,7 @@ const Tol = () => {
                         }}
                     >
                         {isLeftCollapsed ? (
-                            <div className="logodiv2" style={{ width: '50%', height: '100%' }}>
+                            <div className="logodiv2" style={{ width: '50%' }}>
                                 <OULogo
                                     data={logoContent}
                                     onOUColumnClick={handleColumnClick}
