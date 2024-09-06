@@ -16,8 +16,16 @@ export function OULogo({ data, onOUColumnClick, onOUColumnHover }) {
 
     useEffect(() => {
         setTimeout(() => { // Hacky timeout, TODO: should be replaced with callback when ou is rendered
-            const scrollerTop = logoRefTop.current.getHmmLogo().getScroller();
-            const scrollerBot = logoRefBot.current.getHmmLogo().getScroller();
+            var scrollerTop;
+            var scrollerBot;
+
+            try {
+                scrollerTop = logoRefTop.current.getHmmLogo().getScroller();
+                scrollerBot = logoRefBot.current.getHmmLogo().getScroller();
+            } catch (e) {
+                console.error("Scroller not found. Retrying in 1s...");
+                return;
+            }
 
             const canvasTop = document.getElementsByClassName('logo_graphic')[0];
             const canvasBot = document.getElementsByClassName('logo_graphic')[1];

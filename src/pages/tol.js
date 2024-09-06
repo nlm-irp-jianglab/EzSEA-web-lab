@@ -166,6 +166,39 @@ const Tol = () => {
         isRightCollapsed ? setPipVisible(true) : setPipVisible(false);
     };
 
+    const handleDownload = (filename, content) => {
+        const element = document.createElement("a");
+        const file = new Blob([content], { type: 'application/json' });
+        element.href = URL.createObjectURL(file);
+        element.download = filename;
+        document.body.appendChild(element); // Required for this to work in FireFox
+        element.click();
+        document.body.removeChild(element);
+    };
+
+    const downloadNewickData = () => {
+        handleDownload('tree_data.nwk', newickData);
+    };
+
+    const downloadLogoFile = (fileName) => {
+        const logoFileContent = JSON.stringify(logoFiles[fileName], null, 2); // Formatting as JSON
+        handleDownload(`${fileName}.json`, logoFileContent);
+    };
+
+    const renderDropdown = () => (
+        <div className="dropdown">
+            <button className="dropbtn">Download Files</button>
+            <div className="dropdown-content">
+                <button onClick={downloadNewickData}>Download Newick Data</button>
+                {Object.keys(logoFiles).map(fileName => (
+                    <button key={fileName} onClick={() => downloadLogoFile(fileName)}>
+                        Download {fileName} Logo File
+                    </button>
+                ))}
+            </div>
+        </div>
+    );
+
     return (
         <div>
             <Navbar pageId={"Integrated Tree Viewer"} />
@@ -249,6 +282,10 @@ const Tol = () => {
             </div>
             <div style={{ textAlign: 'center', marginTop: '2px' }}>
                 <button onClick={handlePrint}>Print Page to PDF</button>
+            </div>
+            {/* Adding the dropdown for downloads */}
+            <div style={{ textAlign: 'center', marginBottom: '10px' }}>
+                {renderDropdown()}
             </div>
         </div>
     );
