@@ -18,7 +18,7 @@
 }
 
 .logo {
-  color: #fff;
+  /* color: #fff; */
   text-decoration: none;
   font-size: 24px;
   font-weight: 700;
@@ -35,6 +35,7 @@
 
 .nav-links a,
 .nav-links-mobile a {
+  user-select: none;
   color: #fff;
   text-decoration: none;
   font-size: 18px;
@@ -81,3 +82,5 @@
 body {
   padding-top: 60px; /* Adjust based on the height of your navbar */
 }
+
+

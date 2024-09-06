@@ -3,6 +3,7 @@ import * as pt from 'phylotree';
 import * as d3 from 'd3';
 import Navbar from "../components/navbar";
 import "../components/phylotree.css";
+import "../components/tol.css";
 import MolstarViewer from "../components/molstar";
 import OULogo from "../components/over-under-logo";
 import n18 from '../components/task2/N18.json'
@@ -28,6 +29,7 @@ const logoFiles = {
 const Tol = () => {
     const treeRef = useRef(null);
     const pvdiv = useRef(null);
+    const [isRadial, setIsRadial] = useState(true);
     const [newickData, setNewickData] = useState(null);
     const [logoContent, setLogoContent] = useState(null);
     const [pipVisible, setPipVisible] = useState(false);
@@ -59,7 +61,7 @@ const Tol = () => {
             const tree = new pt.phylotree(newickData);
             tree.render({
                 'container': "#tree_container",
-                'is-radial': true,
+                'is-radial': isRadial,
                 'selectable': true,
                 'zoom': true,
                 'align-tips': false,
@@ -69,7 +71,7 @@ const Tol = () => {
                 'top-bottom-spacing': 'fixed-step',
                 'left-right-spacing': 'fixed-step',
                 'brush': false,
-                'draw-size-bubbles': true,
+                'draw-size-bubbles': false,
                 'bubble-styler': d => {
                     return 1.5;
                 },
@@ -125,7 +127,7 @@ const Tol = () => {
                 .attr("r", 3);
 
         }
-    }, [newickData, isLeftCollapsed]);
+    }, [newickData, isLeftCollapsed, isRadial]);
 
     const setLogoCallback = useCallback((node) => {
 
@@ -199,9 +201,71 @@ const Tol = () => {
         </div>
     );
 
+    const downloadTreeAsSVG = () => {
+        const svgElement = treeRef.current.querySelector('svg'); // Select the SVG from the tree container
+        if (!svgElement) {
+            console.error("SVG element not found in treeRef.");
+            return;
+        }
+
+        // Serialize the SVG content
+        const serializer = new XMLSerializer();
+        let source = serializer.serializeToString(svgElement);
+
+        // Manually styling the SVG content. TODO: Maybe grab the styles from the CSS file?
+        const styleString = `
+            <style>
+                .branch {
+                    fill: none;
+                    stroke: #999;
+                    stroke-width: 2px;
+                }
+                .internal-node circle {
+                    fill: #CCC;
+                    stroke: black;
+                    stroke-width: 0.5px;
+                }
+                .node {
+                    font: 10px sans-serif;
+                }
+            </style>`;
+
+        // Ensure that we are not redefining the xmlns attribute
+        if (!source.includes('xmlns="http://www.w3.org/2000/svg"')) {
+            source = source.replace('<svg', `<svg xmlns="http://www.w3.org/2000/svg"`);
+        }
+
+        // Insert the style string into the SVG just before the closing tag
+        source = source.replace('</svg>', `${styleString}</svg>`);
+
+        // Create a Blob and trigger the download
+        const svgBlob = new Blob([source], { type: "image/svg+xml;charset=utf-8" });
+        const svgUrl = URL.createObjectURL(svgBlob);
+
+        // Create a download link and trigger the download
+        const downloadLink = document.createElement("a");
+        downloadLink.href = svgUrl;
+        downloadLink.download = "tree_with_styles.svg";
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+    };
+
     return (
         <div>
             <Navbar pageId={"Integrated Tree Viewer"} />
+            <div className="btn-toolbar">
+                <button
+                    className="radial-toggle-button"
+                    onClick={() => setIsRadial(prevIsRadial => !prevIsRadial)}
+                >
+                    Tree Layout: ({isRadial ? 'Radial' : 'Rectangular'})
+                </button>
+                <button className="download-svg-button" onClick={downloadTreeAsSVG}>
+                    Download Tree as SVG
+                </button>
+                {renderDropdown()}
+            </div>
             <div style={{ display: 'flex', height: '90vh', margin: '0 20px' }}>
                 {!isLeftCollapsed && (
                     <div
@@ -284,9 +348,7 @@ const Tol = () => {
                 <button onClick={handlePrint}>Print Page to PDF</button>
             </div>
             {/* Adding the dropdown for downloads */}
-            <div style={{ textAlign: 'center', marginBottom: '10px' }}>
-                {renderDropdown()}
-            </div>
+
         </div>
     );
 };

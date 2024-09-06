@@ -9,9 +9,17 @@ const Navbar = (options) => {
     <div>
       <nav className="navbar">
         {options.pageId ? (
-          <h1 className="logo">{options.pageId}</h1>
+          <div className="nav-links">
+            <Link to="/">
+              <h1 className="logo">{options.pageId}</h1>
+            </Link>
+          </div>
         ) : (
-          <h1 className="logo">Reactvis</h1>
+          <div className="nav-links">
+            <Link to="/">
+              <h1 className="logo">Reactvis</h1>
+            </Link>
+          </div>
         )
         }
         <ul
