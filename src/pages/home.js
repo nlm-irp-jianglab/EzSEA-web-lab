@@ -1,15 +1,16 @@
+import { Link } from "react-router-dom";
 import React from "react";
 import Navbar from "../components/navbar.js";
 
 const Home = () => {
     return (
-        <div>
+        <div style={{ userSelect: "none" }}>
             <Navbar />
-            <h1>Home Page</h1>
-            <br />
-            <p>
-                This is a simple React application that demonstrates the use of various data visualization tools.
-            </p>
+            <p>Home Page</p>
+            <p>Info, Update log, functionality, FAQ, samples</p>
+            <Link to="/submit">
+                <a>Predict Your Protein</a>
+            </Link>
         </div>
     );
 };

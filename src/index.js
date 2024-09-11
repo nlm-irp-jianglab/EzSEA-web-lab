@@ -8,6 +8,7 @@ import PV from "./pages/pv";
 import Tol from "./pages/tol";
 import Playground from "./pages/playground";
 import NotFoundPage from "./pages/notfoundpage";
+import Submit from "./pages/submit";
 import {
     BrowserRouter as Router,
     Routes,
@@ -29,6 +30,11 @@ root.render(
                     exact
                     path="/reactvis"
                     element={<Home />}
+                />
+                <Route
+                    exact
+                    path="/submit"
+                    element={<Submit />}
                 />
                 <Route
                     path="/prlogo"
