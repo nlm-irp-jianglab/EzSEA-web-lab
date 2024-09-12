@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
-import { ProteinLogo } from 'logojs-react';
+import Logo from '../components/logo/logo.jsx';
 import { EasyScroller } from 'easyscroller';
 import * as d3 from 'd3';
 import MolstarViewer from "../components/molstar";
+import Alphabet_nofill from "../components/logo/alphabet_nofill";
 
 
 import n18 from '../components/task2/N18.fa';
@@ -97,6 +98,14 @@ function Playground() {
           setSelectedResidue(index + 1);
         });
 
+        d3.select(childNode).insert("rect", ":first-child")
+          .attr("class", "background")
+          .attr("x", 0) // Adjust as necessary for your SVG structure
+          .attr("y", 0)
+          .attr("width", '73px') // Adjust width and height as needed
+          .attr("height", '445px')
+          .attr("fill", "lightblue");
+
         // Add mouseenter event listener to add background
         childNode.addEventListener("mouseenter", (event) => {
           let existingBackground = d3.select(childNode).select("rect.background");
@@ -115,9 +124,9 @@ function Playground() {
         });
 
         // Add mouseleave event listener to remove background
-        childNode.addEventListener("mouseleave", (event) => {
-          d3.select(childNode).select("rect.background").remove();
-        });
+        // childNode.addEventListener("mouseleave", (event) => {
+        //   d3.select(childNode).select("rect.background").remove();
+        // });
       });
 
       sel = d3.select(logoRefBot.current);
@@ -128,6 +137,14 @@ function Playground() {
           setSelectedResidue(index + 1);
         });
 
+        d3.select(childNode).insert("rect", ":first-child")
+          .attr("class", "background")
+          .attr("x", 0) // Adjust as necessary for your SVG structure
+          .attr("y", 0)
+          .attr("width", '73px') // Adjust width and height as needed
+          .attr("height", '445px')
+          .attr("fill", "lightblue");
+
         // Add mouseenter event listener to add background
         childNode.addEventListener("mouseenter", (event) => {
           let existingBackground = d3.select(childNode).select("rect.background");
@@ -145,10 +162,10 @@ function Playground() {
           }
         });
 
-        // Add mouseleave event listener to remove background
-        childNode.addEventListener("mouseleave", (event) => {
-          d3.select(childNode).select("rect.background").remove();
-        });
+        // // Add mouseleave event listener to remove background
+        // childNode.addEventListener("mouseleave", (event) => {
+        //   d3.select(childNode).select("rect.background").remove();
+        // });
       });
     }
   }, [fastaContentTop, fastaContentBot]);
@@ -190,7 +207,7 @@ function Playground() {
           style={{ display: 'flex', height: '200px', width: 'max-content', overflowX: 'hidden' }}
           ref={logoRefTop}
         >
-          {fastaContentTop && <ProteinLogo fasta={fastaContentTop} />} {/* Pass content to ProteinLogo */}
+          {fastaContentTop && <Logo fasta={fastaContentTop} alphabet={Alphabet_nofill} />} {/* Pass content to ProteinLogo */}
         </div>
         <button onClick={handleDownloadTop}>Download Top SVG</button>
       </div>
@@ -201,14 +218,14 @@ function Playground() {
           style={{ display: 'flex', height: '200px', width: 'max-content', overflowX: 'hidden' }}
           ref={logoRefBot}
         >
-          {fastaContentBot && <ProteinLogo fasta={fastaContentBot} />} {/* Pass content to ProteinLogo */}
+          {fastaContentBot && <Logo fasta={fastaContentBot} alphabet={Alphabet_nofill} />} {/* Pass content to ProteinLogo */}
         </div>
         <button onClick={handleDownloadBot}>Download Bottom SVG</button>
       </div>
       <div className="pvdiv" style={{ width: '100%' }}>
         <MolstarViewer
-        hoveredResidue={hoveredResidue}
-        selectedResidue={selectedResidue}/>
+          hoveredResidue={hoveredResidue}
+          selectedResidue={selectedResidue} />
       </div>
     </div>
   );

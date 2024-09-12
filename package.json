@@ -18,7 +18,6 @@
     "axios": "^1.7.2",
     "bio-pv": "^1.8.1",
     "d3": "^7.9.0",
-    "logojs-react": "^2.1.1",
     "molstar": "^4.5.0",
     "patch-package": "^8.0.0",
     "phylotree": "^2.0.1",
