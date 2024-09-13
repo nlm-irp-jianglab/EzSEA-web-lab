@@ -5,15 +5,17 @@ import Navbar from "../components/navbar";
 import "../components/phylotree.css";
 import "../components/tol.css";
 import MolstarViewer from "../components/molstar";
-import OULogo from "../components/over-under-logo";
-import n18 from '../components/task2/N18.json'
-import n19 from '../components/task2/N19.json'
-import n24 from '../components/task2/N24.json'
-import n25 from '../components/task2/N25.json'
-import n26 from '../components/task2/N26.json'
-import n27 from '../components/task2/N27.json'
-import n28 from '../components/task2/N28.json'
-import n29 from '../components/task2/N29.json'
+import OULogoJS from "../components/over-under-logojs";
+import { readFastaFromFile } from '../components/utils';
+
+import n18 from '../components/task2/N18.fa'
+import n19 from '../components/task2/N19.fa'
+import n24 from '../components/task2/N24.fa'
+import n25 from '../components/task2/N25.fa'
+import n26 from '../components/task2/N26.fa'
+import n27 from '../components/task2/N27.fa'
+import n28 from '../components/task2/N28.fa'
+import n29 from '../components/task2/N29.fa'
 
 const logoFiles = {
     'N18': n18,
@@ -108,8 +110,8 @@ const Tol = () => {
                         var data = {
                             sourceName: source,
                             targetName: target,
-                            source: logoFiles[source],
-                            target: logoFiles[target],
+                            source: await readFastaFromFile(logoFiles[source]),
+                            target: await readFastaFromFile(logoFiles[target]),
                         }
                         treeRef.current.style.width = '50%';
                         setColorFile(`${source}_${target}.color.txt`);
@@ -130,7 +132,6 @@ const Tol = () => {
     }, [newickData, isLeftCollapsed, isRadial]);
 
     const setLogoCallback = useCallback((node) => {
-
         if (node !== null) {
             const handleMouseEnter = () => {
                 node.style.height = '602px';
@@ -147,7 +148,7 @@ const Tol = () => {
         }
     }, []);
 
-    const handleColumnClick = (index, column) => {
+    const handleColumnClick = (index) => {
         setSelectedResidue(index);
     };
 
@@ -302,7 +303,7 @@ const Tol = () => {
                     >
                         {isLeftCollapsed ? (
                             <div className="logodiv2" style={{ width: '50%' }}>
-                                <OULogo
+                                <OULogoJS
                                     data={logoContent}
                                     onOUColumnClick={handleColumnClick}
                                     onOUColumnHover={handleColumnHover}
@@ -322,7 +323,7 @@ const Tol = () => {
                                     >
                                         X
                                     </button>
-                                    <OULogo
+                                    <OULogoJS
                                         data={logoContent}
                                         onOUColumnClick={handleColumnClick}
                                         onOUColumnHover={handleColumnHover}

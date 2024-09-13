@@ -1,0 +1,7 @@
+.glyphrect:hover {
+    fill-opacity: 0.2;
+}
+
+.glyphrect {
+    fill-opacity: 0.0;
+}

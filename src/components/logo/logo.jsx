@@ -16,7 +16,7 @@ const _position = (width, height) => (lv, transform, key, alphabet, events) => {
 	                onSymbolMouseOver={onSymbolMouseOver ? s => onSymbolMouseOver(key, s) : null}
 	                onSymbolClick={onSymbolClick ? s => onSymbolClick(key, s) : null}
 	                onSymbolMouseOut={onSymbolMouseOut ? s => onSymbolMouseOut(key, s) : null}
-	                lv={lv} transform={transform} width={width} height={height} key={key} />
+	                lv={lv} transform={transform} width={width} height={height} key={key} curr={key}/>
     );
 };
 
@@ -68,7 +68,6 @@ const Logo = React.forwardRef(
     ({ ppm, pfm, values, fasta, mode, height, width, alphabet, glyphwidth, scale, startpos, showGridLines, backgroundFrequencies, constantPseudocount, smallSampleCorrectionOff,
        yAxisMax, onSymbolMouseOver, onSymbolMouseOut, onSymbolClick, noFastaNames, countUnaligned }, ref
 ) => {
-
     /* compute likelihood; need at least one entry to continue */
     let count = null;
     const relativePseudocount = (pfm || fasta) && !constantPseudocount && !countUnaligned ? !smallSampleCorrectionOff : false;
