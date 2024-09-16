@@ -1,99 +1,71 @@
 import React, { useState, useRef, useEffect } from "react";
-import "../components/logojs.css";
-import OULogoJS from "../components/over-under-logojs";
+import "../components/phylotree.css";
+import * as pt from 'phylotree';
+import * as d3 from 'd3';
+import "../components/tol.css";
 
 import n18 from '../components/task2/N18.fa';
 import n19 from '../components/task2/N19.fa';
 
 export function Playground() {
-  const [fastaContentTop, setFastaContentTop] = useState("");
-  const [fastaContentBot, setFastaContentBot] = useState("");
-  const [logoData, setLogoData] = useState(null);
-  const [scrollIndex, setScrollIndex] = useState("");
-  const OULogoRef = useRef(null);
+    const treeRef = useRef(null);
+    const [newickData, setNewickData] = useState(null);
 
-  // Fetching the fasta files
-  useEffect(() => {
-    fetch(n18)
-      .then(response => response.text())
-      .then(data => {
-        setFastaContentTop(data);
-      })
-      .catch(error => console.error('Error fetching file:', error));
+    useEffect(() => {
+        const fetchDefaultTree = async () => {
+            try {
+                const response = await fetch(`${process.env.PUBLIC_URL}/bilr_example/bilR_ancestors.nwk`);
+                const text = await response.text();
+                setNewickData(text);
+            } catch (error) {
+                console.error("Error fetching the default tree:", error);
+            }
+        };
 
-    fetch(n19)
-      .then(response => response.text())
-      .then(data => {
-        setFastaContentBot(data);
-      })
-      .catch(error => console.error('Error fetching file:', error));
-  }, []);
+        fetchDefaultTree();
+    }, []);
 
-  // Preparing the logo data
-  useEffect(() => {
-    if (!fastaContentTop || !fastaContentBot) {
-      console.error('No data provided to render Logo');
-      return;
-    }
+    useEffect(() => {
+        if (treeRef.current && newickData) {
+            treeRef.current.innerHTML = '';
 
-    const data = {
-      sourceName: "N18",
-      targetName: "N19",
-      source: fastaContentTop,
-      target: fastaContentBot,
-    };
+            const tree = new pt.phylotree(newickData);
+            tree.render({
+                'container': "#tree_container",
+                'is-radial': true,
+                'selectable': true,
+                'zoom': true,
+                'align-tips': false,
+                'internal-names': true,
+                width: 500,
+                height: 500,
+                'top-bottom-spacing': 'fixed-step',
+                'left-right-spacing': 'fixed-step',
+                'brush': false,
+                'draw-size-bubbles': false,
+                'bubble-styler': d => {
+                    return 1.5;
+                },
+                'show-scale': false,
+                'font-size': 5,
+                'background-color': 'lightblue',
+            });
 
-    setLogoData(data);
-  }, [fastaContentBot, fastaContentTop]);
+            treeRef.current.appendChild(tree.display.show());
 
-  const handleColumnClick = (index, s) => {
-    console.log(`Column ${index + 1} clicked`);
-  };
+        }
+    }, [newickData]);
 
-  const handleColumnHover = (index, s) => {
-    console.log(`Column ${index + 1} hovered`);
-  };
-
-  const handleScrollTo = (index) => {
-    if (OULogoRef.current && index >= 0) {
-      OULogoRef.current.scrollTo(index);
-    }
-  };
-
-  const handleInputChange = (event) => {
-    const value = event.target.value;
-    if (!isNaN(value) && value >= 0) {
-      setScrollIndex(value);
-      handleScrollTo(parseInt(value, 10));
-    } else {
-      setScrollIndex("");
-    }
-  };
-
-  return (
-    <div>
-      {logoData && (
-        <OULogoJS
-          data={logoData}
-          onOUColumnClick={handleColumnClick}
-          onOUColumnHover={handleColumnHover}
-          ref={OULogoRef}
-        />
-      )}
-      <div style={{ marginTop: "20px" }}>
-        <label htmlFor="scrollInput">Scroll to column: </label>
-        <input
-          id="scrollInput"
-          type="number"
-          min="0"
-          value={scrollIndex}
-          onChange={handleInputChange}
-          placeholder="Enter a column number"
-          style={{ padding: "5px", width: "200px" }}
-        />
-      </div>
-    </div>
-  );
+    return (
+        <div>
+            <div
+                id="tree_container"
+                className="tree-div"
+                ref={treeRef}
+                style={{ width : '100%' }}
+            ></div>
+        </div>
+    );
 }
 
 export default Playground;

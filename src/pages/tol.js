@@ -5,8 +5,7 @@ import Navbar from "../components/navbar";
 import "../components/phylotree.css";
 import "../components/tol.css";
 import MolstarViewer from "../components/molstar";
-import OULogoJS from "../components/over-under-logojs";
-import { readFastaFromFile } from '../components/utils';
+import LogoStack from '../components/logo-stack';
 
 import n18 from '../components/task2/N18.fa'
 import n19 from '../components/task2/N19.fa'
@@ -108,10 +107,8 @@ const Tol = () => {
                         return;
                     } else {
                         var data = {
-                            sourceName: source,
-                            targetName: target,
-                            source: await readFastaFromFile(logoFiles[source]),
-                            target: await readFastaFromFile(logoFiles[target]),
+                            [source]: logoFiles[source],
+                            [target]: logoFiles[target],
                         }
                         treeRef.current.style.width = '50%';
                         setColorFile(`${source}_${target}.color.txt`);
@@ -149,11 +146,12 @@ const Tol = () => {
     }, []);
 
     const handleColumnClick = (index) => {
-        setSelectedResidue(index);
+        setSelectedResidue(index + 1);
     };
 
     const handleColumnHover = (index) => {
-        setHoveredResidue(index);
+        console.log("Column hovered:", index);
+        setHoveredResidue(index + 1);
     };
 
     const handlePrint = () => {
@@ -303,10 +301,10 @@ const Tol = () => {
                     >
                         {isLeftCollapsed ? (
                             <div className="logodiv2" style={{ width: '50%' }}>
-                                <OULogoJS
+                                <LogoStack
                                     data={logoContent}
-                                    onOUColumnClick={handleColumnClick}
-                                    onOUColumnHover={handleColumnHover}
+                                    onColumnClick={handleColumnClick}
+                                    onColumnHover={handleColumnHover}
                                 />
                             </div>
                         ) : (
@@ -323,10 +321,10 @@ const Tol = () => {
                                     >
                                         X
                                     </button>
-                                    <OULogoJS
+                                    <LogoStack
                                         data={logoContent}
-                                        onOUColumnClick={handleColumnClick}
-                                        onOUColumnHover={handleColumnHover}
+                                        onColumnClick={handleColumnClick}
+                                        onColumnHover={handleColumnHover}
                                     />
                                 </div>
                             </div>

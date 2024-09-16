@@ -63,7 +63,7 @@ const GlyphStack = ({ height, width, indices, alphabet, lv, transform, alpha, in
 			{glyphs}
 			<rect className="glyphrect" style={{ width: "73px", height: "445px", fill: "red", strokeWidth: "2px", stroke: "lightgrey" }}
 				onClick={onSymbolClick && (() => onSymbolClick(alphabet))}
-				//</g>onMouseOver={onSymbolMouseOver && (() => onSymbolMouseOver(alphabet))}
+				onMouseOver={onSymbolMouseOver && (() => onSymbolMouseOver(alphabet))}
 				>
 			</rect>
 		</g>

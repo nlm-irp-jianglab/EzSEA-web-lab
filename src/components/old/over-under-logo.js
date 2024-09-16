@@ -1,6 +1,6 @@
 // over-under-logo.js
 import React, { useEffect, useRef, useState } from 'react';
-import SkylignComponent from "../components/skylign-component";
+import SkylignComponent from "../skylign-component";
 import { EasyScroller } from 'easyscroller';
 
 export function OULogo({ data, onOUColumnClick, onOUColumnHover }) {

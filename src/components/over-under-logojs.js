@@ -4,13 +4,13 @@ import { EasyScroller } from 'easyscroller';
 import { ProteinAlphabet } from "../components/logo/proteinlogo";
 import { UniqueColors, ShapelyColors } from "../components/logo/alphabets_protein";
 import "../components/logojs.css";
-import { index } from "d3";
 
 const OULogoJS = React.forwardRef(
     ({ data, onOUColumnClick, onOUColumnHover }, ref) => {
         const [fastaContentTop, setFastaContentTop] = useState("");
         const [fastaContentBot, setFastaContentBot] = useState("");
         const scrollerTopRef = useRef(null);
+        const scrollerBotRef = useRef(null);
         const logoRefTop = useRef(null);
         const logoRefBot = useRef(null);
 
@@ -19,6 +19,8 @@ const OULogoJS = React.forwardRef(
                 console.error('No data provided to render Logo');
                 return;
             }
+
+            console.log("Data", data);
 
             const { sourceName, targetName, source, target } = data;
             setFastaContentTop(source);
@@ -78,8 +80,9 @@ const OULogoJS = React.forwardRef(
                 };
 
                 scrollerTop.scroller.__callback = syncScrollTop;
-                scrollerTopRef.current = scrollerTop;
                 scrollerBot.scroller.__callback = syncScrollBot;
+                scrollerTopRef.current = scrollerTop;
+                scrollerBotRef.current = scrollerBot;
             }
         }, [fastaContentTop, fastaContentBot]);
 
@@ -117,7 +120,8 @@ const OULogoJS = React.forwardRef(
         useImperativeHandle(ref, () => ({
             scrollTo: (index) => {
                 console.log("Scrolling to index", index);
-                scrollerTopRef.current.scroller.__scrollLeft = index * 28.7;
+                scrollerTopRef.current.scroller.__publish(index * 28.7, 1, 1, true);
+                scrollerBotRef.current.scroller.__publish(index * 28.7, 1, 1, true);
             }
         }));
 
@@ -130,7 +134,7 @@ const OULogoJS = React.forwardRef(
                         style={{ display: 'flex', height: '200px', width: 'max-content', overflowX: 'hidden' }}
                         ref={logoRefTop}
                     >
-                        {fastaContentTop && <Logo fasta={fastaContentTop} alphabet={ProteinAlphabet} onSymbolClick={onOUColumnClick} onSymbolMouseOver={onOUColumnHover} />} {/* Pass content to ProteinLogo */}
+                        {fastaContentTop && <Logo fasta={fastaContentTop} alphabet={ProteinAlphabet} onSymbolClick={onOUColumnClick} onSymbolMouseOver={onOUColumnHover} />}
                     </div>
                     <button onClick={handleDownloadTop}>Download Top SVG</button>
                 </div>
@@ -142,7 +146,7 @@ const OULogoJS = React.forwardRef(
                         style={{ display: 'flex', height: '200px', width: 'max-content', overflowX: 'hidden' }}
                         ref={logoRefBot}
                     >
-                        {fastaContentBot && <Logo fasta={fastaContentBot} alphabet={ProteinAlphabet} onSymbolClick={onOUColumnClick} onSymbolMouseOver={onOUColumnHover} />} {/* Pass content to ProteinLogo */}
+                        {fastaContentBot && <Logo fasta={fastaContentBot} alphabet={ProteinAlphabet} onSymbolClick={onOUColumnClick} onSymbolMouseOver={onOUColumnHover} />}
                     </div>
                     <button onClick={handleDownloadBot}>Download Bottom SVG</button>
                 </div>
