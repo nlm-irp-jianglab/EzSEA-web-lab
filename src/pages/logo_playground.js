@@ -6,8 +6,9 @@ import n18 from '../components/task2/N18.fa';
 import n19 from '../components/task2/N19.fa';
 import n24 from '../components/task2/N24.fa';
 import n25 from '../components/task2/N25.fa';
+import { readFastaToDict } from '../components/utils';
 
-export function Playground() {
+export function Logo_Playground() {
   const [logoData, setLogoData] = useState(null);
   const [scrollIndex, setScrollIndex] = useState("");
   const OULogoRef = useRef(null);
@@ -17,12 +18,12 @@ export function Playground() {
 
   // Fetching the fasta files
   useEffect(() => {
-    const data = {
-      "N18": n18,
-      "N19": n19,
-    };
+    readFastaToDict(`${process.env.PUBLIC_URL}/bilr_example/single.fa`).then(data => { 
+      data['N0'] = ">N0\n" + data['N0'];
+      console.log(data)
+      setLogoData(data);
+    });
 
-    setLogoData(data);
   }, []);
 
   const handleColumnClick = (index, data) => {
@@ -108,4 +109,4 @@ export function Playground() {
   );
 }
 
-export default Playground;
+export default Logo_Playground;

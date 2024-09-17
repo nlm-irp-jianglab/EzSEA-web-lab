@@ -74,6 +74,7 @@ const Logo = React.forwardRef(
     const pseudocount = relativePseudocount ? 0 : (constantPseudocount || 0) / alphabet.length;
     if (!ppm && !pfm && fasta) {
         const r = (noFastaNames ? parseSequences : parseFASTA)(alphabet, fasta.toUpperCase());
+        console.log(r);
         pfm = r.pfm;
         count = r.count || 1;
     }

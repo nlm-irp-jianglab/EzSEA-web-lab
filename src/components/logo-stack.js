@@ -6,7 +6,7 @@ import "./logojs.css";
 
 const LogoStack = React.forwardRef(
     /*
-        data: A json object containing entries {nodeName: pathToFasta}
+        data: A json object containing entries {nodeName: fasta_data}
         onColumnClick (optional): A function to handle click events on the logo
         onColumnHover (optional): A function to handle hover events on the logo
     */
@@ -50,16 +50,15 @@ const LogoStack = React.forwardRef(
                 return;
             }
 
-            console.log(data);
-
             setNumLogos(Object.keys(data).length);
 
             // Fetch all the fasta content for the logos
-            fetchFastaFiles(data)
-                .then(fetchedContent => {
-                    setFastaContent(fetchedContent);
-                })
-                .catch(error => console.error('Error fetching data:', error));
+            // fetchFastaFiles(data)
+            //     .then(fetchedContent => {
+            //         setFastaContent(fetchedContent);
+            //     })
+            //     .catch(error => console.error('Error fetching data:', error));
+            setFastaContent(data);
         }, [data]);
 
         useEffect(() => {

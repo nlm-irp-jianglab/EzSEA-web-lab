@@ -7,6 +7,7 @@ import App from "./App";
 import PV from "./pages/pv";
 import Tol from "./pages/tol";
 import Playground from "./pages/playground";
+import Logo_Playground from "./pages/logo_playground";
 import NotFoundPage from "./pages/notfoundpage";
 import Submit from "./pages/submit";
 import {
@@ -51,6 +52,10 @@ root.render(
                 <Route
                     exact path="/playground"
                     element={<Playground />}
+                />
+                <Route
+                    exact path="/logo_playground"
+                    element={<Logo_Playground />}
                 />
                 <Route
                     path="*"

@@ -6,28 +6,12 @@ import "../components/phylotree.css";
 import "../components/tol.css";
 import MolstarViewer from "../components/molstar";
 import LogoStack from '../components/logo-stack';
+import { readFastaToDict } from '../components/utils';
 
-import n18 from '../components/task2/N18.fa'
-import n19 from '../components/task2/N19.fa'
-import n24 from '../components/task2/N24.fa'
-import n25 from '../components/task2/N25.fa'
-import n26 from '../components/task2/N26.fa'
-import n27 from '../components/task2/N27.fa'
-import n28 from '../components/task2/N28.fa'
-import n29 from '../components/task2/N29.fa'
-
-const logoFiles = {
-    'N18': n18,
-    'N19': n19,
-    'N24': n24,
-    'N25': n25,
-    'N26': n26,
-    'N27': n27,
-    'N28': n28,
-    'N29': n29,
-};
+const logoFiles = {};
 
 const Tol = () => {
+    const [faData, setFaData] = useState(null);
     const treeRef = useRef(null);
     const pvdiv = useRef(null);
     const [isRadial, setIsRadial] = useState(true);
@@ -44,13 +28,15 @@ const Tol = () => {
     useEffect(() => {
         const fetchDefaultTree = async () => {
             try {
-                const response = await fetch(`${process.env.PUBLIC_URL}/in_ancestors.nwk`);
+                const response = await fetch(`${process.env.PUBLIC_URL}/bilr_example/bilR_ancestors.nwk`);
                 const text = await response.text();
                 setNewickData(text);
             } catch (error) {
                 console.error("Error fetching the default tree:", error);
             }
         };
+
+        readFastaToDict(`${process.env.PUBLIC_URL}/bilr_example/bilR_ancestors.fa`).then(data => { setFaData(data) });
 
         fetchDefaultTree();
     }, []);
@@ -97,7 +83,10 @@ const Tol = () => {
                     var source = branch.source.data.name;
                     var target = branch.target.data.name;
 
-                    if (!logoFiles[source] || !logoFiles[target]) {
+                    console.log("Selected branch:", source, target);
+
+                    if (!faData[source] || !faData[target]) {
+                        console.log("Not Found", faData[source], faData[target]);
                         setSelectedResidue(null);
                         setColorFile(null);
                         setLogoContent(null);
@@ -107,8 +96,8 @@ const Tol = () => {
                         return;
                     } else {
                         var data = {
-                            [source]: logoFiles[source],
-                            [target]: logoFiles[target],
+                            [source]: faData[source],
+                            [target]: faData[target],
                         }
                         treeRef.current.style.width = '50%';
                         setColorFile(`${source}_${target}.color.txt`);
@@ -126,7 +115,7 @@ const Tol = () => {
                 .attr("r", 3);
 
         }
-    }, [newickData, isLeftCollapsed, isRadial]);
+    }, [newickData, isLeftCollapsed, isRadial, faData]);
 
     const setLogoCallback = useCallback((node) => {
         if (node !== null) {
