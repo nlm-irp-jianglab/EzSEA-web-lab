@@ -9,12 +9,10 @@ Sequence Logos: Skylign
 
 Re-implement collapse clade function
 
+!Adding and removing nodes results in nonscrollable logo
+
 !Add summarize feature which exports outputs
   - Output data and svg of figures
-
-Add more intuitive resizability to LogoDiv.
-
-  - Hover now expands logo section
 
 Inherent issue with Skylign: fasta must be converted into a json object thru API.
 Phylotree doesn't give enough options for rendering. Play with manual tree implementation.

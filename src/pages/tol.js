@@ -22,8 +22,8 @@ const Tol = () => {
     const [newickData, setNewickData] = useState(null);
     const [logoContent, setLogoContent] = useState(null);
     const [pipVisible, setPipVisible] = useState(false);
-    const [selectBranch, setSelectBranch] = useState(null);
     const [selectedResidue, setSelectedResidue] = useState(null);
+    const [selectedNodes, setSelectedNodes] = useState([]);
     const [hoveredResidue, setHoveredResidue] = useState(null);
     const [colorFile, setColorFile] = useState(null);
     const [isLeftCollapsed, setIsLeftCollapsed] = useState(false);
@@ -53,7 +53,6 @@ const Tol = () => {
 
             function style_nodes(element, node_data) {
                 var node_label = element.select("text");
-                element.style("font-style", node_data['text-italic'] ? "italic" : "normal");
 
                 if (!isLeafNode(node_data)) { // edits to the internal nodes
                     node_label.text("\u00A0\u00A0\u00A0\u00A0" + node_label.text() + "\u00A0\u00A0\u00A0\u00A0")
@@ -79,15 +78,31 @@ const Tol = () => {
                     }
 
                     function compare(node, el) {
-                        console.log(node);
+                        // change color of circle to red
                         if (node['compare-node']) {
-                            el.select("circle").style("fill", "red");
+                            el.select("circle").style("fill", "");
                         } else {
-                            el.select("circle").style("fill", "lightgray");
+                            el.select("circle").style("fill", "red");
                         }
                         node['compare-node'] = !node['compare-node'];
-                        // change color of circle to red
-                        //triggerRefresh(); // wrong input TODO
+
+                        // Add node to selectedNodes, if already in list, remove it
+                        // Check if node is already selected
+                        const index = selectedNodes.indexOf(node);
+                        if (index > -1) {
+                            selectedNodes.splice(index, 1);
+                        } else {
+                            selectedNodes.push(node);
+                        }
+                        setSelectedNodes(selectedNodes);
+                        // append to logocontent
+                        const data = {};
+                        selectedNodes.forEach(n => {
+                            data[n.data.name] = `>${n.data.name}\n${faData[n.data.name]}`;
+                        });
+                        treeRef.current.style.width = '50%'; // Need to have all these states as a toggle
+                        setLogoContent(data);
+                        setPipVisible(true);
                     }
 
                     // Adding my custom menu
@@ -144,7 +159,6 @@ const Tol = () => {
                         setColorFile(null);
                         setLogoContent(null);
                         setPipVisible(false);
-                        setSelectBranch(null);
                         treeRef.current.style.width = '100%';
                         return;
                     } else { // Send node data to generate logos and open right panel
@@ -152,10 +166,9 @@ const Tol = () => {
                             [source]: `>${source}\n${faData[source]}`, // LogoJS parser expects header before sequence
                             [target]: `>${source}\n${faData[target]}`,
                         }
-                        treeRef.current.style.width = '50%';
+                        treeRef.current.style.width = '50%'; // Need to have all these states as a toggle
                         setColorFile(`${source}_${target}.color.txt`);
                         setLogoContent(data);
-                        setSelectBranch(branch);
                         setPipVisible(true);
                     }
                 });
@@ -189,7 +202,7 @@ const Tol = () => {
 
             treeRef.current.appendChild(tree.display.show());
 
-            //console.log(selectAllDescendants(tree.getNodes(), true, false))
+            console.log(selectAllDescendants(tree.getNodes(), true, false))
 
         }
     }, [newickData, isLeftCollapsed, isRadial, faData]);
@@ -341,7 +354,7 @@ const Tol = () => {
                     ></div>
                 )}
 
-                {selectBranch && (
+                {pipVisible && (
                     <div className="center-console">
                         {!isRightCollapsed && (
                             <button className="triangle-button" onClick={toggleLeftCollapse}>
@@ -356,7 +369,7 @@ const Tol = () => {
                     </div>
                 )}
 
-                {pipVisible && selectBranch && logoContent && !isRightCollapsed && (
+                {pipVisible && logoContent && !isRightCollapsed && (
                     <div
                         className="right-div"
                         style={{
@@ -381,7 +394,6 @@ const Tol = () => {
                                         onClick={() => {
                                             setPipVisible(false);
                                             setSelectedResidue(null);
-                                            setSelectBranch(null);
                                             setIsLeftCollapsed(false);
                                         }}
                                     >
