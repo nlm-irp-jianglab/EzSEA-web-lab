@@ -52,6 +52,7 @@ const LogoStack = React.forwardRef(
 
             setNumLogos(Object.keys(data).length);
 
+            // TODO: Add option for path to fa instead of fa data itself
             // Fetch all the fasta content for the logos
             // fetchFastaFiles(data)
             //     .then(fetchedContent => {
@@ -178,7 +179,7 @@ const LogoStack = React.forwardRef(
         }));
 
         return (
-            <div>
+            <div style={{ overflowX:'hidden' }}>
                 {renderLogos ? (
                     Object.keys(fastaContent).map((key, index) => {
                         return (

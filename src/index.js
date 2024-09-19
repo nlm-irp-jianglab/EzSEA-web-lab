@@ -3,7 +3,6 @@ import { createRoot } from "react-dom/client";
 import "./styles.css";
 
 import Home from "./pages/home";
-import App from "./App";
 import PV from "./pages/pv";
 import Tol from "./pages/tol";
 import Playground from "./pages/playground";
@@ -36,10 +35,6 @@ root.render(
                     exact
                     path="/submit"
                     element={<Submit />}
-                />
-                <Route
-                    path="/prlogo"
-                    element={<App />}
                 />
                 <Route
                     path="/pv"

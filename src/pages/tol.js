@@ -1,12 +1,16 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import * as pt from 'phylotree';
-import * as d3 from 'd3';
+import { isLeafNode } from 'phylotree/src/nodes';
+import { addCustomMenu } from 'phylotree/src/render/menus';
 import Navbar from "../components/navbar";
 import "../components/phylotree.css";
 import "../components/tol.css";
+import * as d3 from 'd3';
 import MolstarViewer from "../components/molstar";
 import LogoStack from '../components/logo-stack';
 import { readFastaToDict } from '../components/utils';
+import { selectAllDescendants } from 'phylotree/src/nodes';
+import { triggerRefresh } from 'phylotree/src/render/events';
 
 const logoFiles = {};
 
@@ -46,32 +50,79 @@ const Tol = () => {
             treeRef.current.innerHTML = '';
 
             const tree = new pt.phylotree(newickData);
-            tree.render({
-                'container': "#tree_container",
-                'is-radial': isRadial,
-                'selectable': true,
-                'zoom': true,
-                'align-tips': false,
-                'internal-names': true,
-                width: 1000,
-                height: 2000,
-                'top-bottom-spacing': 'fixed-step',
-                'left-right-spacing': 'fixed-step',
-                'brush': false,
-                'draw-size-bubbles': false,
-                'bubble-styler': d => {
-                    return 1.5;
-                },
-                'show-scale': false,
-                'font-size': 5,
-                'background-color': 'lightblue',
-            });
 
-            treeRef.current.appendChild(tree.display.show());
+            function style_nodes(element, node_data) {
+                var node_label = element.select("text");
+                element.style("font-style", node_data['text-italic'] ? "italic" : "normal");
 
-            d3.select(treeRef.current)
-                .selectAll('.branch')
-                .on('click', async (event, branch) => {
+                if (!isLeafNode(node_data)) { // edits to the internal nodes
+                    node_label.text("\u00A0\u00A0\u00A0\u00A0" + node_label.text() + "\u00A0\u00A0\u00A0\u00A0")
+                        .style("font-weight", "bold");
+
+                    // Unaligning the internal nodes
+                    const currentTransform = node_label.attr("transform");
+                    const translateRegex = /translate \(([^)]+)\)/;
+                    let newTransform = currentTransform.replace(translateRegex, `translate(0, 0)`);
+                    node_label.attr("transform", newTransform);
+                    // Deleting the line tracer
+                    element.select("line").remove();
+
+                    function compareMenuCondition(node) {
+                        if (node['compare-node']) {
+                            return "Remove from compare";
+                        }
+                        return "Select for compare";
+                    }
+
+                    function showMenuOpt(node) {
+                        return true;
+                    }
+
+                    function compare(node, el) {
+                        console.log(node);
+                        if (node['compare-node']) {
+                            el.select("circle").style("fill", "red");
+                        } else {
+                            el.select("circle").style("fill", "lightgray");
+                        }
+                        node['compare-node'] = !node['compare-node'];
+                        // change color of circle to red
+                        //triggerRefresh(); // wrong input TODO
+                    }
+
+                    // Adding my custom menu
+                    addCustomMenu(node_data, compareMenuCondition, function () {
+                        compare(node_data, element);
+                    }, showMenuOpt);
+                } else { // edits to the leaf nodes
+                    const currentTransform = node_label.attr("transform");
+                    const translateRegex = /translate\s*\(\s*([-\d.]+,0)/;
+                    const currX = currentTransform.match(translateRegex)[1];
+                    let adjustX = 0;
+                    let shift = 0;
+                    if (parseFloat(currX) < 0) {
+                        adjustX = -80; // Must account for size of the rect
+                        shift = -10;
+                    } else {
+                        shift = 10;
+                        adjustX = 70;
+                    }
+                    let newTransform = currentTransform.replace(translateRegex, `translate(${parseFloat(currX) + adjustX}, -5`);
+                    var annotation = element.append("g").attr("transform", newTransform);
+                    annotation.append("rect")
+                        .attr("width", 10)
+                        .attr("height", 10)
+                        .style("fill", "red");
+                    annotation.append("rect")
+                        .attr("width", 10)
+                        .attr("height", 10)
+                        .style("fill", "green")
+                        .attr("transform", `translate(${shift}, 0)`);
+                }
+            }
+
+            function style_edges(element, edge_data) {
+                element.on('click', async (event, branch) => {
                     if (branch.selected) {
                         branch.selected = false;
                         event.target.classList.remove('branch-selected');
@@ -85,7 +136,9 @@ const Tol = () => {
 
                     console.log("Selected branch:", source, target);
 
-                    if (!faData[source] || !faData[target]) {
+                    // Color selected nodes
+
+                    if (!faData[source] || !faData[target]) { // TODO Is this necessary?
                         console.log("Not Found", faData[source], faData[target]);
                         setSelectedResidue(null);
                         setColorFile(null);
@@ -94,10 +147,10 @@ const Tol = () => {
                         setSelectBranch(null);
                         treeRef.current.style.width = '100%';
                         return;
-                    } else {
+                    } else { // Send node data to generate logos and open right panel
                         var data = {
-                            [source]: faData[source],
-                            [target]: faData[target],
+                            [source]: `>${source}\n${faData[source]}`, // LogoJS parser expects header before sequence
+                            [target]: `>${source}\n${faData[target]}`,
                         }
                         treeRef.current.style.width = '50%';
                         setColorFile(`${source}_${target}.color.txt`);
@@ -106,13 +159,37 @@ const Tol = () => {
                         setPipVisible(true);
                     }
                 });
+            }
 
-            d3.select(treeRef.current)
-                .selectAll('.internal-node')
-                .filter(d => d.data.name in logoFiles)
-                .select('circle')
-                .style("fill", "red")
-                .attr("r", 3);
+            tree.render({
+                'container': "#tree_container",
+                'is-radial': true,
+                'selectable': true,
+                'zoom': true,
+                'align-tips': true,
+                'internal-names': true,
+                width: 1000,
+                height: 2000,
+                'top-bottom-spacing': 'fixed-step',
+                'left-right-spacing': 'fixed-step',
+                'brush': false,
+                'draw-size-bubbles': false, // Must be false so that nodes are clickable?
+                'bubble-styler': d => { return 1.5 },
+                'node-styler': style_nodes,
+                'edge-styler': style_edges,
+                'show-scale': false,
+                'font-size': 4,
+                'background-color': 'lightblue',
+                'collapsible': true,
+                'reroot': true,
+                'hide': false, // Causes weird rendering in radial
+            });
+
+            // console.log(tree.getNodes());
+
+            treeRef.current.appendChild(tree.display.show());
+
+            //console.log(selectAllDescendants(tree.getNodes(), true, false))
 
         }
     }, [newickData, isLeftCollapsed, isRadial, faData]);

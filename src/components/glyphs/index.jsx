@@ -24,6 +24,7 @@ import { W } from './W';
 import { X } from './X';
 import { Y } from './Y';
 import { Z } from './Z';
+import { Blank } from './Blank';
 
 import a from './lc_a';
 import b from './lc_b';
@@ -56,7 +57,7 @@ import { N8 } from './n_8';
 import { N9 } from './n_9';
 
 export { A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P,
-	 Q, R, S, T, U, V, W, X, Y, Z };
+	 Q, R, S, T, U, V, W, X, Y, Z, Blank };
 export { a, b, d, e, f, g, h, i, j, k, l, m, n, p,
 	 q, r, t, u, y };
 export { N1, N2, N3, N4, N5, N6, N7, N8, N9 };

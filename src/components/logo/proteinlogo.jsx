@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { A, B, C, D, E, F, G, H, I, K, L, M, N, P,
-	 Q, R, S, T, V, W, X, Y, Z } from '../glyphs';
+	 Q, R, S, T, V, W, X, Y, Z, Blank } from '../glyphs';
 import Logo from './logo';
 
 /**
@@ -32,8 +32,8 @@ export const ProteinAlphabet = [
     { component: V, regex: "V", color: '#222200' },
     { component: W, regex: "W", color: '#080808' },
     { component: Y, regex: "Y", color: '#00a800' },
-    { component: Z, regex: "Z", color: '#aaaa00' }
-];
+    { component: Z, regex: "Z", color: '#aaaa00' },
+]; 
 
 /**
  * Renders a logo with the protein alphabet, with amino acids colored according

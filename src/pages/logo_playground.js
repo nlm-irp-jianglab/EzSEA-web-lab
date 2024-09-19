@@ -6,6 +6,7 @@ import n18 from '../components/task2/N18.fa';
 import n19 from '../components/task2/N19.fa';
 import n24 from '../components/task2/N24.fa';
 import n25 from '../components/task2/N25.fa';
+import single from '../components/task2/single.fa';
 import { readFastaToDict } from '../components/utils';
 
 export function Logo_Playground() {
@@ -19,8 +20,8 @@ export function Logo_Playground() {
   // Fetching the fasta files
   useEffect(() => {
     readFastaToDict(`${process.env.PUBLIC_URL}/bilr_example/single.fa`).then(data => { 
-      data['N0'] = ">N0\n" + data['N0'];
-      console.log(data)
+      data['N0'] = single;
+      data['N1'] = n18;
       setLogoData(data);
     });
 
