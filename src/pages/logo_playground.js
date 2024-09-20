@@ -2,8 +2,6 @@ import React, { useState, useRef, useEffect } from "react";
 import "../components/logojs.css";
 import LogoStack from "../components/logo-stack";
 
-import n18 from '../components/task2/N18.fa';
-import n19 from '../components/task2/N19.fa';
 import n24 from '../components/task2/N24.fa';
 import n25 from '../components/task2/N25.fa';
 import single from '../components/task2/single.fa';
@@ -11,21 +9,33 @@ import { readFastaToDict } from '../components/utils';
 
 export function Logo_Playground() {
   const [logoData, setLogoData] = useState(null);
+  const [faData, setFaData] = useState(null);
   const [scrollIndex, setScrollIndex] = useState("");
   const OULogoRef = useRef(null);
   const [contextMenuVisible, setContextMenuVisible] = useState(false);
-  const [contextMenuPosition, setContextMenuPosition] = useState({ x: 0, y: 0 });
   const [selectedColumn, setSelectedColumn] = useState(null);
+  const [nodeData, setnodeData] = useState(null);
 
   // Fetching the fasta files
   useEffect(() => {
-    readFastaToDict(`${process.env.PUBLIC_URL}/bilr_example/single.fa`).then(data => { 
-      data['N0'] = single;
-      data['N1'] = n18;
-      setLogoData(data);
-    });
+    readFastaToDict(`${process.env.PUBLIC_URL}/bilr_example/bilR_ancestors.fa`).then(data => { setFaData(data) });
+    
+    // Read node json file
+    fetch(`${process.env.PUBLIC_URL}/bilr_example/nodes.json`).then(response => response.json()).then(data => { setnodeData(data) });
+
 
   }, []);
+
+  useEffect(() => {
+    if (faData) {
+      var data = {
+        "N18": `>N18\n${faData["N18"]}`,
+        "N19": `>N19\n${faData["N19"]}`,
+      };
+      setLogoData(data);
+
+    }
+  }, [faData]);
 
   const handleColumnClick = (index, data) => {
     console.log("Position", data);

@@ -9,7 +9,7 @@ const GlyphStack = ({ height, width, indices, alphabet, lv, transform, alpha, in
 	// TODO: Implement coloring to border important residues. Will be done by editing "glyphrect"
 	// TODO: Implement opacity to highlight important residues. Will be done by editing "fillOpacity={alpha}"
 	// Index stored in curr, can use this to determine opacity, color, importance
-	//console.log("Rendering: ", curr);
+	console.log("Rendering: ", curr);
 	/* move up from bottom */
 	let cy = height; // start from bottom with smallest letter
 	let xscale = width / 100.0; // scale to glyphs' 100x100 viewport

@@ -42,3 +42,32 @@ export const readFastaToDict = async (path) => {
         return null;
     }
 };
+
+// TODO Parse annotations, add colors
+export const addRingAnnotation = async (element, annotation) => { // attach rect to element, annotation is csv of annotations
+    const node_label = element.select("text");
+    const currentTransform = node_label.attr("transform");
+    const translateRegex = /translate\s*\(\s*([-\d.]+,0)/;
+    const currX = currentTransform.match(translateRegex)[1];
+    let adjustX = 0;
+    let shift = 0;
+    let direction = 0;
+    if (parseFloat(currX) < 0) {
+        adjustX = -80; // Must account for size of the rect
+        shift = -10;
+    } else {
+        shift = 10;
+        adjustX = 70;
+    }
+    let newTransform = currentTransform.replace(translateRegex, `translate(${parseFloat(currX) + adjustX}, -5`);
+    var annotations = element.append("g").attr("transform", newTransform);
+    annotations.append("rect")
+        .attr("width", 10)
+        .attr("height", 10)
+        .style("fill", "red");
+    annotations.append("rect")
+        .attr("width", 10)
+        .attr("height", 10)
+        .style("fill", "green")
+        .attr("transform", `translate(${shift}, 0)`);
+}

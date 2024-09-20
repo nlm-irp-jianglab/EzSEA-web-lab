@@ -8,9 +8,8 @@ import "../components/tol.css";
 import * as d3 from 'd3';
 import MolstarViewer from "../components/molstar";
 import LogoStack from '../components/logo-stack';
-import { readFastaToDict } from '../components/utils';
+import { readFastaToDict, addRingAnnotation } from '../components/utils';
 import { selectAllDescendants } from 'phylotree/src/nodes';
-import { triggerRefresh } from 'phylotree/src/render/events';
 
 const logoFiles = {};
 
@@ -50,6 +49,16 @@ const Tol = () => {
             treeRef.current.innerHTML = '';
 
             const tree = new pt.phylotree(newickData);
+
+            function clearRightPanel() {
+                setPipVisible(false);
+                setSelectedResidue(null);
+                setIsLeftCollapsed(false);
+                setIsRightCollapsed(false);
+                setColorFile(null);
+                setLogoContent(null);
+                treeRef.current.style.width = '100%';
+            }
 
             function style_nodes(element, node_data) {
                 var node_label = element.select("text");
@@ -110,29 +119,7 @@ const Tol = () => {
                         compare(node_data, element);
                     }, showMenuOpt);
                 } else { // edits to the leaf nodes
-                    const currentTransform = node_label.attr("transform");
-                    const translateRegex = /translate\s*\(\s*([-\d.]+,0)/;
-                    const currX = currentTransform.match(translateRegex)[1];
-                    let adjustX = 0;
-                    let shift = 0;
-                    if (parseFloat(currX) < 0) {
-                        adjustX = -80; // Must account for size of the rect
-                        shift = -10;
-                    } else {
-                        shift = 10;
-                        adjustX = 70;
-                    }
-                    let newTransform = currentTransform.replace(translateRegex, `translate(${parseFloat(currX) + adjustX}, -5`);
-                    var annotation = element.append("g").attr("transform", newTransform);
-                    annotation.append("rect")
-                        .attr("width", 10)
-                        .attr("height", 10)
-                        .style("fill", "red");
-                    annotation.append("rect")
-                        .attr("width", 10)
-                        .attr("height", 10)
-                        .style("fill", "green")
-                        .attr("transform", `translate(${shift}, 0)`);
+                    
                 }
             }
 
@@ -141,36 +128,30 @@ const Tol = () => {
                     if (branch.selected) {
                         branch.selected = false;
                         event.target.classList.remove('branch-selected');
+                        clearRightPanel();
                     } else {
                         branch.selected = true;
                         event.target.classList.add('branch-selected');
-                    }
 
-                    var source = branch.source.data.name;
-                    var target = branch.target.data.name;
-
-                    console.log("Selected branch:", source, target);
-
-                    // Color selected nodes
-
-                    if (!faData[source] || !faData[target]) { // TODO Is this necessary?
-                        console.log("Not Found", faData[source], faData[target]);
-                        setSelectedResidue(null);
-                        setColorFile(null);
-                        setLogoContent(null);
-                        setPipVisible(false);
-                        treeRef.current.style.width = '100%';
-                        return;
-                    } else { // Send node data to generate logos and open right panel
-                        var data = {
-                            [source]: `>${source}\n${faData[source]}`, // LogoJS parser expects header before sequence
-                            [target]: `>${source}\n${faData[target]}`,
+                        var source = branch.source.data.name;
+                        var target = branch.target.data.name;
+                        console.log("Selected branch:", source, target);
+                        if (!faData[source] || !faData[target]) { // TODO Is this necessary?
+                            console.log("Not Found", faData[source], faData[target]);
+                            clearRightPanel();
+                            return;
+                        } else { // Send node data to generate logos and open right panel
+                            var data = {
+                                [source]: `>${source}\n${faData[source]}`, // LogoJS parser expects header before sequence
+                                [target]: `>${source}\n${faData[target]}`,
+                            }
+                            treeRef.current.style.width = '50%'; // Need to have all these states as a toggle
+                            setColorFile(`${source}_${target}.color.txt`);
+                            setLogoContent(data);
+                            setPipVisible(true);
                         }
-                        treeRef.current.style.width = '50%'; // Need to have all these states as a toggle
-                        setColorFile(`${source}_${target}.color.txt`);
-                        setLogoContent(data);
-                        setPipVisible(true);
                     }
+
                 });
             }
 
@@ -202,7 +183,7 @@ const Tol = () => {
 
             treeRef.current.appendChild(tree.display.show());
 
-            console.log(selectAllDescendants(tree.getNodes(), true, false))
+            // console.log(selectAllDescendants(tree.getNodes(), true, false))
 
         }
     }, [newickData, isLeftCollapsed, isRadial, faData]);
