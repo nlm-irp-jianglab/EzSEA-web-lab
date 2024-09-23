@@ -2,10 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import "../components/logojs.css";
 import LogoStack from "../components/logo-stack";
 
-import n24 from '../components/task2/N24.fa';
-import n25 from '../components/task2/N25.fa';
-import single from '../components/task2/single.fa';
-import { readFastaToDict } from '../components/utils';
+import { readFastaToDict, parseNodeData } from '../components/utils';
 
 export function Logo_Playground() {
   const [logoData, setLogoData] = useState(null);
@@ -19,9 +16,14 @@ export function Logo_Playground() {
   // Fetching the fasta files
   useEffect(() => {
     readFastaToDict(`${process.env.PUBLIC_URL}/bilr_example/bilR_ancestors.fa`).then(data => { setFaData(data) });
-    
+
     // Read node json file
-    fetch(`${process.env.PUBLIC_URL}/bilr_example/nodes.json`).then(response => response.json()).then(data => { setnodeData(data) });
+    fetch(`${process.env.PUBLIC_URL}/bilr_example/nodes.json`)
+      .then(response => response.json())
+      .then(data => {
+        parseNodeData(data)
+          .then((parsedData) => setnodeData(parsedData))
+      });
 
 
   }, []);
@@ -29,8 +31,8 @@ export function Logo_Playground() {
   useEffect(() => {
     if (faData) {
       var data = {
-        "N18": `>N18\n${faData["N18"]}`,
-        "N19": `>N19\n${faData["N19"]}`,
+        "N185": `>N18\n${faData["N185"]}`,
+        "N12": `>N19\n${faData["N12"]}`,
       };
       setLogoData(data);
 
@@ -90,12 +92,13 @@ export function Logo_Playground() {
 
   return (
     <div>
-      {logoData && (
+      {logoData && nodeData && (
         <LogoStack
           data={logoData}
           onOUColumnClick={handleColumnClick}
           onOUColumnHover={handleColumnHover}
           ref={OULogoRef}
+          importantResiduesList={nodeData}
         />
       )}
       <div style={{ marginTop: "20px" }}>
@@ -113,8 +116,6 @@ export function Logo_Playground() {
         <button onClick={handleGoClick} style={{ marginLeft: "10px", padding: "5px 10px" }}>
           Go
         </button>
-        <button onClick={() => OULogoRef.current.appendLogo("N24", n24)} style={{ marginLeft: "10px", padding: "5px 10px" }}>Add N24</button>
-        <button onClick={() => OULogoRef.current.appendLogo("N25", n25)} style={{ marginLeft: "10px", padding: "5px 10px" }}>Add N25</button>
       </div>
     </div>
   );

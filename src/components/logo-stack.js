@@ -10,7 +10,7 @@ const LogoStack = React.forwardRef(
         onColumnClick (optional): A function to handle click events on the logo
         onColumnHover (optional): A function to handle hover events on the logo
     */
-    ({ data, onColumnClick, onColumnHover, residueData }, ref) => {
+    ({ data, onColumnClick, onColumnHover, importantResiduesList }, ref) => {
         const [fastaContent, setFastaContent] = useState({});
         const [refsUpdated, setRefsUpdated] = useState(0);
         const logoRefs = useRef([]);
@@ -182,6 +182,7 @@ const LogoStack = React.forwardRef(
                                         fasta={fastaContent[key]}
                                         alphabet={ProteinAlphabet}
                                         onSymbolClick={onColumnClick}
+                                        importantResidues={importantResiduesList[key]}
                                     //onSymbolMouseOver={onColumnHover} // Disabled due to performance issues: Hovering over column is choppy. Highlighting on structure is ok
                                     />
                                 </div>

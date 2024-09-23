@@ -5,11 +5,11 @@ import Glyph from '../glyphs/glyph';
 /**
  * 
  */
-const GlyphStack = ({ height, width, indices, alphabet, lv, transform, alpha, inverted, onSymbolMouseOver, onSymbolMouseOut, onSymbolClick, curr }) => {
+const GlyphStack = ({ height, width, indices, alphabet, lv, transform, alpha, inverted, onSymbolMouseOver, onSymbolMouseOut, onSymbolClick, curr, important }) => {
 	// TODO: Implement coloring to border important residues. Will be done by editing "glyphrect"
 	// TODO: Implement opacity to highlight important residues. Will be done by editing "fillOpacity={alpha}"
 	// Index stored in curr, can use this to determine opacity, color, importance
-	console.log("Rendering: ", curr);
+
 	/* move up from bottom */
 	let cy = height; // start from bottom with smallest letter
 	let xscale = width / 100.0; // scale to glyphs' 100x100 viewport
@@ -61,11 +61,12 @@ const GlyphStack = ({ height, width, indices, alphabet, lv, transform, alpha, in
 	return (
 		<g transform={transform}>
 			{glyphs}
-			<rect className="glyphrect" style={{ width: "73px", height: "445px", fill: "red", strokeWidth: "2px", stroke: "lightgrey" }}
+			<rect className="glyphrect" style={{ width: "73px", height: "445px", fill: important ? "blue" : "red", strokeWidth: "2px", stroke: "lightgray", fillOpacity: important ? ".2" : ""}} // var border here to allow red border for important residues
 				onClick={onSymbolClick && (() => onSymbolClick(alphabet))}
 				onMouseOver={onSymbolMouseOver && (() => onSymbolMouseOver(alphabet))}
-				>
+			>
 			</rect>
+			{important && (<circle r={8} transform='translate(45,500)' fill={"red"}></circle>)}
 		</g>
 	);
 

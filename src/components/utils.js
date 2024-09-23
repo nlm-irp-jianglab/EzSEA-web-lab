@@ -71,3 +71,14 @@ export const addRingAnnotation = async (element, annotation) => { // attach rect
         .style("fill", "green")
         .attr("transform", `translate(${shift}, 0)`);
 }
+
+export const parseNodeData = async (nodeData) => {    
+    const parsedData = {};
+    nodeData.forEach(item => {
+        parsedData[item.node] = {
+            differing_residues: item.differing_residues,
+            score: item.score,
+        }
+    });
+    return parsedData;
+}

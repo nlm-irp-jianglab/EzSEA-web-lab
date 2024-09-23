@@ -5,10 +5,9 @@ import { addCustomMenu } from 'phylotree/src/render/menus';
 import Navbar from "../components/navbar";
 import "../components/phylotree.css";
 import "../components/tol.css";
-import * as d3 from 'd3';
 import MolstarViewer from "../components/molstar";
 import LogoStack from '../components/logo-stack';
-import { readFastaToDict, addRingAnnotation } from '../components/utils';
+import { readFastaToDict, addRingAnnotation, parseNodeData } from '../components/utils';
 import { selectAllDescendants } from 'phylotree/src/nodes';
 
 const logoFiles = {};
@@ -27,6 +26,8 @@ const Tol = () => {
     const [colorFile, setColorFile] = useState(null);
     const [isLeftCollapsed, setIsLeftCollapsed] = useState(false);
     const [isRightCollapsed, setIsRightCollapsed] = useState(false);
+    const [nodeData, setnodeData] = useState(null);
+
 
     useEffect(() => {
         const fetchDefaultTree = async () => {
@@ -42,6 +43,14 @@ const Tol = () => {
         readFastaToDict(`${process.env.PUBLIC_URL}/bilr_example/bilR_ancestors.fa`).then(data => { setFaData(data) });
 
         fetchDefaultTree();
+
+
+        fetch(`${process.env.PUBLIC_URL}/bilr_example/nodes.json`)
+            .then(response => response.json())
+            .then(data => {
+                parseNodeData(data)
+                    .then((parsedData) => setnodeData(parsedData))
+            });
     }, []);
 
     useEffect(() => {
@@ -119,7 +128,7 @@ const Tol = () => {
                         compare(node_data, element);
                     }, showMenuOpt);
                 } else { // edits to the leaf nodes
-                    
+
                 }
             }
 
@@ -365,6 +374,7 @@ const Tol = () => {
                                     data={logoContent}
                                     onColumnClick={handleColumnClick}
                                     onColumnHover={handleColumnHover}
+                                    importantResiduesList={nodeData}
                                 />
                             </div>
                         ) : (
@@ -384,6 +394,7 @@ const Tol = () => {
                                         data={logoContent}
                                         onColumnClick={handleColumnClick}
                                         onColumnHover={handleColumnHover}
+                                        importantResiduesList={nodeData}
                                     />
                                 </div>
                             </div>
