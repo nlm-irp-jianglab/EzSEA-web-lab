@@ -1,7 +1,6 @@
 {
   "name": "reactvis",
   "version": "1.0.0",
-  "homepage": "https://littlelegz.github.io/reactvis",
   "main": "/src/index.js",
   "scripts": {
     "predeploy": "npm run build",

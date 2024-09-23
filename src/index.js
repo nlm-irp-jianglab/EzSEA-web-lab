@@ -13,51 +13,52 @@ import {
     BrowserRouter as Router,
     Routes,
     Route,
-    Navigate,
 } from "react-router-dom";
 
 const root = createRoot(document.getElementById("root"));
 root.render(
-    <>
-        <Router>
-            <Routes>
-                <Route
-                    exact
-                    path="/"
-                    element={<Home />}
-                />
-                <Route
-                    exact
-                    path="/reactvis"
-                    element={<Home />}
-                />
-                <Route
-                    exact
-                    path="/submit"
-                    element={<Submit />}
-                />
-                <Route
-                    path="/pv"
-                    element={<PV />}
-                />
-                <Route
-                    path="/tol"
-                    element={<Tol />}
-                />
-                <Route
-                    exact path="/playground"
-                    element={<Playground />}
-                />
-                <Route
-                    exact path="/logo_playground"
-                    element={<Logo_Playground />}
-                />
-                <Route
-                    path="*"
-                    element={<NotFoundPage />}
-                />
+    <React.StrictMode>
+        <>
+            <Router>
+                <Routes>
+                    <Route
+                        exact
+                        path="/"
+                        element={<Home />}
+                    />
+                    <Route
+                        exact
+                        path="/reactvis"
+                        element={<Home />}
+                    />
+                    <Route
+                        exact
+                        path="/submit"
+                        element={<Submit />}
+                    />
+                    <Route
+                        path="/pv"
+                        element={<PV />}
+                    />
+                    <Route
+                        path="/tol"
+                        element={<Tol />}
+                    />
+                    <Route
+                        exact path="/playground"
+                        element={<Playground />}
+                    />
+                    <Route
+                        exact path="/logo_playground"
+                        element={<Logo_Playground />}
+                    />
+                    <Route
+                        path="*"
+                        element={<NotFoundPage />}
+                    />
 
-            </Routes>
-        </Router>
-    </>
+                </Routes>
+            </Router>
+        </>
+    </React.StrictMode>
 );
