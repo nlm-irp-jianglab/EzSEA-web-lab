@@ -1,13 +1,15 @@
 {
   "files": {
-    "main.css": "/reactvis/static/css/main.b9706168.css",
-    "main.js": "/reactvis/static/js/main.adb81f29.js",
+    "main.css": "/reactvis/static/css/main.06d0ca9f.css",
+    "main.js": "/reactvis/static/js/main.7b71e4b6.js",
+    "static/media/N19.fa": "/reactvis/static/media/N19.00f89e912bca3f9044b1.fa",
+    "static/media/N18.fa": "/reactvis/static/media/N18.98d6c772ac30e80d8282.fa",
     "index.html": "/reactvis/index.html",
-    "main.b9706168.css.map": "/reactvis/static/css/main.b9706168.css.map",
-    "main.adb81f29.js.map": "/reactvis/static/js/main.adb81f29.js.map"
+    "main.06d0ca9f.css.map": "/reactvis/static/css/main.06d0ca9f.css.map",
+    "main.7b71e4b6.js.map": "/reactvis/static/js/main.7b71e4b6.js.map"
   },
   "entrypoints": [
-    "static/css/main.b9706168.css",
-    "static/js/main.adb81f29.js"
+    "static/css/main.06d0ca9f.css",
+    "static/js/main.7b71e4b6.js"
   ]
 }
