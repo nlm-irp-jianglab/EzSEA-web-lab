@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import "../components/logojs.css";
 import LogoStack from "../components/logo-stack";
+import Loading from "../components/loading";
 
 import { readFastaToDict, parseNodeData } from '../components/utils';
 
@@ -117,6 +118,7 @@ export function Logo_Playground() {
           Go
         </button>
       </div>
+      <Loading/>
     </div>
   );
 }

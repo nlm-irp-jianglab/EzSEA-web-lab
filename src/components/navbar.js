@@ -17,7 +17,7 @@ const Navbar = (options) => {
         ) : (
           <div className="nav-links">
             <Link to="/">
-              <h1 className="logo">Reactvis</h1>
+              <h1 className="logo">EzSEA</h1>
             </Link>
           </div>
         )

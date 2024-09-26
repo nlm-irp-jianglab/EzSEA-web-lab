@@ -4,8 +4,9 @@ Protein Viewer: Molstar
 Sequence Logos: Skylign
 
 # TODO:
-~Implement context menu on node click
-  - Rerooting/hiding tree rerenders the tree, removing click listeners and breaking page functionality
+Polish submit page
+  - Add transitions
+  - Add style
 
 Re-implement collapse clade function
 
