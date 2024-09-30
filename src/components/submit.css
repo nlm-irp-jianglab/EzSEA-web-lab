@@ -97,11 +97,16 @@ label.bp3-label {
 
 .bp3-collapse {
     overflow-y: hidden;
+    transition: max-height 0.3s ease-in-out;
     transition: height .2s cubic-bezier(.4, 1, .75, .9);
 }
 
 .bp3-collapse .bp3-collapse-body {
     transition: transform .2s cubic-bezier(.4,1,.75,.9);
+}
+
+button {
+    margin: 1px;
 }
 
 .bp3-card {
