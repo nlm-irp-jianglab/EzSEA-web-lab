@@ -1,5 +1,6 @@
 import { React, useState, useRef, useEffect } from "react";
 import Navbar from "../components/navbar.js";
+import { useNavigate } from "react-router-dom";
 import "../components/submit.css";
 
 const Home = () => {
@@ -14,7 +15,7 @@ const Home = () => {
     const [selectedPhylogeneticProgram, setSelectedPhylogeneticProgram] = useState("FastTree");
     const [selectedAncestralProgram, setSelectedAncestralProgram] = useState("GRASP");
 
-
+    let navigate = useNavigate();
 
     const toggleSettingsDropdown = () => {
         setIsSettingsVisible(!isSettingsVisible); // Toggle the state
@@ -71,7 +72,10 @@ const Home = () => {
         var jobName = jobInput.current.value;
         if (!jobName) {
             // Generate a random job name if none is provided
-            jobName = "EzSEA_" + Math.random().toString(36).substring(7);
+            jobName = "EzSEA_" + Math.random().toString(36).substring(2, 9) + Date.now().toString(36);
+        } else {
+            jobName = jobName.replace(/\s/g, "_");  // Replace spaces with underscores
+            jobName = jobName + "_" + Math.random().toString(36).substring(2, 9) + Date.now().toString(36);
         }
 
         const json = {
@@ -79,9 +83,9 @@ const Home = () => {
             "email": emailInput.current.value,
             "sequence": fastaInput.current.value,
             "folding_program": selectedFoldingProgram,
-            "phylogenetic_program": selectedPhylogeneticProgram,
-            "ancestral_program": selectedAncestralProgram
-        } 
+            "tree_program": selectedPhylogeneticProgram,
+            "asr_program": selectedAncestralProgram
+        }
 
         // Send JSON to backend
         fetch('http://localhost:3001/submit', {
@@ -97,16 +101,45 @@ const Home = () => {
             })
             .catch((error) => {
                 console.error('Error:', error);
+                navigate("/job-queued", {
+                    state: {
+                        error: "An error occurred while submitting the job. Please try again later."
+                    }
+                });
+                return;
             });
 
+
+        var currentdate = new Date();
+        var datetime = "" + currentdate.getDate() + "/"
+            + (currentdate.getMonth() + 1) + "/"
+            + currentdate.getFullYear() + " @ "
+            + currentdate.getHours() + ":"
+            + currentdate.getMinutes() + ":"
+            + currentdate.getSeconds();
+
+        // Redirect to the results page
+        navigate("/job-queued", {
+            state: {
+                jobId: jobName,
+                email: emailInput.current.value,
+                time: datetime
+            }
+        });
     }
+
+    const populateExample = () => {
+        fastaInput.current.value = ">PA14_rph\nMNRPSGRAADQLRPIRITRHYTKHAEGSVLVEFGDTKVICTVSAESGVPRFLKGQGQGWLTAEYGMLPRSTGERNQREASRGKQGGRTLEIQRLIGRSLRAALDLSKLGENTLYIDCDVIQADGGTRTASITGATVALIDALAVLKKRGALKGNPLKQMVAAVSVGIYQGVPVLDLDYLEDSAAETDLNVVMTDAGGFIEVQGTAEGAPFRPAELNAMLELAQQGMQELFELQRAALAE\n";
+        validateInput();
+    }
+
 
     const statusMsg = () => {
         switch (fastaStatus) {
             case "valid":
                 return (
                     <span className="bp3-tag bp3-intent-success">
-                        <span icon="tick" className="bp3-icon bp3-icon-tick">
+                        <span icon="tick" className="bp3-icon bp3-icon-tick" style={{ transform: "translateY(2px)" }} >
                             <svg data-icon="tick" width="16" height="16" viewBox="0 0 16 16">
                                 <desc>tick</desc>
                                 <path d="M14 3c-.28 0-.53.11-.71.29L6 10.59l-3.29-3.3a1.003 1.003 0 00-1.42 1.42l4 4c.18.18.43.29.71.29s.53-.11.71-.29l8-8A1.003 1.003 0 0014 3z" fillRule="evenodd"></path>
@@ -119,7 +152,7 @@ const Home = () => {
                 return (
                     <span className="bp3-tag bp3-intent-danger">
                         <span icon="cross" className="bp3-icon bp3-icon-cross">
-                            <svg data-icon="cross" width="16" height="16" viewBox="0 0 16 16">
+                            <svg data-icon="cross" width="16" height="16" viewBox="0 0 16 16" style={{ transform: "translateY(2px)" }} >
                                 <desc>cross</desc>
                                 <path d="M9.41 8l3.29-3.29c.19-.18.3-.43.3-.71a1.003 1.003 0 00-1.71-.71L8 6.59l-3.29-3.3a1.003 1.003 0 00-1.42 1.42L6.59 8 3.3 11.29c-.19.18-.3.43-.3.71a1.003 1.003 0 001.71.71L8 9.41l3.29 3.29c.18.19.43.3.71.3a1.003 1.003 0 00.71-1.71L9.41 8z" fillRule="evenodd"></path>
                             </svg>
@@ -132,7 +165,7 @@ const Home = () => {
                 return (
                     <span className="bp3-tag bp3-intent-danger">
                         <span icon="cross" className="bp3-icon bp3-icon-cross">
-                            <svg data-icon="cross" width="16" height="16" viewBox="0 0 16 16">
+                            <svg data-icon="cross" width="16" height="16" viewBox="0 0 16 16" style={{ transform: "translateY(2px)" }} >
                                 <desc>cross</desc>
                                 <path d="M9.41 8l3.29-3.29c.19-.18.3-.43.3-.71a1.003 1.003 0 00-1.71-.71L8 6.59l-3.29-3.3a1.003 1.003 0 00-1.42 1.42L6.59 8 3.3 11.29c-.19.18-.3.43-.3.71a1.003 1.003 0 001.71.71L8 9.41l3.29 3.29c.18.19.43.3.71.3a1.003 1.003 0 00.71-1.71L9.41 8z" fillRule="evenodd"></path>
                             </svg>
@@ -145,7 +178,7 @@ const Home = () => {
                 return (
                     <span className="bp3-tag bp3-intent-danger">
                         <span icon="cross" className="bp3-icon bp3-icon-cross">
-                            <svg data-icon="cross" width="16" height="16" viewBox="0 0 16 16">
+                            <svg data-icon="cross" width="16" height="16" viewBox="0 0 16 16" style={{ transform: "translateY(2px)" }}>
                                 <desc>cross</desc>
                                 <path d="M9.41 8l3.29-3.29c.19-.18.3-.43.3-.71a1.003 1.003 0 00-1.71-.71L8 6.59l-3.29-3.3a1.003 1.003 0 00-1.42 1.42L6.59 8 3.3 11.29c-.19.18-.3.43-.3.71a1.003 1.003 0 001.71.71L8 9.41l3.29 3.29c.18.19.43.3.71.3a1.003 1.003 0 00.71-1.71L9.41 8z" fillRule="evenodd"></path>
                             </svg>
@@ -168,7 +201,7 @@ const Home = () => {
         <div style={{ userSelect: "none" }}>
             <Navbar />
             <div style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", flex: "1 0 auto" }}>
-                <div style={{ textAlign: "center", margin: "2em auto 0px", width: "50%", padding: "0.5em", flex: "1 1 0" }}>
+                <div style={{ textAlign: "center", margin: "2em auto 0px", width: "40%", padding: "0.5em", flex: "1 1 0" }}>
                     <img src={process.env.PUBLIC_URL + "/temp_logo.png"} alt="Logo" style={{ width: "60%", marginBottom: "3em" }}></img>
                     <div>
                         <div> {/* This div is for text input and examples */}
@@ -178,8 +211,8 @@ const Home = () => {
                                     {statusMsg()}
                                     <span className="bp3-popover-wrapper">
                                         <div className="bp3-popover-target">
-                                            <button type="button" className="bp3-button bp3-minimal bp3-small">
-                                                <span className="bp3-button-text">Examples</span>
+                                            <button type="button" className="bp3-button bp3-minimal bp3-small" onClick={() => populateExample()}>
+                                                <span className="bp3-button-text">Example</span>
                                             </button>
                                         </div>
                                     </span>

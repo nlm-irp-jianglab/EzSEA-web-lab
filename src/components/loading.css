@@ -9,22 +9,22 @@
   #loader #circle1{
     stroke-dasharray: 100%;
     stroke-dashoffset: 100%;
-    animation: strokeAnimate 2s  1s  ease forwards;
+    animation: strokeAnimate 2s  1s  ease forwards alternate infinite;
   }
   #loader #circle2{
     stroke-dasharray: 100%;
     stroke-dashoffset: 100%;
-    animation: strokeAnimate 2s  1s  ease forwards;
+    animation: strokeAnimate 2s  1s  ease forwards alternate infinite;
   }
   #loader #circle3{
     stroke-dasharray: 100%;
     stroke-dashoffset: 100%;
-    animation: strokeAnimate 2s  1s  ease forwards;
+    animation: strokeAnimate 2s  1s  ease forwards alternate infinite;
   }
   #loader line{
     stroke-dasharray: 100%;
     stroke-dashoffset: 100%;
-    animation: strokeAnimate 5s  0.9s  ease forwards;
+    animation: strokeAnimate 2s  1s  ease forwards alternate infinite;
   }
   
   @keyframes strokeAnimate{

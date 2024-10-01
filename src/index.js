@@ -9,6 +9,8 @@ import Playground from "./pages/playground";
 import Logo_Playground from "./pages/logo_playground";
 import NotFoundPage from "./pages/notfoundpage";
 import Submit from "./pages/submit";
+import JobQueued from "./pages/jobqueued";
+import Results from "./pages/results";
 import {
     BrowserRouter as Router,
     Routes,
@@ -39,6 +41,14 @@ root.render(
                     <Route
                         path="/pv"
                         element={<PV />}
+                    />
+                    <Route
+                        path="/results/:jobId"
+                        element={<Results />}
+                    />
+                    <Route
+                        path="/job-queued"
+                        element={<JobQueued />}
                     />
                     <Route
                         path="/tol"

@@ -32,12 +32,6 @@ const Navbar = (options) => {
           <Link to="/tol" className="tol">
             <li>Tree of Life</li>
           </Link>
-          <Link to="/pv" className="pv">
-            <li>Mol*</li>
-          </Link>
-          <Link to="/prlogo" className="prlogo">
-            <li>Seq Logo</li>
-          </Link>
         </ul>
         <button
           className="mobile-menu-icon"

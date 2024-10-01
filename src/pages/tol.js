@@ -7,8 +7,7 @@ import "../components/phylotree.css";
 import "../components/tol.css";
 import MolstarViewer from "../components/molstar";
 import LogoStack from '../components/logo-stack';
-import { readFastaToDict, addRingAnnotation, parseNodeData } from '../components/utils';
-import { selectAllDescendants } from 'phylotree/src/nodes';
+import { readFastaToDict, parseNodeData } from '../components/utils';
 
 const logoFiles = {};
 
