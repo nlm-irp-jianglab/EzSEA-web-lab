@@ -88,7 +88,7 @@ const Home = () => {
         }
 
         // Send JSON to backend
-        fetch('http://localhost:8787/submit', {
+        fetch('http://host.docker.internal:8787/submit', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
