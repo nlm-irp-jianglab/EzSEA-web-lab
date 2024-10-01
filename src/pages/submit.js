@@ -88,7 +88,7 @@ const Home = () => {
         }
 
         // Send JSON to backend
-        fetch('http://localhost:3001/submit', {
+        fetch('http://localhost:8787/submit', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -98,6 +98,22 @@ const Home = () => {
             .then(response => response.json())
             .then(data => {
                 console.log('Success:', data);
+                var currentdate = new Date();
+                var datetime = "" + currentdate.getDate() + "/"
+                    + (currentdate.getMonth() + 1) + "/"
+                    + currentdate.getFullYear() + " @ "
+                    + currentdate.getHours() + ":"
+                    + currentdate.getMinutes() + ":"
+                    + currentdate.getSeconds();
+
+                // Redirect to the results page
+                navigate("/job-queued", {
+                    state: {
+                        jobId: jobName,
+                        email: emailInput.current.value,
+                        time: datetime
+                    }
+                });
             })
             .catch((error) => {
                 console.error('Error:', error);
@@ -110,22 +126,7 @@ const Home = () => {
             });
 
 
-        var currentdate = new Date();
-        var datetime = "" + currentdate.getDate() + "/"
-            + (currentdate.getMonth() + 1) + "/"
-            + currentdate.getFullYear() + " @ "
-            + currentdate.getHours() + ":"
-            + currentdate.getMinutes() + ":"
-            + currentdate.getSeconds();
 
-        // Redirect to the results page
-        navigate("/job-queued", {
-            state: {
-                jobId: jobName,
-                email: emailInput.current.value,
-                time: datetime
-            }
-        });
     }
 
     const populateExample = () => {
