@@ -81,7 +81,7 @@ const Home = () => {
             "folding_program": selectedFoldingProgram,
             "phylogenetic_program": selectedPhylogeneticProgram,
             "ancestral_program": selectedAncestralProgram
-        }
+        } 
 
         // Send JSON to backend
         fetch('http://localhost:3001/submit', {
