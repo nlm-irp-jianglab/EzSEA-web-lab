@@ -70,7 +70,9 @@ const Home = () => {
 
     const submitJob = () => {
         var jobName = jobInput.current.value;
-        if (!jobName) {
+        const domain = window.location.hostname;
+	console.log("Current domain: ", domain);
+	if (!jobName) {
             // Generate a random job name if none is provided
             jobName = "EzSEA_" + Math.random().toString(36).substring(2, 9) + Date.now().toString(36);
         } else {
@@ -88,7 +90,11 @@ const Home = () => {
         }
 
         // Send JSON to backend
-        fetch('http://host.docker.internal:8787/submit', {
+        fetch('http://host.docker.internal:3001/hello', {
+	    method: 'GET',
+	}).then(response => console.log(response)).catch((error) => console.log(error));
+
+	fetch('http://host.docker.internal:3001/submit', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
