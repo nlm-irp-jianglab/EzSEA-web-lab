@@ -62,11 +62,6 @@ root.render(
                         exact path="/logo_playground"
                         element={<Logo_Playground />}
                     />
-                    <Route
-                        path="*"
-                        element={<NotFoundPage />}
-                    />
-
                 </Routes>
             </Router>
         </>

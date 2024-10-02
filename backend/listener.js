@@ -1,7 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
-const cors = require('cors');
 const { exec } = require('child_process');
 const allowOrigins = ['http://localhost:3000']
 
@@ -13,18 +12,6 @@ let data = null;
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ extended: false, limit: '50mb' }));
 app.use(express.static(path.join(__dirname, 'build')));
-app.use(cors({
-    origin: function (origin, callback) {
-        if (!origin) return callback(null, true);
-        if (allowOrigins.indexOf(origin) === -1) {
-            console.log(origin)
-            var msg = 'The CORS policy for this site does not ' +
-                'allow access from the specified Origin.';
-            return callback(new Error(msg), false);
-        }
-        return callback(null, true);
-    }
-}));
 
 app.post("/submit", (req, res) => {
     // Retrieve JSON from the POST body 
@@ -48,7 +35,8 @@ app.post("/submit", (req, res) => {
 });
 
 app.get("/hello", (req, res) => {
-    res.send("Hello World!");
+    console.log("Recevied GET");
+    res.send({body: "Hello World!"});
 });
 
 // Server listening on PORT 5000

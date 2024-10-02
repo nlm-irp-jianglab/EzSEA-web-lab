@@ -92,7 +92,7 @@ const Home = () => {
         // Send JSON to backend
         fetch('/api/hello', {
             method: 'GET',
-        }).then(response => console.log(response)).catch((error) => console.log(error));
+        }).then(response => console.log("Success: ", response)).catch((error) => console.log(error));
 
         fetch('/api/submit', {
             method: 'POST',
