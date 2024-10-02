@@ -1,7 +1,0 @@
-services: 
-  frontend:
-    image: zhaoj16/reactvis-docker:latest
-    ports:
-      - "80:443"
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
