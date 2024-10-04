@@ -7,7 +7,22 @@ services:
     build: ./backend
     ports:
       - "8002:5000"
+    privileged: true
+    volumes:
+      - /home/jiangak_ncbi_nlm_nih_gov/EzSEA:/data
+      - /home/jiangak_ncbi_nlm_nih_gov/database/:/database
+      - /var/run/docker.sock:/var/run/docker.sock # Mounting Docker socket, allowing backend to start Docker containers. DANGEROUS security issues
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
+    runtime: nvidia
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
   proxy:
     build: ./proxy
     ports:
       - "80:80"
+  ezsea-tool:
+    image: reactvis-ezsea-tool

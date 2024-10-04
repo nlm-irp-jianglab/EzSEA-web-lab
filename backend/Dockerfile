@@ -1,10 +1,13 @@
-Stage 0 -- Building frontend assests
+# Stage 0 -- Building node listener assests
 FROM node:20.5.1-alpine AS build
 
 WORKDIR /usr/src/app
-COPY package*.json ./
-RUN npm install
-COPY . .
-EXPOSE 5000
 
+COPY /listener/package*.json ./
+RUN npm install
+RUN apk add --no-cache docker-cli
+
+COPY /listener/ .
+EXPOSE 5000
+ 
 CMD ["node", "listener.js"]

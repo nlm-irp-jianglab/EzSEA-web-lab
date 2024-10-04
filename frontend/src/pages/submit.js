@@ -9,7 +9,6 @@ const Home = () => {
     const [fastaStatus, setFastaStatus] = useState("");
     const jobInput = useRef(null);
     const emailInput = useRef(null);
-    const [emailStatus, setEmailStatus] = useState(false);
     const fastaInput = useRef(null);
     const [selectedFoldingProgram, setSelectedFoldingProgram] = useState("colabfold");
     const [selectedPhylogeneticProgram, setSelectedPhylogeneticProgram] = useState("FastTree");
@@ -50,22 +49,13 @@ const Home = () => {
         setFastaStatus("valid");
     };
 
-    const validateEmail = (email) => {
-        if (email === "") {
-            setEmailStatus(false);
-            return;
-        } else {
-            setEmailStatus(true);
-        }
-    };
-
     useEffect(() => {
-        if (fastaStatus === "valid" && emailStatus === true) {
+        if (fastaStatus === "valid") {
             setCanSubmit(true);
         } else {
             setCanSubmit(false);
         }
-    }, [fastaStatus, emailStatus]);
+    }, [fastaStatus]);
 
 
     const submitJob = () => {
@@ -90,10 +80,6 @@ const Home = () => {
         }
 
         // Send JSON to backend
-        fetch('/api/hello', {
-            method: 'GET',
-        }).then(response => console.log("Success: ", response)).catch((error) => console.log(error));
-
         fetch('/api/submit', {
             method: 'POST',
             headers: {
@@ -101,31 +87,40 @@ const Home = () => {
             },
             body: JSON.stringify(json),
         })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Success:', data);
-                var currentdate = new Date();
-                var datetime = "" + currentdate.getDate() + "/"
-                    + (currentdate.getMonth() + 1) + "/"
-                    + currentdate.getFullYear() + " @ "
-                    + currentdate.getHours() + ":"
-                    + currentdate.getMinutes() + ":"
-                    + currentdate.getSeconds();
+            .then(response => {
+                if (response.status !== 200) {
+                    return response.json().then(data => {   
+                        console.log('Backend error:', data.error);
+                        navigate("/job-queued", {
+                            state: {
+                                error: data.error
+                            }
+                        });
+                    });
+                } else {
+                    var currentdate = new Date();
+                    var datetime = "" + currentdate.getDate() + "/"
+                        + (currentdate.getMonth() + 1) + "/"
+                        + currentdate.getFullYear() + " @ "
+                        + currentdate.getHours() + ":"
+                        + currentdate.getMinutes() + ":"
+                        + currentdate.getSeconds();
 
-                // Redirect to the results page
-                navigate("/job-queued", {
-                    state: {
-                        jobId: jobName,
-                        email: emailInput.current.value,
-                        time: datetime
-                    }
-                });
+                    // Redirect to the results page
+                    navigate("/job-queued", {
+                        state: {
+                            jobId: jobName,
+                            email: emailInput.current.value,
+                            time: datetime
+                        }
+                    });
+                }
             })
             .catch((error) => {
                 console.error('Error:', error);
                 navigate("/job-queued", {
                     state: {
-                        error: "An error occurred while submitting the job. Please try again later."
+                        error: "An error occurred while attempting to submit the job. Please try again later."
                     }
                 });
                 return;
@@ -362,10 +357,10 @@ const Home = () => {
                                 </div>
                             </div>
                             <div className="bp3-form-group bp3-inline">
-                                <label className="bp3-label">Your e-mail address </label>
+                                <label className="bp3-label">Your e-mail address <span className="bp3-text-muted">(optional)</span></label>
                                 <div className="bp3-form-content">
                                     <div className="bp3-input-group">
-                                        <input type="text" id="email-input" ref={emailInput} placeholder="your@email.com" className="bp3-input" onChange={() => validateEmail(emailInput.current.value)} />
+                                        <input type="text" id="email-input" ref={emailInput} placeholder="your@email.com" className="bp3-input" />
                                     </div>
                                 </div>
                             </div>
