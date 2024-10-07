@@ -25,4 +25,4 @@ services:
     ports:
       - "80:80"
   ezsea-tool:
-    image: reactvis-ezsea-tool
+    image: ezsea-tool
