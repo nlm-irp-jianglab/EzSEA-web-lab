@@ -1,5 +1,6 @@
 import { React, useState, useRef, useEffect } from "react";
 import Navbar from "../components/navbar.js";
+import Footer from "../components/footer.js";
 import { useNavigate } from "react-router-dom";
 import "../components/submit.css";
 
@@ -204,10 +205,12 @@ const Home = () => {
             <Navbar />
             <div style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", flex: "1 0 auto" }}>
                 <div style={{ textAlign: "center", margin: "2em auto 0px", width: "40%", padding: "0.5em", flex: "1 1 0" }}>
-                    <img src={process.env.PUBLIC_URL + "/temp_logo.png"} alt="Logo" style={{ width: "60%", marginBottom: "3em" }}></img>
+                    <img src={process.env.PUBLIC_URL + "/ezsea_logo.svg"} alt="Logo" style={{ width: "35%", marginBottom: "1em" }}></img>
+                    <h1 style={{ fontSize: "2em", marginBottom: "0.5em" }}>EzSEA</h1>
+                    <p>Enzyme Sequence Evolution Analysis is a tool that combines structure, phylogenetics, and ancestral state reconstruction to delineate an enzyme from its closest relatives and identify evolutionarily important residues.</p>
                     <div>
                         <div> {/* This div is for text input and examples */}
-                            <textarea placeholder="Sequence in FASTA format" className="data-input" ref={fastaInput} onChange={validateInput} style={{ height: "150px", width: "100%", resize: "vertical" }}></textarea>
+                            <textarea placeholder="Sequence in FASTA format" className="data-input" ref={fastaInput} onChange={validateInput} style={{ height: "150px", width: "100%", resize: "vertical", minHeight:"100px" }}></textarea>
                             <div>
                                 <div style={{ display: "flex", marginTop: "0.3em", justifyContent: "space-between" }}>
                                     {statusMsg()}
@@ -248,28 +251,28 @@ const Home = () => {
                                             <div>
                                                 <p>Protein Folding Program:</p>
                                                 <span>
-                                                    <button
+                                                    <button className="bp3-button bp3-minimal"
                                                         onClick={() => setSelectedFoldingProgram('colabfold')}
                                                         style={{
-                                                            backgroundColor: selectedFoldingProgram === 'colabfold' ? '#007bff' : 'transparent',
+                                                            backgroundColor: selectedFoldingProgram === 'colabfold' ? '#007bff' : '#eee',
                                                             color: selectedFoldingProgram === 'colabfold' ? 'white' : 'black'
                                                         }}
                                                     >
                                                         colabfold
                                                     </button>
-                                                    <button
+                                                    <button className="bp3-button bp3-minimal"
                                                         onClick={() => setSelectedFoldingProgram('pdb')}
                                                         style={{
-                                                            backgroundColor: selectedFoldingProgram === 'pdb' ? '#007bff' : 'transparent',
+                                                            backgroundColor: selectedFoldingProgram === 'pdb' ? '#007bff' : '#eee',
                                                             color: selectedFoldingProgram === 'pdb' ? 'white' : 'black'
                                                         }}
                                                     >
                                                         pdb
                                                     </button>
-                                                    <button
+                                                    <button className="bp3-button bp3-minimal"
                                                         onClick={() => setSelectedFoldingProgram('none')}
                                                         style={{
-                                                            backgroundColor: selectedFoldingProgram === 'none' ? '#007bff' : 'transparent',
+                                                            backgroundColor: selectedFoldingProgram === 'none' ? '#007bff' : '#eee',
                                                             color: selectedFoldingProgram === 'none' ? 'white' : 'black'
                                                         }}
                                                     >
@@ -279,28 +282,28 @@ const Home = () => {
 
                                                 <p>Phylogenetic Tree Program:</p>
                                                 <span>
-                                                    <button
+                                                    <button className="bp3-button bp3-minimal"
                                                         onClick={() => setSelectedPhylogeneticProgram('FastTree')}
                                                         style={{
-                                                            backgroundColor: selectedPhylogeneticProgram === 'FastTree' ? '#007bff' : 'transparent',
+                                                            backgroundColor: selectedPhylogeneticProgram === 'FastTree' ? '#007bff' : '#eee',
                                                             color: selectedPhylogeneticProgram === 'FastTree' ? 'white' : 'black'
                                                         }}
                                                     >
                                                         FastTree
                                                     </button>
-                                                    <button
+                                                    <button className="bp3-button bp3-minimal"
                                                         onClick={() => setSelectedPhylogeneticProgram('iqtree')}
                                                         style={{
-                                                            backgroundColor: selectedPhylogeneticProgram === 'iqtree' ? '#007bff' : 'transparent',
+                                                            backgroundColor: selectedPhylogeneticProgram === 'iqtree' ? '#007bff' : '#eee',
                                                             color: selectedPhylogeneticProgram === 'iqtree' ? 'white' : 'black'
                                                         }}
                                                     >
                                                         iqtree
                                                     </button>
-                                                    <button
+                                                    <button className="bp3-button bp3-minimal"
                                                         onClick={() => setSelectedPhylogeneticProgram('raxml')}
                                                         style={{
-                                                            backgroundColor: selectedPhylogeneticProgram === 'raxml' ? '#007bff' : 'transparent',
+                                                            backgroundColor: selectedPhylogeneticProgram === 'raxml' ? '#007bff' : '#eee',
                                                             color: selectedPhylogeneticProgram === 'raxml' ? 'white' : 'black'
                                                         }}
                                                     >
@@ -310,28 +313,28 @@ const Home = () => {
 
                                                 <p>Ancestral State Inference Program:</p>
                                                 <span>
-                                                    <button
+                                                    <button className="bp3-button bp3-minimal"
                                                         onClick={() => setSelectedAncestralProgram('GRASP')}
                                                         style={{
-                                                            backgroundColor: selectedAncestralProgram === 'GRASP' ? '#007bff' : 'transparent',
+                                                            backgroundColor: selectedAncestralProgram === 'GRASP' ? '#007bff' : '#eee',
                                                             color: selectedAncestralProgram === 'GRASP' ? 'white' : 'black'
                                                         }}
                                                     >
                                                         GRASP
                                                     </button>
-                                                    <button
+                                                    <button className="bp3-button bp3-minimal"
                                                         onClick={() => setSelectedAncestralProgram('iqtree')}
                                                         style={{
-                                                            backgroundColor: selectedAncestralProgram === 'iqtree' ? '#007bff' : 'transparent',
+                                                            backgroundColor: selectedAncestralProgram === 'iqtree' ? '#007bff' : '#eee',
                                                             color: selectedAncestralProgram === 'iqtree' ? 'white' : 'black'
                                                         }}
                                                     >
                                                         iqtree
                                                     </button>
-                                                    <button
+                                                    <button className="bp3-button bp3-minimal"
                                                         onClick={() => setSelectedAncestralProgram('raxml-ng')}
                                                         style={{
-                                                            backgroundColor: selectedAncestralProgram === 'raxml-ng' ? '#007bff' : 'transparent',
+                                                            backgroundColor: selectedAncestralProgram === 'raxml-ng' ? '#007bff' : '#eee',
                                                             color: selectedAncestralProgram === 'raxml-ng' ? 'white' : 'black'
                                                         }}
                                                     >
@@ -377,6 +380,7 @@ const Home = () => {
                     </div>
                 </div>
             </div>
+            <Footer />
         </div>
     );
 };

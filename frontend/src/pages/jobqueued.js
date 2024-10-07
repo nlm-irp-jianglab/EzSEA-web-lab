@@ -22,13 +22,18 @@ const JobQueued = () => {
 
     const rootMsg = () => {
         if (error) {
-            return (<div className="dialog-container"><p>{error}</p></div>);
+            return (
+                <div className="dialog-container">
+                    <p>{error}</p>
+                    <button type="button" class="jobqueue-button" onClick={() => toSubmit()}><span class="bp3-button-text">Submit another job</span></button>
+                </div>
+            );
         } else {
             return (
                 <div className="dialog-container">
                     <p>Job ID: <span style={{ fontWeight: "bold" }}>{location.state.jobId}</span> queued on: <span style={{ fontWeight: "bold" }}>{location.state.time}</span> </p>
                     <Loading />
-                    <p>Completion notification will be sent via Email to: <span style={{ fontWeight: "bold" }}>{location.state.email}</span></p>
+                    {location.state.email && <p>Completion notification will be sent via Email to: <span style={{ fontWeight: "bold" }}>{location.state.email}</span></p>}
                     <div className="dialog-buttons">
                         <button type="button" class="jobqueue-button" onClick={() => toSubmit()}><span class="bp3-button-text">Submit another job</span></button>
                         <button type="button" class="results-button" onClick={() => toResults()}><span class="bp3-button-text">Go to results page</span></button>

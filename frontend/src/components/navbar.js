@@ -6,7 +6,7 @@ const Navbar = (options) => {
   const [isMobile, setIsMobile] = useState(false);
 
   return (
-    <div>
+    <div style={{paddingBottom:"40px"}}>
       <nav className="navbar">
         {options.pageId ? (
           <div className="nav-links">

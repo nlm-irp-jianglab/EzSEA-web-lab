@@ -26,16 +26,11 @@ root.render(
                     <Route
                         exact
                         path="/"
-                        element={<Home />}
+                        element={<Submit />}
                     />
                     <Route
                         exact
                         path="/reactvis"
-                        element={<Home />}
-                    />
-                    <Route
-                        exact
-                        path="/submit"
                         element={<Submit />}
                     />
                     <Route
@@ -61,6 +56,10 @@ root.render(
                     <Route
                         exact path="/logo_playground"
                         element={<Logo_Playground />}
+                    />
+                    <Route
+                        path="*"
+                        element={<NotFoundPage />}
                     />
                 </Routes>
             </Router>

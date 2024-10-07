@@ -17,8 +17,8 @@ When deploying to gh-pages, add
   "homepage": "https://littlelegz.github.io/reactvis", 
 to line 3-4 of package.json
 
-## Docker Setup
+## Live Dev Setup
 `
-docker build -t zhaoj16/reactvis-docker:latest .
-docker run -p 3000:443 zhaoj16/rectvis-docker:latest
+npm i
+npm start
 `
