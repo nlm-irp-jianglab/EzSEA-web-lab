@@ -18,7 +18,7 @@ app.post("/submit", (req, res) => {
     exec(`docker run --gpus all \
           --mount type=bind,source=/home/jiangak_ncbi_nlm_nih_gov/EzSEA,target=/data \
           --mount type=bind,source=/home/jiangak_ncbi_nlm_nih_gov/database/,target=/database \
-          ezsea-tool "-i ${data.sequence} --output "/home/zhaoj16_ncbi_nlm_nih_gov/outputs" -d /database/GTDB -n 1000 -f ${data.folding_program} -treeprogram ${data.tree_program} -asrprogram ${data.asr_program}"
+          ezsea -i "${data.sequence}" --output "/home/zhaoj16_ncbi_nlm_nih_gov/outputs" -d "/database/GTDB" -n 1000 -f "${data.folding_program}" --treeprogram "${data.tree_program}" --asrprogram "${data.asr_program}"
         `,    
     (err, stdout, stderr) => {
             if (err) {
@@ -28,11 +28,13 @@ app.post("/submit", (req, res) => {
             } else {
                 res.status(200).json({ body: "Job submitted successfully" });
             }
-            console.log(stdout);
-        });
+    });
+    setTimeout(function () {
+	res.status(200).json({ body: "Job submitted successfully" });
+    }, 3000);
 });
 
 // Server listening on PORT 5000
 app.listen(5000, () => {
-    console.log('Server is listening on port 5000');
+    console.log('Backend is listening on port 5000');
 });
