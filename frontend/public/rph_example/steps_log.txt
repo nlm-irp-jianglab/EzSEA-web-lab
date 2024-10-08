@@ -1,0 +1,9 @@
+diamond blastp -d /database/GTDB.dmnd -q /data/outputs/input.fasta -o /data/outputs/Sequence/diamond_output.m8 -k 1000 --quiet --threads 8
+bash -c seqtk subseq /database/GTDB.faa <(cut -f 2 /data/outputs/Sequence/diamond_output.m8) > /data/outputs/Sequence/seq.faa
+cd-hit -i /data/outputs/Sequence/seq.faa -o /data/outputs/Sequence/seq_no_dups.faa -c 1.0 -n 5
+muscle -super5 /data/outputs/Sequence/seq_no_dups.faa -threads 8 -output /data/outputs/Alignment/seq.afa
+goalign clean sites --char=GAP -c 0.97 -i /data/outputs/Alignment/seq.afa -o /data/outputs/Alignment/seq_trimmed.afa
+FastTree -lg -gamma -out /data/outputs/Tree/seq.tree /data/outputs/Alignment/seq_trimmed.afa
+iqtree2 -s /data/outputs/Alignment/seq_trimmed.afa -te /data/outputs/Tree/seq.tree -m LG -pre /data/outputs/Ancestral/seq -asr
+plmc
+clade_finder
