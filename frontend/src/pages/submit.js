@@ -64,7 +64,7 @@ const Home = () => {
         setSubmitStatus(true); // Prevent double submission
         var jobName = jobInput.current.value;
         const domain = window.location.hostname;
-        console.log("Current domain: ", domain);
+
         if (!jobName) {
             // Generate a random job name if none is provided
             jobName = "EzSEA_" + Math.random().toString(36).substring(2, 9) + Date.now().toString(36);
@@ -92,6 +92,7 @@ const Home = () => {
         })
             .then(response => {
                 if (response.status !== 200) {
+                    
                     return response.json().then(data => {   
                         console.log('Backend error:', data.error);
                         navigate("/job-queued", {
@@ -101,6 +102,9 @@ const Home = () => {
                         });
                     });
                 } else {
+                    response.json().then(data => {
+                      console.log(data);
+                    });
                     var currentdate = new Date();
                     var datetime = "" + currentdate.getDate() + "/"
                         + (currentdate.getMonth() + 1) + "/"

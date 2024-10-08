@@ -14,22 +14,24 @@ app.use(express.static(path.join(__dirname, 'build')));
 app.post("/submit", (req, res) => {
     // Retrieve JSON from the POST body 
     data = req.body;
+    var error = null;
     console.log(data);
     exec(`docker run --gpus all \
           --mount type=bind,source=/home/zhaoj16_ncbi_nlm_nih_gov/EzSEA/,target=/data \
           --mount type=bind,source=/home/jiangak_ncbi_nlm_nih_gov/database/,target=/database \
-          ezsea -i "${data.sequence}" --output "/data/outputs" -d "/database/GTDB" -n 1000 -f "${data.folding_program}" --treeprogram "${data.tree_program}" --asrprogram "${data.asr_program}"
+          ezsea -i "${data.sequence}" "/data/outputs" -d "/database/GTDB" -n 1000 -f "${data.folding_program}" --treeprogram "${data.tree_program}" --asrprogram "${data.asr_program}"
         `,    
     (err, stdout, stderr) => {
             if (err) {
+		error = "There was a problem initializing your job, please try again later";
                 console.error(err);
             } else {
                 console.log("Job COMPLETED:", stdout);
             }
     });
     setTimeout(function () {
-	res.status(200).json({ body: "Job submitted successfully" });
-    }, 3000);
+	res.status(200).json({ body: "Job submitted successfully", error: error });
+    }, 7000);
 });
 
 app.get("/results", (req, res) => {
