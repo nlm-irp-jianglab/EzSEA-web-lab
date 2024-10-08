@@ -7,6 +7,7 @@ import "../components/submit.css";
 const Home = () => {
     const [isSettingsVisible, setIsSettingsVisible] = useState(false);
     const [canSubmit, setCanSubmit] = useState(false);
+    const [submitStatus, setSubmitStatus] = useState(false); // Once button is clicked, submit status set to True, ensure no double submission
     const [fastaStatus, setFastaStatus] = useState("");
     const jobInput = useRef(null);
     const emailInput = useRef(null);
@@ -60,6 +61,7 @@ const Home = () => {
 
 
     const submitJob = () => {
+        setSubmitStatus(true); // Prevent double submission
         var jobName = jobInput.current.value;
         const domain = window.location.hostname;
         console.log("Current domain: ", domain);
@@ -126,9 +128,6 @@ const Home = () => {
                 });
                 return;
             });
-
-
-
     }
 
     const populateExample = () => {
@@ -350,7 +349,7 @@ const Home = () => {
                             </div>
                         </div>
 
-                        <div style={{ width: "100%", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", marginTop: "2em", marginBottom: "2em" }}>
+                        <div style={{ width: "76%", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "flex-end", marginTop: "2em", marginBottom: "2em" }}>
                             <div className="bp3-form-group bp3-inline">
                                 <label className="bp3-label">Job name <span className="bp3-text-muted">(optional)</span></label>
                                 <div className="bp3-form-content">
@@ -368,8 +367,8 @@ const Home = () => {
                                 </div>
                             </div>
                         </div>
-                        <button type="button" disabled={!canSubmit} onClick={submitJob} className="bp3-button bp3-intent-primary">
-                            <span className="bp3-button-text" >Submit EzSEA job</span>
+                        <button type="button" disabled={!canSubmit || submitStatus} onClick={submitJob} className="bp3-button bp3-intent-primary">
+                            <span className="bp3-button-text" >{submitStatus ? "Submitting..." : "Submit EzSEA job"}</span>
                             <span icon="circle-arrow-right" className="bp3-icon bp3-icon-circle-arrow-right">
                                 <svg data-icon="circle-arrow-right" width="16" height="16" viewBox="0 0 16 16">
                                     <desc>circle-arrow-right</desc>

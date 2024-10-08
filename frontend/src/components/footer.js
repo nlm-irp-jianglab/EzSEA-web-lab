@@ -15,7 +15,8 @@ const Footer = () => {
                 </a>
             </div>
             <div style={styles.copyright}>
-                <p>&copy; {new Date().getFullYear()} Your Company. All rights reserved.</p>
+                <span style={{ float: "left", paddingLeft: "10px"}}>Contact us: support@ezsea.com</span>
+                <img src={process.env.PUBLIC_URL + "/nihlogo.png"} alt="NIHLogo" style={{ width: "5%", paddingRight: "10px" }}></img>
             </div>
         </footer>
     );
@@ -23,13 +24,15 @@ const Footer = () => {
 
 const styles = {
     footer: {
-        marginTop: "30px",
+        marginTop: "40px",
         backgroundColor: "#d4d0cf",
         color: "#fff",
         textAlign: "center",
         position: "relative",
         width: "100%",
         paddingBottom: "10px",
+        bottom: "0px",
+        left: "0px"
     },
     linksContainer: {
         paddingTop: "10px",
@@ -41,6 +44,7 @@ const styles = {
         margin: "0 15px",
     },
     copyright: {
+        textAlign: "right",
         fontSize: "14px",
     },
 };

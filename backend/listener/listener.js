@@ -32,6 +32,10 @@ app.post("/submit", (req, res) => {
     }, 3000);
 });
 
+app.get("/results", (req, res) => {
+    res.status(200).json(data);
+});
+
 // Server listening on PORT 5000
 app.listen(5000, () => {
     console.log('Backend is listening on port 5000');
