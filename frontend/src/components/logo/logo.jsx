@@ -41,8 +41,7 @@ export const RawLogo = ({ values, glyphWidth, stackHeight, alphabet, onSymbolMou
     }
 
     return values.map((lv, i) => {
-        // Check if the 1-based index (i + 1) is in the importantResidues list
-        if (importantResidues.includes(i + 1)) {
+        if (importantResidues.includes(i)) {
             console.log("generating important residue");
             return gposition(lv, 'translate(' + glyphWidth * i + ',0)', i, alphabet, { onSymbolMouseOver, onSymbolMouseOut, onSymbolClick }, true);
         } else {

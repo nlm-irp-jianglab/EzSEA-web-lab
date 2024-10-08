@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 import * as pt from 'phylotree';
 import { isLeafNode } from 'phylotree/src/nodes';
 import { addCustomMenu } from 'phylotree/src/render/menus';
+import { selectAllDescendants } from 'phylotree/src/nodes';
 import Navbar from "../components/navbar";
 import "../components/phylotree.css";
 import "../components/tol.css";
@@ -132,35 +133,47 @@ const Tol = () => {
             }
 
             function style_edges(element, edge_data) {
-                element.on('click', async (event, branch) => {
-                    if (branch.selected) {
-                        branch.selected = false;
-                        event.target.classList.remove('branch-selected');
-                        clearRightPanel();
-                    } else {
-                        branch.selected = true;
-                        event.target.classList.add('branch-selected');
-
-                        var source = branch.source.data.name;
-                        var target = branch.target.data.name;
-                        console.log("Selected branch:", source, target);
-                        if (!faData[source] || !faData[target]) { // TODO Is this necessary?
-                            console.log("Not Found", faData[source], faData[target]);
+                try {
+                    element.on('click', async (event, branch) => {
+                        if (branch.selected) {
+                            branch.selected = false;
+                            event.target.classList.remove('branch-selected');
                             clearRightPanel();
-                            return;
-                        } else { // Send node data to generate logos and open right panel
-                            var data = {
-                                [source]: `>${source}\n${faData[source]}`, // LogoJS parser expects header before sequence
-                                [target]: `>${source}\n${faData[target]}`,
+                        } else {
+                            branch.selected = true;
+                            event.target.classList.add('branch-selected');
+    
+                            var source = branch.source.data.name;
+                            var target = branch.target.data.name;
+                            console.log("Selected branch:", source, target);
+                            if (!faData[source] || !faData[target]) { // TODO Is this necessary?
+                                console.log("Not Found", faData[source], faData[target]);
+                                clearRightPanel();
+                                return;
+                            } else { // Send node data to generate logos and o
+                                var descendants = selectAllDescendants(branch.target, true, true);
+                                var source_fa = "";
+                                for (var node of descendants) {
+                                    source_fa += `>${node.data.name}\n${faData[node.data.name]}\n`;
+                                }
+                                console.log(source_fa);
+                                var data = {
+                                    [source]: source_fa, // LogoJS parser expects header before sequence
+                                    [target]: `>${source}\n${faData[target]}`,
+                                }
+                                treeRef.current.style.width = '50%'; // Need to have all these states as a toggle
+                                setColorFile(`${source}_${target}.color.txt`);
+                                setLogoContent(data);
+                                setPipVisible(true);
                             }
-                            treeRef.current.style.width = '50%'; // Need to have all these states as a toggle
-                            setColorFile(`${source}_${target}.color.txt`);
-                            setLogoContent(data);
-                            setPipVisible(true);
                         }
-                    }
-
-                });
+    
+                    });
+                } catch (error) {
+                    // Select all descendent branches triggers this error
+                    // console.error("Error styling edges:", error);
+                }
+                
             }
 
             tree.render({
