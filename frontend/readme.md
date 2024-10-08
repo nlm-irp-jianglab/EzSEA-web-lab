@@ -8,14 +8,12 @@ Polish submit page
   - Add transitions
   - Add style
 
-Re-implement collapse clade function
+!Port TOL to results page
+
+!Status page
 
 !Add summarize feature which exports outputs
   - Output data and svg of figures
-
-When deploying to gh-pages, add
-  "homepage": "https://littlelegz.github.io/reactvis", 
-to line 3-4 of package.json
 
 ## Live Dev Setup
 `
