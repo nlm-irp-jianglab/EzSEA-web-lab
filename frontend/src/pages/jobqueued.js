@@ -13,7 +13,7 @@ const JobQueued = () => {
     console.log(location);
 
     const toSubmit = () => {
-        navigate("/submit");
+        navigate("/");
     };
 
     const toResults = () => {
@@ -25,7 +25,9 @@ const JobQueued = () => {
             return (
                 <div className="dialog-container">
                     <p>{error}</p>
-                    <button type="button" class="jobqueue-button" onClick={() => toSubmit()}><span class="bp3-button-text">Submit another job</span></button>
+                    <div className="dialog-buttons">
+                        <button type="button" class="jobqueue-button" onClick={() => toSubmit()}><span class="bp3-button-text">Submit another job</span></button>
+                    </div>
                 </div>
             );
         } else {
