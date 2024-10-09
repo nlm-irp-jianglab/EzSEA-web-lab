@@ -20,7 +20,8 @@ app.post("/submit", (req, res) => {
           --mount type=bind,source=/home/zhaoj16_ncbi_nlm_nih_gov/EzSEA/,target=/data \
           --mount type=bind,source=/home/jiangak_ncbi_nlm_nih_gov/database/,target=/database \
           ezsea -i "${data.sequence}" --output "/data/${data.job_name}" -d "/database/GTDB" -n 1000 -f "${data.folding_program}" --treeprogram "${data.tree_program}" --asrprogram "${data.asr_program}"
-        `,    
+          > /data/${data.job_name}/log.txt 2>&1     
+          `,    
     (err, stdout, stderr) => {
             if (err) {
 		error = "There was a problem initializing your job, please try again later";
@@ -34,7 +35,7 @@ app.post("/submit", (req, res) => {
     }, 7000);
 });
 
-app.get("/results/:id/:", (req, res) => {
+app.get("/results/:id", (req, res) => {
     const id = req.params.id;
     /* 
         Returns data of query:

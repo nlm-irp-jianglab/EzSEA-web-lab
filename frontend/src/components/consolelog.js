@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
-const ConsoleLogs = () => {
+const ConsoleLogs = ({jobid}) => {
+
     const [logs, setLogs] = useState([
         'Starting process...',
         'Loading resources...',
