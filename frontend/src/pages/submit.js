@@ -118,7 +118,8 @@ const Home = () => {
                         state: {
                             jobId: jobName,
                             email: emailInput.current.value,
-                            time: datetime
+                            time: datetime,
+                            error: data.error || null
                         }
                     });
                 }
