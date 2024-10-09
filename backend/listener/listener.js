@@ -34,7 +34,7 @@ app.post("/submit", (req, res) => {
     }, 7000);
 });
 
-app.get("/results/:id", (req, res) => {
+app.get("/results/:id/:", (req, res) => {
     const id = req.params.id;
     /* 
         Returns data of query:

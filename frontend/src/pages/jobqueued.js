@@ -10,7 +10,7 @@ const JobQueued = () => {
     const location = useLocation();
     const error = location.state.error;
 
-    console.log(location);
+    console.log("Job queue location: ", location);
 
     const toSubmit = () => {
         navigate("/");
