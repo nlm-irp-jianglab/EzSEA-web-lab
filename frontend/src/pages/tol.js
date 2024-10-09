@@ -13,22 +13,35 @@ import { readFastaToDict, parseNodeData } from '../components/utils';
 const logoFiles = {};
 
 const Tol = () => {
+    // State to store the tree data and node data
     const [faData, setFaData] = useState(null);
-    const treeRef = useRef(null);
-    const pvdiv = useRef(null);
-    const [isRadial, setIsRadial] = useState(true);
     const [newickData, setNewickData] = useState(null);
-    const [logoContent, setLogoContent] = useState(null);
-    const [pipVisible, setPipVisible] = useState(false);
-    const [selectedResidue, setSelectedResidue] = useState(null);
-    const [selectedNodes, setSelectedNodes] = useState([]);
-    const [hoveredResidue, setHoveredResidue] = useState(null);
-    const [colorFile, setColorFile] = useState(null);
-    const [isLeftCollapsed, setIsLeftCollapsed] = useState(false);
-    const [isRightCollapsed, setIsRightCollapsed] = useState(false);
     const [nodeData, setnodeData] = useState(null);
 
+    // State to store the logo content (formatted for logoJS) and color file
+    const [logoContent, setLogoContent] = useState(null);
+    const [colorFile, setColorFile] = useState(null);
+    const [selectedNodes, setSelectedNodes] = useState([]); // Important, keeps track of user selected nodes for comparison
 
+    // Toggle between radial and linear layout
+    const [isRadial, setIsRadial] = useState(true);
+
+    // For live updates linking sequence logo and structure viewer
+    const [selectedResidue, setSelectedResidue] = useState(null);
+    const [hoveredResidue, setHoveredResidue] = useState(null); // Currently not in use
+
+    // States for rendering control
+    const [pipVisible, setPipVisible] = useState(false);
+    const [isLeftCollapsed, setIsLeftCollapsed] = useState(false);
+    const [isRightCollapsed, setIsRightCollapsed] = useState(false);
+
+    // References for rendering
+    const treeRef = useRef(null);
+    const pvdiv = useRef(null);
+
+
+    // Fetch the tree data and node data on component mount, store data into states
+    // TODO: Fetch dynamically from the backend
     useEffect(() => {
         const fetchDefaultTree = async () => {
             try {
@@ -53,6 +66,7 @@ const Tol = () => {
             });
     }, []);
 
+    // Deals with tree rendering
     useEffect(() => {
         if (treeRef.current && newickData) {
             treeRef.current.innerHTML = '';
@@ -112,6 +126,7 @@ const Tol = () => {
                         } else {
                             selectedNodes.push(node);
                         }
+                        console.log(selectedNodes);
                         setSelectedNodes(selectedNodes);
                         // append to logocontent
                         const data = {};
@@ -140,8 +155,12 @@ const Tol = () => {
                             event.target.classList.remove('branch-selected');
                             clearRightPanel();
                         } else {
+
                             branch.selected = true;
                             event.target.classList.add('branch-selected');
+                            selectedNodes.length = 0;
+                            selectedNodes.push(branch.target);
+                            selectedNodes.push(branch.source);
     
                             var source = branch.source.data.name;
                             var target = branch.target.data.name;
@@ -151,12 +170,11 @@ const Tol = () => {
                                 clearRightPanel();
                                 return;
                             } else { // Send node data to generate logos and o
-                                var descendants = selectAllDescendants(branch.target, true, true);
+                                var descendants = selectAllDescendants(branch.target, false, true);
                                 var source_fa = "";
                                 for (var node of descendants) {
                                     source_fa += `>${node.data.name}\n${faData[node.data.name]}\n`;
                                 }
-                                console.log(source_fa);
                                 var data = {
                                     [source]: source_fa, // LogoJS parser expects header before sequence
                                     [target]: `>${source}\n${faData[target]}`,
@@ -203,9 +221,6 @@ const Tol = () => {
             // console.log(tree.getNodes());
 
             treeRef.current.appendChild(tree.display.show());
-
-            // console.log(selectAllDescendants(tree.getNodes(), true, false))
-
         }
     }, [newickData, isLeftCollapsed, isRadial, faData]);
 
@@ -235,15 +250,12 @@ const Tol = () => {
         setHoveredResidue(index + 1);
     };
 
-    const handlePrint = () => {
-        window.print();
-    };
-
     const toggleLeftCollapse = () => {
         setIsLeftCollapsed(!isLeftCollapsed);
     };
 
     const toggleRightCollapse = () => {
+        console.log("Toggling right collapse");
         setIsRightCollapsed(!isRightCollapsed);
         isRightCollapsed ? setPipVisible(true) : setPipVisible(false);
     };
@@ -356,7 +368,7 @@ const Tol = () => {
                     ></div>
                 )}
 
-                {pipVisible && (
+                {selectedNodes.length > 0 && (
                     <div className="center-console">
                         {!isRightCollapsed && (
                             <button className="triangle-button" onClick={toggleLeftCollapse}>
@@ -425,10 +437,6 @@ const Tol = () => {
 
 
             </div>
-            <div style={{ textAlign: 'center', marginTop: '2px' }}>
-                <button onClick={handlePrint}>Print Page to PDF</button>
-            </div>
-            {/* Adding the dropdown for downloads */}
 
         </div>
     );

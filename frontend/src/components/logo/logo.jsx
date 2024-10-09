@@ -42,7 +42,6 @@ export const RawLogo = ({ values, glyphWidth, stackHeight, alphabet, onSymbolMou
 
     return values.map((lv, i) => {
         if (importantResidues.includes(i)) {
-            console.log("generating important residue");
             return gposition(lv, 'translate(' + glyphWidth * i + ',0)', i, alphabet, { onSymbolMouseOver, onSymbolMouseOut, onSymbolClick }, true);
         } else {
             // Regular handling for non-important residues
