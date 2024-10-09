@@ -15,14 +15,15 @@ app.post("/submit", (req, res) => {
     // Retrieve JSON from the POST body 
     data = req.body;
     var error = null;
-    console.log(data);
-    exec(`docker run --gpus all \
+    console.log("Received Job: ", data.job_name);
+    
+    const command = `docker run --gpus all \
           --mount type=bind,source=/home/zhaoj16_ncbi_nlm_nih_gov/EzSEA/,target=/data \
           --mount type=bind,source=/home/jiangak_ncbi_nlm_nih_gov/database/,target=/database \
-          ezsea -i "${data.sequence}" --output "/data/${data.job_name}" -d "/database/GTDB" -n 1000 -f "${data.folding_program}" --treeprogram "${data.tree_program}" --asrprogram "${data.asr_program}"
-          > /data/${data.job_name}/log.txt 2>&1     
-          `,    
-    (err, stdout, stderr) => {
+          --mount type=bind,source=/home/zhaoj16_ncbi_nlm_nih_gov/EzSEA/logs,target=/logs \
+          ezsea ezsea -i "${data.sequence}" --output "/data/${data.job_name}" -d "/database/GTDB" -n 1000 -f "${data.folding_program}" --treeprogram "${data.tree_program}" --asrprogram "${data.asr_program}"
+          `;
+    exec(command, (err, stdout, stderr) => {
             if (err) {
 		error = "There was a problem initializing your job, please try again later";
                 console.error(err);
@@ -50,6 +51,7 @@ app.get("/results/:id", (req, res) => {
 
 app.get("/status/:id", (req, res) => {
     const id = req.params.id;
+    fetch(`/outputs/EzSEA_${id}/log.txt`).then(response => response.text()).then(data => console.log(data)).catch(error => console.error(error));
     /* 
         Returns status of query:
         - Running

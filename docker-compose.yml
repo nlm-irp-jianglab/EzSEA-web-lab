@@ -9,8 +9,7 @@ services:
       - "8002:5000"
     privileged: true
     volumes:
-      - /home/jiangak_ncbi_nlm_nih_gov/EzSEA:/data
-      - /home/jiangak_ncbi_nlm_nih_gov/database/:/database
+      - /home/zhaoj16_ncbi_nlm_nih_gov/EzSEA/:/outputs
       - /var/run/docker.sock:/var/run/docker.sock # Mounting Docker socket, allowing backend to start Docker containers. DANGEROUS security issues
     deploy:
       resources:
