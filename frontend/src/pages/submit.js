@@ -92,8 +92,8 @@ const Home = () => {
         })
             .then(response => {
                 if (response.status !== 200) {
-                    
-                    return response.json().then(data => {   
+
+                    return response.json().then(data => {
                         console.log('Backend error:', data.error);
                         navigate("/job-queued", {
                             state: {
@@ -103,25 +103,25 @@ const Home = () => {
                     });
                 } else {
                     response.json().then(data => {
-                      console.log(data);
-                    });
-                    var currentdate = new Date();
-                    var datetime = "" + currentdate.getDate() + "/"
-                        + (currentdate.getMonth() + 1) + "/"
-                        + currentdate.getFullYear() + " @ "
-                        + currentdate.getHours() + ":"
-                        + currentdate.getMinutes() + ":"
-                        + currentdate.getSeconds();
+                        var currentdate = new Date();
+                        var datetime = "" + currentdate.getDate() + "/"
+                            + (currentdate.getMonth() + 1) + "/"
+                            + currentdate.getFullYear() + " @ "
+                            + currentdate.getHours() + ":"
+                            + currentdate.getMinutes() + ":"
+                            + currentdate.getSeconds();
 
-                    // Redirect to the results page
-                    navigate("/job-queued", {
-                        state: {
-                            jobId: jobName,
-                            email: emailInput.current.value,
-                            time: datetime,
-                            error: data.error || null
-                        }
+                        // Redirect to the results page
+                        navigate("/job-queued", {
+                            state: {
+                                jobId: jobName,
+                                email: emailInput.current.value,
+                                time: datetime,
+                                error: data.error || null
+                            }
+                        });
                     });
+
                 }
             })
             .catch((error) => {
@@ -214,7 +214,7 @@ const Home = () => {
                     <p>Enzyme Sequence Evolution Analysis is a tool that combines structure, phylogenetics, and ancestral state reconstruction to delineate an enzyme from its closest relatives and identify evolutionarily important residues.</p>
                     <div>
                         <div> {/* This div is for text input and examples */}
-                            <textarea placeholder="Sequence in FASTA format" className="data-input" ref={fastaInput} onChange={validateInput} style={{ height: "150px", width: "100%", resize: "vertical", minHeight:"100px" }}></textarea>
+                            <textarea placeholder="Sequence in FASTA format" className="data-input" ref={fastaInput} onChange={validateInput} style={{ height: "150px", width: "100%", resize: "vertical", minHeight: "100px" }}></textarea>
                             <div>
                                 <div style={{ display: "flex", marginTop: "0.3em", justifyContent: "space-between" }}>
                                     {statusMsg()}
