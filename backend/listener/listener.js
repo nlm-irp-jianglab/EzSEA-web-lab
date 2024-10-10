@@ -59,7 +59,13 @@ app.get("/status/:id", (req, res) => {
             return res.status(500).json({ error: "Error reading log file" });
         }
         const logsArray = data.split('\n');
-        return res.status(200).json({ logs: logsArray });
+        var status = "Running";
+        if (logsArray[logsArray.length - 1] === "Done. Goodbye!") {
+            status = "Completed";
+        } else if (logsArray[logsArray.length - 1] === ("Stopping with exit code 1.")) {
+            status = "Error";
+        }
+        return res.status(200).json({ logs: logsArray, status: status });
     });
 
     /* 
