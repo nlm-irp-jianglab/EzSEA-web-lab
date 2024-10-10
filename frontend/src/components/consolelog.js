@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useImperativeHandle } from 'react';
 
-const ConsoleLogs = React.forwardRef(({ jobid }, ref) => {
+const ConsoleLogs = React.forwardRef(({ jobid, updateStatusCallback }, ref) => {
     const [loading, setLoading] = useState(true);
     const [logs, setLogs] = useState([]);
     const [jobStatus, setJobStatus] = useState('Unknown');
@@ -13,12 +13,14 @@ const ConsoleLogs = React.forwardRef(({ jobid }, ref) => {
             const data = await response.json();
             setLogs(data.logs);
             setJobStatus(data.status);
+            updateStatusCallback(data.status);
             setTimeout(() => {
                 setLoading(false);
             }, 1000);
         } catch (error) {
             console.error('Error fetching logs for id:', jobid, '\nError: ', error);
             setJobStatus('Unknown')
+            updateStatusCallback('Unknown');
             setLoading(false);
         }
     };
@@ -26,11 +28,6 @@ const ConsoleLogs = React.forwardRef(({ jobid }, ref) => {
     // Fetch logs on initial render and on interval
     useEffect(() => {
         fetchLogs();
-        // const interval = setInterval(() => {
-        //     fetchLogs();
-        // }, 5000);
-
-        // return () => clearInterval(interval);
     }, [jobid]);
 
     const getStatusStyle = () => {
@@ -55,12 +52,6 @@ const ConsoleLogs = React.forwardRef(({ jobid }, ref) => {
             document.head.removeChild(styleTag);
         };
     }, []);
-
-    useImperativeHandle(ref, () => ({
-        getStatus: () => {
-            return jobStatus;
-        },
-    }));
 
     return (
         <div style={styles.container}>

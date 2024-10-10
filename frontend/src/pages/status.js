@@ -1,15 +1,16 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Navbar from '../components/navbar';
 import { useParams } from 'react-router-dom';
 import ConsoleLogs from '../components/consolelog';
 import { useNavigate } from "react-router-dom";
 
 const Status = () => {
+    const [jobStatus, setJobStatus] = useState('Unknown');
     const logs = useRef(null);
 
     let navigate = useNavigate();
     const { jobId } = useParams();
-    console.log("Fetching id: ", jobId);
+    
     useEffect(() => {
         // Fetch the job status
         fetch(`/api/status/${jobId}`)
@@ -19,32 +20,23 @@ const Status = () => {
             });
     }, []);
 
+    const updateStatus = (status) => {
+        setJobStatus(status);
+    }
+
     const renderButtons = () => {
-        if (logs.current != null && logs.current.getStatus() === "Completed") {
-            return (
-                <div className="dialog-buttons">
-                    <button type="button" className="jobqueue-button" onClick={() => navigate(`/submit`)}><span class="bp3-button-text">Submit another job</span></button>
-                    <button type="button" className="results-button" onClick={() => navigate(`/results/${location.state.jobId}`)}><span class="bp3-button-text">Go to results</span></button>
-                </div>
-            );
-        } else {
-            return (
-                <div className="dialog-buttons">
-                    <button type="button" className="jobqueue-button" onClick={() => navigate(`/submit`)}><span class="bp3-button-text">Submit another job</span></button>
-                </div>
-            );
-        }
+        return (
+            <div className="dialog-buttons">
+                <button type="button" className="jobqueue-button" onClick={() => navigate(`/submit`)}><span class="bp3-button-text">Submit another job</span></button>
+                <button type="button" className="results-button" disabled={!(jobStatus == "Completed")} onClick={() => navigate(`/results/${location.state.jobId}`)}><span class="bp3-button-text">Go to results</span></button>
+            </div>
+        );
     };
-
-    useEffect(() => {
-        console.log("Current status: ", logs.current.getStatus());
-    }, [logs]);
-
 
     return (
         <div>
             <Navbar />
-            <ConsoleLogs jobid={jobId} ref={logs} />
+            <ConsoleLogs jobid={jobId} ref={logs} updateStatusCallback={updateStatus} />
             {renderButtons()}
         </div>
     );
