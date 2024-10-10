@@ -21,7 +21,6 @@ app.post("/submit", (req, res) => {
     const command = `docker run --gpus all \
           --mount type=bind,source=/home/zhaoj16_ncbi_nlm_nih_gov/EzSEA/,target=/data \
           --mount type=bind,source=/home/jiangak_ncbi_nlm_nih_gov/database/,target=/database \
-          --mount type=bind,source=/home/zhaoj16_ncbi_nlm_nih_gov/EzSEA/logs,target=/logs \
           ezsea ezsea -i "${data.sequence}" --output "/data/${data.job_name}" -d "/database/GTDB" -n 1000 -f "${data.folding_program}" --treeprogram "${data.tree_program}" --asrprogram "${data.asr_program}"
           `;
     exec(command, (err, stdout, stderr) => {
@@ -60,9 +59,10 @@ app.get("/status/:id", (req, res) => {
         }
         const logsArray = data.split('\n');
         var status = "Running";
-        if (logsArray[logsArray.length - 1] === "Done. Goodbye!") {
+	console.log("Latest log; ", logsArray[logsArray.length - 2]);
+        if (logsArray[logsArray.length - 2].includes("Done. Goodbye!")) {
             status = "Completed";
-        } else if (logsArray[logsArray.length - 1] === ("Stopping with exit code 1.")) {
+        } else if (logsArray[logsArray.length - 2].includes("Stopping with exit code 1.")) {
             status = "Error";
         }
         return res.status(200).json({ logs: logsArray, status: status });

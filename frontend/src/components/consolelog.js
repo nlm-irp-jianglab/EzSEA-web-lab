@@ -11,7 +11,9 @@ const ConsoleLogs = ({ jobid }) => {
             const response = await fetch(`/api/status/${jobid}`);
             const data = await response.json();
             setLogs(data.logs);
-            setLoading(false);
+	    setTimeout(() => {
+		setLoading(false);
+	    }, 1000);
         } catch (error) {
             console.error('Error fetching logs for id:', jobid, '\nError: ', error);
             setLoading(false);

@@ -16,8 +16,8 @@ const JobQueued = () => {
         navigate("/");
     };
 
-    const toResults = () => {
-        navigate(`/results/${location.state.jobId}`);
+    const toStatus = () => {
+        navigate(`/status/${location.state.jobId}`);
     }
 
     const rootMsg = () => {
@@ -38,7 +38,7 @@ const JobQueued = () => {
                     {location.state.email && <p>Completion notification will be sent via Email to: <span style={{ fontWeight: "bold" }}>{location.state.email}</span></p>}
                     <div className="dialog-buttons">
                         <button type="button" class="jobqueue-button" onClick={() => toSubmit()}><span class="bp3-button-text">Submit another job</span></button>
-                        <button type="button" class="results-button" onClick={() => toResults()}><span class="bp3-button-text">Go to results page</span></button>
+                        <button type="button" class="results-button" onClick={() => toStatus()}><span class="bp3-button-text">Go to status page</span></button>
                     </div>
                 </div>
             );
