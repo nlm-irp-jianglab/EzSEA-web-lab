@@ -84,7 +84,7 @@ const ConsoleLogs = React.forwardRef(({ jobid, updateStatusCallback }, ref) => {
                 </button>
             </div>
             <div style={styles.consoleBody}>
-                {logs.map((log, index) => (
+                {logs && logs.length > 0 && logs.map((log, index) => (
                     <div key={index} style={styles.logEntry}>
                         {log}
                     </div>
