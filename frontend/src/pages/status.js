@@ -17,6 +17,8 @@ const Status = () => {
             .then(response => response.json())
             .then(data => {
                 console.log(data);
+            }).catch(error => {
+                console.error('Error fetching logs for id:', jobId, '\nError: ', error);
             });
     }, []);
 
@@ -27,8 +29,8 @@ const Status = () => {
     const renderButtons = () => {
         return (
             <div className="dialog-buttons">
-                <button type="button" className="jobqueue-button" onClick={() => navigate(`/submit`)}><span class="bp3-button-text">Submit another job</span></button>
-                <button type="button" className="results-button" disabled={!(jobStatus == "Completed")} onClick={() => navigate(`/results/${location.state.jobId}`)}><span class="bp3-button-text">Go to results</span></button>
+                <button type="button" className="jobqueue-button" onClick={() => navigate(`/submit`)}><span className="bp3-button-text">Submit another job</span></button>
+                <button type="button" className="results-button" disabled={!(jobStatus == "Completed")} onClick={() => navigate(`/results/${location.state.jobId}`)}><span className="bp3-button-text">Go to results</span></button>
             </div>
         );
     };

@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useImperativeHandle } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 const ConsoleLogs = React.forwardRef(({ jobid, updateStatusCallback }, ref) => {
     const [loading, setLoading] = useState(true);
     const [logs, setLogs] = useState([]);
     const [jobStatus, setJobStatus] = useState('Unknown');
+    const logsEndRef = useRef(null); // Reference to the end of the logs
 
     // Function to fetch logs
     const fetchLogs = async () => {
@@ -18,12 +19,19 @@ const ConsoleLogs = React.forwardRef(({ jobid, updateStatusCallback }, ref) => {
                 setLoading(false);
             }, 1000);
         } catch (error) {
-            console.error('Error fetching logs for id:', jobid, '\nError: ', error);
+            setLogs(['Error: Failed to fetch logs for job']);
             setJobStatus('Unknown')
             updateStatusCallback('Unknown');
             setLoading(false);
         }
     };
+
+    // Scroll to the bottom when new logs are added
+    useEffect(() => {
+        if (logsEndRef.current) {
+            logsEndRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+    }, [logs]); // This effect runs whenever the logs array changes
 
     // Fetch logs on initial render and on interval
     useEffect(() => {
@@ -81,6 +89,8 @@ const ConsoleLogs = React.forwardRef(({ jobid, updateStatusCallback }, ref) => {
                         {log}
                     </div>
                 ))}
+                {/* The div used to scroll to the bottom */}
+                <div ref={logsEndRef} />
             </div>
         </div>
     );
