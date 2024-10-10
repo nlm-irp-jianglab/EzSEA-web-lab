@@ -17,7 +17,7 @@ app.post("/submit", (req, res) => {
     data = req.body;
     var error = null;
     console.log("Received Job: ", data.job_name);
-    
+
     const command = `docker run --gpus all \
           --mount type=bind,source=/home/zhaoj16_ncbi_nlm_nih_gov/EzSEA/,target=/data \
           --mount type=bind,source=/home/jiangak_ncbi_nlm_nih_gov/database/,target=/database \
@@ -25,15 +25,15 @@ app.post("/submit", (req, res) => {
           ezsea ezsea -i "${data.sequence}" --output "/data/${data.job_name}" -d "/database/GTDB" -n 1000 -f "${data.folding_program}" --treeprogram "${data.tree_program}" --asrprogram "${data.asr_program}"
           `;
     exec(command, (err, stdout, stderr) => {
-            if (err) {
-		error = "There was a problem initializing your job, please try again later";
-                console.error(err);
-            } else {
-                console.log("Job COMPLETED:", stdout);
-            }
+        if (err) {
+            error = "There was a problem initializing your job, please try again later";
+            console.error(err);
+        } else {
+            console.log("Job COMPLETED:", stdout);
+        }
     });
     setTimeout(function () {
-	res.status(200).json({ body: "Job submitted successfully", error: error });
+        res.status(200).json({ body: "Job submitted successfully", error: error });
     }, 7000);
 });
 
@@ -58,7 +58,6 @@ app.get("/status/:id", (req, res) => {
             console.error("Error reading file:", err);
             return res.status(500).json({ error: "Error reading log file" });
         }
-        console.log("File content:", data);
         const logsArray = data.split('\n');
         return res.status(200).json({ logs: logsArray });
     });

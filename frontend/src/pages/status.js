@@ -15,18 +15,9 @@ const Status = () => {
             });
     }, []);
 
-    const loadingOverlay = () => {
-        return (
-            <div>
-                <p>Loading...</p>
-            </div>
-        );
-    };
-
     return (
         <div>
             <Navbar />
-            <p>Job ID: <span style={{fontWeight: "bold"}}>{jobId}</span></p> 
             <ConsoleLogs jobid={jobId} />
         </div>
     );
