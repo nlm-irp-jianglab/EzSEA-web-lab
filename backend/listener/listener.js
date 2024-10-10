@@ -59,7 +59,6 @@ app.get("/status/:id", (req, res) => {
         }
         const logsArray = data.split('\n');
         var status = "Running";
-	console.log("Latest log; ", logsArray[logsArray.length - 2]);
         if (logsArray[logsArray.length - 2].includes("Done. Goodbye!")) {
             status = "Completed";
         } else if (logsArray[logsArray.length - 2].includes("Stopping with exit code 1.")) {

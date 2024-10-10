@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useImperativeHandle } from 'react';
 
-const ConsoleLogs = ({ jobid }) => {
+const ConsoleLogs = React.forwardRef(({ jobid }, ref) => {
     const [loading, setLoading] = useState(true);
     const [logs, setLogs] = useState([]);
+    const [jobStatus, setJobStatus] = useState('Unknown');
 
     // Function to fetch logs
     const fetchLogs = async () => {
@@ -11,11 +12,13 @@ const ConsoleLogs = ({ jobid }) => {
             const response = await fetch(`/api/status/${jobid}`);
             const data = await response.json();
             setLogs(data.logs);
-	    setTimeout(() => {
-		setLoading(false);
-	    }, 1000);
+            setJobStatus(data.status);
+            setTimeout(() => {
+                setLoading(false);
+            }, 1000);
         } catch (error) {
             console.error('Error fetching logs for id:', jobid, '\nError: ', error);
+            setJobStatus('Unknown')
             setLoading(false);
         }
     };
@@ -30,6 +33,19 @@ const ConsoleLogs = ({ jobid }) => {
         // return () => clearInterval(interval);
     }, [jobid]);
 
+    const getStatusStyle = () => {
+        switch (jobStatus) {
+            case 'Running':
+                return styles.runningStatus;
+            case 'Error':
+                return styles.errorStatus;
+            case 'Completed':
+                return styles.completedStatus;
+            default:
+                return styles.unknownStatus;
+        }
+    };
+
     // Append custom scroll style to the document head
     useEffect(() => {
         const styleTag = document.createElement('style');
@@ -40,10 +56,19 @@ const ConsoleLogs = ({ jobid }) => {
         };
     }, []);
 
+    useImperativeHandle(ref, () => ({
+        getStatus: () => {
+            return jobStatus;
+        },
+    }));
+
     return (
         <div style={styles.container}>
             <div style={styles.consoleHeader}>
-                <div>Log of Job: EzSEA_{jobid}</div>
+                <div>
+                    Job: EzSEA_{jobid} |
+                    Status: <span style={getStatusStyle()}>{jobStatus}</span>
+                </div>
                 <button onClick={fetchLogs} style={styles.refreshButton} disabled={loading}>
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -68,7 +93,7 @@ const ConsoleLogs = ({ jobid }) => {
             </div>
         </div>
     );
-};
+});
 
 // Styling for the console-like output
 const styles = {
@@ -116,7 +141,22 @@ const styles = {
     },
     logEntry: {
         marginBottom: '5px',
-    }
+    },
+
+    // Status Text Styling
+    runningStatus: {
+        color: '#00aaff',
+        animation: 'pulse 1.5s infinite',
+    },
+    errorStatus: {
+        color: '#ff4d4f',
+    },
+    completedStatus: {
+        color: '#00ff00',
+    },
+    unknownStatus: {
+        color: '#d4d4d4',
+    },
 };
 
 // Add a glow effect when hovering over the button
@@ -150,6 +190,12 @@ const globalStyles = `
     @keyframes spin {
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
+    }
+    
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.5; }
+      100% { opacity: 1; }
     }
 `;
 
