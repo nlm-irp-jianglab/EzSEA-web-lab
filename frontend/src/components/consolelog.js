@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 
 const ConsoleLogs = React.forwardRef(({ jobid, updateStatusCallback }, ref) => {
     const [loading, setLoading] = useState(true);
-    const [logs, setLogs] = useState([]);
+    const [logs, setLogs] = useState(['']);
     const [jobStatus, setJobStatus] = useState('Unknown');
     const logsEndRef = useRef(null); // Reference to the end of the logs
 
