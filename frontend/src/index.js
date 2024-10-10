@@ -11,6 +11,7 @@ import NotFoundPage from "./pages/notfoundpage";
 import Submit from "./pages/submit";
 import JobQueued from "./pages/jobqueued";
 import Results from "./pages/results";
+import Status from "./pages/status";
 import {
     BrowserRouter as Router,
     Routes,
@@ -40,6 +41,10 @@ root.render(
                     <Route
                         path="/results/:jobId"
                         element={<Results />}
+                    />
+                    <Route
+                        path="/status/:jobId"
+                        element={<Status />}
                     />
                     <Route
                         path="/job-queued"

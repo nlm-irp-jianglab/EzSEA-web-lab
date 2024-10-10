@@ -1,21 +1,29 @@
 import React, { useState, useEffect } from 'react';
 
 const ConsoleLogs = ({jobid}) => {
-
-    const [logs, setLogs] = useState([
-        'Starting process...',
-        'Loading resources...',
-        'Process running successfully.',
-        'Fetching data...',
-        'Data loaded successfully.',
-        'Process completed.'
-    ]);
+    const [loading, setLoading] = useState(true);
+    const [logs, setLogs] = useState([]);
 
     // Simulating log updates over time
     useEffect(() => {
+        const fetchLogs = async () => {
+	    setLoading(true);
+	    try {
+		const response = await fetch(`/api/status/${jobid}`);
+		const data = await response.json();
+		setLogs(data.logs);
+		setLoading(false);
+	    } catch (error) {
+		console.error('Error fetching logs for id:', jobid, '\nError: ', error);
+		setLoading(false);
+	    }
+	};
+
+	fetchLogs();
+	
         const interval = setInterval(() => {
-            setLogs(prevLogs => [...prevLogs, `New log entry at ${new Date().toLocaleTimeString()}`]);
-        }, 3000); 
+	    fetchLogs();
+        }, 5000); 
 
         return () => clearInterval(interval); 
     }, []);
@@ -31,7 +39,7 @@ const ConsoleLogs = ({jobid}) => {
 
     return (
         <div style={styles.container}>
-            <div style={styles.consoleHeader}>Console Output:</div>
+            <div style={styles.consoleHeader}>Log of Job: EzSEA_{jobid}</div>
             <div style={styles.consoleBody}>
                 {logs.map((log, index) => (
                     <div key={index} style={styles.logEntry}>

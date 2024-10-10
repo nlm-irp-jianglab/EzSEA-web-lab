@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
 const { exec } = require('child_process');
+const fs = require('fs');
 
 var app = express();
 
@@ -51,14 +52,23 @@ app.get("/results/:id", (req, res) => {
 
 app.get("/status/:id", (req, res) => {
     const id = req.params.id;
-    fetch(`/outputs/EzSEA_${id}/log.txt`).then(response => response.text()).then(data => console.log(data)).catch(error => console.error(error));
+    const filePath = `/outputs/EzSEA_${id}/EzSEA.log`;
+    fs.readFile(filePath, 'utf8', (err, data) => {
+        if (err) {
+            console.error("Error reading file:", err);
+            return res.status(500).json({ error: "Error reading log file" });
+        }
+        console.log("File content:", data);
+        const logsArray = data.split('\n');
+        return res.status(200).json({ logs: logsArray });
+    });
+
     /* 
         Returns status of query:
         - Running
         - Completed
         - Error
     */
-    res.status(200).json({ status: "Unknown" });
 });
 
 // Server listening on PORT 5000

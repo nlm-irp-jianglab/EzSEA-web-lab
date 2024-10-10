@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Navbar from '../components/navbar';
 import { useParams } from 'react-router-dom';
+import ConsoleLogs from '../components/consolelog';
 
 const Status = () => {
     const { jobId } = useParams();
-
+    console.log("Fetching id: ", jobId);
     useEffect(() => {
         // Fetch the job status
         fetch(`/api/status/${jobId}`)
@@ -26,6 +27,7 @@ const Status = () => {
         <div>
             <Navbar />
             <p>Job ID: <span style={{fontWeight: "bold"}}>{jobId}</span></p> 
+            <ConsoleLogs jobid={jobId} />
         </div>
     );
 };
