@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const { exec } = require('child_process');
 const fs = require('fs');
+const pino = require('pino')
 
 var app = express();
 
@@ -16,7 +17,7 @@ app.post("/submit", (req, res) => {
     // Retrieve JSON from the POST body 
     data = req.body;
     var error = null;
-    console.log("Received Job: ", data.job_name);
+    pino.info("Received Job: ", data.job_name);
 
     const command = `docker run --gpus all \
           --mount type=bind,source=/home/zhaoj16_ncbi_nlm_nih_gov/EzSEA/,target=/data \
@@ -26,9 +27,9 @@ app.post("/submit", (req, res) => {
     exec(command, (err, stdout, stderr) => {
         if (err) {
             error = "There was a problem initializing your job, please try again later";
-            console.error(err);
+            pino.error(err);
         } else {
-            console.log("Job COMPLETED:", stdout);
+            pino.info("Job COMPLETED:", stdout);
         }
     });
     setTimeout(function () {
@@ -54,8 +55,8 @@ app.get("/status/:id", (req, res) => {
     const filePath = `/outputs/EzSEA_${id}/EzSEA.log`;
     fs.readFile(filePath, 'utf8', (err, data) => {
         if (err) {
-            console.error("Error reading file:", err);
-            return res.status(500).json({ error: "Error reading log file" });
+            pino.error("Error reading file:", err);
+            return res.status(500).json({ error: "Error reading log file. Please ensure you job ID is correct." });
         }
         const logsArray = data.split('\n');
         var status = "Running";
@@ -77,5 +78,5 @@ app.get("/status/:id", (req, res) => {
 
 // Server listening on PORT 5000
 app.listen(5000, () => {
-    console.log('Backend is listening on port 5000');
+    pino.info('Backend is listening on port 5000');
 });

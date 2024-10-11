@@ -10,7 +10,7 @@ const Status = () => {
 
     let navigate = useNavigate();
     const { jobId } = useParams();
-    
+
     useEffect(() => {
         // Fetch the job status
         fetch(`/api/status/${jobId}`)
@@ -28,9 +28,11 @@ const Status = () => {
 
     const renderButtons = () => {
         return (
-            <div className="dialog-buttons">
-                <button type="button" className="jobqueue-button" onClick={() => navigate(`/submit`)}><span className="bp3-button-text">Submit another job</span></button>
-                <button type="button" className="results-button" disabled={!(jobStatus == "Completed")} onClick={() => navigate(`/results/${location.state.jobId}`)}><span className="bp3-button-text">Go to results</span></button>
+            <div className="dialog-buttons" style={styles.dialogContainer}>
+                <span>
+                    <button type="button" className="jobqueue-button" onClick={() => navigate(`/submit`)}><span className="bp3-button-text">Submit another job</span></button>
+                    <button type="button" className="results-button" disabled={!(jobStatus == "Completed")} onClick={() => navigate(`/results/${location.state.jobId}`)}><span className="bp3-button-text">Go to results</span></button>
+                </span>
             </div>
         );
     };
@@ -42,6 +44,20 @@ const Status = () => {
             {renderButtons()}
         </div>
     );
+};
+
+const styles = {
+    dialogContainer: {
+        opacity: '1',
+        alignItems: 'center',
+        display: 'flex',
+        justifyContent: 'center',
+        minHeight: '100%',
+        flexDirection: 'column',
+        userSelect: 'none',
+        width: '100%'
+
+    }
 };
 
 export default Status;

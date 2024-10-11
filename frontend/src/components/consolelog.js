@@ -12,9 +12,14 @@ const ConsoleLogs = React.forwardRef(({ jobid, updateStatusCallback }, ref) => {
         try {
             const response = await fetch(`/api/status/${jobid}`);
             const data = await response.json();
-            setLogs(data.logs);
-            setJobStatus(data.status);
-            updateStatusCallback(data.status);
+            if (response.status == 200) {
+                setLogs(data.logs);
+                setJobStatus(data.status);
+                updateStatusCallback(data.status);
+            } else {
+                setLogs(data.error);
+            }
+
             setTimeout(() => {
                 setLoading(false);
             }, 1000);
@@ -68,7 +73,7 @@ const ConsoleLogs = React.forwardRef(({ jobid, updateStatusCallback }, ref) => {
                     Job: EzSEA_{jobid} |
                     Status: <span style={getStatusStyle()}>{jobStatus}</span>
                 </div>
-                <button onClick={fetchLogs} style={styles.refreshButton} disabled={loading}>
+                <button onClick={fetchLogs} className="refresh-button" style={styles.refreshButton} disabled={loading}>
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         fill="currentColor"
@@ -175,17 +180,13 @@ const globalStyles = `
       background-color: #2d2d2d; /* Dark background */
     }
 
-    .bp3-button:hover {
+    .refresh-button:hover {
         box-shadow: 0 0 10px rgba(0, 122, 255, 0.8); /* Blue glow */
     }
 
     .bp3-button:disabled {
         opacity: 0.5;
         cursor: not-allowed;
-    }
-
-    button:hover {
-        box-shadow: 0 0 10px rgba(0, 122, 255, 0.8); /* Blue glow */
     }
 
     @keyframes spin {
