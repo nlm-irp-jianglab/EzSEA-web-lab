@@ -19,19 +19,20 @@ app.post("/submit", (req, res) => {
     // Retrieve JSON from the POST body 
     data = req.body;
     var error = null;
-    logger.info("Received Job: ", data.job_id);
+    logger.info("Received Job: " + data.job_id);
 
     const command = `docker run --gpus all \
           --mount type=bind,source=/home/zhaoj16_ncbi_nlm_nih_gov/EzSEA/,target=/data \
           --mount type=bind,source=/home/jiangak_ncbi_nlm_nih_gov/database/,target=/database \
           ezsea ezsea -i "${data.sequence}" --output "/data/EzSEA_${data.job_id}" -d "/database/GTDB" -n ${data.num_seq} -f "${data.folding_program}" --treeprogram "${data.tree_program}" --asrprogram "${data.asr_program}"
           `;
+    logger.info("Running: " + command);
     exec(command, (err, stdout, stderr) => {
         if (err) {
             error = "There was a problem initializing your job, please try again later";
             console.error(err); // Pino doesn't give new lines
         } else {
-            logger.info("Job COMPLETED:", stdout);
+            logger.info("Job COMPLETED:" + stdout);
         }
     });
     setTimeout(function () {
@@ -60,6 +61,7 @@ app.get("/results/:id", (req, res) => {
 app.get("/status/:id", (req, res) => {
     const id = req.params.id;
     const filePath = `/outputs/EzSEA_${id}/EzSEA.log`;
+    logger.info("Serving logs for job: " + id);
     
     fs.readFile(filePath, 'utf8', (err, data) => {
         if (err) {
