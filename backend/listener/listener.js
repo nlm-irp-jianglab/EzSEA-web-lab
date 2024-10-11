@@ -19,17 +19,17 @@ app.post("/submit", (req, res) => {
     // Retrieve JSON from the POST body 
     data = req.body;
     var error = null;
-    logger.info("Received Job: ", data.job_name);
+    logger.info("Received Job: ", data.job_id);
 
     const command = `docker run --gpus all \
           --mount type=bind,source=/home/zhaoj16_ncbi_nlm_nih_gov/EzSEA/,target=/data \
           --mount type=bind,source=/home/jiangak_ncbi_nlm_nih_gov/database/,target=/database \
-          ezsea ezsea -i "${data.sequence}" --output "/data/${data.job_name}" -d "/database/GTDB" -n 1000 -f "${data.folding_program}" --treeprogram "${data.tree_program}" --asrprogram "${data.asr_program}"
+          ezsea ezsea -i "${data.sequence}" --output "/data/EzSEA_${data.job_id}" -d "/database/GTDB" -n ${data.num_seq} -f "${data.folding_program}" --treeprogram "${data.tree_program}" --asrprogram "${data.asr_program}"
           `;
     exec(command, (err, stdout, stderr) => {
         if (err) {
             error = "There was a problem initializing your job, please try again later";
-            logger.error(err);
+            console.error(err); // Pino doesn't give new lines
         } else {
             logger.info("Job COMPLETED:", stdout);
         }
@@ -41,6 +41,11 @@ app.post("/submit", (req, res) => {
 
 app.get("/results/:id", (req, res) => {
     const id = req.params.id;
+    const folderPath = `/outputs/EzSEA_${id}`;
+    const treePath = path.join(folderPath, 'Ancestral', 'seq.treefile');
+    const leafPath = path.join(folderPath, 'Alignment', 'seq_trimmed.afa');
+    const ancestralPath = path.join(folderPath, 'Ancestral', 'seq_trimmed_ancestors.afa');
+    const nodesPath = path.join(folderPath, 'nodes.json');
     /* 
         Returns data of query:
         - Aligned FA of leaves
@@ -55,6 +60,7 @@ app.get("/results/:id", (req, res) => {
 app.get("/status/:id", (req, res) => {
     const id = req.params.id;
     const filePath = `/outputs/EzSEA_${id}/EzSEA.log`;
+    
     fs.readFile(filePath, 'utf8', (err, data) => {
         if (err) {
             logger.error("Error reading file:", err);
@@ -69,13 +75,6 @@ app.get("/status/:id", (req, res) => {
         }
         return res.status(200).json({ logs: logsArray, status: status });
     });
-
-    /* 
-        Returns status of query:
-        - Running
-        - Completed
-        - Error
-    */
 });
 
 // Server listening on PORT 5000

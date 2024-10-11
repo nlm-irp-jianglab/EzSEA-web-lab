@@ -9,10 +9,12 @@ import "../components/tol.css";
 import MolstarViewer from "../components/molstar";
 import LogoStack from '../components/logo-stack';
 import { readFastaToDict, parseNodeData } from '../components/utils';
+import { useParams } from 'react-router-dom';
 
 const logoFiles = {};
 
 const Tol = () => {
+    const { jobId } = useParams();
     // State to store the tree data and node data
     const [faData, setFaData] = useState(null);
     const [newickData, setNewickData] = useState(null);

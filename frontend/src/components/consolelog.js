@@ -41,6 +41,13 @@ const ConsoleLogs = React.forwardRef(({ jobid, updateStatusCallback }, ref) => {
     // Fetch logs on initial render and on interval
     useEffect(() => {
         fetchLogs();
+
+        // Fetch logs every 20 seconds
+        const interval = setInterval(() => {
+            fetchLogs();
+        }, 20000);
+
+        return () => clearInterval(interval);
     }, [jobid]);
 
     const getStatusStyle = () => {
@@ -70,7 +77,7 @@ const ConsoleLogs = React.forwardRef(({ jobid, updateStatusCallback }, ref) => {
         <div style={styles.container}>
             <div style={styles.consoleHeader}>
                 <div>
-                    Job: EzSEA_{jobid} |
+                    Job: {jobid} |
                     Status: <span style={getStatusStyle()}>{jobStatus}</span>
                 </div>
                 <button onClick={fetchLogs} className="refresh-button" style={styles.refreshButton} disabled={loading}>

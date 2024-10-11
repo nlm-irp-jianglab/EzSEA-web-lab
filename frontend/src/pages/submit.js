@@ -12,6 +12,8 @@ const Home = () => {
     const jobInput = useRef(null);
     const emailInput = useRef(null);
     const fastaInput = useRef(null);
+
+    const [selectedNumSeq, setSelectedNumSeq] = useState(1000);
     const [selectedFoldingProgram, setSelectedFoldingProgram] = useState("colabfold");
     const [selectedPhylogeneticProgram, setSelectedPhylogeneticProgram] = useState("FastTree");
     const [selectedAncestralProgram, setSelectedAncestralProgram] = useState("GRASP");
@@ -63,23 +65,25 @@ const Home = () => {
     const submitJob = () => {
         setSubmitStatus(true); // Prevent double submission
         var jobName = jobInput.current.value;
-        const domain = window.location.hostname;
+        const id = Math.random().toString(36).substring(2, 9) + Date.now().toString(36);
 
         if (!jobName) {
             // Generate a random job name if none is provided
-            jobName = "EzSEA_" + Math.random().toString(36).substring(2, 9) + Date.now().toString(36);
+            jobName = "EzSEA_" + id
         } else {
             jobName = jobName.replace(/\s/g, "_");  // Replace spaces with underscores
-            jobName = jobName + "_" + Math.random().toString(36).substring(2, 9) + Date.now().toString(36);
+            jobName = jobName + "_" + id
         }
 
         const json = {
             "job_name": jobName,
+            "job_id": id,
             "email": emailInput.current.value,
             "sequence": fastaInput.current.value,
             "folding_program": selectedFoldingProgram,
             "tree_program": selectedPhylogeneticProgram,
-            "asr_program": selectedAncestralProgram
+            "asr_program": selectedAncestralProgram,
+            "num_seq": selectedNumSeq
         }
 
         // Send JSON to backend
@@ -92,7 +96,6 @@ const Home = () => {
         })
             .then(response => {
                 if (response.status !== 200) {
-
                     return response.json().then(data => {
                         console.log('Backend error:', data.error);
                         navigate("/job-queued", {
@@ -114,7 +117,7 @@ const Home = () => {
                         // Redirect to the results page
                         navigate("/job-queued", {
                             state: {
-                                jobId: jobName,
+                                jobId: id,
                                 email: emailInput.current.value,
                                 time: datetime,
                                 error: data.error || null
@@ -338,11 +341,50 @@ const Home = () => {
                                                     <button className="bp3-button bp3-minimal"
                                                         onClick={() => setSelectedAncestralProgram('raxml-ng')}
                                                         style={{
-                                                            backgroundColor: selectedAncestralProgram === 'raxml-ng' ? '#007bff' : '#eee',
-                                                            color: selectedAncestralProgram === 'raxml-ng' ? 'white' : 'black'
+                                                            backgroundColor: selectedNumSeq === 'raxml-ng' ? '#007bff' : '#eee',
+                                                            color: selectedNumSeq === 'raxml-ng' ? 'white' : 'black'
                                                         }}
                                                     >
                                                         raxml-ng
+                                                    </button>
+                                                </span>
+                                                <p>Number of Sequences:</p>
+                                                <span>
+                                                    <button className="bp3-button bp3-minimal"
+                                                        onClick={() => setSelectedNumSeq(100)}
+                                                        style={{
+                                                            backgroundColor: selectedNumSeq == 100 ? '#007bff' : '#eee',
+                                                            color: selectedNumSeq == 100 ? 'white' : 'black'
+                                                        }}
+                                                    >
+                                                        100
+                                                    </button>
+                                                    <button className="bp3-button bp3-minimal"
+                                                        onClick={() => setSelectedNumSeq(200)}
+                                                        style={{
+                                                            backgroundColor: selectedNumSeq == 200 ? '#007bff' : '#eee',
+                                                            color: selectedNumSeq == 200 ? 'white' : 'black'
+                                                        }}
+                                                    >
+                                                        200
+                                                    </button>
+                                                    <button className="bp3-button bp3-minimal"
+                                                        onClick={() => setSelectedNumSeq(500)}
+                                                        style={{
+                                                            backgroundColor: selectedNumSeq == 500 ? '#007bff' : '#eee',
+                                                            color: selectedNumSeq == 500 ? 'white' : 'black'
+                                                        }}
+                                                    >
+                                                        500
+                                                    </button>
+                                                    <button className="bp3-button bp3-minimal"
+                                                        onClick={() => setSelectedNumSeq(1000)}
+                                                        style={{
+                                                            backgroundColor: selectedNumSeq == 1000 ? '#007bff' : '#eee',
+                                                            color: selectedNumSeq == 1000 ? 'white' : 'black'
+                                                        }}
+                                                    >
+                                                        1000
                                                     </button>
                                                 </span>
                                             </div>

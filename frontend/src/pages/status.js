@@ -11,17 +11,6 @@ const Status = () => {
     let navigate = useNavigate();
     const { jobId } = useParams();
 
-    useEffect(() => {
-        // Fetch the job status
-        fetch(`/api/status/${jobId}`)
-            .then(response => response.json())
-            .then(data => {
-                console.log(data);
-            }).catch(error => {
-                console.error('Error fetching logs for id:', jobId, '\nError: ', error);
-            });
-    }, []);
-
     const updateStatus = (status) => {
         setJobStatus(status);
     }
