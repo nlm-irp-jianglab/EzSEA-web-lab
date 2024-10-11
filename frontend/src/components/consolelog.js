@@ -17,7 +17,7 @@ const ConsoleLogs = React.forwardRef(({ jobid, updateStatusCallback }, ref) => {
                 setJobStatus(data.status);
                 updateStatusCallback(data.status);
             } else {
-                setLogs(data.error);
+                setLogs([`${data.error}`]);
             }
 
             setTimeout(() => {
