@@ -17,6 +17,7 @@ const Home = () => {
     const [selectedFoldingProgram, setSelectedFoldingProgram] = useState("colabfold");
     const [selectedPhylogeneticProgram, setSelectedPhylogeneticProgram] = useState("FastTree");
     const [selectedAncestralProgram, setSelectedAncestralProgram] = useState("GRASP");
+    const [selectedAlignmentProgram, setSelectedAlignmentProgram] = useState("MUSCLE");
 
     let navigate = useNavigate();
 
@@ -256,6 +257,45 @@ const Home = () => {
                                     {isSettingsVisible ? (
                                         <div className="bp3-card bp3-elevation-0">
                                             <div>
+                                                <p>Number of Sequences:</p>
+                                                <span>
+                                                    <button className="bp3-button bp3-minimal"
+                                                        onClick={() => setSelectedNumSeq(100)}
+                                                        style={{
+                                                            backgroundColor: selectedNumSeq == 100 ? '#007bff' : '#eee',
+                                                            color: selectedNumSeq == 100 ? 'white' : 'black'
+                                                        }}
+                                                    >
+                                                        100
+                                                    </button>
+                                                    <button className="bp3-button bp3-minimal"
+                                                        onClick={() => setSelectedNumSeq(200)}
+                                                        style={{
+                                                            backgroundColor: selectedNumSeq == 200 ? '#007bff' : '#eee',
+                                                            color: selectedNumSeq == 200 ? 'white' : 'black'
+                                                        }}
+                                                    >
+                                                        200
+                                                    </button>
+                                                    <button className="bp3-button bp3-minimal"
+                                                        onClick={() => setSelectedNumSeq(500)}
+                                                        style={{
+                                                            backgroundColor: selectedNumSeq == 500 ? '#007bff' : '#eee',
+                                                            color: selectedNumSeq == 500 ? 'white' : 'black'
+                                                        }}
+                                                    >
+                                                        500
+                                                    </button>
+                                                    <button className="bp3-button bp3-minimal"
+                                                        onClick={() => setSelectedNumSeq(1000)}
+                                                        style={{
+                                                            backgroundColor: selectedNumSeq == 1000 ? '#007bff' : '#eee',
+                                                            color: selectedNumSeq == 1000 ? 'white' : 'black'
+                                                        }}
+                                                    >
+                                                        1000
+                                                    </button>
+                                                </span>
                                                 <p>Protein Folding Program:</p>
                                                 <span>
                                                     <button className="bp3-button bp3-minimal"
@@ -348,43 +388,34 @@ const Home = () => {
                                                         raxml-ng
                                                     </button>
                                                 </span>
-                                                <p>Number of Sequences:</p>
+                                                <p>Alignment Program:</p>
                                                 <span>
                                                     <button className="bp3-button bp3-minimal"
-                                                        onClick={() => setSelectedNumSeq(100)}
+                                                        onClick={() => setSelectedAlignmentProgram('GRASP')}
                                                         style={{
-                                                            backgroundColor: selectedNumSeq == 100 ? '#007bff' : '#eee',
-                                                            color: selectedNumSeq == 100 ? 'white' : 'black'
+                                                            backgroundColor: selectedAlignmentProgram === 'MUSCLE' ? '#007bff' : '#eee',
+                                                            color: selectedAlignmentProgram === 'MUSCLE' ? 'white' : 'black'
                                                         }}
                                                     >
-                                                        100
+                                                        MUSCLE
                                                     </button>
                                                     <button className="bp3-button bp3-minimal"
-                                                        onClick={() => setSelectedNumSeq(200)}
+                                                        onClick={() => setSelectedAlignmentProgram('MAFFT')}
                                                         style={{
-                                                            backgroundColor: selectedNumSeq == 200 ? '#007bff' : '#eee',
-                                                            color: selectedNumSeq == 200 ? 'white' : 'black'
+                                                            backgroundColor: selectedAncestralProgram === 'MAFFT' ? '#007bff' : '#eee',
+                                                            color: selectedAlignmentProgram === 'MAFFT' ? 'white' : 'black'
                                                         }}
                                                     >
-                                                        200
+                                                        MAFFT
                                                     </button>
                                                     <button className="bp3-button bp3-minimal"
-                                                        onClick={() => setSelectedNumSeq(500)}
+                                                        onClick={() => setSelectedAlignmentProgram('clustalw')}
                                                         style={{
-                                                            backgroundColor: selectedNumSeq == 500 ? '#007bff' : '#eee',
-                                                            color: selectedNumSeq == 500 ? 'white' : 'black'
+                                                            backgroundColor: selectedAlignmentProgram === 'clustalw' ? '#007bff' : '#eee',
+                                                            color: selectedAlignmentProgram === 'clustalw' ? 'white' : 'black'
                                                         }}
                                                     >
-                                                        500
-                                                    </button>
-                                                    <button className="bp3-button bp3-minimal"
-                                                        onClick={() => setSelectedNumSeq(1000)}
-                                                        style={{
-                                                            backgroundColor: selectedNumSeq == 1000 ? '#007bff' : '#eee',
-                                                            color: selectedNumSeq == 1000 ? 'white' : 'black'
-                                                        }}
-                                                    >
-                                                        1000
+                                                        clustalw
                                                     </button>
                                                 </span>
                                             </div>
