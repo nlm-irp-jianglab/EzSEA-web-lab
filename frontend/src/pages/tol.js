@@ -57,8 +57,6 @@ const Tol = () => {
 
         readFastaToDict(`${process.env.PUBLIC_URL}/bilr_example/bilR_ancestors.fa`).then(data => { setFaData(data) });
 
-        fetchDefaultTree();
-
 
         fetch(`${process.env.PUBLIC_URL}/bilr_example/nodes.json`)
             .then(response => response.json())

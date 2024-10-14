@@ -20,7 +20,7 @@ const Status = () => {
             <div className="dialog-buttons" style={styles.dialogContainer}>
                 <span>
                     <button type="button" className="jobqueue-button" onClick={() => navigate(`/submit`)}><span className="bp3-button-text">Submit another job</span></button>
-                    <button type="button" className="results-button" disabled={!(jobStatus == "Completed")} onClick={() => navigate(`/results/${location.state.jobId}`)}><span className="bp3-button-text">Go to results</span></button>
+                    <button type="button" className="results-button" disabled={!(jobStatus == "Completed")} onClick={() => navigate(`/results/${jobId}`)}><span className="bp3-button-text">Go to results</span></button>
                 </span>
             </div>
         );

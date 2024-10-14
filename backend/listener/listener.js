@@ -40,29 +40,75 @@ app.post("/submit", (req, res) => {
     }, 7000);
 });
 
-app.get("/results/:id", (req, res) => {
+app.get("/results/:id", async (req, res) => {
     const id = req.params.id;
-    const folderPath = `/outputs/EzSEA_${id}`;
-    const treePath = path.join(folderPath, 'Ancestral', 'seq.treefile');
-    const leafPath = path.join(folderPath, 'Alignment', 'seq_trimmed.afa');
-    const ancestralPath = path.join(folderPath, 'Ancestral', 'seq_trimmed_ancestors.afa');
+    const folderPath = `/outputs/EzSEA_${id}/Visualization`;
+    const treePath = path.join(folderPath, 'asr.tree');
+    const leafPath = path.join(folderPath, 'seq_trimmed.afa');
+    const ancestralPath = path.join(folderPath, 'asr.fa');
     const nodesPath = path.join(folderPath, 'nodes.json');
-    /* 
-        Returns data of query:
-        - Aligned FA of leaves
-        - Aligned FA of internal nodes
-        - Newick tree
-        - Node.json info
-        - Structure PDB
-    */
-    res.status(200).json(data);
+    const structPath = path.join(folderPath, 'seq.pdb');
+
+    // Read the files
+    const treePromise = fs.promises.readFile(treePath, 'utf8')
+        .then(data => ({ tree: data }))
+        .catch(err => {
+            logger.error("Error reading tree file: " + err);
+            return { treeError: "Error reading tree file." };
+        });
+
+    const leafPromise = fs.promises.readFile(leafPath, 'utf8')
+        .then(data => ({ leaf: data }))
+        .catch(err => {
+            logger.error("Error reading leaf file: " + err);
+            return { leafError: "Error reading leaf file." };
+        });
+
+    const ancestralPromise = fs.promises.readFile(ancestralPath, 'utf8')
+        .then(data => ({ ancestral: data }))
+        .catch(err => {
+            logger.error("Error reading ancestral file: " + err);
+            return { ancestralError: "Error reading ancestral file." };
+        });
+
+    const nodesPromise = fs.promises.readFile(nodesPath, 'utf8')
+        .then(data => ({ nodes: data }))
+        .catch(err => {
+            logger.error("Error reading nodes file: " + err);
+            return { nodesError: "Error reading nodes file." };
+        });
+
+    const structPromise = fs.promises.readFile(structPath, 'utf8')
+        .then(data => ({ struct: data }))
+        .catch(err => {
+            logger.error("Error reading struct file: " + err);
+            return { structError: "Error reading struct file." };
+        });
+
+    // Run all the promises concurrently and gather the results
+    const results = await Promise.allSettled([treePromise, leafPromise, ancestralPromise, nodesPromise, structPromise]);
+
+    // Collect the resolved results into one object
+    const response = results.reduce((acc, result) => {
+        if (result.status === 'fulfilled') {
+            return { ...acc, ...result.value };
+        }
+        return acc;
+    }, {});
+
+    // Send response with the files that were successfully read and any error messages
+    if (Object.keys(response).length > 0) {
+        return res.status(200).json(response);
+    } else {
+        return res.status(500).json({ error: "Failed to read all files." });
+    }
 });
 
 app.get("/status/:id", (req, res) => {
     const id = req.params.id;
     const filePath = `/outputs/EzSEA_${id}/EzSEA.log`;
     logger.info("Serving logs for job: " + id);
-    
+
     fs.readFile(filePath, 'utf8', (err, data) => {
         if (err) {
             logger.error("Error reading file:", err);
