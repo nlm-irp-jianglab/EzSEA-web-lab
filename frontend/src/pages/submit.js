@@ -381,8 +381,8 @@ const Home = () => {
                                                     <button className="bp3-button bp3-minimal"
                                                         onClick={() => setSelectedAncestralProgram('raxml-ng')}
                                                         style={{
-                                                            backgroundColor: selectedNumSeq === 'raxml-ng' ? '#007bff' : '#eee',
-                                                            color: selectedNumSeq === 'raxml-ng' ? 'white' : 'black'
+                                                            backgroundColor: selectedAncestralProgram === 'raxml-ng' ? '#007bff' : '#eee',
+                                                            color: selectedAncestralProgram === 'raxml-ng' ? 'white' : 'black'
                                                         }}
                                                     >
                                                         raxml-ng
@@ -391,7 +391,7 @@ const Home = () => {
                                                 <p>Alignment Program:</p>
                                                 <span>
                                                     <button className="bp3-button bp3-minimal"
-                                                        onClick={() => setSelectedAlignmentProgram('GRASP')}
+                                                        onClick={() => setSelectedAlignmentProgram('MUSCLE')}
                                                         style={{
                                                             backgroundColor: selectedAlignmentProgram === 'MUSCLE' ? '#007bff' : '#eee',
                                                             color: selectedAlignmentProgram === 'MUSCLE' ? 'white' : 'black'
@@ -402,7 +402,7 @@ const Home = () => {
                                                     <button className="bp3-button bp3-minimal"
                                                         onClick={() => setSelectedAlignmentProgram('MAFFT')}
                                                         style={{
-                                                            backgroundColor: selectedAncestralProgram === 'MAFFT' ? '#007bff' : '#eee',
+                                                            backgroundColor: selectedAlignmentProgram === 'MAFFT' ? '#007bff' : '#eee',
                                                             color: selectedAlignmentProgram === 'MAFFT' ? 'white' : 'black'
                                                         }}
                                                     >
