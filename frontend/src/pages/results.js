@@ -8,7 +8,7 @@ import "../components/phylotree.css";
 import "../components/tol.css";
 import MolstarViewer from "../components/molstar";
 import LogoStack from '../components/logo-stack';
-import { readFastaToDict, parseNodeData } from '../components/utils';
+import { fastaToDict, parseNodeData } from '../components/utils';
 import { useParams } from 'react-router-dom';
 
 const logoFiles = {};
@@ -20,6 +20,7 @@ const Tol = () => {
     const [leafData, setLeafData] = useState(null); // Fasta data for the leaf nodes
     const [newickData, setNewickData] = useState(null); // Tree
     const [nodeData, setnodeData] = useState(null); // asr stats, important residues
+    const [structData, setStructData] = useState(null); // Structure data
 
     // State to store the logo content (formatted for logoJS) and color file
     const [logoContent, setLogoContent] = useState(null);
@@ -67,25 +68,24 @@ const Tol = () => {
                     } else {
                         setLeafData(data.leaf);
                     }
-                    
+
                     if (data.ancestralError) {
                         console.error("Error fetching ancestral data:", data.ancestralError);
                     } else {
-			console.log(data.ancestral);
-                        setFaData(data.ancestral);
+                        fastaToDict(data.ancestral).then((fastaDict) => setFaData(fastaDict));
                     }
 
                     if (data.nodesError) {
                         console.error("Error fetching nodes data:", data.nodesError);
                     } else {
                         parseNodeData(JSON.parse(data.nodes))
-                            .then((parsedData) => setnodeData(parsedData))
+                            .then((parsedData) => setnodeData(parsedData));
                     }
 
                     if (data.structError) {
                         console.error("Error fetching structure data:", data.structError);
                     } else {
-                       //console.log("Structure data:", data.struct);
+                        setStructData(data.struct);
                     }
 
                 });
