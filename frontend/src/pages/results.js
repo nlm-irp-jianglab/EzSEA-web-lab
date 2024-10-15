@@ -27,9 +27,6 @@ const Tol = () => {
     const [colorFile, setColorFile] = useState(null);
     const [selectedNodes, setSelectedNodes] = useState([]); // Important, keeps track of user selected nodes for comparison
 
-    // Toggle between radial and linear layout
-    const [isRadial, setIsRadial] = useState(true);
-
     // For live updates linking sequence logo and structure viewer
     const [selectedResidue, setSelectedResidue] = useState(null);
     const [hoveredResidue, setHoveredResidue] = useState(null); // Currently not in use
@@ -45,7 +42,6 @@ const Tol = () => {
 
 
     // Fetch the tree data and node data on component mount, store data into states
-    // TODO: Fetch dynamically from the backend
     useEffect(() => {
         try {
             const response = fetch(`/api/results/${jobId}`);
@@ -66,7 +62,7 @@ const Tol = () => {
                     if (data.leafError) {
                         console.error("Error fetching leaf data:", data.leafError);
                     } else {
-                        fastaToDict(data.ancestral).then((fastaDict) => setLeafData(fastaDict));
+                        fastaToDict(data.leaf).then((fastaDict) => setLeafData(fastaDict));
                     }
 
                     if (data.ancestralError) {
@@ -206,7 +202,7 @@ const Tol = () => {
 				
                                 var data = {
                                     [source]: `>${source}\n${faData[source]}`, // LogoJS parser expects header before sequence
-                                    [target]: target_fa, 
+                                    [target + "Descendants"]: target_fa, 
                                 }
                                 treeRef.current.style.width = '50%'; // Need to have all these states as a toggle
                                 setColorFile(`${source}_${target}.color.txt`);
@@ -251,18 +247,18 @@ const Tol = () => {
 
             treeRef.current.appendChild(tree.display.show());
         }
-    }, [newickData, isLeftCollapsed, isRadial, faData]);
+    }, [newickData, isLeftCollapsed, faData]);
 
     const setLogoCallback = useCallback((node) => {
         if (node !== null) {
             const handleMouseEnter = () => {
-                node.style.height = '602px';
-                pvdiv.current.style.height = 'calc(100% - 604px)';
+                node.style.height = '500px';
+                pvdiv.current.style.height = 'calc(100% - 504px)';
             };
 
             const handleMouseLeave = () => {
-                node.style.height = '300px';
-                pvdiv.current.style.height = 'calc(100% - 304px)';
+                node.style.height = '250px';
+                pvdiv.current.style.height = 'calc(100% - 250px)';
             };
 
             node.addEventListener('mouseenter', handleMouseEnter);
@@ -318,6 +314,7 @@ const Tol = () => {
                         Download {fileName} Logo File
                     </button>
                 ))}
+                <button>Placeholder</button>
             </div>
         </div>
     );
@@ -366,7 +363,7 @@ const Tol = () => {
         // Create a download link and trigger the download
         const downloadLink = document.createElement("a");
         downloadLink.href = svgUrl;
-        downloadLink.download = "tree_with_styles.svg";
+        downloadLink.download = "tree.svg";
         document.body.appendChild(downloadLink);
         downloadLink.click();
         document.body.removeChild(downloadLink);
@@ -376,12 +373,6 @@ const Tol = () => {
         <div>
             <Navbar pageId={"Integrated Tree Viewer"} />
             <div className="btn-toolbar">
-                <button
-                    className="radial-toggle-button"
-                    onClick={() => setIsRadial(prevIsRadial => !prevIsRadial)}
-                >
-                    Tree Layout: ({isRadial ? 'Radial' : 'Rectangular'})
-                </button>
                 <button className="download-svg-button" onClick={downloadTreeAsSVG}>
                     Download Tree as SVG
                 </button>

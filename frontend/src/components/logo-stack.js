@@ -168,10 +168,12 @@ const LogoStack = React.forwardRef(
                     Object.keys(fastaContent).map((key, index) => {
                         return (
                             <div className={"logo_" + index} key={key}>
-                                <div style={{ display: "flex", flexDirection: "row" }}>
-                                    <p>{key}</p>
-                                    <button className="logo-download-btn" onClick={() => downloadLogoSVG(index, 'seqlogo_' + key + '.svg')}>Download SVG</button>
-                                    <button className="logo-remove-btn" onClick={() => removeLogo(index)}>Remove</button>
+                                <div style={{ display: "flex", flexDirection: "row", alignItems: "center", height: "40px", marginLeft: "5px", justifyContent: "space-between" }}>
+                                    <p style={{paddingLeft: "30px"}}><b>{key}</b></p>
+                                    <span style={{paddingRight: "30px"}}>
+                                        <button className="logo-download-btn" style={styles.downloadBtn} onClick={() => downloadLogoSVG(index, 'seqlogo_' + key + '.svg')}>Download SVG</button>
+                                        <button className="logo-remove-btn" style={styles.removeBtn} onClick={() => removeLogo(index)}>Remove</button>
+                                    </span>
                                 </div>
                                 <div
                                     className="logo_render"
@@ -196,6 +198,43 @@ const LogoStack = React.forwardRef(
                 )}
             </div>
         );
-    });
+    }
+);
+
+const styles = {
+    downloadBtn: {
+        display: "inline-flex",
+        flexDirection: "row",
+        alignItems: "center",
+        border: "none",
+        borderRadius: "3px",
+        cursor: "pointer",
+        fontSize: "14px",
+        justifyContent: "center",
+        padding: "5px 10px",
+        textAlign: "center",
+        verticalAlign: "middle",
+        height: "30px",
+        padding: "5px",
+        backgroundColor: "#def2b3",
+        alignItems: "center",
+    },
+    removeBtn: {
+        display: "inline-flex",
+        flexDirection: "row",
+        alignItems: "center",
+        border: "none",
+        borderRadius: "3px",
+        cursor: "pointer",
+        fontSize: "14px",
+        justifyContent: "center",
+        padding: "5px 10px",
+        textAlign: "left",
+        verticalAlign: "middle",
+        height: "30px",
+        padding: "5px",
+        backgroundColor: "#f2b4b3",
+    }
+}
 
 export default LogoStack;

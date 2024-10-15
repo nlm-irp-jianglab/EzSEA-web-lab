@@ -47,7 +47,7 @@ const Tol = () => {
     useEffect(() => {
         const fetchDefaultTree = async () => {
             try {
-                const response = await fetch(`${process.env.PUBLIC_URL}/bilr_example/bilR_ancestors.nwk`);
+                const response = await fetch(`${process.env.PUBLIC_URL}/example_2/Visualization/asr.tree`);
                 const text = await response.text();
                 setNewickData(text);
             } catch (error) {
@@ -55,7 +55,9 @@ const Tol = () => {
             }
         };
 
-        readFastaToDict(`${process.env.PUBLIC_URL}/bilr_example/bilR_ancestors.fa`).then(data => { setFaData(data) });
+        fetchDefaultTree();
+
+        readFastaToDict(`${process.env.PUBLIC_URL}/example_2/Visualization/asr.fa`).then(data => { setFaData(data) });
 
 
         fetch(`${process.env.PUBLIC_URL}/bilr_example/nodes.json`)
@@ -176,7 +178,7 @@ const Tol = () => {
                                     source_fa += `>${node.data.name}\n${faData[node.data.name]}\n`;
                                 }
                                 var data = {
-                                    [source]: source_fa, // LogoJS parser expects header before sequence
+                                    [source + "desc"]: source_fa, // LogoJS parser expects header before sequence
                                     [target]: `>${source}\n${faData[target]}`,
                                 }
                                 treeRef.current.style.width = '50%'; // Need to have all these states as a toggle
@@ -227,13 +229,13 @@ const Tol = () => {
     const setLogoCallback = useCallback((node) => {
         if (node !== null) {
             const handleMouseEnter = () => {
-                node.style.height = '602px';
-                pvdiv.current.style.height = 'calc(100% - 604px)';
+                node.style.height = '500px';
+                pvdiv.current.style.height = 'calc(100% - 504px)';
             };
 
             const handleMouseLeave = () => {
-                node.style.height = '300px';
-                pvdiv.current.style.height = 'calc(100% - 304px)';
+                node.style.height = '250px';
+                pvdiv.current.style.height = 'calc(100% - 250px)';
             };
 
             node.addEventListener('mouseenter', handleMouseEnter);
