@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import * as pt from 'phylotree';
 import { isLeafNode } from 'phylotree/src/nodes';
-import { addCustomMenu } from 'phylotree/src/render/menus';
+import { addCustomMenu, modifySelection } from 'phylotree/src/render/menus';
 import { selectAllDescendants } from 'phylotree/src/nodes';
 import Navbar from "../components/navbar";
 import "../components/phylotree.css";
@@ -11,7 +11,7 @@ import LogoStack from '../components/logo-stack';
 import { fastaToDict, parseNodeData } from '../components/utils';
 import { useParams } from 'react-router-dom';
 
-const Tol = () => {
+const Results = () => {
     const { jobId } = useParams();
     // State to store the tree data and node data
     const [faData, setFaData] = useState(null); // Fasta data for the internal nodes (ancestral)
@@ -272,6 +272,7 @@ const Tol = () => {
         setIsRightCollapsed(false);
         setColorFile(null);
         setLogoContent(null);
+        setSelectedNodes([]);
         treeRef.current.style.width = '100%';
     }
 
@@ -367,7 +368,8 @@ const Tol = () => {
     return (
         <div>
             <Navbar pageId={"Integrated Tree Viewer"} />
-            <div className="btn-toolbar">
+            <div className="btn-toolbar" style={{display: "flex", justifyContent: "space-between"}}>
+                <p>Results of job: {jobId}</p>
                 {renderDropdown()}
             </div>
             <div style={{ display: 'flex', height: '90vh', margin: '0 20px' }}>
@@ -453,4 +455,4 @@ const Tol = () => {
     );
 };
 
-export default Tol;
+export default Results;
