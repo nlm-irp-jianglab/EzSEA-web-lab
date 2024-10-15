@@ -131,7 +131,7 @@ export function MolStarWrapper({ structData, selectedResidue, hoveredResidue, co
     window.molstar.managers.interactivity.lociSelects.deselectAll();
     window.molstar.managers.interactivity.lociSelects.select({ loci }); // Select the residue
 
-    console.log("Selected residue", residueNumber);
+    // console.log("Selected residue", residueNumber);
   }
 
   async function applyColorFile(colorFile) {
@@ -142,33 +142,27 @@ export function MolStarWrapper({ structData, selectedResidue, hoveredResidue, co
       return;
     }
 
-    const string = await fetch(`${process.env.PUBLIC_URL}/${colorFile}`).then((response) => {
+    fetch(`${process.env.PUBLIC_URL}/${colorFile}`).then((response) => {
       return response.text();
+    }).then((string) => {
+      const lines = string.split("\n");
+      for (const line of lines) {
+        const [residue, color] = line.split("\t");
+        const seq_id = parseInt(residue);
+        // Overpaint the residue, must await each query, maybe flip instead of search for residue, search for color then apply to all residues.
+        setStructureOverpaint(window.molstar, window.molstar.managers.structure.hierarchy.current.structures[0].components, Color(colorArr[color]), (s) => {
+          const sel = Script.getStructureSelection(Q => Q.struct.generator.atomGroups({
+            'residue-test': Q.core.rel.eq([Q.struct.atomProperty.macromolecular.label_seq_id(), seq_id]),
+            'group-by': Q.struct.atomProperty.macromolecular.residueKey(),
+          }), s);
+          return StructureSelection.toLociWithSourceUnits(sel);
+        });
+      }
+      console.log("Applied color file", colorFile);
+    }).catcj((error) => {
+      console.error("No colors applied, color file is empty or does not exist.");
     });
 
-    const lines = string.split("\n");
-
-    // Due to catch-all routing to 404 page, fetching colorfile will always return 200 status code. We
-    // check if the color file is empty or does not exist by checking if first line res is html.
-    if (lines[0] == "<!DOCTYPE html>\r") {
-      console.error("No colors applied, color file is empty or does not exist.");
-      return;
-    }
-
-    for (const line of lines) {
-      const [residue, color] = line.split("\t");
-      const seq_id = parseInt(residue);
-      // Overpaint the residue, must await each query, maybe flip instead of search for residue, search for color then apply to all residues.
-      await setStructureOverpaint(window.molstar, window.molstar.managers.structure.hierarchy.current.structures[0].components, Color(colorArr[color]), (s) => {
-        const sel = Script.getStructureSelection(Q => Q.struct.generator.atomGroups({
-          'residue-test': Q.core.rel.eq([Q.struct.atomProperty.macromolecular.label_seq_id(), seq_id]),
-          'group-by': Q.struct.atomProperty.macromolecular.residueKey(),
-        }), s);
-        return StructureSelection.toLociWithSourceUnits(sel);
-      });
-    }
-
-    console.log("Applied color file", colorFile);
   }
 
   return (

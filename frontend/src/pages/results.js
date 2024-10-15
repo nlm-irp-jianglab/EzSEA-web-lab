@@ -202,7 +202,7 @@ const Tol = () => {
 				
                                 var data = {
                                     [source]: `>${source}\n${faData[source]}`, // LogoJS parser expects header before sequence
-                                    [target + "Descendants"]: target_fa, 
+                                    [target]: target_fa, 
                                 }
                                 treeRef.current.style.width = '50%'; // Need to have all these states as a toggle
                                 setColorFile(`${source}_${target}.color.txt`);
@@ -239,7 +239,7 @@ const Tol = () => {
                 'font-size': 4,
                 'background-color': 'lightblue',
                 'collapsible': true,
-                'reroot': true,
+                'reroot': false,
                 'hide': false, // Causes weird rendering in radial
             });
 

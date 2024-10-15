@@ -56,6 +56,7 @@ const LogoStack = React.forwardRef(
             setRenderLogos(true);
         }, [fastaContent]);
 
+        // Handling Sync Scrolling
         useEffect(() => {
             // Destroy existing scrollers - This is done to prevent overlapping scrollers
             backScrollers.current.forEach((scroller) => {
