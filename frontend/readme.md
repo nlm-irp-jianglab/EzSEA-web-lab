@@ -5,12 +5,13 @@ Sequence Logos: Skylign
 
 # TODO:
 Polish submit page
-  - Add transitions
+  - !Add transitions
   - Add style
 
-!Port TOL to results page
+~Port TOL to results page
 
-!Status page
+~Results page
+  - Selected nodes for compare, change from list to dict containing node name and fa. Will store state of node: descendant vs asr
 
 !Add summarize feature which exports outputs
   - Output data and svg of figures

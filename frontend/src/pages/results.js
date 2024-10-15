@@ -11,8 +11,6 @@ import LogoStack from '../components/logo-stack';
 import { fastaToDict, parseNodeData } from '../components/utils';
 import { useParams } from 'react-router-dom';
 
-const logoFiles = {};
-
 const Tol = () => {
     const { jobId } = useParams();
     // State to store the tree data and node data
@@ -97,16 +95,6 @@ const Tol = () => {
 
             const tree = new pt.phylotree(newickData);
 
-            function clearRightPanel() {
-                setPipVisible(false);
-                setSelectedResidue(null);
-                setIsLeftCollapsed(false);
-                setIsRightCollapsed(false);
-                setColorFile(null);
-                setLogoContent(null);
-                treeRef.current.style.width = '100%';
-            }
-
             function style_nodes(element, node_data) {
                 var node_label = element.select("text");
 
@@ -129,6 +117,14 @@ const Tol = () => {
                         return "Select for compare";
                     }
 
+                    function compareDescendants(node) {
+                        if (node['compare-descendants']) {
+                            return "Remove descendants from compare";
+                        } else {
+                            return "Select descendants for compare";
+                        }
+                    }
+
                     function showMenuOpt(node) {
                         return true;
                     }
@@ -143,14 +139,13 @@ const Tol = () => {
                         node['compare-node'] = !node['compare-node'];
 
                         // Add node to selectedNodes, if already in list, remove it
-                        // Check if node is already selected
                         const index = selectedNodes.indexOf(node);
                         if (index > -1) {
                             selectedNodes.splice(index, 1);
                         } else {
                             selectedNodes.push(node);
                         }
-                        console.log(selectedNodes);
+
                         setSelectedNodes(selectedNodes);
                         // append to logocontent
                         const data = {};
@@ -270,6 +265,16 @@ const Tol = () => {
         setSelectedResidue(index + 1);
     };
 
+    const clearRightPanel = () => {
+        setPipVisible(false);
+        setSelectedResidue(null);
+        setIsLeftCollapsed(false);
+        setIsRightCollapsed(false);
+        setColorFile(null);
+        setLogoContent(null);
+        treeRef.current.style.width = '100%';
+    }
+
     const handleColumnHover = (index) => {
         console.log("Column hovered:", index);
         setHoveredResidue(index + 1);
@@ -295,26 +300,16 @@ const Tol = () => {
         document.body.removeChild(element);
     };
 
-    const downloadNewickData = () => {
-        handleDownload('tree_data.nwk', newickData);
-    };
-
-    const downloadLogoFile = (fileName) => {
-        const logoFileContent = JSON.stringify(logoFiles[fileName], null, 2); // Formatting as JSON
-        handleDownload(`${fileName}.json`, logoFileContent);
-    };
-
     const renderDropdown = () => (
         <div className="dropdown">
             <button className="dropbtn">Download Files</button>
             <div className="dropdown-content">
-                <button onClick={downloadNewickData}>Download Newick Data</button>
-                {Object.keys(logoFiles).map(fileName => (
-                    <button key={fileName} onClick={() => downloadLogoFile(fileName)}>
-                        Download {fileName} Logo File
-                    </button>
-                ))}
-                <button>Placeholder</button>
+                <button onClick={() => handleDownload(`${jobId}_asr_nodes.fa`, faData)}>Ancestral Sequences</button>
+                <button onClick={() => handleDownload(`${jobId}_leaf_nodes.fa`, leafData)}>Leaf Sequences</button>
+                <button onClick={() => handleDownload(`${jobId}_nodes.json`, nodeData)}>Node Info</button>
+                <button onClick={() => handleDownload(`${jobId}_struct.pdb`, structData)}>Structure PDB</button>
+                <button onClick={() => handleDownload(`${jobId}_tree_data.nwk`, newickData)}>Tree Newick</button>
+                <button onClick={downloadTreeAsSVG}>Tree SVG</button>
             </div>
         </div>
     );
@@ -373,9 +368,6 @@ const Tol = () => {
         <div>
             <Navbar pageId={"Integrated Tree Viewer"} />
             <div className="btn-toolbar">
-                <button className="download-svg-button" onClick={downloadTreeAsSVG}>
-                    Download Tree as SVG
-                </button>
                 {renderDropdown()}
             </div>
             <div style={{ display: 'flex', height: '90vh', margin: '0 20px' }}>
