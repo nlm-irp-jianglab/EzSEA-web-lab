@@ -71,21 +71,20 @@ const Tol = () => {
                     if (data.ancestralError) {
                         console.error("Error fetching ancestral data:", data.ancestralError);
                     } else {
-			console.log(data.ancestral);
                         setFaData(data.ancestral);
                     }
 
-                    if (data.nodesError) {
+                    If.nodesError) {
                         console.error("Error fetching nodes data:", data.nodesError);
                     } else {
-                        parseNodeData(JSON.parse(data.nodes))
+                        parseNodeData(data.nodes)
                             .then((parsedData) => setnodeData(parsedData))
                     }
 
                     if (data.structError) {
                         console.error("Error fetching structure data:", data.structError);
                     } else {
-                       //console.log("Structure data:", data.struct);
+                        console.log("Structure data:", data.struct);
                     }
 
                 });
