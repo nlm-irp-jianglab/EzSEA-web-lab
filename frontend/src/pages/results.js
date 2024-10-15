@@ -197,15 +197,15 @@ const Tol = () => {
                                 console.log("Not Found", faData[source], faData[target]);
                                 clearRightPanel();
                                 return;
-                            } else { // Send node data to generate logos and o
+                            } else { // Send node data to generate logos
                                 var descendants = selectAllDescendants(branch.target, false, true);
-                                var source_fa = "";
+                                var target_fa = "";
                                 for (var node of descendants) {
-                                    source_fa += `>${node.data.name}\n${faData[node.data.name]}\n`;
+                                    target_fa += `>${node.data.name}\n${faData[node.data.name]}\n`;
                                 }
                                 var data = {
-                                    [source]: source_fa, // LogoJS parser expects header before sequence
-                                    [target]: `>${source}\n${faData[target]}`,
+                                    [source]: `>${source}\n${faData[source]}`, // LogoJS parser expects header before sequence
+                                    [target]: target_fa,
                                 }
                                 treeRef.current.style.width = '50%'; // Need to have all these states as a toggle
                                 setColorFile(`${source}_${target}.color.txt`);
@@ -454,6 +454,7 @@ const Tol = () => {
 
                         <div className="pvdiv" ref={pvdiv} style={{ width: isLeftCollapsed ? '50%' : '100%' }}>
                             <MolstarViewer
+                                structData={structData}
                                 selectedResidue={selectedResidue}
                                 colorFile={colorFile}
                                 hoveredResidue={hoveredResidue}

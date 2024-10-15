@@ -23,7 +23,7 @@ const colorArr = [ // Color gradient for adding color to residues
   0xDF2F2F,
 ]
 
-export function MolStarWrapper({ selectedResidue, hoveredResidue, colorFile }) {
+export function MolStarWrapper({ structData, selectedResidue, hoveredResidue, colorFile }) {
   const parent = createRef();
   const [isStructureLoaded, setIsStructureLoaded] = useState(false);
 
@@ -59,10 +59,9 @@ export function MolStarWrapper({ selectedResidue, hoveredResidue, colorFile }) {
 
       // Loading the default pdb file
       // TODO: Load PDB files dynamically
-      const string = await fetch(`${process.env.PUBLIC_URL}/GCA_900167205.pdb`).then((response) => response.text());
 
       const myData = await window.molstar.builders.data.rawData({
-        data: string, /* string or number[] */
+        data: structData, /* string or number[] */
         label: void 0 /* optional label */
       });
 
