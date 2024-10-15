@@ -427,9 +427,7 @@ const Tol = () => {
                                     <button
                                         className="logo-close-btn"
                                         onClick={() => {
-                                            setPipVisible(false);
-                                            setSelectedResidue(null);
-                                            setIsLeftCollapsed(false);
+                                            clearRightPanel();
                                         }}
                                     >
                                         X

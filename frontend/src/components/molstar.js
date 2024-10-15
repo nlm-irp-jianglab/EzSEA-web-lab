@@ -159,7 +159,7 @@ export function MolStarWrapper({ structData, selectedResidue, hoveredResidue, co
         });
       }
       console.log("Applied color file", colorFile);
-    }).catcj((error) => {
+    }).catch((error) => {
       console.error("No colors applied, color file is empty or does not exist.");
     });
 
