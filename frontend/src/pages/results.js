@@ -66,7 +66,7 @@ const Tol = () => {
                     if (data.leafError) {
                         console.error("Error fetching leaf data:", data.leafError);
                     } else {
-                        setLeafData(data.leaf);
+                        fastaToDict(data.ancestral).then((fastaDict) => setLeafData(fastaDict));
                     }
 
                     if (data.ancestralError) {
@@ -198,15 +198,15 @@ const Tol = () => {
                                 clearRightPanel();
                                 return;
                             } else { // Send node data to generate logos
-                                var descendants = selectAllDescendants(branch.target, false, true);
+                                var descendants = selectAllDescendants(branch.target, true, false); // First bool is for leaf, second is for internal
                                 var target_fa = "";
                                 for (var node of descendants) {
-                                    target_fa += `>${node.data.name}\n${faData[node.data.name]}\n`;
+                                    target_fa += `>${node.data.name}\n${leafData[node.data.name]}\n`;
                                 }
 				
                                 var data = {
                                     [source]: `>${source}\n${faData[source]}`, // LogoJS parser expects header before sequence
-                                    [target]: target_fa,
+                                    [target]: target_fa, 
                                 }
                                 treeRef.current.style.width = '50%'; // Need to have all these states as a toggle
                                 setColorFile(`${source}_${target}.color.txt`);
