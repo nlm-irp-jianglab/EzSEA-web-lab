@@ -203,6 +203,7 @@ const Tol = () => {
                                 for (var node of descendants) {
                                     target_fa += `>${node.data.name}\n${faData[node.data.name]}\n`;
                                 }
+				
                                 var data = {
                                     [source]: `>${source}\n${faData[source]}`, // LogoJS parser expects header before sequence
                                     [target]: target_fa,

@@ -1,0 +1,138 @@
+[
+    {
+        "node": "N21",
+        "differing_residues": [
+            144
+        ],
+        "score": 34.69071767844941
+    },
+    {
+        "node": "N9",
+        "differing_residues": [
+            196
+        ],
+        "score": 34.21500555
+    },
+    {
+        "node": "N13",
+        "differing_residues": [
+            72
+        ],
+        "score": 32.7113973592176
+    },
+    {
+        "node": "N47",
+        "differing_residues": [
+            69,
+            214,
+            221
+        ],
+        "score": 23.184880627706658
+    },
+    {
+        "node": "N37",
+        "differing_residues": [
+            161
+        ],
+        "score": 22.55787844571475
+    },
+    {
+        "node": "N22",
+        "differing_residues": [
+            155,
+            216,
+            230
+        ],
+        "score": 21.582429304288762
+    },
+    {
+        "node": "N35",
+        "differing_residues": [
+            195
+        ],
+        "score": 20.913944859735835
+    },
+    {
+        "node": "N46",
+        "differing_residues": [
+            43,
+            138
+        ],
+        "score": 16.676907044769003
+    },
+    {
+        "node": "N61",
+        "differing_residues": [
+            112,
+            155
+        ],
+        "score": 14.904518494649997
+    },
+    {
+        "node": "N40",
+        "differing_residues": [
+            104
+        ],
+        "score": 13.569110805167277
+    },
+    {
+        "node": "N39",
+        "differing_residues": [
+            13
+        ],
+        "score": 12.430180762229975
+    },
+    {
+        "node": "N38",
+        "differing_residues": [
+            155
+        ],
+        "score": 12.293507586543763
+    },
+    {
+        "node": "N63",
+        "differing_residues": [
+            114
+        ],
+        "score": 8.324330317775626
+    },
+    {
+        "node": "N23",
+        "differing_residues": [
+            239
+        ],
+        "score": 6.9995324204158145
+    },
+    {
+        "node": "N48",
+        "differing_residues": [
+            225
+        ],
+        "score": 6.131406617919049
+    },
+    {
+        "node": "N62",
+        "differing_residues": [],
+        "score": 0
+    },
+    {
+        "node": "N36",
+        "differing_residues": [],
+        "score": 0
+    },
+    {
+        "node": "N19",
+        "differing_residues": [],
+        "score": 0
+    },
+    {
+        "node": "N15",
+        "differing_residues": [],
+        "score": 0
+    },
+    {
+        "node": "N14",
+        "differing_residues": [],
+        "score": 0
+    }
+]

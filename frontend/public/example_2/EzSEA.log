@@ -1,0 +1,27 @@
+2024-10-11 16:26:20 - ActEvo.main - INFO - Full command: /usr/src/app/localcolabfold/colabfold-conda/bin/ezsea -i >PA14_rph
+MNRPSGRAADQLRPIRITRHYTKHAEGSVLVEFGDTKVICTVSAESGVPRFLKGQGQGWLTAEYGMLPRSTGERNQREASRGKQGGRTLEIQRLIGRSLRAALDLSKLGENTLYIDCDVIQADGGTRTASITGATVALIDALAVLKKRGALKGNPLKQMVAAVSVGIYQGVPVLDLDYLEDSAAETDLNVVMTDAGGFIEVQGTAEGAPFRPAELNAMLELAQQGMQELFELQRAALAE
+ --output /data/EzSEA_l8rd0u3m24xwu6d -d /database/GTDB -n 100 -f colabfold --treeprogram FastTree --asrprogram GRASP
+2024-10-11 16:26:20 - ActEvo.main - INFO - Writing input string to file...
+2024-10-11 16:26:20 - ActEvo.main - INFO - Detected unfinished run. Resuming from step 1
+2024-10-11 16:26:20 - ActEvo.main - INFO - Checking to see if diamond is installed
+2024-10-11 16:26:20 - ActEvo.main - INFO - Checking to see if muscle is installed
+2024-10-11 16:26:20 - ActEvo.main - INFO - Checking to see if seqtk is installed
+2024-10-11 16:26:20 - ActEvo.main - INFO - Checking to see if FastTree is installed
+2024-10-11 16:26:20 - ActEvo.main - INFO - Checking to see if java is installed
+2024-10-11 16:26:20 - ActEvo.main - INFO - Checking to see if goalign is installed
+2024-10-11 16:26:20 - ActEvo.main - INFO - Checking to see if plmc is installed
+2024-10-11 16:26:20 - ActEvo.main - INFO - Checking to see if muscle is installed
+2024-10-11 16:26:20 - ActEvo.main - INFO - All dependencies are installed.
+2024-10-11 16:26:20 - ActEvo.main - INFO - Running structure prediction script: /usr/src/app/localcolabfold/colabfold-conda/lib/python3.10/site-packages/ActEvo/run_colabfold.sh /data/EzSEA_l8rd0u3m24xwu6d/input.fasta /data/EzSEA_l8rd0u3m24xwu6d/Structure
+2024-10-11 16:26:20 - ActEvo.main - INFO - Running command: diamond blastp -d /database/GTDB.dmnd -q /data/EzSEA_l8rd0u3m24xwu6d/input.fasta -o /data/EzSEA_l8rd0u3m24xwu6d/Sequence/diamond_output.m8 -k 100 --quiet --threads 8
+2024-10-11 16:33:10 - ActEvo.main - INFO - Running command: bash -c seqtk subseq /database/GTDB.faa <(cut -f 2 /data/EzSEA_l8rd0u3m24xwu6d/Sequence/diamond_output.m8) > /data/EzSEA_l8rd0u3m24xwu6d/Sequence/seq.faa
+2024-10-11 16:35:50 - ActEvo.main - INFO - Running command: cd-hit -i /data/EzSEA_l8rd0u3m24xwu6d/Sequence/seq.faa -o /data/EzSEA_l8rd0u3m24xwu6d/Sequence/seq_no_dups.faa -c 1.0 -n 5
+2024-10-11 16:35:50 - ActEvo.main - INFO - Running command: muscle -super5 /data/EzSEA_l8rd0u3m24xwu6d/Sequence/seq_no_dups.faa -threads 8 -output /data/EzSEA_l8rd0u3m24xwu6d/Alignment/seq.afa
+2024-10-11 16:35:50 - ActEvo.main - INFO - Running command: goalign clean sites --char=GAP -c 0.97 -i /data/EzSEA_l8rd0u3m24xwu6d/Alignment/seq.afa -o /data/EzSEA_l8rd0u3m24xwu6d/Alignment/seq_trimmed.afa
+2024-10-11 16:35:50 - ActEvo.main - INFO - Running command: FastTree -lg -gamma -out /data/EzSEA_l8rd0u3m24xwu6d/Tree/seq.tree /data/EzSEA_l8rd0u3m24xwu6d/Alignment/seq_trimmed.afa
+2024-10-11 16:35:54 - ActEvo.main - INFO - Running command: java -jar /usr/src/app/localcolabfold/colabfold-conda/lib/python3.10/site-packages/ActEvo/bnkit.jar --aln /data/EzSEA_l8rd0u3m24xwu6d/Alignment/seq_trimmed.afa --nwk /data/EzSEA_l8rd0u3m24xwu6d/Tree/seq.tree --output-folder /data/EzSEA_l8rd0u3m24xwu6d/Ancestral --prefix seq_trimmed
+2024-10-11 16:35:58 - ActEvo.main - INFO - Tree-building pipeline completed successfully!
+2024-10-11 16:35:58 - ActEvo.main - INFO - Structure prediction completed successfully!
+2024-10-11 16:35:58 - ActEvo.main - INFO - Examining coevolution in the query sequence using plmc...
+2024-10-11 16:38:10 - ActEvo.main - INFO - Starting delineation algorithm...
+2024-10-11 16:38:11 - ActEvo.main - INFO - Done. Goodbye!
