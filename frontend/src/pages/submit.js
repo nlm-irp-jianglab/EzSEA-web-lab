@@ -416,7 +416,7 @@ const Home = () => {
                                                             color: selectedAlignmentProgram === 'clustalo' ? 'white' : 'black'
                                                         }}
                                                     >
-                                                        clustalw
+                                                        clustalo
                                                     </button>
                                                 </span>
                                             </div>
