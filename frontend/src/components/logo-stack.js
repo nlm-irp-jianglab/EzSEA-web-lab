@@ -188,6 +188,7 @@ const LogoStack = React.forwardRef(
                                         importantResidues={importantResiduesList[key] || {
                                             differing_residues: [], // If no important residues are provided, default to empty list
                                         }}
+                                        mode="FREQUENCY"
                                     //onSymbolMouseOver={onColumnHover} // Disabled due to performance issues: Hovering over column is choppy. Highlighting on structure is ok
                                     />
                                 </div>

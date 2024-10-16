@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import * as pt from 'phylotree';
-import { isLeafNode } from 'phylotree/src/nodes';
+import { isLeafNode, getRootNode } from 'phylotree/src/nodes';
 import { addCustomMenu } from 'phylotree/src/render/menus';
 import { selectAllDescendants } from 'phylotree/src/nodes';
 import Navbar from "../components/navbar";
@@ -10,6 +10,7 @@ import MolstarViewer from "../components/molstar";
 import LogoStack from '../components/logo-stack';
 import { readFastaToDict, parseNodeData } from '../components/utils';
 import { useParams } from 'react-router-dom';
+import * as d3 from 'd3';
 
 const logoFiles = {};
 
@@ -41,6 +42,8 @@ const Tol = () => {
     const treeRef = useRef(null);
     const pvdiv = useRef(null);
 
+    // Storing tree reference itself
+    const [treeObj, setTreeObj] = useState(null);
 
     // Fetch the tree data and node data on component mount, store data into states
     // TODO: Fetch dynamically from the backend
@@ -75,15 +78,6 @@ const Tol = () => {
 
             const tree = new pt.phylotree(newickData);
 
-            function clearRightPanel() {
-                setPipVisible(false);
-                setSelectedResidue(null);
-                setIsLeftCollapsed(false);
-                setIsRightCollapsed(false);
-                setColorFile(null);
-                setLogoContent(null);
-                treeRef.current.style.width = '100%';
-            }
 
             function style_nodes(element, node_data) {
                 var node_label = element.select("text");
@@ -120,6 +114,8 @@ const Tol = () => {
                         }
                         node['compare-node'] = !node['compare-node'];
 
+                        console.log("Selected for comparison:", node, el.node());
+
                         // Add node to selectedNodes, if already in list, remove it
                         // Check if node is already selected
                         const index = selectedNodes.indexOf(node);
@@ -128,7 +124,7 @@ const Tol = () => {
                         } else {
                             selectedNodes.push(node);
                         }
-                        console.log(selectedNodes);
+                        console.log("Currently selected nodes: ", selectedNodes);
                         setSelectedNodes(selectedNodes);
                         // append to logocontent
                         const data = {};
@@ -163,7 +159,7 @@ const Tol = () => {
                             selectedNodes.length = 0;
                             selectedNodes.push(branch.target);
                             selectedNodes.push(branch.source);
-    
+
                             var source = branch.source.data.name;
                             var target = branch.target.data.name;
                             console.log("Selected branch:", source, target);
@@ -172,14 +168,9 @@ const Tol = () => {
                                 clearRightPanel();
                                 return;
                             } else { // Send node data to generate logos and o
-                                var descendants = selectAllDescendants(branch.target, false, true);
-                                var source_fa = "";
-                                for (var node of descendants) {
-                                    source_fa += `>${node.data.name}\n${faData[node.data.name]}\n`;
-                                }
                                 var data = {
-                                    [source + "desc"]: source_fa, // LogoJS parser expects header before sequence
-                                    [target]: `>${source}\n${faData[target]}`,
+                                    [source]:`>${source}\n${faData[source]}`, // LogoJS parser expects header before sequence
+                                    [target]: `>${target}\n${faData[target]}`,
                                 }
                                 treeRef.current.style.width = '50%'; // Need to have all these states as a toggle
                                 setColorFile(`${source}_${target}.color.txt`);
@@ -187,14 +178,16 @@ const Tol = () => {
                                 setPipVisible(true);
                             }
                         }
-    
+
                     });
                 } catch (error) {
                     // Select all descendent branches triggers this error
                     // console.error("Error styling edges:", error);
                 }
-                
+
             }
+
+            setTreeObj(tree);  
 
             tree.render({
                 'container': "#tree_container",
@@ -280,6 +273,25 @@ const Tol = () => {
         const logoFileContent = JSON.stringify(logoFiles[fileName], null, 2); // Formatting as JSON
         handleDownload(`${fileName}.json`, logoFileContent);
     };
+
+    function clearRightPanel() {
+        setPipVisible(false);
+        setSelectedResidue(null);
+        setIsLeftCollapsed(false);
+        setIsRightCollapsed(false);
+        setColorFile(null);
+        setLogoContent(null);
+        selectedNodes.length = 0;
+        setSelectedNodes([]);
+        var desc = selectAllDescendants(treeObj.getNodes(), false, true);
+        // Map set node-compare to false over desc
+        desc.forEach(node => {
+            node['compare-node'] = false;
+        });
+        d3.selectAll('.branch-selected').classed('branch-selected', false);
+        d3.selectAll('.internal-node').select('circle').style('fill', '');
+        treeRef.current.style.width = '100%';
+    }
 
     const renderDropdown = () => (
         <div className="dropdown">
@@ -409,9 +421,7 @@ const Tol = () => {
                                     <button
                                         className="logo-close-btn"
                                         onClick={() => {
-                                            setPipVisible(false);
-                                            setSelectedResidue(null);
-                                            setIsLeftCollapsed(false);
+                                            clearRightPanel();
                                         }}
                                     >
                                         X

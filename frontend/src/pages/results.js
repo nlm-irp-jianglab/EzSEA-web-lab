@@ -38,6 +38,8 @@ const Results = () => {
     const treeRef = useRef(null);
     const pvdiv = useRef(null);
 
+    // Storing tree reference itself
+    const [treeObj, setTreeObj] = useState(null);
 
     // Fetch the tree data and node data on component mount, store data into states
     useEffect(() => {
@@ -146,7 +148,7 @@ const Results = () => {
                             selectedNodes.push(node);
                         }
 
-                        // setSelectedNodes(selectedNodes);
+                        setSelectedNodes(selectedNodes);
                         // append to logocontent
                         const data = {};
                         selectedNodes.forEach(n => {
@@ -214,6 +216,9 @@ const Results = () => {
 
             }
 
+            setTreeObj(tree);  
+
+
             tree.render({
                 'container': "#tree_container",
                 'is-radial': true,
@@ -272,8 +277,15 @@ const Results = () => {
         setIsRightCollapsed(false);
         setColorFile(null);
         setLogoContent(null);
+        selectedNodes.length = 0;
         setSelectedNodes([]);
-        treeRef.current.style.width = '100%';
+        var desc = selectAllDescendants(treeObj.getNodes(), false, true);
+        // Map set node-compare to false over desc
+        desc.forEach(node => {
+            node['compare-node'] = false;
+        });
+        d3.selectAll('.branch-selected').classed('branch-selected', false);
+        d3.selectAll('.internal-node').select('circle').style('fill', '');
     }
 
     const handleColumnHover = (index) => {
