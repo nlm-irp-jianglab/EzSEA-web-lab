@@ -84,6 +84,7 @@ const Home = () => {
             "folding_program": selectedFoldingProgram,
             "tree_program": selectedPhylogeneticProgram,
             "asr_program": selectedAncestralProgram,
+            "align_program": selectedAlignmentProgram,
             "num_seq": selectedNumSeq
         }
 

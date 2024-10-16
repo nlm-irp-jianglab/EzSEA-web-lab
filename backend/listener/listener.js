@@ -24,7 +24,9 @@ app.post("/submit", (req, res) => {
     const command = `docker run --gpus all \
           --mount type=bind,source=/home/zhaoj16_ncbi_nlm_nih_gov/EzSEA/,target=/data \
           --mount type=bind,source=/home/jiangak_ncbi_nlm_nih_gov/database/,target=/database \
-          ezsea ezsea -i "${data.sequence}" --output "/data/EzSEA_${data.job_id}" -d "/database/GTDB" -n ${data.num_seq} -f "${data.folding_program}" --treeprogram "${data.tree_program}" --asrprogram "${data.asr_program}"
+          ezsea ezsea -i "${data.sequence}" --output "/data/EzSEA_${data.job_id}" -d "/database/GTDB" \
+          -n ${data.num_seq} -f "${data.folding_program}" --treeprogram "${data.tree_program}" \
+          --asrprogram "${data.asr_program}" --alignprogram "${data.align_program}" \
           `;
     logger.info("Running: " + command);
     exec(command, (err, stdout, stderr) => {
