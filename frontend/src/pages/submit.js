@@ -17,7 +17,7 @@ const Home = () => {
     const [selectedFoldingProgram, setSelectedFoldingProgram] = useState("colabfold");
     const [selectedPhylogeneticProgram, setSelectedPhylogeneticProgram] = useState("FastTree");
     const [selectedAncestralProgram, setSelectedAncestralProgram] = useState("GRASP");
-    const [selectedAlignmentProgram, setSelectedAlignmentProgram] = useState("MUSCLE");
+    const [selectedAlignmentProgram, setSelectedAlignmentProgram] = useState("muscle");
 
     let navigate = useNavigate();
 
@@ -392,10 +392,10 @@ const Home = () => {
                                                 <p>Alignment Program:</p>
                                                 <span>
                                                     <button className="bp3-button bp3-minimal"
-                                                        onClick={() => setSelectedAlignmentProgram('MUSCLE')}
+                                                        onClick={() => setSelectedAlignmentProgram('muscle')}
                                                         style={{
-                                                            backgroundColor: selectedAlignmentProgram === 'MUSCLE' ? '#007bff' : '#eee',
-                                                            color: selectedAlignmentProgram === 'MUSCLE' ? 'white' : 'black'
+                                                            backgroundColor: selectedAlignmentProgram === 'muscle' ? '#007bff' : '#eee',
+                                                            color: selectedAlignmentProgram === 'muscle' ? 'white' : 'black'
                                                         }}
                                                     >
                                                         MUSCLE
@@ -410,10 +410,10 @@ const Home = () => {
                                                         MAFFT
                                                     </button>
                                                     <button className="bp3-button bp3-minimal"
-                                                        onClick={() => setSelectedAlignmentProgram('clustalw')}
+                                                        onClick={() => setSelectedAlignmentProgram('clustalo')}
                                                         style={{
-                                                            backgroundColor: selectedAlignmentProgram === 'clustalw' ? '#007bff' : '#eee',
-                                                            color: selectedAlignmentProgram === 'clustalw' ? 'white' : 'black'
+                                                            backgroundColor: selectedAlignmentProgram === 'clustalo' ? '#007bff' : '#eee',
+                                                            color: selectedAlignmentProgram === 'clustalo' ? 'white' : 'black'
                                                         }}
                                                     >
                                                         clustalw
