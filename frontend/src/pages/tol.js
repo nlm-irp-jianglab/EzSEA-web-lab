@@ -22,7 +22,7 @@ const Tol = () => {
     const [nodeData, setnodeData] = useState(null);
 
     // State to store the logo content (formatted for logoJS) and color file
-    const [logoContent, setLogoContent] = useState(null);
+    const [logoContent, setLogoContent] = useState({});
     const [colorFile, setColorFile] = useState(null);
     const [selectedNodes, setSelectedNodes] = useState([]); // Important, keeps track of user selected nodes for comparison
 
@@ -77,7 +77,7 @@ const Tol = () => {
             treeRef.current.innerHTML = '';
 
             const tree = new pt.phylotree(newickData);
-
+            setTreeObj(tree);
 
             function style_nodes(element, node_data) {
                 var node_label = element.select("text");
@@ -98,7 +98,7 @@ const Tol = () => {
                         if (node['compare-node']) {
                             return "Remove from compare";
                         }
-                        return "Select for compare";
+                        return "Compare ancestral state";
                     }
 
                     function showMenuOpt(node) {
@@ -109,37 +109,111 @@ const Tol = () => {
                         // change color of circle to red
                         if (node['compare-node']) {
                             el.select("circle").style("fill", "");
+                            node['compare-descendants'] = false;
                         } else {
                             el.select("circle").style("fill", "red");
                         }
                         node['compare-node'] = !node['compare-node'];
 
-                        console.log("Selected for comparison:", node, el.node());
+                        console.log("Current logo content: ", logoContent);
 
-                        // Add node to selectedNodes, if already in list, remove it
+                        // Add node to logoContent, if already in list, remove it
                         // Check if node is already selected
-                        const index = selectedNodes.indexOf(node);
-                        if (index > -1) {
-                            selectedNodes.splice(index, 1);
-                        } else {
-                            selectedNodes.push(node);
-                        }
-                        console.log("Currently selected nodes: ", selectedNodes);
-                        setSelectedNodes(selectedNodes);
-                        // append to logocontent
-                        const data = {};
-                        selectedNodes.forEach(n => {
-                            data[n.data.name] = `>${n.data.name}\n${faData[n.data.name]}`;
+                        setLogoContent(prevLogoContent => {
+                            const updatedLogoContent = { ...prevLogoContent };
+
+                            // Add or remove node from logoContent
+                            if (node.data.name in updatedLogoContent) {
+                                delete updatedLogoContent[node.data.name];  // Remove the node
+                            } else {
+                                updatedLogoContent[node.data.name] = `>${node.data.name}\n${faData[node.data.name]}`;  // Add the node
+                            }
+
+                            // Adjust layout and show PIP if there's any content
+                            if (Object.keys(updatedLogoContent).length > 0) {
+                                treeRef.current.style.width = '50%';
+                                setIsRightCollapsed(false);
+                                setPipVisible(true);
+                            } else {
+                                treeRef.current.style.width = '100%';
+                                setPipVisible(false);
+                            }
+
+                            return updatedLogoContent;  // Return the new state
                         });
-                        treeRef.current.style.width = '50%'; // Need to have all these states as a toggle
-                        setLogoContent(data);
-                        setPipVisible(true);
+
                     }
 
-                    // Adding my custom menu
-                    addCustomMenu(node_data, compareMenuCondition, function () {
-                        compare(node_data, element);
-                    }, showMenuOpt);
+                    function compareDescMenuCondition(node) {
+                        if (node['compare-descendants']) {
+                            return "Remove descendants";
+                        } else {
+                            return "Compare descendants";
+                        }
+                    }
+
+                    function compareDescendants(node, el) {
+                        // change color of circle to yellow
+                        if (node['compare-descendants']) {
+                            el.select("circle").style("fill", "");
+                        } else {
+                            el.select("circle").style("fill", "yellow");
+                        }
+                        node['compare-descendants'] = !node['compare-descendants'];
+                        node['compare-node'] = !node['compare-node'];
+
+                        console.log("Current logo content: ", logoContent);
+
+                        // Add node to logoContent, if already in list, remove it
+                        // Check if node is already selected
+                        setLogoContent(prevLogoContent => {
+                            const updatedLogoContent = { ...prevLogoContent };
+
+                            // Add or remove node from logoContent
+                            if (node.data.name in updatedLogoContent) {
+                                delete updatedLogoContent[node.data.name];  // Remove the node
+                            } else {
+                                var descendants = selectAllDescendants(node, false, true);
+                                var desc_fa = "";
+                                for (var desc of descendants) {
+                                    desc_fa += `>${desc.data.name}\n${faData[desc.data.name]}\n`;
+                                }
+                                updatedLogoContent[node.data.name] = desc_fa;  // Add the node
+                            }
+
+                            // Adjust layout and show PIP if there's any content
+                            if (Object.keys(updatedLogoContent).length > 0) {
+                                treeRef.current.style.width = '50%';
+                                setIsRightCollapsed(false);
+                                setPipVisible(true);
+                            } else {
+                                treeRef.current.style.width = '100%';
+                                setPipVisible(false);
+                            }
+
+                            return updatedLogoContent;  // Return the new state
+                        });
+                    }
+
+                    function showDescMenuOpt(node) {
+                        if (node['compare-descendants'] || node['compare-node']) {
+                            return false;
+                        }
+                        return true;
+                    }
+
+                    // Toggling selection options causes this code to run in duplicate. Patchy fix
+
+                    if (!node_data['menu_items'] || node_data['menu_items'].length != 2) {
+                        // Adding my custom menu
+                        addCustomMenu(node_data, compareMenuCondition, function () {
+                            compare(node_data, element);
+                        }, showMenuOpt);
+
+                        addCustomMenu(node_data, compareDescMenuCondition, function () {
+                            compareDescendants(node_data, element);
+                        }, showDescMenuOpt);
+                    }
                 } else { // edits to the leaf nodes
 
                 }
@@ -153,12 +227,12 @@ const Tol = () => {
                             event.target.classList.remove('branch-selected');
                             clearRightPanel();
                         } else {
-
+                            // Remove all previous highlighted branches
+                            d3.selectAll('.branch-selected').classed('branch-selected', false);
+                            // Remove all previous selected nodes
                             branch.selected = true;
                             event.target.classList.add('branch-selected');
-                            selectedNodes.length = 0;
-                            selectedNodes.push(branch.target);
-                            selectedNodes.push(branch.source);
+                            setLogoContent({});
 
                             var source = branch.source.data.name;
                             var target = branch.target.data.name;
@@ -169,25 +243,26 @@ const Tol = () => {
                                 return;
                             } else { // Send node data to generate logos and o
                                 var data = {
-                                    [source]:`>${source}\n${faData[source]}`, // LogoJS parser expects header before sequence
+                                    [source]: `>${source}\n${faData[source]}`, // LogoJS parser expects header before sequence
                                     [target]: `>${target}\n${faData[target]}`,
                                 }
                                 treeRef.current.style.width = '50%'; // Need to have all these states as a toggle
                                 setColorFile(`${source}_${target}.color.txt`);
                                 setLogoContent(data);
+                                setIsRightCollapsed(false);
                                 setPipVisible(true);
+                                console.log(logoContent);
                             }
                         }
-
                     });
                 } catch (error) {
                     // Select all descendent branches triggers this error
                     // console.error("Error styling edges:", error);
                 }
 
+
             }
 
-            setTreeObj(tree);  
 
             tree.render({
                 'container': "#tree_container",
@@ -240,10 +315,37 @@ const Tol = () => {
         setSelectedResidue(index + 1);
     };
 
+    function clearRightPanel() {
+        setPipVisible(false);
+        setSelectedResidue(null);
+        setIsLeftCollapsed(false);
+        setIsRightCollapsed(false);
+        setColorFile(null);
+        setLogoContent({});
+        var desc = selectAllDescendants(treeObj.getNodes(), false, true);
+        // Map set node-compare to false over desc
+        desc.forEach(node => {
+            node['compare-node'] = false;
+        });
+        d3.selectAll('.internal-node').select('circle').style('fill', '');
+        d3.selectAll('.branch-selected').classed('branch-selected', false);
+        treeRef.current.style.width = '100%';
+    }
+
     const handleColumnHover = (index) => {
         console.log("Column hovered:", index);
         setHoveredResidue(index + 1);
     };
+
+    const handleNodeRemove = (index) => {
+        // Remove node from logoContent
+        const newLogoContent = { ...logoContent };
+        const keys = Object.keys(newLogoContent);
+        delete newLogoContent[keys[index]];
+        setLogoContent(newLogoContent);
+        // TODO!! Sync highlights on the tree
+        console.log("Logo content after removal:", logoContent);
+    }
 
     const toggleLeftCollapse = () => {
         setIsLeftCollapsed(!isLeftCollapsed);
@@ -274,24 +376,7 @@ const Tol = () => {
         handleDownload(`${fileName}.json`, logoFileContent);
     };
 
-    function clearRightPanel() {
-        setPipVisible(false);
-        setSelectedResidue(null);
-        setIsLeftCollapsed(false);
-        setIsRightCollapsed(false);
-        setColorFile(null);
-        setLogoContent(null);
-        selectedNodes.length = 0;
-        setSelectedNodes([]);
-        var desc = selectAllDescendants(treeObj.getNodes(), false, true);
-        // Map set node-compare to false over desc
-        desc.forEach(node => {
-            node['compare-node'] = false;
-        });
-        d3.selectAll('.branch-selected').classed('branch-selected', false);
-        d3.selectAll('.internal-node').select('circle').style('fill', '');
-        treeRef.current.style.width = '100%';
-    }
+
 
     const renderDropdown = () => (
         <div className="dropdown">
@@ -382,7 +467,7 @@ const Tol = () => {
                     ></div>
                 )}
 
-                {selectedNodes.length > 0 && (
+                {Object.keys(logoContent).length > 0 && (
                     <div className="center-console">
                         {!isRightCollapsed && (
                             <button className="triangle-button" onClick={toggleLeftCollapse}>
@@ -413,6 +498,7 @@ const Tol = () => {
                                     onColumnClick={handleColumnClick}
                                     onColumnHover={handleColumnHover}
                                     importantResiduesList={nodeData}
+                                    removeNodeHandle={handleNodeRemove}
                                 />
                             </div>
                         ) : (
@@ -431,6 +517,7 @@ const Tol = () => {
                                         onColumnClick={handleColumnClick}
                                         onColumnHover={handleColumnHover}
                                         importantResiduesList={nodeData}
+                                        removeNodeHandle={handleNodeRemove}
                                     />
                                 </div>
                             </div>

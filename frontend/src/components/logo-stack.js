@@ -10,7 +10,7 @@ const LogoStack = React.forwardRef(
         onColumnClick (optional): A function to handle click events on the logo
         onColumnHover (optional): A function to handle hover events on the logo
     */
-    ({ data, onColumnClick, onColumnHover, importantResiduesList }, ref) => {
+    ({ data, onColumnClick, onColumnHover, importantResiduesList, removeNodeHandle }, ref) => {
         const [fastaContent, setFastaContent] = useState({});
         const [refsUpdated, setRefsUpdated] = useState(0);
         const logoRefs = useRef([]);
@@ -144,6 +144,8 @@ const LogoStack = React.forwardRef(
             logoRefs.current.splice(logoIndex, 1);
             setFastaContent(newFastaContent);
             setRefsUpdated(refsUpdated - 1);
+
+            removeNodeHandle(logoIndex); // Call the parent function to remove the node from list in Results.js
         };
 
         useImperativeHandle(ref, () => ({
