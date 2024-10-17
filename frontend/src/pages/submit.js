@@ -401,13 +401,13 @@ const Home = () => {
                                                         MUSCLE
                                                     </button>
                                                     <button className="bp3-button bp3-minimal"
-                                                        onClick={() => setSelectedAlignmentProgram('MAFFT')}
+                                                        onClick={() => setSelectedAlignmentProgram('mafft')}
                                                         style={{
-                                                            backgroundColor: selectedAlignmentProgram === 'MAFFT' ? '#007bff' : '#eee',
-                                                            color: selectedAlignmentProgram === 'MAFFT' ? 'white' : 'black'
+                                                            backgroundColor: selectedAlignmentProgram === 'mafft' ? '#007bff' : '#eee',
+                                                            color: selectedAlignmentProgram === 'mafft' ? 'white' : 'black'
                                                         }}
                                                     >
-                                                        MAFFT
+                                                        mafft
                                                     </button>
                                                     <button className="bp3-button bp3-minimal"
                                                         onClick={() => setSelectedAlignmentProgram('clustalo')}

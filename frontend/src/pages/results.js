@@ -10,6 +10,7 @@ import MolstarViewer from "../components/molstar";
 import LogoStack from '../components/logo-stack';
 import { fastaToDict, parseNodeData } from '../components/utils';
 import { useParams } from 'react-router-dom';
+import * as d3 from 'd3';
 
 const Results = () => {
     const { jobId } = useParams();
