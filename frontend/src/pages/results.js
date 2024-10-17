@@ -22,7 +22,7 @@ const Results = () => {
     const [structData, setStructData] = useState(null); // Structure data
 
     // State to store the logo content (formatted for logoJS) and color file
-    const [logoContent, setLogoContent] = useState(null);
+    const [logoContent, setLogoContent] = useState({});
     const [colorFile, setColorFile] = useState(null);
     const [selectedNodes, setSelectedNodes] = useState([]); // Important, keeps track of user selected nodes for comparison
 
