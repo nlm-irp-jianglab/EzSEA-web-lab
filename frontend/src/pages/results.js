@@ -320,6 +320,8 @@ const Results = () => {
     useEffect(() => {
         if (Object.keys(logoContent).length == 0) {
             setPipVisible(false);
+        } else {
+            setPipVisible(true);
         }
     }, [logoContent]);
 
@@ -330,13 +332,18 @@ const Results = () => {
                 pvdiv.current.style.height = 'calc(100% - 504px)';
             };
 
-            const handleMouseLeave = () => {
-                node.style.height = '250px';
-                pvdiv.current.style.height = 'calc(100% - 250px)';
+            node.addEventListener('mouseenter', handleMouseEnter);
+        }
+    }, []);
+
+    const setPvdivCallback = useCallback((node) => {
+        if (node !== null) {
+            const handleMouseEnter = () => {
+                node.style.height = 'calc(100% - 250px)';
+                logoStackRef.current.style.height = '250px';
             };
 
             node.addEventListener('mouseenter', handleMouseEnter);
-            node.addEventListener('mouseleave', handleMouseLeave);
         }
     }, []);
 
@@ -393,6 +400,35 @@ const Results = () => {
             });
     }
 
+    const selectNode = (nodeId) => {
+        if (nodeId in logoContent) { // If already selected, do nothing
+            return;
+        }
+        d3.selectAll('.internal-node')
+            .each(function () {
+                var node = d3.select(this).data()[0];
+                if (node.data.name === nodeId) {
+                    node['compare-node'] = true;
+
+                    // Add to logoContent
+                    setLogoContent(prevLogoContent => {
+                        const updatedLogoContent = { ...prevLogoContent };
+                        updatedLogoContent[node.data.name] = `>${node.data.name}\n${faData[node.data.name]}`;
+                        return updatedLogoContent;
+                    });
+
+                    const circles = d3.select(this).selectAll('circle'); // Highlight/Rehighlight Node
+                    if (circles.size() === 2) {
+                        circles.filter(function (d, i) {
+                            return i === 0; // Target the first circle when there are two
+                        }).remove();
+                    }
+
+                    d3.select(this).insert("circle", ":first-child").attr("r", 5).style("fill", "red");
+                }
+            });
+    }
+
     const toggleLeftCollapse = () => {
         setIsLeftCollapsed(!isLeftCollapsed);
     };
@@ -413,7 +449,7 @@ const Results = () => {
         document.body.removeChild(element);
     };
 
-    const renderDropdown = () => (
+    const downloadsDropdown = () => (
         <div className="dropdown">
             <button className="dropbtn">Download Files</button>
             <div className="dropdown-content">
@@ -423,6 +459,19 @@ const Results = () => {
                 <button onClick={() => handleDownload(`${jobId}_struct.pdb`, structData)}>Structure PDB</button>
                 <button onClick={() => handleDownload(`${jobId}_tree_data.nwk`, newickData)}>Tree Newick</button>
                 <button onClick={downloadTreeAsSVG}>Tree SVG</button>
+            </div>
+        </div>
+    );
+
+    const importantNodesDropdown = () => (
+        <div className="dropdown">
+            <button className="dropbtn">Important Nodes</button>
+            <div className="dropdown-content">
+                {Object.keys(topNodes).map(key => (
+                    <button key={key} onClick={() => selectNode(key)}>
+                        {key} Score: {topNodes[key]['score']}
+                    </button>
+                ))}
             </div>
         </div>
     );
@@ -482,7 +531,10 @@ const Results = () => {
             <Navbar pageId={"Integrated Tree Viewer"} />
             <div className="btn-toolbar" style={{ display: "flex", justifyContent: "space-between" }}>
                 <p>Results of job: {jobId}</p>
-                {renderDropdown()}
+                <span>
+                    {downloadsDropdown()}
+                    {importantNodesDropdown()}
+                </span>
             </div>
             <div style={{ display: 'flex', height: '90vh', margin: '0 20px' }}>
                 {!isLeftCollapsed && (
@@ -530,7 +582,7 @@ const Results = () => {
                             </div>
                         ) : (
                             <div className="expandedRight">
-                                <div className="logodiv" ref={setLogoCallback} style={{ width: isLeftCollapsed ? '50%' : '100%', height: isLeftCollapsed ? '100%' : '300px' }}>
+                                <div className="logodiv" ref={(el) => {(setLogoCallback(el)); logoStackRef.current = el}} style={{ width: isLeftCollapsed ? '50%' : '100%', height: isLeftCollapsed ? '100%' : '250px' }}>
                                     <button
                                         className="logo-close-btn"
                                         onClick={() => {
@@ -550,7 +602,7 @@ const Results = () => {
                             </div>
                         )}
 
-                        <div className="pvdiv" ref={pvdiv} style={{ width: isLeftCollapsed ? '50%' : '100%' }}>
+                        <div className="pvdiv" ref={(el) => {setPvdivCallback(el); pvdiv.current = el}} style={{ width: isLeftCollapsed ? '50%' : '100%' }}>
                             <MolstarViewer
                                 structData={structData}
                                 selectedResidue={selectedResidue}
