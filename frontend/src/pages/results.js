@@ -75,11 +75,9 @@ const Results = () => {
                     if (data.nodesError) {
                         console.error("Error fetching nodes data:", data.nodesError);
                     } else {
-                        JSON.parse(data.nodes)
-                            .then((json) => {
-                                parseNodeData(json.slice(0, 10)).then((parsedData) => setTopNodes(parsedData));
-                                parseNodeData(json).then((parsedData) => setnodeData(parsedData));
-                            });
+                        const json = JSON.parse(data.nodes);
+                        parseNodeData(json.slice(0, 10)).then((parsedData) => setTopNodes(parsedData));
+                        parseNodeData(json).then((parsedData) => setnodeData(parsedData));
                     }
 
                     if (data.structError) {
@@ -107,7 +105,8 @@ const Results = () => {
                 if (!isLeafNode(node_data)) { // edits to the internal nodes
                     node_label.text("\u00A0\u00A0\u00A0\u00A0" + node_label.text() + "\u00A0\u00A0\u00A0\u00A0")
                         .style("font-weight", "bold");
-                    if (topNodes && node_data.data.name in topNodes) { // First condition to ensure nodeData is populated
+
+                    if (topNodes && node_data.data.name in topNodes) { // First condition to ensure topNodes is populated
                         element.select("circle").style("fill", "green");
                     }
 
