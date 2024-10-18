@@ -20,11 +20,11 @@ const Results = () => {
     const [newickData, setNewickData] = useState(null); // Tree
     const [nodeData, setnodeData] = useState(null); // asr stats, important residues
     const [structData, setStructData] = useState(null); // Structure data
+    const [topNodes, setTopNodes] = useState(null); // Top 10 nodes for the tree
 
     // State to store the logo content (formatted for logoJS) and color file
-    const [logoContent, setLogoContent] = useState({});
+    const [logoContent, setLogoContent] = useState({}); // Dict of N#: sequences used for rendering seqlogo
     const [colorFile, setColorFile] = useState(null);
-    const [selectedNodes, setSelectedNodes] = useState([]); // Important, keeps track of user selected nodes for comparison
 
     // For live updates linking sequence logo and structure viewer
     const [selectedResidue, setSelectedResidue] = useState(null);
@@ -75,8 +75,11 @@ const Results = () => {
                     if (data.nodesError) {
                         console.error("Error fetching nodes data:", data.nodesError);
                     } else {
-                        parseNodeData(JSON.parse(data.nodes))
-                            .then((parsedData) => setnodeData(parsedData));
+                        JSON.parse(data.nodes)
+                            .then((json) => {
+                                parseNodeData(json.slice(0, 10)).then((parsedData) => setTopNodes(parsedData));
+                                parseNodeData(json).then((parsedData) => setnodeData(parsedData));
+                            });
                     }
 
                     if (data.structError) {
@@ -104,6 +107,9 @@ const Results = () => {
                 if (!isLeafNode(node_data)) { // edits to the internal nodes
                     node_label.text("\u00A0\u00A0\u00A0\u00A0" + node_label.text() + "\u00A0\u00A0\u00A0\u00A0")
                         .style("font-weight", "bold");
+                    if (topNodes && node_data.data.name in topNodes) { // First condition to ensure nodeData is populated
+                        element.select("circle").style("fill", "green");
+                    }
 
                     // Unaligning the internal nodes
                     const currentTransform = node_label.attr("transform");
@@ -127,10 +133,10 @@ const Results = () => {
                     function compare(node, el) {
                         // change color of circle to red
                         if (node['compare-node']) {
-                            el.select("circle").style("fill", "");
+                            el.select("circle").remove();
                             node['compare-descendants'] = false;
                         } else {
-                            el.select("circle").style("fill", "red");
+                            el.insert("circle", ":first-child").attr("r", 5).style("fill", "red");
                         }
                         node['compare-node'] = !node['compare-node'];
 
@@ -174,9 +180,9 @@ const Results = () => {
                     function compareDescendants(node, el) {
                         // change color of circle to yellow
                         if (node['compare-descendants']) {
-                            el.select("circle").style("fill", "");
+                            el.select("circle").remove();
                         } else {
-                            el.select("circle").style("fill", "yellow");
+                            el.insert("circle", ":first-child").attr("r", 5).style("fill", "yellow");
                         }
                         node['compare-descendants'] = !node['compare-descendants'];
                         node['compare-node'] = !node['compare-node'];
@@ -232,7 +238,7 @@ const Results = () => {
                         addCustomMenu(node_data, compareDescMenuCondition, function () {
                             compareDescendants(node_data, element);
                         }, showDescMenuOpt);
-                    }                
+                    }
                 } else { // edits to the leaf nodes
 
                 }
@@ -312,6 +318,12 @@ const Results = () => {
         }
     }, [newickData, isLeftCollapsed, faData]);
 
+    useEffect(() => {
+        if (Object.keys(logoContent).length == 0) {
+            setPipVisible(false);
+        }
+    }, [logoContent]);
+
     const setLogoCallback = useCallback((node) => {
         if (node !== null) {
             const handleMouseEnter = () => {
@@ -345,7 +357,15 @@ const Results = () => {
         desc.forEach(node => {
             node['compare-node'] = false;
         });
-        d3.selectAll('.internal-node').select('circle').style('fill', '');
+        d3.selectAll('.internal-node') // Remove the first circle if two are present in internal nodes
+            .each(function () {
+                const circles = d3.select(this).selectAll('circle');
+                if (circles.size() === 2) {
+                    circles.filter(function (d, i) {
+                        return i === 0; // Target the first circle when there are two
+                    }).remove();
+                }
+            });
         d3.selectAll('.branch-selected').classed('branch-selected', false);
         treeRef.current.style.width = '100%';
     }
@@ -356,11 +376,22 @@ const Results = () => {
     };
 
     const handleNodeRemove = (index) => {
+        // Remove node from logoContent
         const newLogoContent = { ...logoContent };
         const keys = Object.keys(newLogoContent);
         delete newLogoContent[keys[index]];
         setLogoContent(newLogoContent);
-        // TODO!! Sync highlights on the tree
+
+        // Below syncs highlights on TOL with remove action in logo stack
+        d3.selectAll('.internal-node')
+            .each(function () {
+                var node = d3.select(this).data()[0];
+                if (node.data.name === keys[index]) {
+                    node['compare-node'] = false;
+                    node['compare-descendants'] = false;
+                    d3.select(this).select('circle').remove();  // Remove the circle
+                }
+            });
     }
 
     const toggleLeftCollapse = () => {

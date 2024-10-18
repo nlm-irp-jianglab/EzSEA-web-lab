@@ -20,6 +20,7 @@ const Tol = () => {
     const [faData, setFaData] = useState(null);
     const [newickData, setNewickData] = useState(null);
     const [nodeData, setnodeData] = useState(null);
+    const [topNodes, setTopNodes] = useState(null); // Top 10 nodes for the tree
 
     // State to store the logo content (formatted for logoJS) and color file
     const [logoContent, setLogoContent] = useState({});
@@ -63,11 +64,12 @@ const Tol = () => {
         readFastaToDict(`${process.env.PUBLIC_URL}/example_2/Visualization/asr.fa`).then(data => { setFaData(data) });
 
 
-        fetch(`${process.env.PUBLIC_URL}/bilr_example/nodes.json`)
+
+        fetch(`${process.env.PUBLIC_URL}/example_2/Visualization/nodes.json`)
             .then(response => response.json())
-            .then(data => {
-                parseNodeData(data)
-                    .then((parsedData) => setnodeData(parsedData))
+            .then((json) => {
+                parseNodeData(json.slice(0, 10)).then((parsedData) => setTopNodes(parsedData));
+                parseNodeData(json).then((parsedData) => setnodeData(parsedData));
             });
     }, []);
 
@@ -84,7 +86,12 @@ const Tol = () => {
 
                 if (!isLeafNode(node_data)) { // edits to the internal nodes
                     node_label.text("\u00A0\u00A0\u00A0\u00A0" + node_label.text() + "\u00A0\u00A0\u00A0\u00A0")
-                        .style("font-weight", "bold");
+                        .style("font-weight", "bold")
+                        .style("font-size", "10px");
+
+                    if (topNodes && node_data.data.name in topNodes) { // First condition to ensure nodeData is populated
+                        element.select("circle").style("fill", "green");
+                    }
 
                     // Unaligning the internal nodes
                     const currentTransform = node_label.attr("transform");
@@ -108,10 +115,10 @@ const Tol = () => {
                     function compare(node, el) {
                         // change color of circle to red
                         if (node['compare-node']) {
-                            el.select("circle").style("fill", "");
+                            el.select("circle").remove();
                             node['compare-descendants'] = false;
                         } else {
-                            el.select("circle").style("fill", "red");
+                            el.insert("circle", ":first-child").attr("r", 5).style("fill", "red");
                         }
                         node['compare-node'] = !node['compare-node'];
 
@@ -155,9 +162,9 @@ const Tol = () => {
                     function compareDescendants(node, el) {
                         // change color of circle to yellow
                         if (node['compare-descendants']) {
-                            el.select("circle").style("fill", "");
+                            el.select("circle").remove();
                         } else {
-                            el.select("circle").style("fill", "yellow");
+                            el.insert("circle", ":first-child").attr("r", 5).style("fill", "yellow");
                         }
                         node['compare-descendants'] = !node['compare-descendants'];
                         node['compare-node'] = !node['compare-node'];
@@ -294,6 +301,12 @@ const Tol = () => {
         }
     }, [newickData, isLeftCollapsed, isRadial, faData]);
 
+    useEffect(() => {
+        if (Object.keys(logoContent).length == 0) {
+            setPipVisible(false);
+        }
+    }, [logoContent]);
+
     const setLogoCallback = useCallback((node) => {
         if (node !== null) {
             const handleMouseEnter = () => {
@@ -327,7 +340,15 @@ const Tol = () => {
         desc.forEach(node => {
             node['compare-node'] = false;
         });
-        d3.selectAll('.internal-node').select('circle').style('fill', '');
+        d3.selectAll('.internal-node') // Remove the first circle if two are present in internal nodes
+            .each(function () {
+                const circles = d3.select(this).selectAll('circle');
+                if (circles.size() === 2) {
+                    circles.filter(function (d, i) {
+                        return i === 0; // Target the first circle when there are two
+                    }).remove();
+                }
+            });
         d3.selectAll('.branch-selected').classed('branch-selected', false);
         treeRef.current.style.width = '100%';
     }
@@ -343,8 +364,17 @@ const Tol = () => {
         const keys = Object.keys(newLogoContent);
         delete newLogoContent[keys[index]];
         setLogoContent(newLogoContent);
-        // TODO!! Sync highlights on the tree
-        console.log("Logo content after removal:", logoContent);
+
+        // Below syncs highlights on TOL with remove action in logo stack
+        d3.selectAll('.internal-node')
+            .each(function () {
+                var node = d3.select(this).data()[0];
+                if (node.data.name === keys[index]) {
+                    node['compare-node'] = false;
+                    node['compare-descendants'] = false;
+                    d3.select(this).select('circle').remove();  // Remove the circle
+                }
+            });
     }
 
     const toggleLeftCollapse = () => {
@@ -375,8 +405,6 @@ const Tol = () => {
         const logoFileContent = JSON.stringify(logoFiles[fileName], null, 2); // Formatting as JSON
         handleDownload(`${fileName}.json`, logoFileContent);
     };
-
-
 
     const renderDropdown = () => (
         <div className="dropdown">

@@ -26,33 +26,48 @@ const Home = () => {
     };
 
     const validateInput = () => {
-        // TODO implement fasta input validation
         const fasta = fastaInput.current.value.trim();  // Remove any extra whitespace
         const lines = fasta.split('\n');  // Split the input into lines
-
+    
         // Check if empty input
         if (fasta === "") {
             setFastaStatus("empty");
             return;
         }
-
+    
+        // Check for header line
         if (!lines[0].startsWith('>')) {
             setFastaStatus("noHeader");
             return;
         }
-
+    
         // Check if the remaining lines contain only valid characters for the sequence
         const sequenceRegex = /^[ACDEFGHIKLMNPQRSTVWY]+$/i;
+        let sequenceLength = 0;  // Variable to count the sequence length
         for (let i = 1; i < lines.length; i++) {
-            if (!sequenceRegex.test(lines[i])) {
+            const line = lines[i].trim();
+            if (!sequenceRegex.test(line)) {
                 setFastaStatus("invalid");
                 return;
             }
+            sequenceLength += line.length;  // Add line length to the total sequence length
         }
-
-        // If both checks pass, mark as valid
+    
+        // Check if sequence length is within the valid range
+        if (sequenceLength < 50) {
+            setFastaStatus("tooShort");
+            return;
+        }
+    
+        if (sequenceLength > 1000) {
+            setFastaStatus("tooLong");
+            return;
+        }
+    
+        // If all checks pass, mark as valid
         setFastaStatus("valid");
     };
+    
 
     useEffect(() => {
         if (fastaStatus === "valid") {
@@ -196,6 +211,32 @@ const Home = () => {
                             </svg>
                         </span>
                         <span className="bp3-text-overflow-ellipsis bp3-fill">Invalid sequence</span>
+                    </span>
+                );
+            }
+            case "tooShort": {
+                return (
+                    <span className="bp3-tag bp3-intent-danger">
+                        <span icon="cross" className="bp3-icon bp3-icon-cross">
+                            <svg data-icon="cross" width="16" height="16" viewBox="0 0 16 16" style={{ transform: "translateY(2px)" }}>
+                                <desc>cross</desc>
+                                <path d="M9.41 8l3.29-3.29c.19-.18.3-.43.3-.71a1.003 1.003 0 00-1.71-.71L8 6.59l-3.29-3.3a1.003 1.003 0 00-1.42 1.42L6.59 8 3.3 11.29c-.19.18-.3.43-.3.71a1.003 1.003 0 001.71.71L8 9.41l3.29 3.29c.18.19.43.3.71.3a1.003 1.003 0 00.71-1.71L9.41 8z" fillRule="evenodd"></path>
+                            </svg>
+                        </span>
+                        <span className="bp3-text-overflow-ellipsis bp3-fill">Sequence less than 50AA</span>
+                    </span>
+                );
+            }
+            case "tooLong": {
+                return (
+                    <span className="bp3-tag bp3-intent-danger">
+                        <span icon="cross" className="bp3-icon bp3-icon-cross">
+                            <svg data-icon="cross" width="16" height="16" viewBox="0 0 16 16" style={{ transform: "translateY(2px)" }}>
+                                <desc>cross</desc>
+                                <path d="M9.41 8l3.29-3.29c.19-.18.3-.43.3-.71a1.003 1.003 0 00-1.71-.71L8 6.59l-3.29-3.3a1.003 1.003 0 00-1.42 1.42L6.59 8 3.3 11.29c-.19.18-.3.43-.3.71a1.003 1.003 0 001.71.71L8 9.41l3.29 3.29c.18.19.43.3.71.3a1.003 1.003 0 00.71-1.71L9.41 8z" fillRule="evenodd"></path>
+                            </svg>
+                        </span>
+                        <span className="bp3-text-overflow-ellipsis bp3-fill">Sequence longer than 1000AA</span>
                     </span>
                 );
             }
