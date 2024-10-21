@@ -255,8 +255,7 @@ const Tol = () => {
                                     [source]: `>${source}\n${faData[source]}`, // LogoJS parser expects header before sequence
                                     [target]: `>${target}\n${faData[target]}`,
                                 }
-                                treeRef.current.style.width = '50%'; // Need to have all these states as a toggle
-                                setColorFile(`${source}_${target}.color.txt`);
+                                treeRef.current.style.width = '50%'; 
                                 setLogoContent(data);
                                 setIsRightCollapsed(false);
                                 setPipVisible(true);
