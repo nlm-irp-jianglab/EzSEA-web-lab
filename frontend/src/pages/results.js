@@ -20,10 +20,10 @@ const Results = () => {
     const [newickData, setNewickData] = useState(null); // Tree
     const [nodeData, setnodeData] = useState(null); // asr stats, important residues
     const [structData, setStructData] = useState(null); // Structure data
-    const [topNodes, setTopNodes] = useState(null); // Top 10 nodes for the tree
+    const [topNodes, setTopNodes] = useState({}); // Top 10 nodes for the tree
 
     // State to store the logo content (formatted for logoJS) and color file
-    const [logoContent, setLogoContent] = useState({}); // Dict of N#: sequences used for rendering seqlogo
+    const [logoContent, setLogoContent] = useState({}); // Dict of Node: sequences used for rendering seqlogo
     const [colorFile, setColorFile] = useState(null);
 
     // For live updates linking sequence logo and structure viewer
@@ -38,6 +38,7 @@ const Results = () => {
     // References for rendering
     const treeRef = useRef(null);
     const pvdiv = useRef(null);
+    const logoStackRef = useRef(null);
 
     // Storing tree reference itself
     const [treeObj, setTreeObj] = useState(null);
@@ -319,6 +320,7 @@ const Results = () => {
 
     useEffect(() => {
         if (Object.keys(logoContent).length == 0) {
+            setIsLeftCollapsed(false);
             setPipVisible(false);
         } else {
             setPipVisible(true);
@@ -339,6 +341,10 @@ const Results = () => {
     const setPvdivCallback = useCallback((node) => {
         if (node !== null) {
             const handleMouseEnter = () => {
+                if (logoStackRef.current === null) {
+                    node.style.height = '90vh';
+                    return;
+                }
                 node.style.height = 'calc(100% - 250px)';
                 logoStackRef.current.style.height = '250px';
             };
@@ -466,7 +472,7 @@ const Results = () => {
     const importantNodesDropdown = () => (
         <div className="dropdown">
             <button className="dropbtn">Important Nodes</button>
-            <div className="dropdown-content">
+            <div className="dropdown-content" style={{zIndex: "2"}}>
                 {Object.keys(topNodes).map(key => (
                     <button key={key} onClick={() => selectNode(key)}>
                         {key} Score: {topNodes[key]['score']}

@@ -25,7 +25,6 @@ const Tol = () => {
     // State to store the logo content (formatted for logoJS) and color file
     const [logoContent, setLogoContent] = useState({});
     const [colorFile, setColorFile] = useState(null);
-    const [selectedNodes, setSelectedNodes] = useState([]); // Important, keeps track of user selected nodes for comparison
 
     // Toggle between radial and linear layout
     const [isRadial, setIsRadial] = useState(true);
@@ -268,7 +267,6 @@ const Tol = () => {
                     // console.error("Error styling edges:", error);
                 }
 
-
             }
 
 
@@ -296,14 +294,13 @@ const Tol = () => {
                 'hide': false, // Causes weird rendering in radial
             });
 
-            // console.log(tree.getNodes());
-
             treeRef.current.appendChild(tree.display.show());
         }
     }, [newickData, isLeftCollapsed, isRadial, faData]);
 
     useEffect(() => {
         if (Object.keys(logoContent).length == 0) {
+            setIsLeftCollapsed(false);
             setPipVisible(false);
         } else {
             setPipVisible(true);
@@ -313,7 +310,6 @@ const Tol = () => {
     const setLogoCallback = useCallback((node) => {
         if (node !== null) {
             const handleMouseEnter = () => {
-                console.log("Mouse entered logo div");
                 node.style.height = '500px';
                 pvdiv.current.style.height = 'calc(100% - 504px)';
             };
@@ -325,7 +321,10 @@ const Tol = () => {
     const setPvdivCallback = useCallback((node) => {
         if (node !== null) {
             const handleMouseEnter = () => {
-                console.log("Mouse entered pv div");
+                if (logoStackRef.current === null) {
+                    node.style.height = '90vh';
+                    return;
+                }
                 node.style.height = 'calc(100% - 250px)';
                 logoStackRef.current.style.height = '250px';
             };
@@ -460,7 +459,7 @@ const Tol = () => {
     );
 
     const importantNodesDropdown = () => (
-        <div className="dropdown" >
+        <div className="dropdown">
             <button className="dropbtn">Important Nodes</button>
             <div className="dropdown-content" style={{zIndex: "2"}}>
                 {Object.keys(topNodes).map(key => (
@@ -470,7 +469,7 @@ const Tol = () => {
                 ))}
             </div>
         </div>
-    )
+    );
 
     const downloadTreeAsSVG = () => {
         const svgElement = treeRef.current.querySelector('svg'); // Select the SVG from the tree container
