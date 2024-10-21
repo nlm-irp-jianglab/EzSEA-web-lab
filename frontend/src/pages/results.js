@@ -24,7 +24,7 @@ const Results = () => {
 
     // State to store the logo content (formatted for logoJS) and color file
     const [logoContent, setLogoContent] = useState({}); // Dict of Node: sequences used for rendering seqlogo
-    const [colorFile, setColorFile] = useState(null);
+    const [colorArr, setColorArr] = useState(null);
 
     // For live updates linking sequence logo and structure viewer
     const [selectedResidue, setSelectedResidue] = useState(null);
@@ -203,6 +203,7 @@ const Results = () => {
                                 for (var desc of descendants) {
                                     desc_fa += `>${desc.data.name}\n${faData[desc.data.name]}\n`;
                                 }
+                                calcEntropyFromMSA(desc_fa).then((entropy) => mapEntropyToColors(entropy)).then((colors) => { setColorArr(colors) });
                                 updatedLogoContent[node.data.name] = desc_fa;  // Add the node
                             }
 
@@ -271,8 +272,7 @@ const Results = () => {
                                     [source]: `>${source}\n${faData[source]}`, // LogoJS parser expects header before sequence
                                     [target]: `>${target}\n${faData[target]}`,
                                 }
-                                treeRef.current.style.width = '50%'; // Need to have all these states as a toggle
-                                setColorFile(`${source}_${target}.color.txt`);
+                                treeRef.current.style.width = '50%';
                                 setLogoContent(data);
                                 setIsRightCollapsed(false);
                                 setPipVisible(true);
@@ -324,6 +324,7 @@ const Results = () => {
             setPipVisible(false);
         } else {
             setPipVisible(true);
+            setColorArr(null);
         }
     }, [logoContent]);
 
@@ -362,12 +363,13 @@ const Results = () => {
         setSelectedResidue(null);
         setIsLeftCollapsed(false);
         setIsRightCollapsed(false);
-        setColorFile(null);
+        setColorArr(null);
         setLogoContent({});
         var desc = selectAllDescendants(treeObj.getNodes(), false, true);
         // Map set node-compare to false over desc
         desc.forEach(node => {
             node['compare-node'] = false;
+            node['compare-descendants'] = false;
         });
         d3.selectAll('.internal-node') // Remove the first circle if two are present in internal nodes
             .each(function () {
@@ -458,7 +460,7 @@ const Results = () => {
     const downloadsDropdown = () => (
         <div className="dropdown">
             <button className="dropbtn">Download Files</button>
-            <div className="dropdown-content">
+            <div className="dropdown-content" style={{ zIndex: "2" }}>
                 <button onClick={() => handleDownload(`${jobId}_asr_nodes.fa`, faData)}>Ancestral Sequences</button>
                 <button onClick={() => handleDownload(`${jobId}_leaf_nodes.fa`, leafData)}>Leaf Sequences</button>
                 <button onClick={() => handleDownload(`${jobId}_nodes.json`, nodeData)}>Node Info</button>
@@ -472,7 +474,7 @@ const Results = () => {
     const importantNodesDropdown = () => (
         <div className="dropdown">
             <button className="dropbtn">Important Nodes</button>
-            <div className="dropdown-content" style={{zIndex: "2"}}>
+            <div className="dropdown-content" style={{ zIndex: "2" }}>
                 {Object.keys(topNodes).map(key => (
                     <button key={key} onClick={() => selectNode(key)}>
                         {key} Score: {topNodes[key]['score']}
@@ -569,7 +571,7 @@ const Results = () => {
         });
 
         // Set the combined SVG size (width as the largest width, height as the total yOffset)
-        combinedSVG.setAttribute("width", "100%"); 
+        combinedSVG.setAttribute("width", "100%");
         combinedSVG.setAttribute("height", "100%");
 
         // Serialize the combined SVG to a string
@@ -644,8 +646,14 @@ const Results = () => {
                         }}
                     >
                         {isLeftCollapsed ? (
-                            <div id="logo-stack" className="logodiv2" style={{ width: '50%' }}>
-                                <button onClick={downloadCombinedSVG}>Download All Logos</button>
+                            <div className="logodiv2" style={{ width: '50%' }}>
+                                <button onClick={downloadCombinedSVG}>
+                                    <svg width="25px" height="25px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" version="1.1" fill="none" stroke="#000000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5">
+                                        <title>Download Stack</title>
+                                        <path d="m3.25 7.25-1.5.75 6.25 3.25 6.25-3.25-1.5-.75m-11 3.75 6.25 3.25 6.25-3.25" />
+                                        <path d="m8 8.25v-6.5m-2.25 4.5 2.25 2 2.25-2" />
+                                    </svg>
+                                </button>
                                 <LogoStack
                                     data={logoContent}
                                     onColumnClick={handleColumnClick}
@@ -656,7 +664,7 @@ const Results = () => {
                             </div>
                         ) : (
                             <div className="expandedRight">
-                                <div className="logodiv" ref={(el) => {(setLogoCallback(el)); logoStackRef.current = el}} style={{ width: isLeftCollapsed ? '50%' : '100%', height: isLeftCollapsed ? '100%' : '250px' }}>
+                                <div className="logodiv" ref={(el) => { (setLogoCallback(el)); logoStackRef.current = el }} style={{ width: isLeftCollapsed ? '50%' : '100%', height: isLeftCollapsed ? '100%' : '250px' }}>
                                     <button
                                         className="logo-close-btn"
                                         onClick={() => {
@@ -676,18 +684,16 @@ const Results = () => {
                             </div>
                         )}
 
-                        <div className="pvdiv" ref={(el) => {setPvdivCallback(el); pvdiv.current = el}} style={{ width: isLeftCollapsed ? '50%' : '100%' }}>
+                        <div className="pvdiv" ref={(el) => { setPvdivCallback(el); pvdiv.current = el }} style={{ width: isLeftCollapsed ? '50%' : '100%' }}>
                             <MolstarViewer
                                 structData={structData}
                                 selectedResidue={selectedResidue}
-                                colorFile={colorFile}
+                                colorFile={colorArr}
                                 hoveredResidue={hoveredResidue}
                             />
                         </div>
                     </div>
                 )}
-
-
 
             </div>
 

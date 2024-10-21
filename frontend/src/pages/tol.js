@@ -25,7 +25,7 @@ const Tol = () => {
 
     // State to store the logo content (formatted for logoJS) and color file
     const [logoContent, setLogoContent] = useState({});
-    const [colorFile, setColorFile] = useState(null);
+    const [colorArr, setColorArr] = useState(null);
 
     // Toggle between radial and linear layout
     const [isRadial, setIsRadial] = useState(true);
@@ -33,7 +33,6 @@ const Tol = () => {
     // For live updates linking sequence logo and structure viewer
     const [selectedResidue, setSelectedResidue] = useState(null);
     const [hoveredResidue, setHoveredResidue] = useState(null); // Currently not in use
-    const [colorScheme, setColorScheme] = useState(null);
 
     // States for rendering control
     const [pipVisible, setPipVisible] = useState(false);
@@ -186,7 +185,7 @@ const Tol = () => {
                                 for (var desc of descendants) {
                                     desc_fa += `>${desc.data.name}\n${faData[desc.data.name]}\n`;
                                 }
-                                calcEntropyFromMSA(desc_fa).then((entropy) => mapEntropyToColors(entropy)).then((colors) => { setColorFile(colors) });
+                                calcEntropyFromMSA(desc_fa).then((entropy) => mapEntropyToColors(entropy)).then((colors) => { setColorArr(colors) });
                                 updatedLogoContent[node.data.name] = desc_fa;  // Add the node
                             }
 
@@ -305,6 +304,7 @@ const Tol = () => {
             setPipVisible(false);
         } else {
             setPipVisible(true);
+            setColorArr(null);
         }
     }, [logoContent]);
 
@@ -343,12 +343,13 @@ const Tol = () => {
         setSelectedResidue(null);
         setIsLeftCollapsed(false);
         setIsRightCollapsed(false);
-        setColorFile(null);
+        setColorArr(null);
         setLogoContent({});
         var desc = selectAllDescendants(treeObj.getNodes(), false, true);
         // Map set node-compare to false over desc
         desc.forEach(node => {
             node['compare-node'] = false;
+            node['compare-descendants'] = false;
         });
         d3.selectAll('.internal-node') // Remove the first circle if two are present in internal nodes
             .each(function () {
@@ -675,7 +676,7 @@ const Tol = () => {
                         <div className="pvdiv" ref={(el) => { setPvdivCallback(el); pvdiv.current = el }} style={{ width: isLeftCollapsed ? '50%' : '100%' }}>
                             <MolstarViewer
                                 selectedResidue={selectedResidue}
-                                colorFile={colorFile}
+                                colorFile={colorArr}
                                 hoveredResidue={hoveredResidue}
                             />
                         </div>
