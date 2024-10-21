@@ -8,7 +8,7 @@ import "../components/phylotree.css";
 import "../components/tol.css";
 import MolstarViewer from "../components/molstar";
 import LogoStack from '../components/logo-stack';
-import { readFastaToDict, parseNodeData } from '../components/utils';
+import { readFastaToDict, parseNodeData, calcEntropyFromMSA } from '../components/utils';
 import { useParams } from 'react-router-dom';
 import * as d3 from 'd3';
 
@@ -185,6 +185,7 @@ const Tol = () => {
                                 for (var desc of descendants) {
                                     desc_fa += `>${desc.data.name}\n${faData[desc.data.name]}\n`;
                                 }
+                                calcEntropyFromMSA(desc_fa).then((entropy) => { console.log("Entropy of descendants:", entropy) });
                                 updatedLogoContent[node.data.name] = desc_fa;  // Add the node
                             }
 
@@ -447,7 +448,7 @@ const Tol = () => {
     const downloadsDropdown = () => (
         <div className="dropdown">
             <button className="dropbtn">Download Files</button>
-            <div className="dropdown-content" style={{zIndex: "2"}}>
+            <div className="dropdown-content" style={{ zIndex: "2" }}>
                 <button onClick={downloadNewickData}>Download Newick Data</button>
                 {Object.keys(logoFiles).map(fileName => (
                     <button key={fileName} onClick={() => downloadLogoFile(fileName)}>
@@ -461,7 +462,7 @@ const Tol = () => {
     const importantNodesDropdown = () => (
         <div className="dropdown">
             <button className="dropbtn">Important Nodes</button>
-            <div className="dropdown-content" style={{zIndex: "2"}}>
+            <div className="dropdown-content" style={{ zIndex: "2" }}>
                 {Object.keys(topNodes).map(key => (
                     <button key={key} onClick={() => selectNode(key)}>
                         {key} Score: {topNodes[key]['score']}
@@ -521,6 +522,73 @@ const Tol = () => {
         document.body.removeChild(downloadLink);
     };
 
+    function downloadCombinedSVG() {
+        // Select all svg elements within a specific div (e.g., with id "svgContainer")
+        const svgElements = document.querySelectorAll('#logo-stack svg');
+
+        if (svgElements.length === 0) {
+            console.error("No SVG elements found!");
+            return;
+        }
+
+        // Create a new SVG element that will contain all the others
+        const combinedSVG = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        combinedSVG.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+
+        // Positioning variables
+        let yOffset = 0;
+
+        svgElements.forEach((svg, index) => {
+            const height = 60; // Default height if not provided
+
+            // Create a group element to contain the svg
+            const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+
+            // Adjust the position of the SVG using a transform
+            g.setAttribute("transform", `translate(0, ${yOffset})`);
+
+            // Add the current SVG into the group element
+            const clonedSVG = svg.cloneNode(true);
+            g.appendChild(clonedSVG);
+
+            // Append the group element into the combined SVG
+            combinedSVG.appendChild(g);
+
+            // Update yOffset for the next svg to be placed below the current one
+            yOffset += parseFloat(height);
+        });
+
+        // Set the combined SVG size (width as the largest width, height as the total yOffset)
+        combinedSVG.setAttribute("width", "100%"); 
+        combinedSVG.setAttribute("height", "100%");
+
+        // Serialize the combined SVG to a string
+        const serializer = new XMLSerializer();
+        var svgString = serializer.serializeToString(combinedSVG);
+
+
+        const styleString = `
+        <style>
+            .glyphrect {
+                fill-opacity: 0.0;
+            }
+        </style>`;
+        svgString = svgString.replace('</svg>', `${styleString}</svg>`);
+
+        // Create a blob for the SVG data
+        const blob = new Blob([svgString], { type: 'image/svg+xml' });
+
+        // Create a download link
+        const downloadLink = document.createElement('a');
+        downloadLink.href = URL.createObjectURL(blob);
+        downloadLink.download = `combined.svg`; // Name of the downloaded file
+
+        // Trigger the download
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink); // Clean up
+    }
+
     return (
         <div>
             <Navbar pageId={"Integrated Tree Viewer"} />
@@ -566,7 +634,8 @@ const Tol = () => {
                         }}
                     >
                         {isLeftCollapsed ? (
-                            <div className="logodiv2" style={{ width: '50%' }}>
+                            <div id="logo-stack" className="logodiv2" style={{ width: '50%' }}>
+                                <button onClick={downloadCombinedSVG}>Download All Logos</button>
                                 <LogoStack
                                     data={logoContent}
                                     onColumnClick={handleColumnClick}
@@ -577,7 +646,7 @@ const Tol = () => {
                             </div>
                         ) : (
                             <div className="expandedRight">
-                                <div className="logodiv" ref={(el) => {(setLogoCallback(el)); logoStackRef.current = el}} style={{ width: isLeftCollapsed ? '50%' : '100%', height: isLeftCollapsed ? '100%' : '250px' }}>
+                                <div className="logodiv" ref={(el) => { (setLogoCallback(el)); logoStackRef.current = el }} style={{ width: isLeftCollapsed ? '50%' : '100%', height: isLeftCollapsed ? '100%' : '250px' }}>
                                     <button
                                         className="logo-close-btn"
                                         onClick={() => {
@@ -597,7 +666,7 @@ const Tol = () => {
                             </div>
                         )}
 
-                        <div className="pvdiv" ref={(el) => {setPvdivCallback(el); pvdiv.current = el}} style={{ width: isLeftCollapsed ? '50%' : '100%' }}>
+                        <div className="pvdiv" ref={(el) => { setPvdivCallback(el); pvdiv.current = el }} style={{ width: isLeftCollapsed ? '50%' : '100%' }}>
                             <MolstarViewer
                                 selectedResidue={selectedResidue}
                                 colorFile={colorFile}

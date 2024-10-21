@@ -4,6 +4,7 @@ export const readFastaFromFile = async (path) => {
         .catch(error => console.error('Error fetching file:', error));
 }
 
+// Fetchs a local fasta file and reads sequences into a dictionary
 export const readFastaToDict = async (path) => {
     try {
         const fastaContent = await fetch(path).then(response => response.text());
@@ -100,4 +101,24 @@ export const parseNodeData = async (nodeData) => {
         }
     });
     return parsedData;
+}
+
+// Calculate the entropy of a multiple sequence alignment given as a fasta string
+export const calcEntropyFromMSA = async (msa) => {
+    const sequences = Object.values(await fastaToDict(msa));
+    const numSequences = sequences.length;
+    const seqLength = sequences[0].length;
+    const entropy = Array(seqLength).fill(0);
+
+    for (let i = 0; i < seqLength; i++) {
+        const column = sequences.map(seq => seq[i]);
+        const counts = column.reduce((acc, aa) => {
+            acc[aa] = (acc[aa] || 0) + 1;
+            return acc;
+        }, {});
+        const freqs = Object.values(counts).map(count => count / numSequences);
+        entropy[i] = freqs.reduce((acc, freq) => acc - freq * Math.log2(freq), 0);
+    }
+
+    return entropy;
 }
