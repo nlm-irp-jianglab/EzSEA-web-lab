@@ -60,8 +60,10 @@ export function MolStarWrapper({ structData, selectedResidue, hoveredResidue, co
       // Loading the default pdb file
       // TODO: Load PDB files dynamically
 
+      const defStruct = await fetch(`${process.env.PUBLIC_URL}/example_2/Visualization/seq.pdb`).then(response => response.text()).then((text) => text);
+
       const myData = await window.molstar.builders.data.rawData({
-        data: structData, /* string or number[] */
+        data: structData || defStruct, /* string or number[] */
         label: void 0 /* optional label */
       });
 
@@ -106,6 +108,8 @@ export function MolStarWrapper({ structData, selectedResidue, hoveredResidue, co
     if (residueNumber == null) return;
     const seq_id = residueNumber;
 
+    console.log("selecting residue", seq_id);
+
     if (!window.molstar || !window.molstar.managers.structure.hierarchy.current.structures.length) {
       console.error("Mol* plugin or structure data is not initialized.");
       return;
@@ -141,27 +145,19 @@ export function MolStarWrapper({ structData, selectedResidue, hoveredResidue, co
       console.error("Mol* plugin or structure data is not initialized.");
       return;
     }
+    const testArr = ["0x5900a6", 
+      "0x880077", "0xec0013", "0xb1004e", "0x1e00e1"]
 
-    // fetch(`${process.env.PUBLIC_URL}/${colorFile}`).then((response) => {
-    //   return response.text();
-    // }).then((string) => {
-    //   const lines = string.split("\n");
-    //   for (const line of lines) {
-    //     const [residue, color] = line.split("\t");
-    //     const seq_id = parseInt(residue);
-    //     // Overpaint the residue, must await each query, maybe flip instead of search for residue, search for color then apply to all residues.
-    //     setStructureOverpaint(window.molstar, window.molstar.managers.structure.hierarchy.current.structures[0].components, Color(colorArr[color]), (s) => {
-    //       const sel = Script.getStructureSelection(Q => Q.struct.generator.atomGroups({
-    //         'residue-test': Q.core.rel.eq([Q.struct.atomProperty.macromolecular.label_seq_id(), seq_id]),
-    //         'group-by': Q.struct.atomProperty.macromolecular.residueKey(),
-    //       }), s);
-    //       return StructureSelection.toLociWithSourceUnits(sel);
-    //     });
-    //   }
-    //   console.log("Applied color file", colorFile);
-    // }).catch((error) => {
-    //   console.error("No colors applied, color file is empty or does not exist.");
-    // });
+    colorFile.forEach(async function (color, i) {
+      console.log("Applying color", color, "to residue", i);
+      await setStructureOverpaint(window.molstar, window.molstar.managers.structure.hierarchy.current.structures[0].components, Color(color), (s) => {
+        const sel = Script.getStructureSelection(Q => Q.struct.generator.atomGroups({
+          'residue-test': Q.core.rel.eq([Q.struct.atomProperty.macromolecular.label_seq_id(), i]),
+          'group-by': Q.struct.atomProperty.macromolecular.residueKey(),
+        }), s);
+        return StructureSelection.toLociWithSourceUnits(sel);
+      });
+    });
 
   }
 

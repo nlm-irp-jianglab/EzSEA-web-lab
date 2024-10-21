@@ -1,7 +1,7 @@
 # Playing around with visualization tools
 Phylogenetic Tree: PhyloTree.js
-Protein Viewer: Molstar
-Sequence Logos: Skylign
+Protein Viewer: Mol*
+Sequence Logos: LogoJS
 
 # TODO:
 Polish submit page

@@ -122,3 +122,37 @@ export const calcEntropyFromMSA = async (msa) => {
 
     return entropy;
 }
+
+// Function to map entropy values to heatmap colors
+export const mapEntropyToColors = async (entropyArray) => {
+    const maxEntropy = Math.log2(20);  // Theoretical max entropy for amino acids (log2(20) ~ 4.32)
+    const minEntropy = 0;              // Minimum entropy is 0
+
+    // Helper function to normalize values between 0 and 1
+    const normalize = (value, min, max) => (value - min) / (max - min);
+
+    // Function to interpolate colors based on normalized value
+    const interpolateColor = (value) => {
+        // Define color stops for heatmap: from blue to red
+        const colorStops = [
+            { r: 0, g: 0, b: 255 },   // Blue (low entropy)
+            { r: 255, g: 0, b: 0 }    // Red (high entropy)
+        ];
+
+        // Calculate interpolated color (linear interpolation between blue and red)
+        const r = Math.round(colorStops[0].r + (colorStops[1].r - colorStops[0].r) * value);
+        const g = Math.round(colorStops[0].g + (colorStops[1].g - colorStops[0].g) * value);
+        const b = Math.round(colorStops[0].b + (colorStops[1].b - colorStops[0].b) * value);
+
+        // Convert RGB to hex
+        return `0x${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
+    };
+
+    // Normalize entropies and map to colors
+    const colorArray = entropyArray.map(entropy => {
+        const normalizedValue = normalize(entropy, minEntropy, maxEntropy);
+        return interpolateColor(normalizedValue);
+    });
+
+    return colorArray;
+};

@@ -8,7 +8,7 @@ import "../components/phylotree.css";
 import "../components/tol.css";
 import MolstarViewer from "../components/molstar";
 import LogoStack from '../components/logo-stack';
-import { readFastaToDict, parseNodeData, calcEntropyFromMSA } from '../components/utils';
+import { readFastaToDict, parseNodeData, calcEntropyFromMSA, mapEntropyToColors } from '../components/utils';
 import { useParams } from 'react-router-dom';
 import * as d3 from 'd3';
 
@@ -19,6 +19,7 @@ const Tol = () => {
     // State to store the tree data and node data
     const [faData, setFaData] = useState(null);
     const [newickData, setNewickData] = useState(null);
+    const [structData, setStructData] = useState(null); // Structure data
     const [nodeData, setnodeData] = useState(null);
     const [topNodes, setTopNodes] = useState({}); // Top 10 nodes for the tree
 
@@ -32,6 +33,7 @@ const Tol = () => {
     // For live updates linking sequence logo and structure viewer
     const [selectedResidue, setSelectedResidue] = useState(null);
     const [hoveredResidue, setHoveredResidue] = useState(null); // Currently not in use
+    const [colorScheme, setColorScheme] = useState(null);
 
     // States for rendering control
     const [pipVisible, setPipVisible] = useState(false);
@@ -62,7 +64,6 @@ const Tol = () => {
         fetchDefaultTree();
 
         readFastaToDict(`${process.env.PUBLIC_URL}/example_2/Visualization/asr.fa`).then(data => { setFaData(data) });
-
 
 
         fetch(`${process.env.PUBLIC_URL}/example_2/Visualization/nodes.json`)
@@ -185,7 +186,7 @@ const Tol = () => {
                                 for (var desc of descendants) {
                                     desc_fa += `>${desc.data.name}\n${faData[desc.data.name]}\n`;
                                 }
-                                calcEntropyFromMSA(desc_fa).then((entropy) => { console.log("Entropy of descendants:", entropy) });
+                                calcEntropyFromMSA(desc_fa).then((entropy) => mapEntropyToColors(entropy)).then((colors) => { setColorFile(colors) });
                                 updatedLogoContent[node.data.name] = desc_fa;  // Add the node
                             }
 
@@ -559,7 +560,7 @@ const Tol = () => {
         });
 
         // Set the combined SVG size (width as the largest width, height as the total yOffset)
-        combinedSVG.setAttribute("width", "100%"); 
+        combinedSVG.setAttribute("width", "100%");
         combinedSVG.setAttribute("height", "100%");
 
         // Serialize the combined SVG to a string
@@ -634,8 +635,14 @@ const Tol = () => {
                         }}
                     >
                         {isLeftCollapsed ? (
-                            <div id="logo-stack" className="logodiv2" style={{ width: '50%' }}>
-                                <button onClick={downloadCombinedSVG}>Download All Logos</button>
+                            <div className="logodiv2" style={{ width: '50%' }}>
+                                <button onClick={downloadCombinedSVG}>
+                                    <svg width="25px" height="25px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" version="1.1" fill="none" stroke="#000000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5">
+                                        <title>Download Stack</title>
+                                        <path d="m3.25 7.25-1.5.75 6.25 3.25 6.25-3.25-1.5-.75m-11 3.75 6.25 3.25 6.25-3.25" />
+                                        <path d="m8 8.25v-6.5m-2.25 4.5 2.25 2 2.25-2" />
+                                    </svg>
+                                </button>
                                 <LogoStack
                                     data={logoContent}
                                     onColumnClick={handleColumnClick}
@@ -675,8 +682,6 @@ const Tol = () => {
                         </div>
                     </div>
                 )}
-
-
 
             </div>
 
