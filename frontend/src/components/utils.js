@@ -171,3 +171,15 @@ export const mapEntropyToColors = async (entropyArray) => {
 
     return colorArray;
 };
+
+export const jsonToFasta = (jsonObject) => {
+    let fastaContent = '';
+
+    // Iterate over each key-value pair in the JSON
+    for (const [header, sequence] of Object.entries(jsonObject)) {
+        // Construct FASTA format: Header starts with ">", followed by the sequence
+        fastaContent += `>${header}\n${sequence}\n`;
+    }
+
+    return fastaContent;
+};

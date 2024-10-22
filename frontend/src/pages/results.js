@@ -8,7 +8,7 @@ import "../components/phylotree.css";
 import "../components/tol.css";
 import MolstarViewer from "../components/molstar";
 import LogoStack from '../components/logo-stack';
-import { fastaToDict, parseNodeData, calcEntropyFromMSA, mapEntropyToColors } from '../components/utils';
+import { fastaToDict, parseNodeData, calcEntropyFromMSA, mapEntropyToColors, jsonToFasta } from '../components/utils';
 import { useParams } from 'react-router-dom';
 import * as d3 from 'd3';
 
@@ -449,7 +449,7 @@ const Results = () => {
 
     const handleDownload = (filename, content) => {
         // If content is an object, stringify it; otherwise, use the content as it is
-        const fileContent = typeof content === 'object' ? JSON.stringify(content, null, 2) : content;
+        const fileContent = typeof content === 'object' ? jsonToFasta(content) : content;
     
         // Create a Blob and download the file
         const element = document.createElement("a");
