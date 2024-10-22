@@ -1,14 +1,14 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import * as pt from 'phylotree';
 import { isLeafNode } from 'phylotree/src/nodes';
-import { addCustomMenu, modifySelection } from 'phylotree/src/render/menus';
+import { addCustomMenu } from 'phylotree/src/render/menus';
 import { selectAllDescendants } from 'phylotree/src/nodes';
 import Navbar from "../components/navbar";
 import "../components/phylotree.css";
 import "../components/tol.css";
 import MolstarViewer from "../components/molstar";
 import LogoStack from '../components/logo-stack';
-import { fastaToDict, parseNodeData } from '../components/utils';
+import { fastaToDict, parseNodeData, calcEntropyFromMSA, mapEntropyToColors } from '../components/utils';
 import { useParams } from 'react-router-dom';
 import * as d3 from 'd3';
 
