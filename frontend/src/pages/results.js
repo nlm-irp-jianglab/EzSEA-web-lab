@@ -447,9 +447,14 @@ const Results = () => {
         isRightCollapsed ? setPipVisible(true) : setPipVisible(false);
     };
 
-    const handleDownload = (filename, content) => {
+    const handleDownload = (filename, content, fasta = false) => {
         // If content is an object, stringify it; otherwise, use the content as it is
-        const fileContent = typeof content === 'object' ? jsonToFasta(content) : content;
+        var fileContent;
+        if (fasta) {
+            fileContent = jsonToFasta(content);
+        } else {
+            fileContent = typeof content === 'object' ? JSON.stringify(content) : content;
+        }
     
         // Create a Blob and download the file
         const element = document.createElement("a");
@@ -466,8 +471,8 @@ const Results = () => {
         <div className="dropdown">
             <button className="dropbtn">Download Files</button>
             <div className="dropdown-content" style={{ zIndex: "2" }}>
-                <button onClick={() => handleDownload(`${jobId}_asr_nodes.fa`, faData)}>Ancestral Sequences</button>
-                <button onClick={() => handleDownload(`${jobId}_leaf_nodes.fa`, leafData)}>Leaf Sequences</button>
+                <button onClick={() => handleDownload(`${jobId}_asr_nodes.fa`, faData, true)}>Ancestral Sequences</button>
+                <button onClick={() => handleDownload(`${jobId}_leaf_nodes.fa`, leafData, true)}>Leaf Sequences</button>
                 <button onClick={() => handleDownload(`${jobId}_nodes.json`, nodeData)}>Node Info</button>
                 <button onClick={() => handleDownload(`${jobId}_struct.pdb`, structData)}>Structure PDB</button>
                 <button onClick={() => handleDownload(`${jobId}_tree_data.nwk`, newickData)}>Tree Newick</button>
