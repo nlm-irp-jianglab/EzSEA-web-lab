@@ -10,7 +10,7 @@ const LogoStack = React.forwardRef(
         onColumnClick (optional): A function to handle click events on the logo
         onColumnHover (optional): A function to handle hover events on the logo
     */
-    ({ data, onColumnClick, onColumnHover, importantResiduesList, removeNodeHandle }, ref) => {
+    ({ data, onColumnClick, onColumnHover, importantResiduesList, removeNodeHandle, applyStructColor }, ref) => {
         const [fastaContent, setFastaContent] = useState({});
         const [refsUpdated, setRefsUpdated] = useState(0);
         const logoRefs = useRef([]);
@@ -174,6 +174,9 @@ const LogoStack = React.forwardRef(
                                 <div style={{ display: "flex", flexDirection: "row", alignItems: "center", height: "40px", marginLeft: "5px", justifyContent: "space-between" }}>
                                     <p style={{ paddingLeft: "30px" }}><b>{key}</b></p>
                                     <span style={{ paddingRight: "30px" }}>
+                                        <button className="logo-download-btn" onClick={() => applyStructColor(key)}>
+                                            Color Entropy
+                                        </button>
                                         <button className="logo-download-btn" style={styles.downloadBtn} onClick={() => downloadLogoSVG(index, 'seqlogo_' + key + '.svg')}>
                                             <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                 <title>Download Individual</title>

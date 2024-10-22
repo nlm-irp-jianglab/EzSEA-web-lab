@@ -453,7 +453,7 @@ const Results = () => {
         if (fasta) {
             fileContent = jsonToFasta(content);
         } else {
-            fileContent = typeof content === 'object' ? JSON.stringify(content) : content;
+            fileContent = typeof content === 'object' ? JSON.stringify(content, null, 2) : content;
         }
     
         // Create a Blob and download the file

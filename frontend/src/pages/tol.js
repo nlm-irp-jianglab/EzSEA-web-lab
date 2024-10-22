@@ -185,6 +185,7 @@ const Tol = () => {
                                 for (var desc of descendants) {
                                     desc_fa += `>${desc.data.name}\n${faData[desc.data.name]}\n`;
                                 }
+                                // Calculates entropies, maps to colors and sets the colorArr state
                                 calcEntropyFromMSA(desc_fa).then((entropy) => mapEntropyToColors(entropy)).then((colors) => { setColorArr(colors) });
                                 updatedLogoContent[node.data.name] = desc_fa;  // Add the node
                             }
@@ -254,7 +255,7 @@ const Tol = () => {
                                     [source]: `>${source}\n${faData[source]}`, // LogoJS parser expects header before sequence
                                     [target]: `>${target}\n${faData[target]}`,
                                 }
-                                treeRef.current.style.width = '50%'; 
+                                treeRef.current.style.width = '50%';
                                 setLogoContent(data);
                                 setIsRightCollapsed(false);
                                 setPipVisible(true);
@@ -337,6 +338,25 @@ const Tol = () => {
     const handleColumnClick = (index) => {
         setSelectedResidue(index + 1);
     };
+
+    const applyStructColor = (nodeId) => {
+        console.log("Applying structure color for node:", nodeId);
+        // Grabbing node data from tree
+        d3.selectAll('.internal-node')
+            .each(function () {
+                var node = d3.select(this).data()[0];
+                if (node.data.name === nodeId) {
+                    console.log("Node data:", node.data);
+                    var descendants = selectAllDescendants(node, false, true);
+                    var desc_fa = "";
+                    for (var desc of descendants) {
+                        desc_fa += `>${desc.data.name}\n${faData[desc.data.name]}\n`;
+                    }
+                    // Calculates entropies, maps to colors and sets the colorArr state
+                    calcEntropyFromMSA(desc_fa).then((entropy) => mapEntropyToColors(entropy)).then((colors) => { setColorArr(colors) });
+                }
+            });
+    }
 
     function clearRightPanel() {
         setPipVisible(false);
@@ -649,6 +669,7 @@ const Tol = () => {
                                     onColumnHover={handleColumnHover}
                                     importantResiduesList={nodeData}
                                     removeNodeHandle={handleNodeRemove}
+                                    applyStructColor={applyStructColor}
                                 />
                             </div>
                         ) : (
@@ -668,6 +689,7 @@ const Tol = () => {
                                         onColumnHover={handleColumnHover}
                                         importantResiduesList={nodeData}
                                         removeNodeHandle={handleNodeRemove}
+                                        applyStructColor={applyStructColor}
                                     />
                                 </div>
                             </div>
