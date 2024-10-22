@@ -448,14 +448,19 @@ const Results = () => {
     };
 
     const handleDownload = (filename, content) => {
+        // If content is an object, stringify it; otherwise, use the content as it is
+        const fileContent = typeof content === 'object' ? JSON.stringify(content, null, 2) : content;
+    
+        // Create a Blob and download the file
         const element = document.createElement("a");
-        const file = new Blob([content], { type: 'application/json' });
+        const file = new Blob([fileContent], { type: 'text/plain' }); 
         element.href = URL.createObjectURL(file);
         element.download = filename;
         document.body.appendChild(element); // Required for this to work in FireFox
         element.click();
         document.body.removeChild(element);
     };
+    
 
     const downloadsDropdown = () => (
         <div className="dropdown">
