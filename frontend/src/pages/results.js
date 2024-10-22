@@ -131,42 +131,13 @@ const Results = () => {
                     }
 
                     function compare(node, el) {
-                        // change color of circle to red
                         if (node['compare-node']) {
-                            el.select("circle").remove();
+                            setNodeColor(node.data.name, null);
                             node['compare-descendants'] = false;
-                        } else {
-                            el.insert("circle", ":first-child").attr("r", 5).style("fill", "red");
                         }
+
                         node['compare-node'] = !node['compare-node'];
-
-                        console.log("Current logo content: ", logoContent);
-
-                        // Add node to logoContent, if already in list, remove it
-                        // Check if node is already selected
-                        setLogoContent(prevLogoContent => {
-                            const updatedLogoContent = { ...prevLogoContent };
-
-                            // Add or remove node from logoContent
-                            if (node.data.name in updatedLogoContent) {
-                                delete updatedLogoContent[node.data.name];  // Remove the node
-                            } else {
-                                updatedLogoContent[node.data.name] = `>${node.data.name}\n${faData[node.data.name]}`;  // Add the node
-                            }
-
-                            // Adjust layout and show PIP if there's any content
-                            if (Object.keys(updatedLogoContent).length > 0) {
-                                treeRef.current.style.width = '50%';
-                                setIsRightCollapsed(false);
-                                setPipVisible(true);
-                            } else {
-                                treeRef.current.style.width = '100%';
-                                setPipVisible(false);
-                            }
-
-                            return updatedLogoContent;  // Return the new state
-                        });
-
+                        pushNodeToLogo(node);
                     }
 
                     function compareDescMenuCondition(node) {
@@ -180,45 +151,12 @@ const Results = () => {
                     function compareDescendants(node, el) {
                         // change color of circle to yellow
                         if (node['compare-descendants']) {
-                            el.select("circle").remove();
-                        } else {
-                            el.insert("circle", ":first-child").attr("r", 5).style("fill", "yellow");
+                            setNodeColor(node.data.name, null);
                         }
                         node['compare-descendants'] = !node['compare-descendants'];
                         node['compare-node'] = !node['compare-node'];
 
-                        console.log("Current logo content: ", logoContent);
-
-                        // Add node to logoContent, if already in list, remove it
-                        // Check if node is already selected
-                        setLogoContent(prevLogoContent => {
-                            const updatedLogoContent = { ...prevLogoContent };
-
-                            // Add or remove node from logoContent
-                            if (node.data.name in updatedLogoContent) {
-                                delete updatedLogoContent[node.data.name];  // Remove the node
-                            } else {
-                                var descendants = selectAllDescendants(node, false, true);
-                                var desc_fa = "";
-                                for (var desc of descendants) {
-                                    desc_fa += `>${desc.data.name}\n${faData[desc.data.name]}\n`;
-                                }
-                                calcEntropyFromMSA(desc_fa).then((entropy) => mapEntropyToColors(entropy)).then((colors) => { setColorArr(colors) });
-                                updatedLogoContent[node.data.name] = desc_fa;  // Add the node
-                            }
-
-                            // Adjust layout and show PIP if there's any content
-                            if (Object.keys(updatedLogoContent).length > 0) {
-                                treeRef.current.style.width = '50%';
-                                setIsRightCollapsed(false);
-                                setPipVisible(true);
-                            } else {
-                                treeRef.current.style.width = '100%';
-                                setPipVisible(false);
-                            }
-
-                            return updatedLogoContent;  // Return the new state
-                        });
+                        pushNodeToLogo(node, true);
                     }
 
                     function showDescMenuOpt(node) {
@@ -251,34 +189,24 @@ const Results = () => {
                         if (branch.selected) {
                             branch.selected = false;
                             event.target.classList.remove('branch-selected');
-                            clearRightPanel();
+                            removeNodeFromLogo(branch.source); // Remove the node from logoContent if already present
+                            removeNodeFromLogo(branch.target);
                         } else {
-                            // Remove all previous highlighted branches
-                            d3.selectAll('.branch-selected').classed('branch-selected', false);
-                            // Remove all previous selected nodes
                             branch.selected = true;
                             event.target.classList.add('branch-selected');
-                            setLogoContent({});
 
                             var source = branch.source.data.name;
                             var target = branch.target.data.name;
                             console.log("Selected branch:", source, target);
-                            if (!faData[source] || !faData[target]) { // TODO Is this necessary?
-                                console.log("Not Found", faData[source], faData[target]);
+                            if (!faData[source] || !faData[target]) {
+                                console.log("Missing node data for branch.", faData[source], faData[target]);
                                 clearRightPanel();
                                 return;
                             } else {
-                                var data = {
-                                    [source]: `>${source}\n${faData[source]}`, // LogoJS parser expects header before sequence
-                                    [target]: `>${target}\n${faData[target]}`,
-                                }
-                                treeRef.current.style.width = '50%';
-                                setLogoContent(data);
-                                setIsRightCollapsed(false);
-                                setPipVisible(true);
+                                pushNodeToLogo(branch.source);
+                                pushNodeToLogo(branch.target);
                             }
                         }
-
                     });
                 } catch (error) {
                     // Select all descendent branches triggers this error
@@ -317,6 +245,91 @@ const Results = () => {
             treeRef.current.appendChild(tree.display.show());
         }
     }, [newickData, isLeftCollapsed, faData]);
+
+    const removeNodeFromLogo = (node) => {
+        // Remove node from logoContent
+        setLogoContent(prevLogoContent => {
+            const updatedLogoContent = { ...prevLogoContent };
+
+            // Add or remove node from logoContent
+            if (node.data.name in updatedLogoContent) {
+                node['compare-node'] = false;
+                node['compare-descendants'] = false;
+
+                delete updatedLogoContent[node.data.name];  // Remove the node
+                setNodeColor(node.data.name, null);
+            }
+
+            return updatedLogoContent;  // Return the new state
+        });
+    };
+
+
+    const pushNodeToLogo = (node, comp_desc = false) => {
+        // Add node to logoContent, if already in list, remove it
+        setLogoContent(prevLogoContent => {
+            const updatedLogoContent = { ...prevLogoContent };
+
+            // Add or remove node from logoContent
+            if (node.data.name in updatedLogoContent) {
+                node['compare-node'] = false;
+                node['compare-descendants'] = false;
+                delete updatedLogoContent[node.data.name];  // Remove the node
+            } else {
+                if (comp_desc) {
+                    node['compare-node'] = true;
+                    node['compare-descendants'] = true;
+                    var descendants = selectAllDescendants(node, false, true);
+                    var desc_fa = "";
+                    for (var desc of descendants) {
+                        desc_fa += `>${desc.data.name}\n${faData[desc.data.name]}\n`;
+                    }
+                    if (desc_fa === "") {
+                        console.log("No descendants found for node:", node.data.name);
+                        return updatedLogoContent;
+                    }
+                    // Calculates entropies, maps to colors and sets the colorArr state
+                    calcEntropyFromMSA(desc_fa).then((entropy) => mapEntropyToColors(entropy)).then((colors) => { setColorArr(colors) });
+
+                    updatedLogoContent[node.data.name] = desc_fa;
+                    setNodeColor(node.data.name, "yellow");
+                } else {
+                    node['compare-node'] = true;
+                    updatedLogoContent[node.data.name] = `>${node.data.name}\n${faData[node.data.name]}`;
+                    setNodeColor(node.data.name, "red");
+                }
+            }
+
+            return updatedLogoContent;  // Return the new state
+        });
+
+    };
+
+    const setNodeColor = (nodeId, color = null) => {
+        d3.selectAll('.internal-node')
+            .each(function () {
+                var node = d3.select(this).data()[0];
+                if (node.data.name === nodeId) {
+                    if (color == null) {
+                        const circles = d3.select(this).selectAll('circle');
+                        if (circles.size() === 2) {
+                            circles.filter(function (d, i) {
+                                return i === 0; // Remove the first circle when there are two
+                            }).remove();
+                        }
+                    } else {
+                        // Calling push node, results in calling setNodeColor twice (possibly due to react state updates), this check prevents adding a circle twice
+                        const circles = d3.select(this).selectAll('circle');
+                        if (circles.size() === 2) {
+                            console.log("Attempted to add circle to node with existing circle");
+                        } else {
+                            d3.select(this).insert("circle", ":first-child").attr("r", 5).style("fill", color);
+
+                        }
+                    }
+                }
+            });
+    };
 
     useEffect(() => {
         if (Object.keys(logoContent).length == 0) {
@@ -358,6 +371,25 @@ const Results = () => {
         setSelectedResidue(index + 1);
     };
 
+    const applyStructColor = (nodeId) => {
+        console.log("Applying structure color for node:", nodeId);
+        // Grabbing node data from tree
+        d3.selectAll('.internal-node')
+            .each(function () {
+                var node = d3.select(this).data()[0];
+                if (node.data.name === nodeId) {
+                    console.log("Node data:", node.data);
+                    var descendants = selectAllDescendants(node, false, true);
+                    var desc_fa = "";
+                    for (var desc of descendants) {
+                        desc_fa += `>${desc.data.name}\n${faData[desc.data.name]}\n`;
+                    }
+                    // Calculates entropies, maps to colors and sets the colorArr state
+                    calcEntropyFromMSA(desc_fa).then((entropy) => mapEntropyToColors(entropy)).then((colors) => { setColorArr(colors) });
+                }
+            });
+    }
+
     const clearRightPanel = () => {
         setPipVisible(false);
         setSelectedResidue(null);
@@ -370,16 +402,8 @@ const Results = () => {
         desc.forEach(node => {
             node['compare-node'] = false;
             node['compare-descendants'] = false;
+            setNodeColor(node.data.name, null);
         });
-        d3.selectAll('.internal-node') // Remove the first circle if two are present in internal nodes
-            .each(function () {
-                const circles = d3.select(this).selectAll('circle');
-                if (circles.size() === 2) {
-                    circles.filter(function (d, i) {
-                        return i === 0; // Target the first circle when there are two
-                    }).remove();
-                }
-            });
         d3.selectAll('.branch-selected').classed('branch-selected', false);
         treeRef.current.style.width = '100%';
     }
@@ -403,7 +427,12 @@ const Results = () => {
                 if (node.data.name === keys[index]) {
                     node['compare-node'] = false;
                     node['compare-descendants'] = false;
-                    d3.select(this).select('circle').remove();  // Remove the circle
+                    const circles = d3.select(this).selectAll('circle');
+                    if (circles.size() === 2) {
+                        circles.filter(function (d, i) {
+                            return i === 0; // Target the first circle when there are two
+                        }).remove();
+                    }
                 }
             });
     }
@@ -417,22 +446,7 @@ const Results = () => {
                 var node = d3.select(this).data()[0];
                 if (node.data.name === nodeId) {
                     node['compare-node'] = true;
-
-                    // Add to logoContent
-                    setLogoContent(prevLogoContent => {
-                        const updatedLogoContent = { ...prevLogoContent };
-                        updatedLogoContent[node.data.name] = `>${node.data.name}\n${faData[node.data.name]}`;
-                        return updatedLogoContent;
-                    });
-
-                    const circles = d3.select(this).selectAll('circle'); // Highlight/Rehighlight Node
-                    if (circles.size() === 2) {
-                        circles.filter(function (d, i) {
-                            return i === 0; // Target the first circle when there are two
-                        }).remove();
-                    }
-
-                    d3.select(this).insert("circle", ":first-child").attr("r", 5).style("fill", "red");
+                    pushNodeToLogo(node);
                 }
             });
     }
@@ -455,17 +469,17 @@ const Results = () => {
         } else {
             fileContent = typeof content === 'object' ? JSON.stringify(content, null, 2) : content;
         }
-    
+
         // Create a Blob and download the file
         const element = document.createElement("a");
-        const file = new Blob([fileContent], { type: 'text/plain' }); 
+        const file = new Blob([fileContent], { type: 'text/plain' });
         element.href = URL.createObjectURL(file);
         element.download = filename;
         document.body.appendChild(element); // Required for this to work in FireFox
         element.click();
         document.body.removeChild(element);
     };
-    
+
 
     const downloadsDropdown = () => (
         <div className="dropdown">
@@ -670,6 +684,7 @@ const Results = () => {
                                     onColumnHover={handleColumnHover}
                                     importantResiduesList={nodeData}
                                     removeNodeHandle={handleNodeRemove}
+                                    applyStructColor={applyStructColor}
                                 />
                             </div>
                         ) : (
@@ -689,6 +704,7 @@ const Results = () => {
                                         onColumnHover={handleColumnHover}
                                         importantResiduesList={nodeData}
                                         removeNodeHandle={handleNodeRemove}
+                                        applyStructColor={applyStructColor}
                                     />
                                 </div>
                             </div>
