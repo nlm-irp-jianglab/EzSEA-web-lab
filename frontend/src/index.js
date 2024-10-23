@@ -31,6 +31,11 @@ root.render(
                     />
                     <Route
                         exact
+                        path="/submit"
+                        element={<Submit />}
+                    />
+                    <Route
+                        exact
                         path="/reactvis"
                         element={<Submit />}
                     />

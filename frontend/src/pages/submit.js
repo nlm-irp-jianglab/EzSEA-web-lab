@@ -95,7 +95,7 @@ const Home = () => {
             "job_name": jobName,
             "job_id": id,
             "email": emailInput.current.value,
-            "sequence": fastaInput.current.value,
+            "sequence": fastaInput.current.value.trim(), //Trim whitespace, it can cause errors in pipeline
             "folding_program": selectedFoldingProgram,
             "tree_program": selectedPhylogeneticProgram,
             "asr_program": selectedAncestralProgram,
