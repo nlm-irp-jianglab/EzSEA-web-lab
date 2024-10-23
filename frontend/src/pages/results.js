@@ -11,6 +11,7 @@ import LogoStack from '../components/logo-stack';
 import { fastaToDict, parseNodeData, calcEntropyFromMSA, mapEntropyToColors, jsonToFasta } from '../components/utils';
 import { useParams } from 'react-router-dom';
 import * as d3 from 'd3';
+import ErrorPopup from '../components/errorpopup';
 
 const Results = () => {
     const { jobId } = useParams();
@@ -42,6 +43,7 @@ const Results = () => {
 
     // Storing tree reference itself
     const [treeObj, setTreeObj] = useState(null);
+    const [isErrorPopupVisible, setErrorPopupVisible] = useState(false);
 
     // Fetch the tree data and node data on component mount, store data into states
     useEffect(() => {
@@ -51,7 +53,7 @@ const Results = () => {
                 .then(data => {
                     // Check if error
                     if (data.error) {
-                        console.error("Error fetching results:", data.error);
+                        console.error("Error reading results:", data.error);
                         return;
                     }
                     // Check if individual read errors are present
@@ -628,6 +630,9 @@ const Results = () => {
     return (
         <div>
             <Navbar pageId={"Integrated Tree Viewer"} />
+            {isErrorPopupVisible && (
+                <ErrorPopup errorMessage="Results not available" onClose={() => setErrorPopupVisible(false)} />
+            )}
             <div className="btn-toolbar" style={{ display: "flex", justifyContent: "space-between", height: "40px" }}>
                 <p>Results of job: {jobId}</p>
                 <span>

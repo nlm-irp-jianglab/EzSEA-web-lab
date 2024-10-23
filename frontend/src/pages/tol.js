@@ -11,6 +11,7 @@ import LogoStack from '../components/logo-stack';
 import { readFastaToDict, parseNodeData, calcEntropyFromMSA, mapEntropyToColors } from '../components/utils';
 import { useParams } from 'react-router-dom';
 import * as d3 from 'd3';
+import ErrorPopup from '../components/errorpopup';
 
 const logoFiles = {};
 
@@ -46,6 +47,15 @@ const Tol = () => {
 
     // Storing tree reference itself
     const [treeObj, setTreeObj] = useState(null);
+    const [isErrorPopupVisible, setErrorPopupVisible] = useState(false);
+
+    const showErrorPopup = () => {
+        setErrorPopupVisible(true);
+    };
+
+    const closeErrorPopup = () => {
+        setErrorPopupVisible(false);
+    };
 
     // Fetch the tree data and node data on component mount, store data into states
     // TODO: Fetch dynamically from the backend
@@ -606,9 +616,13 @@ const Tol = () => {
     return (
         <div>
             <Navbar pageId={"Integrated Tree Viewer"} />
+            {isErrorPopupVisible && (
+                <ErrorPopup errorMessage="An error occurred!" onClose={closeErrorPopup} />
+            )}
             <div className="btn-toolbar" style={{ display: "flex", justifyContent: "space-between" }}>
                 <p>Results of job: {jobId}</p>
                 <span>
+                    <button onClick={showErrorPopup}>Trigger Error</button>
                     {downloadsDropdown()}
                     {importantNodesDropdown()}
                 </span>
