@@ -628,7 +628,7 @@ const Results = () => {
     return (
         <div>
             <Navbar pageId={"Integrated Tree Viewer"} />
-            <div className="btn-toolbar" style={{ display: "flex", justifyContent: "space-between" }}>
+            <div className="btn-toolbar" style={{ display: "flex", justifyContent: "space-between", height: "40px" }}>
                 <p>Results of job: {jobId}</p>
                 <span>
                     {downloadsDropdown()}

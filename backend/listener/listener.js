@@ -91,17 +91,18 @@ app.get("/results/:id", async (req, res) => {
     const results = await Promise.allSettled([treePromise, leafPromise, ancestralPromise, nodesPromise, structPromise]);
 
     // Collect the resolved results into one object
-    const fulfilledResults = results.filter(result => result.status === 'fulfilled');
-    const response = fulfilledResults.reduce((acc, result) => {
-        return { ...acc, ...result.value };
+    const response = results.reduce((acc, result) => {
+        if (result.status === 'fulfilled') {
+            return { ...acc, ...result.value };
+        }
+        return acc;
     }, {});
 
-    // Check if any promises were fulfilled
-    if (fulfilledResults.length > 0) {
-        return res.status(200).json(response);
-    } else {
-        // If no promises were fulfilled, return a general error
+    // Send response with the files that were successfully read and any error messages
+    if (response['treeError'] && response['leafError'] && response['ancestralError'] && response['nodesError'] && response['structError']) {
         return res.status(500).json({ error: "Failed to read all files." });
+    } else {
+        return res.status(200).json(response);
     }
 });
 
