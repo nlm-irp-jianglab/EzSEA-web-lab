@@ -1,0 +1,42 @@
+/* Dimming background */
+.popup-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6); /* Dim the background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999; /* Make sure it's above everything */
+  }
+  
+  /* Popup container */
+  .popup {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+    z-index: 1000; /* Ensure it's on top */
+  }
+  
+  /* Popup button */
+  .popup button {
+    background-color: #ff4d4f;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 20px;
+  }
+  
+  .popup button:hover {
+    background-color: #d4380d;
+  }
+  
