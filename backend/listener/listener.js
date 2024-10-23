@@ -3,7 +3,8 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const { exec } = require('child_process');
 const fs = require('fs');
-const pino = require('pino')
+const pino = require('pino');
+const emailjs = require('@emailjs/nodejs');
 
 var app = express();
 const logger = pino();
@@ -13,7 +14,21 @@ app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ extended: false, limit: '50mb' }));
 app.use(express.static(path.join(__dirname, 'build')));
 
-
+const sendEmail = async (recipient, jobId) => {
+    try {
+        const response = await emailjs.send("service_key", "template_key", {
+            recipient: recipient,
+            jobId: jobId,
+        }, 
+        {
+            publicKey: "PUBLIC_KEY",
+            privateKey: "PRIVATE_KEY",
+        });
+        console.log('Email sent successfully:', response);
+    } catch (error) {
+        console.error("Error sending email:", error);
+    }
+};
 
 app.post("/submit", (req, res) => {
     // Retrieve JSON from the POST body 
@@ -35,6 +50,9 @@ app.post("/submit", (req, res) => {
             console.error(err); // Pino doesn't give new lines
         } else {
             logger.info("Job COMPLETED:" + stdout);
+            // if (data.email) {
+            //     sendEmail(data.email, data.job_id);
+            // }
         }
     });
     setTimeout(function () {

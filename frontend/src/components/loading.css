@@ -1,53 +1,83 @@
-#loader-container{
-    max-width:220px;
-    position: absolute;
-    top:50%;
-    left: 50%;
-    transform: translate(-50%,-50%);
+.middle-wave {
+  fill: #bce6fb;
+}
+
+.small-leaf {
+  fill: #bce6fb;
+  transform-origin: center;
+  opacity: 0;
+  animation: revealSmallLeaves 1.5s ease-in-out forwards;
+  animation-delay: 5s;
+}
+
+.large-leaf {
+  fill: #bce6fb;
+  transform-origin: center;
+  opacity: 0;
+  animation: revealLargeLeaves 1.5s ease-in-out forwards;
+  animation-delay: 6.5s;
+}
+
+.tree {
+  fill: #4991ce;
+  mask: linear-gradient(180deg, transparent 50%, black 50%) top;
+  mask-size: 100% 200%;
+  animation: treeAnimation 2s ease-in-out forwards;
+  animation-delay: 3s;
+}
+
+.wave {
+  fill: #4991ce;
+}
+
+.wave,
+.middle-wave {
+  transform-origin: left-center;
+  mask: linear-gradient(270deg, transparent 50%, black 50%) right;
+  mask-size: 200%;
+  animation: waveAnimation 3s ease-in-out forwards;
+}
+
+@keyframes waveAnimation {
+  0% {
+    mask-position: right;
   }
-  
-  #loader #circle1{
-    stroke-dasharray: 100%;
-    stroke-dashoffset: 100%;
-    animation: strokeAnimate 2s  1s  ease forwards alternate infinite;
+
+  100% {
+    mask-position: left;
   }
-  #loader #circle2{
-    stroke-dasharray: 100%;
-    stroke-dashoffset: 100%;
-    animation: strokeAnimate 2s  1s  ease forwards alternate infinite;
+}
+
+@keyframes treeAnimation {
+  0% {
+    mask-position: top;
   }
-  #loader #circle3{
-    stroke-dasharray: 100%;
-    stroke-dashoffset: 100%;
-    animation: strokeAnimate 2s  1s  ease forwards alternate infinite;
+
+  100% {
+    mask-position: bottom;
   }
-  #loader line{
-    stroke-dasharray: 100%;
-    stroke-dashoffset: 100%;
-    animation: strokeAnimate 2s  1s  ease forwards alternate infinite;
+}
+
+@keyframes revealSmallLeaves {
+  0% {
+    opacity: 0;
+    transform: scale(0);
   }
-  
-  @keyframes strokeAnimate{
-    to{
-        stroke-dashoffset: 0;
-  
-    }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
   }
-  
-  @media screen and (max-width: 768px) {
-    #loader-container{
-        max-width:150px;
-    }
-    #loader{
-        width:150px;
-    }
+}
+
+@keyframes revealLargeLeaves {
+  0% {
+    opacity: 0;
+    transform: scale(0);
   }
-  
-  @media  screen and (max-width:650px) {
-    #loader-container{
-        max-width:100px;
-    }
-    #loader{
-        width:100px;
-    }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
   }
+}
