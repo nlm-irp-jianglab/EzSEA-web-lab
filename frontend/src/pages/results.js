@@ -53,29 +53,34 @@ const Results = () => {
                 .then(data => {
                     // Check if error
                     if (data.error) {
+                        setErrorPopupVisible(true);
                         console.error("Error reading results:", data.error);
                         return;
                     }
                     // Check if individual read errors are present
                     if (data.treeError) {
+                        setErrorPopupVisible(true);
                         console.error("Error fetching tree data:", data.treeError);
                     } else {
                         setNewickData(data.tree);
                     }
 
                     if (data.leafError) {
+                        setErrorPopupVisible(true);
                         console.error("Error fetching leaf data:", data.leafError);
                     } else {
                         fastaToDict(data.leaf).then((fastaDict) => setLeafData(fastaDict));
                     }
 
                     if (data.ancestralError) {
+                        setErrorPopupVisible(true);
                         console.error("Error fetching ancestral data:", data.ancestralError);
                     } else {
                         fastaToDict(data.ancestral).then((fastaDict) => setFaData(fastaDict));
                     }
 
                     if (data.nodesError) {
+                        setErrorPopupVisible(true);
                         console.error("Error fetching nodes data:", data.nodesError);
                     } else {
                         const json = JSON.parse(data.nodes);
@@ -84,6 +89,7 @@ const Results = () => {
                     }
 
                     if (data.structError) {
+                        setErrorPopupVisible(true);
                         console.error("Error fetching structure data:", data.structError);
                     } else {
                         setStructData(data.struct);
@@ -91,6 +97,7 @@ const Results = () => {
 
                 });
         } catch (error) {
+            setErrorPopupVisible(true);
             console.error("Error fetching results:", error);
         };
     }, []);
