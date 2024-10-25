@@ -112,13 +112,13 @@ const Results = () => {
             var textsize = 0;
             var padding = "";
 
-            if (Object.keys(dictionary).length > 400) {
+            if (Object.keys(faData).length > 400) {
                 textsize = 4;
                 paddding = "\u00A0\u00A0\u00A0\u00A0";
-            } else if (Object.keys(dictionary).length > 250) {
+            } else if (Object.keys(faData).length > 250) {
                 textsize = 4;
                 padding = "\u00A0\u00A0\u00A0\u00A0";
-            } else if (Object.keys(dictionary).length > 100) {
+            } else if (Object.keys(faData).length > 100) {
                 textsize = 6;
                 padding = "\u00A0\u00A0\u00A0";
             } else {
