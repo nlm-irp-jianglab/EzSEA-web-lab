@@ -60,10 +60,10 @@ export function MolStarWrapper({ structData, selectedResidue, hoveredResidue, co
       // Loading the default pdb file
       // TODO: Load PDB files dynamically
 
-      const defStruct = await fetch(`${process.env.PUBLIC_URL}/example_2/Visualization/seq.pdb`).then(response => response.text()).then((text) => text);
+      // const defStruct = await fetch(`${process.env.PUBLIC_URL}/example_2/Visualization/seq.pdb`).then(response => response.text()).then((text) => text);
 
       const myData = await window.molstar.builders.data.rawData({
-        data: structData || defStruct, /* string or number[] */
+        data: structData, /* string or number[] */
         label: void 0 /* optional label */
       });
 

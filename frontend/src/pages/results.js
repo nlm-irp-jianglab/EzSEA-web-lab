@@ -89,7 +89,7 @@ const Results = () => {
                     }
 
                     if (data.structError) {
-                        setErrorPopupVisible(true);
+                        // setErrorPopupVisible(true);
                         console.error("Error fetching structure data:", data.structError);
                     } else {
                         setStructData(data.struct);
@@ -104,16 +104,33 @@ const Results = () => {
 
     // Deals with tree rendering
     useEffect(() => {
-        if (treeRef.current && newickData) {
+        if (treeRef.current && newickData && nodeData) {
             treeRef.current.innerHTML = '';
 
             const tree = new pt.phylotree(newickData);
+
+            var textsize = 0;
+            var padding = "";
+
+            if (Object.keys(dictionary).length > 400) {
+                textsize = 4;
+                paddding = "\u00A0\u00A0\u00A0\u00A0";
+            } else if (Object.keys(dictionary).length > 250) {
+                textsize = 4;
+                padding = "\u00A0\u00A0\u00A0\u00A0";
+            } else if (Object.keys(dictionary).length > 100) {
+                textsize = 6;
+                padding = "\u00A0\u00A0\u00A0";
+            } else {
+                textsize = 20;
+                padding = "\u00A0";
+            }
 
             function style_nodes(element, node_data) {
                 var node_label = element.select("text");
 
                 if (!isLeafNode(node_data)) { // edits to the internal nodes
-                    node_label.text("\u00A0\u00A0\u00A0\u00A0" + node_label.text() + "\u00A0\u00A0\u00A0\u00A0")
+                    node_label.text(padding + node_label.text() + padding)
                         .style("font-weight", "bold");
 
                     if (topNodes && node_data.data.name in topNodes) { // First condition to ensure topNodes is populated
@@ -279,7 +296,7 @@ const Results = () => {
         setLogoContent(prevLogoContent => {
             const updatedLogoContent = { ...prevLogoContent };
 
-            // Add or remove node from logoContent
+            // Add or do nothing if node is already in logoContent
             if (node.data.name in updatedLogoContent) {
                 node['compare-node'] = false;
                 node['compare-descendants'] = false;
@@ -661,12 +678,26 @@ const Results = () => {
                     <div className="center-console">
                         {!isRightCollapsed && (
                             <button className="triangle-button" onClick={toggleLeftCollapse}>
-                                {isLeftCollapsed ? '▶' : '◀'}
+                                {isLeftCollapsed ? <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <title>Expand Left</title>
+                                    <path d="M21 6H13M9 6V18M21 10H13M21 14H13M21 18H13M3 10L5 12L3 14" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                </svg> :
+                                    <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" transform='rotate(180)'>
+                                        <title>Collapse Left</title>
+                                        <path d="M21 6H13M9 6V18M21 10H13M21 14H13M21 18H13M3 10L5 12L3 14" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                    </svg>}
                             </button>
                         )}
                         {!isLeftCollapsed && (
                             <button className="triangle-button" onClick={toggleRightCollapse}>
-                                {isRightCollapsed ? '◀' : '▶'}
+                                {isRightCollapsed ? <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" transform='rotate(180)'>
+                                    <title>Expand Right</title>
+                                    <path d="M21 6H13M9 6V18M21 10H13M21 14H13M21 18H13M3 10L5 12L3 14" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                </svg> :
+                                    <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <title>Collapse Right</title>
+                                        <path d="M21 6H13M9 6V18M21 10H13M21 14H13M21 18H13M3 10L5 12L3 14" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                    </svg>}
                             </button>
                         )}
                     </div>

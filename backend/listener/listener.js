@@ -49,10 +49,10 @@ app.post("/submit", (req, res) => {
             error = "There was a problem initializing your job, please try again later";
             console.error(err); // Pino doesn't give new lines
         } else {
-            logger.info("Job COMPLETED:" + stdout);
-            // if (data.email) {
-            //     sendEmail(data.email, data.job_id);
-            // }
+            logger.info("Job COMPLETED:" + data.job_id);
+            if (data.email) {
+                sendEmail(data.email, data.job_id);
+            }
         }
     });
     setTimeout(function () {

@@ -85,8 +85,10 @@ const Tol = () => {
 
     // Deals with tree rendering
     useEffect(() => {
-        if (treeRef.current && newickData) {
+        if (treeRef.current && newickData && nodeData) {
             treeRef.current.innerHTML = '';
+
+            console.log(Object.keys(nodeData).length);
 
             const tree = new pt.phylotree(newickData);
             setTreeObj(tree);
@@ -95,7 +97,7 @@ const Tol = () => {
                 var node_label = element.select("text");
 
                 if (!isLeafNode(node_data)) { // edits to the internal nodes
-                    node_label.text("\u00A0\u00A0\u00A0\u00A0" + node_label.text() + "\u00A0\u00A0\u00A0\u00A0")
+                    node_label.text("\u00A0" + node_label.text() + "\u00A0")
                         .style("font-weight", "bold")
 
                     if (topNodes && node_data.data.name in topNodes) { // First condition to ensure nodeData is populated
@@ -224,7 +226,7 @@ const Tol = () => {
                 'node-styler': style_nodes,
                 'edge-styler': style_edges,
                 'show-scale': false,
-                'font-size': 4,
+                'font-size': 12,
                 'background-color': 'lightblue',
                 'collapsible': true,
                 'reroot': true,
@@ -641,12 +643,26 @@ const Tol = () => {
                     <div className="center-console">
                         {!isRightCollapsed && (
                             <button className="triangle-button" onClick={toggleLeftCollapse}>
-                                {isLeftCollapsed ? '▶' : '◀'}
+                                {isLeftCollapsed ? <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <title>Expand Left</title>
+                                    <path d="M21 6H13M9 6V18M21 10H13M21 14H13M21 18H13M3 10L5 12L3 14" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                </svg> :
+                                    <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" transform='rotate(180)'>
+                                        <title>Collapse Left</title>
+                                        <path d="M21 6H13M9 6V18M21 10H13M21 14H13M21 18H13M3 10L5 12L3 14" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                    </svg>}
                             </button>
                         )}
                         {!isLeftCollapsed && (
                             <button className="triangle-button" onClick={toggleRightCollapse}>
-                                {isRightCollapsed ? '◀' : '▶'}
+                                {isRightCollapsed ? <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" transform='rotate(180)'>
+                                    <title>Expand Right</title>
+                                    <path d="M21 6H13M9 6V18M21 10H13M21 14H13M21 18H13M3 10L5 12L3 14" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                </svg> :
+                                    <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <title>Collapse Right</title>
+                                        <path d="M21 6H13M9 6V18M21 10H13M21 14H13M21 18H13M3 10L5 12L3 14" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                    </svg>}
                             </button>
                         )}
                     </div>
