@@ -507,7 +507,7 @@ const Results = () => {
 
     const downloadsDropdown = () => (
         <div className="dropdown">
-            <button className="dropbtn">Download Files</button>
+            <button className="dropbtn-downloads">Download Files</button>
             <div className="dropdown-content" style={{ zIndex: "2" }}>
                 <button onClick={() => handleDownload(`${jobId}_asr_nodes.fa`, faData, true)}>Ancestral Sequences</button>
                 <button onClick={() => handleDownload(`${jobId}_leaf_nodes.fa`, leafData, true)}>Leaf Sequences</button>
@@ -521,7 +521,7 @@ const Results = () => {
 
     const importantNodesDropdown = () => (
         <div className="dropdown">
-            <button className="dropbtn">Important Nodes</button>
+            <button className="dropbtn-nodes">Important Nodes</button>
             <div className="dropdown-content" style={{ zIndex: "2" }}>
                 {Object.keys(topNodes).map(key => (
                     <button key={key} onClick={() => selectNode(key)}>
