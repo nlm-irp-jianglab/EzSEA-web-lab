@@ -60,7 +60,10 @@ export function MolStarWrapper({ structData, selectedResidue, hoveredResidue, co
       // Loading the default pdb file
       // TODO: Load PDB files dynamically
 
-      // const defStruct = await fetch(`${process.env.PUBLIC_URL}/example_2/Visualization/seq.pdb`).then(response => response.text()).then((text) => text);
+      if (structData == null) {
+        console.error("No structure data provided.");
+        return;
+      }
 
       const myData = await window.molstar.builders.data.rawData({
         data: structData, /* string or number[] */

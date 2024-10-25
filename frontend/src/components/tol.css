@@ -29,7 +29,17 @@
 }
 
 /* Dropdown button */
-.dropbtn {
+.dropbtn-nodes {
+    background-color: #137cbd;
+    color: white;
+    padding: 10px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.dropbtn-downloads {
     background-color: #4CAF50;
     color: white;
     padding: 10px;

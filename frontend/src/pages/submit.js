@@ -28,19 +28,19 @@ const Home = () => {
     const validateInput = () => {
         const fasta = fastaInput.current.value.trim();  // Remove any extra whitespace
         const lines = fasta.split('\n');  // Split the input into lines
-    
+
         // Check if empty input
         if (fasta === "") {
             setFastaStatus("empty");
             return;
         }
-    
+
         // Check for header line
         if (!lines[0].startsWith('>')) {
             setFastaStatus("noHeader");
             return;
         }
-    
+
         // Check if the remaining lines contain only valid characters for the sequence
         const sequenceRegex = /^[ACDEFGHIKLMNPQRSTVWY]+$/i;
         let sequenceLength = 0;  // Variable to count the sequence length
@@ -52,22 +52,22 @@ const Home = () => {
             }
             sequenceLength += line.length;  // Add line length to the total sequence length
         }
-    
+
         // Check if sequence length is within the valid range
         if (sequenceLength < 50) {
             setFastaStatus("tooShort");
             return;
         }
-    
+
         if (sequenceLength > 1000) {
             setFastaStatus("tooLong");
             return;
         }
-    
+
         // If all checks pass, mark as valid
         setFastaStatus("valid");
     };
-    
+
 
     useEffect(() => {
         if (fastaStatus === "valid") {
@@ -267,7 +267,9 @@ const Home = () => {
                                     <span className="bp3-popover-wrapper">
                                         <div className="bp3-popover-target">
                                             <button type="button" className="bp3-button bp3-minimal bp3-small" onClick={() => populateExample()}>
-                                                <span className="bp3-button-text">Example</span>
+                                                <span className="bp3-button-text">
+                                                    Example
+                                                </span>
                                             </button>
                                         </div>
                                     </span>
@@ -295,176 +297,173 @@ const Home = () => {
                                 <span className="bp3-button-text">{isSettingsVisible ? "Hide advanced settings" : "Show advanced settings"}</span>
                             </button>
                             <div className="bp3-collapse">
-                                <div className="bp3-collapse-body" style={{ transform: isSettingsVisible ? "translateY(0px)" : "translateY(-557px)" }}>
-                                    {isSettingsVisible ? (
-                                        <div className="bp3-card bp3-elevation-0">
-                                            <div>
-                                                <p>Number of Sequences:</p>
-                                                <span>
-                                                    <button className="bp3-button bp3-minimal"
-                                                        onClick={() => setSelectedNumSeq(100)}
-                                                        style={{
-                                                            backgroundColor: selectedNumSeq == 100 ? '#007bff' : '#eee',
-                                                            color: selectedNumSeq == 100 ? 'white' : 'black'
-                                                        }}
-                                                    >
-                                                        100
-                                                    </button>
-                                                    <button className="bp3-button bp3-minimal"
-                                                        onClick={() => setSelectedNumSeq(200)}
-                                                        style={{
-                                                            backgroundColor: selectedNumSeq == 200 ? '#007bff' : '#eee',
-                                                            color: selectedNumSeq == 200 ? 'white' : 'black'
-                                                        }}
-                                                    >
-                                                        200
-                                                    </button>
-                                                    <button className="bp3-button bp3-minimal"
-                                                        onClick={() => setSelectedNumSeq(500)}
-                                                        style={{
-                                                            backgroundColor: selectedNumSeq == 500 ? '#007bff' : '#eee',
-                                                            color: selectedNumSeq == 500 ? 'white' : 'black'
-                                                        }}
-                                                    >
-                                                        500
-                                                    </button>
-                                                    <button className="bp3-button bp3-minimal"
-                                                        onClick={() => setSelectedNumSeq(1000)}
-                                                        style={{
-                                                            backgroundColor: selectedNumSeq == 1000 ? '#007bff' : '#eee',
-                                                            color: selectedNumSeq == 1000 ? 'white' : 'black'
-                                                        }}
-                                                    >
-                                                        1000
-                                                    </button>
-                                                </span>
-                                                <p>Protein Folding Program:</p>
-                                                <span>
-                                                    <button className="bp3-button bp3-minimal"
-                                                        onClick={() => setSelectedFoldingProgram('colabfold')}
-                                                        style={{
-                                                            backgroundColor: selectedFoldingProgram === 'colabfold' ? '#007bff' : '#eee',
-                                                            color: selectedFoldingProgram === 'colabfold' ? 'white' : 'black'
-                                                        }}
-                                                    >
-                                                        colabfold
-                                                    </button>
-                                                    <button className="bp3-button bp3-minimal"
-                                                        onClick={() => setSelectedFoldingProgram('pdb')}
-                                                        style={{
-                                                            backgroundColor: selectedFoldingProgram === 'pdb' ? '#007bff' : '#eee',
-                                                            color: selectedFoldingProgram === 'pdb' ? 'white' : 'black'
-                                                        }}
-                                                    >
-                                                        pdb
-                                                    </button>
-                                                    <button className="bp3-button bp3-minimal"
-                                                        onClick={() => setSelectedFoldingProgram('none')}
-                                                        style={{
-                                                            backgroundColor: selectedFoldingProgram === 'none' ? '#007bff' : '#eee',
-                                                            color: selectedFoldingProgram === 'none' ? 'white' : 'black'
-                                                        }}
-                                                    >
-                                                        none
-                                                    </button>
-                                                </span>
+                                <div className="bp3-collapse-body" style={{ transform: isSettingsVisible ? "translateY(0px)" : "translateY(-557px)", height: isSettingsVisible ? "480px" : "0" }}>
 
-                                                <p>Phylogenetic Tree Program:</p>
-                                                <span>
-                                                    <button className="bp3-button bp3-minimal"
-                                                        onClick={() => setSelectedPhylogeneticProgram('FastTree')}
-                                                        style={{
-                                                            backgroundColor: selectedPhylogeneticProgram === 'FastTree' ? '#007bff' : '#eee',
-                                                            color: selectedPhylogeneticProgram === 'FastTree' ? 'white' : 'black'
-                                                        }}
-                                                    >
-                                                        FastTree
-                                                    </button>
-                                                    <button className="bp3-button bp3-minimal"
-                                                        onClick={() => setSelectedPhylogeneticProgram('iqtree')}
-                                                        style={{
-                                                            backgroundColor: selectedPhylogeneticProgram === 'iqtree' ? '#007bff' : '#eee',
-                                                            color: selectedPhylogeneticProgram === 'iqtree' ? 'white' : 'black'
-                                                        }}
-                                                    >
-                                                        iqtree
-                                                    </button>
-                                                    <button className="bp3-button bp3-minimal"
-                                                        onClick={() => setSelectedPhylogeneticProgram('raxml')}
-                                                        style={{
-                                                            backgroundColor: selectedPhylogeneticProgram === 'raxml' ? '#007bff' : '#eee',
-                                                            color: selectedPhylogeneticProgram === 'raxml' ? 'white' : 'black'
-                                                        }}
-                                                    >
-                                                        raxml
-                                                    </button>
-                                                </span>
+                                    <div className="bp3-card bp3-elevation-0">
+                                        <div>
+                                            <p>Number of Sequences:</p>
+                                            <span>
+                                                <button className="bp3-button bp3-minimal"
+                                                    onClick={() => setSelectedNumSeq(1000)}
+                                                    style={{
+                                                        backgroundColor: selectedNumSeq == 1000 ? '#007bff' : '#eee',
+                                                        color: selectedNumSeq == 1000 ? 'white' : 'black'
+                                                    }}
+                                                >
+                                                    1000
+                                                </button>
+                                                <button className="bp3-button bp3-minimal"
+                                                    onClick={() => setSelectedNumSeq(500)}
+                                                    style={{
+                                                        backgroundColor: selectedNumSeq == 500 ? '#007bff' : '#eee',
+                                                        color: selectedNumSeq == 500 ? 'white' : 'black'
+                                                    }}
+                                                >
+                                                    500
+                                                </button>
+                                                <button className="bp3-button bp3-minimal"
+                                                    onClick={() => setSelectedNumSeq(200)}
+                                                    style={{
+                                                        backgroundColor: selectedNumSeq == 200 ? '#007bff' : '#eee',
+                                                        color: selectedNumSeq == 200 ? 'white' : 'black'
+                                                    }}
+                                                >
+                                                    200
+                                                </button>
+                                                <button className="bp3-button bp3-minimal"
+                                                    onClick={() => setSelectedNumSeq(100)}
+                                                    style={{
+                                                        backgroundColor: selectedNumSeq == 100 ? '#007bff' : '#eee',
+                                                        color: selectedNumSeq == 100 ? 'white' : 'black'
+                                                    }}
+                                                >
+                                                    100
+                                                </button>
+                                            </span>
+                                            <p>Protein Folding Program:</p>
+                                            <span>
+                                                <button className="bp3-button bp3-minimal"
+                                                    onClick={() => setSelectedFoldingProgram('colabfold')}
+                                                    style={{
+                                                        backgroundColor: selectedFoldingProgram === 'colabfold' ? '#007bff' : '#eee',
+                                                        color: selectedFoldingProgram === 'colabfold' ? 'white' : 'black'
+                                                    }}
+                                                >
+                                                    colabfold
+                                                </button>
+                                                <button className="bp3-button bp3-minimal"
+                                                    onClick={() => setSelectedFoldingProgram('pdb')}
+                                                    style={{
+                                                        backgroundColor: selectedFoldingProgram === 'pdb' ? '#007bff' : '#eee',
+                                                        color: selectedFoldingProgram === 'pdb' ? 'white' : 'black'
+                                                    }}
+                                                >
+                                                    pdb
+                                                </button>
+                                                <button className="bp3-button bp3-minimal"
+                                                    onClick={() => setSelectedFoldingProgram('none')}
+                                                    style={{
+                                                        backgroundColor: selectedFoldingProgram === 'none' ? '#007bff' : '#eee',
+                                                        color: selectedFoldingProgram === 'none' ? 'white' : 'black'
+                                                    }}
+                                                >
+                                                    none
+                                                </button>
+                                            </span>
 
-                                                <p>Ancestral State Inference Program:</p>
-                                                <span>
-                                                    <button className="bp3-button bp3-minimal"
-                                                        onClick={() => setSelectedAncestralProgram('GRASP')}
-                                                        style={{
-                                                            backgroundColor: selectedAncestralProgram === 'GRASP' ? '#007bff' : '#eee',
-                                                            color: selectedAncestralProgram === 'GRASP' ? 'white' : 'black'
-                                                        }}
-                                                    >
-                                                        GRASP
-                                                    </button>
-                                                    <button className="bp3-button bp3-minimal"
-                                                        onClick={() => setSelectedAncestralProgram('iqtree')}
-                                                        style={{
-                                                            backgroundColor: selectedAncestralProgram === 'iqtree' ? '#007bff' : '#eee',
-                                                            color: selectedAncestralProgram === 'iqtree' ? 'white' : 'black'
-                                                        }}
-                                                    >
-                                                        iqtree
-                                                    </button>
-                                                    <button className="bp3-button bp3-minimal"
-                                                        onClick={() => setSelectedAncestralProgram('raxml-ng')}
-                                                        style={{
-                                                            backgroundColor: selectedAncestralProgram === 'raxml-ng' ? '#007bff' : '#eee',
-                                                            color: selectedAncestralProgram === 'raxml-ng' ? 'white' : 'black'
-                                                        }}
-                                                    >
-                                                        raxml-ng
-                                                    </button>
-                                                </span>
-                                                <p>Alignment Program:</p>
-                                                <span>
-                                                    <button className="bp3-button bp3-minimal"
-                                                        onClick={() => setSelectedAlignmentProgram('muscle')}
-                                                        style={{
-                                                            backgroundColor: selectedAlignmentProgram === 'muscle' ? '#007bff' : '#eee',
-                                                            color: selectedAlignmentProgram === 'muscle' ? 'white' : 'black'
-                                                        }}
-                                                    >
-                                                        MUSCLE
-                                                    </button>
-                                                    <button className="bp3-button bp3-minimal"
-                                                        onClick={() => setSelectedAlignmentProgram('mafft')}
-                                                        style={{
-                                                            backgroundColor: selectedAlignmentProgram === 'mafft' ? '#007bff' : '#eee',
-                                                            color: selectedAlignmentProgram === 'mafft' ? 'white' : 'black'
-                                                        }}
-                                                    >
-                                                        mafft
-                                                    </button>
-                                                    <button className="bp3-button bp3-minimal"
-                                                        onClick={() => setSelectedAlignmentProgram('clustalo')}
-                                                        style={{
-                                                            backgroundColor: selectedAlignmentProgram === 'clustalo' ? '#007bff' : '#eee',
-                                                            color: selectedAlignmentProgram === 'clustalo' ? 'white' : 'black'
-                                                        }}
-                                                    >
-                                                        clustalo
-                                                    </button>
-                                                </span>
-                                            </div>
+                                            <p>Phylogenetic Tree Program:</p>
+                                            <span>
+                                                <button className="bp3-button bp3-minimal"
+                                                    onClick={() => setSelectedPhylogeneticProgram('FastTree')}
+                                                    style={{
+                                                        backgroundColor: selectedPhylogeneticProgram === 'FastTree' ? '#007bff' : '#eee',
+                                                        color: selectedPhylogeneticProgram === 'FastTree' ? 'white' : 'black'
+                                                    }}
+                                                >
+                                                    FastTree
+                                                </button>
+                                                <button className="bp3-button bp3-minimal"
+                                                    onClick={() => setSelectedPhylogeneticProgram('iqtree')}
+                                                    style={{
+                                                        backgroundColor: selectedPhylogeneticProgram === 'iqtree' ? '#007bff' : '#eee',
+                                                        color: selectedPhylogeneticProgram === 'iqtree' ? 'white' : 'black'
+                                                    }}
+                                                >
+                                                    iqtree
+                                                </button>
+                                                <button className="bp3-button bp3-minimal"
+                                                    onClick={() => setSelectedPhylogeneticProgram('raxml')}
+                                                    style={{
+                                                        backgroundColor: selectedPhylogeneticProgram === 'raxml' ? '#007bff' : '#eee',
+                                                        color: selectedPhylogeneticProgram === 'raxml' ? 'white' : 'black'
+                                                    }}
+                                                >
+                                                    raxml
+                                                </button>
+                                            </span>
+
+                                            <p>Ancestral State Inference Program:</p>
+                                            <span>
+                                                <button className="bp3-button bp3-minimal"
+                                                    onClick={() => setSelectedAncestralProgram('GRASP')}
+                                                    style={{
+                                                        backgroundColor: selectedAncestralProgram === 'GRASP' ? '#007bff' : '#eee',
+                                                        color: selectedAncestralProgram === 'GRASP' ? 'white' : 'black'
+                                                    }}
+                                                >
+                                                    GRASP
+                                                </button>
+                                                <button className="bp3-button bp3-minimal"
+                                                    onClick={() => setSelectedAncestralProgram('iqtree')}
+                                                    style={{
+                                                        backgroundColor: selectedAncestralProgram === 'iqtree' ? '#007bff' : '#eee',
+                                                        color: selectedAncestralProgram === 'iqtree' ? 'white' : 'black'
+                                                    }}
+                                                >
+                                                    iqtree
+                                                </button>
+                                                <button className="bp3-button bp3-minimal"
+                                                    onClick={() => setSelectedAncestralProgram('raxml-ng')}
+                                                    style={{
+                                                        backgroundColor: selectedAncestralProgram === 'raxml-ng' ? '#007bff' : '#eee',
+                                                        color: selectedAncestralProgram === 'raxml-ng' ? 'white' : 'black'
+                                                    }}
+                                                >
+                                                    raxml-ng
+                                                </button>
+                                            </span>
+                                            <p>Alignment Program:</p>
+                                            <span>
+                                                <button className="bp3-button bp3-minimal"
+                                                    onClick={() => setSelectedAlignmentProgram('muscle')}
+                                                    style={{
+                                                        backgroundColor: selectedAlignmentProgram === 'muscle' ? '#007bff' : '#eee',
+                                                        color: selectedAlignmentProgram === 'muscle' ? 'white' : 'black'
+                                                    }}
+                                                >
+                                                    MUSCLE
+                                                </button>
+                                                <button className="bp3-button bp3-minimal"
+                                                    onClick={() => setSelectedAlignmentProgram('mafft')}
+                                                    style={{
+                                                        backgroundColor: selectedAlignmentProgram === 'mafft' ? '#007bff' : '#eee',
+                                                        color: selectedAlignmentProgram === 'mafft' ? 'white' : 'black'
+                                                    }}
+                                                >
+                                                    mafft
+                                                </button>
+                                                <button className="bp3-button bp3-minimal"
+                                                    onClick={() => setSelectedAlignmentProgram('clustalo')}
+                                                    style={{
+                                                        backgroundColor: selectedAlignmentProgram === 'clustalo' ? '#007bff' : '#eee',
+                                                        color: selectedAlignmentProgram === 'clustalo' ? 'white' : 'black'
+                                                    }}
+                                                >
+                                                    clustalo
+                                                </button>
+                                            </span>
                                         </div>
-                                    ) : (
-                                        <div></div>
-                                    )}
+                                    </div>
                                 </div>
                             </div>
                         </div>

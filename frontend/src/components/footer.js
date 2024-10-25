@@ -15,7 +15,7 @@ const Footer = () => {
                 </a>
             </div>
             <div style={styles.copyright}>
-                <span style={{ float: "left", paddingLeft: "10px"}}>Contact us: support@ezsea.com</span>
+                <span style={{ float: "left", paddingLeft: "10px"}}><a href="mailto:ezsea.notifications@gmail.com" style={styles.link}>Contact us</a></span>
                 <img src={process.env.PUBLIC_URL + "/nihlogo.png"} alt="NIHLogo" style={{ width: "5%", paddingRight: "10px" }}></img>
             </div>
         </footer>

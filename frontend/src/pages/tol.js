@@ -263,9 +263,7 @@ const Tol = () => {
 
             // Add or remove node from logoContent
             if (node.data.name in updatedLogoContent) {
-                node['compare-node'] = false;
-                node['compare-descendants'] = false;
-                delete updatedLogoContent[node.data.name];  // Remove the node
+                return updatedLogoContent;
             } else {
                 if (comp_desc) {
                     node['compare-node'] = true;
@@ -473,7 +471,7 @@ const Tol = () => {
 
     const downloadsDropdown = () => (
         <div className="dropdown">
-            <button className="dropbtn">Download Files</button>
+            <button className="dropbtn-downloads">Download Files</button>
             <div className="dropdown-content" style={{ zIndex: "2" }}>
                 <button onClick={downloadNewickData}>Download Newick Data</button>
                 {Object.keys(logoFiles).map(fileName => (
@@ -487,7 +485,7 @@ const Tol = () => {
 
     const importantNodesDropdown = () => (
         <div className="dropdown">
-            <button className="dropbtn">Important Nodes</button>
+            <button className="dropbtn-nodes">Important Nodes</button>
             <div className="dropdown-content" style={{ zIndex: "2" }}>
                 {Object.keys(topNodes).map(key => (
                     <button key={key} onClick={() => selectNode(key)}>
@@ -617,16 +615,14 @@ const Tol = () => {
 
     return (
         <div>
-            <Navbar pageId={"Integrated Tree Viewer"} />
+            <Navbar pageId={"Results: ru5hnx3m2np8010"} />
             {isErrorPopupVisible && (
                 <ErrorPopup errorMessage="An error occurred!" onClose={closeErrorPopup} />
             )}
-            <div className="btn-toolbar" style={{ display: "flex", justifyContent: "space-between" }}>
-                <p>Results of job: {jobId}</p>
+            <div className="btn-toolbar" style={{ display: "flex", justifyContent: "space-between", height: "40px" }}>
                 <span>
-                    <button onClick={showErrorPopup}>Trigger Error</button>
-                    {downloadsDropdown()}
                     {importantNodesDropdown()}
+                    {downloadsDropdown()}
                 </span>
             </div>
             <div style={{ display: 'flex', height: '90vh', margin: '0 20px' }}>
@@ -679,13 +675,15 @@ const Tol = () => {
                     >
                         {isLeftCollapsed ? (
                             <div className="logodiv2" style={{ width: '50%' }}>
-                                <button onClick={downloadCombinedSVG}>
-                                    <svg width="25px" height="25px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" version="1.1" fill="none" stroke="#000000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5">
-                                        <title>Download Stack</title>
-                                        <path d="m3.25 7.25-1.5.75 6.25 3.25 6.25-3.25-1.5-.75m-11 3.75 6.25 3.25 6.25-3.25" />
-                                        <path d="m8 8.25v-6.5m-2.25 4.5 2.25 2 2.25-2" />
-                                    </svg>
-                                </button>
+                                <div style={{ textAlign: "center" }}>
+                                    <button onClick={downloadCombinedSVG} style={{borderRadius: "3px", backgroundColor: "#def2b3", border: "none", cursor: "pointer"}}>
+                                        <svg width="25px" height="25px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" version="1.1" fill="none" stroke="#000000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5">
+                                            <title>Download Stack</title>
+                                            <path d="m3.25 7.25-1.5.75 6.25 3.25 6.25-3.25-1.5-.75m-11 3.75 6.25 3.25 6.25-3.25" />
+                                            <path d="m8 8.25v-6.5m-2.25 4.5 2.25 2 2.25-2" />
+                                        </svg>
+                                    </button>
+                                </div>
                                 <LogoStack
                                     data={logoContent}
                                     onColumnClick={handleColumnClick}

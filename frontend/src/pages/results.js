@@ -261,7 +261,7 @@ const Results = () => {
                 'node-styler': style_nodes,
                 'edge-styler': style_edges,
                 'show-scale': false,
-                'font-size': 4,
+                'font-size': textsize,
                 'background-color': 'lightblue',
                 'collapsible': true,
                 'reroot': false,
@@ -298,9 +298,7 @@ const Results = () => {
 
             // Add or do nothing if node is already in logoContent
             if (node.data.name in updatedLogoContent) {
-                node['compare-node'] = false;
-                node['compare-descendants'] = false;
-                delete updatedLogoContent[node.data.name];  // Remove the node
+                return updatedLogoContent;
             } else {
                 if (comp_desc) {
                     node['compare-node'] = true;
@@ -653,15 +651,14 @@ const Results = () => {
 
     return (
         <div>
-            <Navbar pageId={"Integrated Tree Viewer"} />
+            <Navbar pageId={`Results ${jobId}`} />
             {isErrorPopupVisible && (
                 <ErrorPopup errorMessage="Results not available" onClose={() => setErrorPopupVisible(false)} />
             )}
             <div className="btn-toolbar" style={{ display: "flex", justifyContent: "space-between", height: "40px" }}>
-                <p>Results of job: {jobId}</p>
                 <span>
-                    {downloadsDropdown()}
                     {importantNodesDropdown()}
+                    {downloadsDropdown()}
                 </span>
             </div>
             <div style={{ display: 'flex', height: '90vh', margin: '0 20px' }}>
@@ -714,13 +711,15 @@ const Results = () => {
                     >
                         {isLeftCollapsed ? (
                             <div className="logodiv2" style={{ width: '50%' }}>
-                                <button onClick={downloadCombinedSVG}>
-                                    <svg width="25px" height="25px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" version="1.1" fill="none" stroke="#000000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5">
-                                        <title>Download Stack</title>
-                                        <path d="m3.25 7.25-1.5.75 6.25 3.25 6.25-3.25-1.5-.75m-11 3.75 6.25 3.25 6.25-3.25" />
-                                        <path d="m8 8.25v-6.5m-2.25 4.5 2.25 2 2.25-2" />
-                                    </svg>
-                                </button>
+                                <div style={{ textAlign: "center" }}>
+                                    <button onClick={downloadCombinedSVG} style={{borderRadius: "3px", backgroundColor: "#def2b3", border: "none", cursor: "pointer"}}>
+                                        <svg width="25px" height="25px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" version="1.1" fill="none" stroke="#000000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5">
+                                            <title>Download Stack</title>
+                                            <path d="m3.25 7.25-1.5.75 6.25 3.25 6.25-3.25-1.5-.75m-11 3.75 6.25 3.25 6.25-3.25" />
+                                            <path d="m8 8.25v-6.5m-2.25 4.5 2.25 2 2.25-2" />
+                                        </svg>
+                                    </button>
+                                </div>
                                 <LogoStack
                                     data={logoContent}
                                     onColumnClick={handleColumnClick}
