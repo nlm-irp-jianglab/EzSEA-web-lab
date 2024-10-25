@@ -12,6 +12,7 @@ import { readFastaToDict, parseNodeData, calcEntropyFromMSA, mapEntropyToColors 
 import { useParams } from 'react-router-dom';
 import * as d3 from 'd3';
 import ErrorPopup from '../components/errorpopup';
+import Footer from '../components/footer';
 
 const logoFiles = {};
 
@@ -727,7 +728,7 @@ const Tol = () => {
                 )}
 
             </div>
-
+            <Footer />
         </div>
     );
 };

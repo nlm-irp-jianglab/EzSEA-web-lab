@@ -12,6 +12,7 @@ import { fastaToDict, parseNodeData, calcEntropyFromMSA, mapEntropyToColors, jso
 import { useParams } from 'react-router-dom';
 import * as d3 from 'd3';
 import ErrorPopup from '../components/errorpopup';
+import Footer from '../components/footer';
 
 const Results = () => {
     const { jobId } = useParams();
@@ -114,10 +115,10 @@ const Results = () => {
 
             if (Object.keys(faData).length > 400) {
                 textsize = 4;
-                paddding = "\u00A0\u00A0\u00A0\u00A0";
+                paddding = "\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0";
             } else if (Object.keys(faData).length > 250) {
                 textsize = 4;
-                padding = "\u00A0\u00A0\u00A0\u00A0";
+                padding = "\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0";
             } else if (Object.keys(faData).length > 100) {
                 textsize = 6;
                 padding = "\u00A0\u00A0\u00A0";
@@ -651,7 +652,7 @@ const Results = () => {
 
     return (
         <div>
-            <Navbar pageId={`Results ${jobId}`} />
+            <Navbar pageId={`Results: ${jobId}`} />
             {isErrorPopupVisible && (
                 <ErrorPopup errorMessage="Results not available" onClose={() => setErrorPopupVisible(false)} />
             )}
@@ -764,7 +765,7 @@ const Results = () => {
                 )}
 
             </div>
-
+            <Footer />
         </div>
     );
 };
