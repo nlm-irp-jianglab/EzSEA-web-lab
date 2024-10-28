@@ -117,7 +117,7 @@ const Logo = React.forwardRef(
 
         // EDIT: hardcoded width and height 
         return (
-            <svg width="fit-content" height="200" viewBox={'0 0 ' + viewBoxW + ' ' + viewBoxH} ref={ref}> 
+            <svg width="fit-content" height="150" viewBox={'0 0 ' + viewBoxW + ' ' + viewBoxH} ref={ref}> 
                 {showGridLines && (
                     <YGridlines
                         {...{

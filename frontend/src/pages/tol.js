@@ -27,6 +27,7 @@ const Tol = () => {
 
     // State to store the logo content (formatted for logoJS) and color file
     const [logoContent, setLogoContent] = useState({});
+    const [entropyLogoContent, setEntropyLogoContent] = useState({});
     const [colorArr, setColorArr] = useState(null);
 
     // Toggle between radial and linear layout
@@ -83,19 +84,17 @@ const Tol = () => {
                 parseNodeData(json).then((parsedData) => setnodeData(parsedData));
             });
 
-        fetch(`${process.env.PUBLIC_URL}/example_2/Visualization/seq.pdb`)
-            .then(response => response.text())
-            .then((text) => {
-                setStructData(text);
-            });
+        // fetch(`${process.env.PUBLIC_URL}/example_2/Visualization/seq.pdb`)
+        //     .then(response => response.text())
+        //     .then((text) => {
+        //         setStructData(text);
+        //     });
     }, []);
 
     // Deals with tree rendering
     useEffect(() => {
         if (treeRef.current && newickData && nodeData) {
             treeRef.current.innerHTML = '';
-
-            console.log(Object.keys(nodeData).length);
 
             const tree = new pt.phylotree(newickData);
             setTreeObj(tree);
@@ -105,7 +104,7 @@ const Tol = () => {
 
                 if (!isLeafNode(node_data)) { // edits to the internal nodes
                     node_label.text("\u00A0" + node_label.text() + "\u00A0")
-                        .style("font-weight", "bold")
+                        .style("font-weight", "bold");
 
                     if (topNodes && node_data.data.name in topNodes) { // First condition to ensure nodeData is populated
                         element.select("circle").style("fill", "green");
@@ -218,15 +217,15 @@ const Tol = () => {
 
             tree.render({
                 'container': "#tree_container",
-                'is-radial': true,
+                'is-radial': false,
                 'selectable': true,
                 'zoom': true,
                 'align-tips': true,
                 'internal-names': true,
-                width: 1000,
-                height: 2000,
+                width: 2000,
+                height: 4000,
                 'top-bottom-spacing': 'fixed-step',
-                'left-right-spacing': 'fixed-step',
+                'left-right-spacing': 'fit-to-size',
                 'brush': false,
                 'draw-size-bubbles': false, // Must be false so that nodes are clickable?
                 'bubble-styler': d => { return 1.5 },
@@ -285,7 +284,7 @@ const Tol = () => {
                         return updatedLogoContent;
                     }
                     // Calculates entropies, maps to colors and sets the colorArr state
-                    calcEntropyFromMSA(desc_fa).then((entropy) => mapEntropyToColors(entropy)).then((colors) => { setColorArr(colors) });
+                    // calcEntropyFromMSA(desc_fa).then((entropy) => mapEntropyToColors(entropy)).then((colors) => { setColorArr(colors) });
 
                     updatedLogoContent[node.data.name] = desc_fa;
                     setNodeColor(node.data.name, "yellow");
@@ -299,6 +298,36 @@ const Tol = () => {
             return updatedLogoContent;  // Return the new state
         });
 
+    };
+
+    const pushNodeToEntropyLogo = (node) => {
+        setEntropyLogoContent(prevLogoContent => {
+            const updatedLogoContent = { ...prevLogoContent };
+
+            // Add or remove node from logoContent
+            if (node.data.name in updatedLogoContent) {
+                return updatedLogoContent;
+            } else {
+                node['compare-node'] = true;
+                node['compare-descendants'] = true;
+                var descendants = selectAllDescendants(node, false, true);
+                var desc_fa = "";
+                for (var desc of descendants) {
+                    desc_fa += `>${desc.data.name}\n${faData[desc.data.name]}\n`;
+                }
+                if (desc_fa === "") {
+                    console.log("No descendants found for node:", node.data.name);
+                    return updatedLogoContent;
+                }
+                // Calculates entropies, maps to colors and sets the colorArr state
+                calcEntropyFromMSA(desc_fa).then((entropy) => mapEntropyToColors(entropy)).then((colors) => { setColorArr(colors) });
+
+                updatedLogoContent[node.data.name] = desc_fa;
+                setNodeColor(node.data.name, "yellow");
+            }
+
+            return updatedLogoContent;  // Return the new state
+        });
     };
 
     const setNodeColor = (nodeId, color = null) => {
@@ -421,6 +450,19 @@ const Tol = () => {
             });
     }
 
+    const setImportantView = (nodeId) => {
+        d3.selectAll('.internal-node')
+            .each(function () {
+                var node = d3.select(this).data()[0];
+                if (node.data.name === nodeId) {
+                    pushNodeToLogo(node)
+                    pushNodeToLogo(node.parent);
+                    pushNodeToEntropyLogo(node);
+                }
+            });
+        console.log("Viewing important node:", nodeId);
+    }
+
     const toggleLeftCollapse = () => {
         setIsLeftCollapsed(!isLeftCollapsed);
     };
@@ -469,8 +511,8 @@ const Tol = () => {
             <button className="dropbtn-nodes">Important Nodes</button>
             <div className="dropdown-content" style={{ zIndex: "2" }}>
                 {Object.keys(topNodes).map(key => (
-                    <button key={key} onClick={() => selectNode(key)}>
-                        {key} Score: {topNodes[key]['score']}
+                    <button key={key} onClick={() => setImportantView(key)}>
+                        <span style={{ fontWeight: "bold" }}>{key}</span> Score: {topNodes[key]['score'].toFixed(2)}
                     </button>
                 ))}
             </div>
@@ -643,11 +685,11 @@ const Tol = () => {
                     </div>
                 )}
 
-                {pipVisible && logoContent && !isRightCollapsed && (
+                {pipVisible && logoContent && (
                     <div
                         className="right-div"
                         style={{
-                            width: isLeftCollapsed ? '100%' : '50%',
+                            width: isRightCollapsed ? '2%' : (isLeftCollapsed ? '100%' : '50%'),
                             display: 'flex', // Use flexbox to control layout
                             flexDirection: isLeftCollapsed ? 'row' : 'column', // Side by side if left is collapsed
                         }}
@@ -674,7 +716,7 @@ const Tol = () => {
                             </div>
                         ) : (
                             <div className="expandedRight">
-                                <div className="logodiv" ref={logoStackRef} style={{ width: '100%', height: '500px' }}>
+                                <div className="logodiv" ref={logoStackRef} style={{ width: '100%', height: Object.keys(logoContent).length > 1 ? '380px' : '190px' }}>
                                     <button
                                         className="logo-close-btn"
                                         onClick={() => {
@@ -692,10 +734,23 @@ const Tol = () => {
                                         applyStructColor={applyStructColor}
                                     />
                                 </div>
+                                {Object.keys(entropyLogoContent).length > 0 && (
+                                    <div className="logodiv entropyLogodiv" style={{ width: '100%', height: '190px', marginTop: "2px" }}>
+                                        <LogoStack
+                                            data={entropyLogoContent}
+                                            onColumnClick={handleColumnClick}
+                                            onColumnHover={handleColumnHover}
+                                            importantResiduesList={nodeData}
+                                            removeNodeHandle={handleNodeRemove}
+                                            applyStructColor={applyStructColor}
+                                        />
+                                    </div>
+                                )}
                             </div>
+
                         )}
 
-                        <div className="pvdiv" ref={pvdiv} style={{ width: isLeftCollapsed ? '50%' : '100%', height: isLeftCollapsed ? '100%' : "425px" }}>
+                        <div className="pvdiv" ref={pvdiv} style={{ width: isLeftCollapsed ? '50%' : '100%', height: '100%' }}>
                             <MolstarViewer
                                 structData={structData}
                                 selectedResidue={selectedResidue}

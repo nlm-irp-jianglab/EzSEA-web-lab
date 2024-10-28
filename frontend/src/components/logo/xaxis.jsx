@@ -16,7 +16,7 @@ const XAxis = ({ n, transform, glyphWidth, startpos }) => {
         <g transform={transform}>
 	  <g transform="rotate(-90)">
 	    {numbers.map( n => (
-	        <text x="0" y={glyphWidth * (n + 0.66)} fontSize="18"
+	        <text x="0" y={glyphWidth * (n + 0.66)} fontSize="30"
 		      textAnchor="end" key={n}>
                   {n + startpos}
                 </text>
