@@ -115,7 +115,7 @@ const Results = () => {
 
             if (Object.keys(faData).length > 400) {
                 textsize = 4;
-                paddding = "\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0";
+                padding = "\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0";
             } else if (Object.keys(faData).length > 250) {
                 textsize = 4;
                 padding = "\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0";
@@ -271,7 +271,7 @@ const Results = () => {
 
             treeRef.current.appendChild(tree.display.show());
         }
-    }, [newickData, isLeftCollapsed, faData]);
+    }, [newickData, faData]);
 
     const removeNodeFromLogo = (node) => {
         // Remove node from logoContent
@@ -302,8 +302,6 @@ const Results = () => {
                 return updatedLogoContent;
             } else {
                 if (comp_desc) {
-                    node['compare-node'] = true;
-                    node['compare-descendants'] = true;
                     var descendants = selectAllDescendants(node, false, true);
                     var desc_fa = "";
                     for (var desc of descendants) {
@@ -313,6 +311,9 @@ const Results = () => {
                         console.log("No descendants found for node:", node.data.name);
                         return updatedLogoContent;
                     }
+
+                    node['compare-node'] = true;
+                    node['compare-descendants'] = true;
                     // Calculates entropies, maps to colors and sets the colorArr state
                     calcEntropyFromMSA(desc_fa).then((entropy) => mapEntropyToColors(entropy)).then((colors) => { setColorArr(colors) });
 
@@ -366,44 +367,17 @@ const Results = () => {
         }
     }, [logoContent]);
 
-    const setLogoCallback = useCallback((node) => {
-        if (node !== null) {
-            const handleMouseEnter = () => {
-                node.style.height = '500px';
-                pvdiv.current.style.height = 'calc(100% - 504px)';
-            };
-
-            node.addEventListener('mouseenter', handleMouseEnter);
-        }
-    }, []);
-
-    const setPvdivCallback = useCallback((node) => {
-        if (node !== null) {
-            const handleMouseEnter = () => {
-                if (logoStackRef.current === null) {
-                    node.style.height = '90vh';
-                    return;
-                }
-                node.style.height = 'calc(100% - 250px)';
-                logoStackRef.current.style.height = '250px';
-            };
-
-            node.addEventListener('mouseenter', handleMouseEnter);
-        }
-    }, []);
-
     const handleColumnClick = (index) => {
         setSelectedResidue(index + 1);
     };
 
     const applyStructColor = (nodeId) => {
         console.log("Applying structure color for node:", nodeId);
-        // Grabbing node data from tree
+        // Grabbing node data from tree, note will not work if tree is not rendered
         d3.selectAll('.internal-node')
             .each(function () {
                 var node = d3.select(this).data()[0];
                 if (node.data.name === nodeId) {
-                    console.log("Node data:", node.data);
                     var descendants = selectAllDescendants(node, false, true);
                     var desc_fa = "";
                     for (var desc of descendants) {
@@ -663,14 +637,12 @@ const Results = () => {
                 </span>
             </div>
             <div style={{ display: 'flex', height: '90vh', margin: '0 20px' }}>
-                {!isLeftCollapsed && (
-                    <div
-                        id="tree_container"
-                        className="tree-div"
-                        ref={treeRef}
-                        style={{ width: pipVisible ? '50%' : '100%' }}
-                    ></div>
-                )}
+                <div
+                    id="tree_container"
+                    className="tree-div"
+                    ref={treeRef}
+                    style={{ width: isLeftCollapsed ? '2%' : (pipVisible ? '50%' : '100%') }}
+                ></div>
 
                 {Object.keys(logoContent).length > 0 && (
                     <div className="center-console">
@@ -713,7 +685,7 @@ const Results = () => {
                         {isLeftCollapsed ? (
                             <div className="logodiv2" style={{ width: '50%' }}>
                                 <div style={{ textAlign: "center" }}>
-                                    <button onClick={downloadCombinedSVG} style={{borderRadius: "3px", backgroundColor: "#def2b3", border: "none", cursor: "pointer"}}>
+                                    <button className="download-stack-btn" onClick={downloadCombinedSVG} style={{ borderRadius: "3px", backgroundColor: "#def2b3", border: "none", cursor: "pointer" }}>
                                         <svg width="25px" height="25px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" version="1.1" fill="none" stroke="#000000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5">
                                             <title>Download Stack</title>
                                             <path d="m3.25 7.25-1.5.75 6.25 3.25 6.25-3.25-1.5-.75m-11 3.75 6.25 3.25 6.25-3.25" />
@@ -732,7 +704,7 @@ const Results = () => {
                             </div>
                         ) : (
                             <div className="expandedRight">
-                                <div className="logodiv" ref={(el) => { (setLogoCallback(el)); logoStackRef.current = el }} style={{ width: isLeftCollapsed ? '50%' : '100%', height: isLeftCollapsed ? '100%' : '250px' }}>
+                                <div className="logodiv" ref={logoStackRef} style={{ width: '100%', height: '500px' }}>
                                     <button
                                         className="logo-close-btn"
                                         onClick={() => {
@@ -753,7 +725,7 @@ const Results = () => {
                             </div>
                         )}
 
-                        <div className="pvdiv" ref={(el) => { setPvdivCallback(el); pvdiv.current = el }} style={{ width: isLeftCollapsed ? '50%' : '100%' }}>
+                        <div className="pvdiv" ref={pvdiv} style={{ width: isLeftCollapsed ? '50%' : '100%', height: isLeftCollapsed ? '100%' : "425px" }}>
                             <MolstarViewer
                                 structData={structData}
                                 selectedResidue={selectedResidue}

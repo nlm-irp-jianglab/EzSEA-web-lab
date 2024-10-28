@@ -68,6 +68,7 @@ app.get("/results/:id", async (req, res) => {
     const ancestralPath = path.join(folderPath, 'asr.fa');
     const nodesPath = path.join(folderPath, 'nodes.json');
     const structPath = path.join(folderPath, 'seq.pdb');
+    logger.info("Serving results for job: " + id);
 
     // Read the files
     const treePromise = fs.promises.readFile(treePath, 'utf8')
@@ -127,7 +128,7 @@ app.get("/results/:id", async (req, res) => {
 app.get("/status/:id", (req, res) => {
     const id = req.params.id;
     const filePath = `/outputs/EzSEA_${id}/EzSEA.log`;
-    logger.info("Serving logs for job: " + id);
+    logger.info("Serving status for job: " + id);
 
     fs.readFile(filePath, 'utf8', (err, data) => {
         if (err) {

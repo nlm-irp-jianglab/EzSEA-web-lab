@@ -82,6 +82,12 @@ const Tol = () => {
                 parseNodeData(json.slice(0, 10)).then((parsedData) => setTopNodes(parsedData));
                 parseNodeData(json).then((parsedData) => setnodeData(parsedData));
             });
+
+        fetch(`${process.env.PUBLIC_URL}/example_2/Visualization/seq.pdb`)
+            .then(response => response.text())
+            .then((text) => {
+                setStructData(text);
+            });
     }, []);
 
     // Deals with tree rendering
@@ -236,7 +242,7 @@ const Tol = () => {
 
             treeRef.current.appendChild(tree.display.show());
         }
-    }, [newickData, isLeftCollapsed, isRadial, faData]);
+    }, [newickData, isRadial, faData]);
 
     const removeNodeFromLogo = (node) => {
         // Remove node from logoContent
@@ -330,32 +336,6 @@ const Tol = () => {
             setColorArr(null);
         }
     }, [logoContent]);
-
-    const setLogoCallback = useCallback((node) => {
-        if (node !== null) {
-            const handleMouseEnter = () => {
-                node.style.height = '500px';
-                pvdiv.current.style.height = 'calc(100% - 504px)';
-            };
-
-            node.addEventListener('mouseenter', handleMouseEnter);
-        }
-    }, []);
-
-    const setPvdivCallback = useCallback((node) => {
-        if (node !== null) {
-            const handleMouseEnter = () => {
-                if (logoStackRef.current === null) {
-                    node.style.height = '90vh';
-                    return;
-                }
-                node.style.height = 'calc(100% - 250px)';
-                logoStackRef.current.style.height = '250px';
-            };
-
-            node.addEventListener('mouseenter', handleMouseEnter);
-        }
-    }, []);
 
     const handleColumnClick = (index) => {
         setSelectedResidue(index + 1);
@@ -627,14 +607,12 @@ const Tol = () => {
                 </span>
             </div>
             <div style={{ display: 'flex', height: '90vh', margin: '0 20px' }}>
-                {!isLeftCollapsed && (
-                    <div
-                        id="tree_container"
-                        className="tree-div"
-                        ref={treeRef}
-                        style={{ width: pipVisible ? '50%' : '100%' }}
-                    ></div>
-                )}
+                <div
+                    id="tree_container"
+                    className="tree-div"
+                    ref={treeRef}
+                    style={{ width: isLeftCollapsed ? '2%' : (pipVisible ? '50%' : '100%') }}
+                ></div>
 
                 {Object.keys(logoContent).length > 0 && (
                     <div className="center-console">
@@ -676,8 +654,8 @@ const Tol = () => {
                     >
                         {isLeftCollapsed ? (
                             <div className="logodiv2" style={{ width: '50%' }}>
-                                <div style={{ textAlign: "center" }}>
-                                    <button onClick={downloadCombinedSVG} style={{borderRadius: "3px", backgroundColor: "#def2b3", border: "none", cursor: "pointer"}}>
+                                <div className="btnbar" style={{ textAlign: "center", height: "32px" }}>
+                                    <button onClick={downloadCombinedSVG} style={{ borderRadius: "3px", backgroundColor: "#def2b3", border: "none", cursor: "pointer" }}>
                                         <svg width="25px" height="25px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" version="1.1" fill="none" stroke="#000000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5">
                                             <title>Download Stack</title>
                                             <path d="m3.25 7.25-1.5.75 6.25 3.25 6.25-3.25-1.5-.75m-11 3.75 6.25 3.25 6.25-3.25" />
@@ -696,7 +674,7 @@ const Tol = () => {
                             </div>
                         ) : (
                             <div className="expandedRight">
-                                <div className="logodiv" ref={(el) => { (setLogoCallback(el)); logoStackRef.current = el }} style={{ width: isLeftCollapsed ? '50%' : '100%', height: isLeftCollapsed ? '100%' : '250px' }}>
+                                <div className="logodiv" ref={logoStackRef} style={{ width: '100%', height: '500px' }}>
                                     <button
                                         className="logo-close-btn"
                                         onClick={() => {
@@ -717,8 +695,9 @@ const Tol = () => {
                             </div>
                         )}
 
-                        <div className="pvdiv" ref={(el) => { setPvdivCallback(el); pvdiv.current = el }} style={{ width: isLeftCollapsed ? '50%' : '100%' }}>
+                        <div className="pvdiv" ref={pvdiv} style={{ width: isLeftCollapsed ? '50%' : '100%', height: isLeftCollapsed ? '100%' : "425px" }}>
                             <MolstarViewer
+                                structData={structData}
                                 selectedResidue={selectedResidue}
                                 colorFile={colorArr}
                                 hoveredResidue={hoveredResidue}
