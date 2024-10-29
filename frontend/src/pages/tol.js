@@ -513,6 +513,40 @@ const Tol = () => {
         </div>
     );
 
+    const zoomToInput = () => {
+        const svg = d3.select("svg");
+        const zoom = d3.zoom().on("zoom", (event) => {
+            svg.select("g").attr("transform", event.transform);
+        });
+        svg.call(zoom);
+
+        let targetnode;
+        let nodeData;
+        d3.selectAll('.node')
+            .each(function () {
+                const node = d3.select(this).data()[0];
+                if (node.data.name === "PA14_rph") {
+                    targetnode = d3.select(this);
+                    nodeData = node; // Store the node data
+                }
+            });
+
+        // Check if target node is found
+        if (targetnode) {
+            console.log("Target node found and zoomed:", targetnode, nodeData);
+            const targetX = nodeData.x;
+            const targetY = nodeData.y;
+
+            svg.transition()
+                .duration(750)
+                .call(zoom.transform, d3.zoomIdentity.translate(200, 200).scale(1).translate(-targetX, -targetY)); // Adjust the scale and translation as needed
+
+        } else {
+            console.log("Target node not found.");
+        }
+
+    };
+
 
     function downloadCombinedSVG() {
         // Select all svg elements within a specific div (e.g., with id "svgContainer")
@@ -595,6 +629,7 @@ const Tol = () => {
                     <button onClick={() => logoStackRef.current.scrollToIndex(100)}>Scroll 100</button>
                     <button onClick={() => logoStackRef.current.scrollToIndex(150)}>Scroll 150</button>
                     <button onClick={() => logoStackRef.current.scrollToIndex(200)}>Scroll 200</button>
+                    <button onClick={() => zoomToInput()}>Zoom</button>
                 </span>
             </div>
             <div style={{ display: 'flex', height: '90vh', margin: '0 20px' }}>
@@ -661,6 +696,7 @@ const Tol = () => {
                                     importantResiduesList={nodeData}
                                     removeNodeHandle={handleNodeRemove}
                                     applyStructColor={applyStructColor}
+                                    ref={logoStackRef}
                                 />
                             </div>
                         ) : (

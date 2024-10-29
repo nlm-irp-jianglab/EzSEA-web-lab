@@ -18,6 +18,7 @@ const Home = () => {
     const [selectedPhylogeneticProgram, setSelectedPhylogeneticProgram] = useState("FastTree");
     const [selectedAncestralProgram, setSelectedAncestralProgram] = useState("GRASP");
     const [selectedAlignmentProgram, setSelectedAlignmentProgram] = useState("muscle");
+    const [selectedDatabase, setSelectedDatabase] = useState("GTDB");
 
     let navigate = useNavigate();
 
@@ -100,7 +101,8 @@ const Home = () => {
             "tree_program": selectedPhylogeneticProgram,
             "asr_program": selectedAncestralProgram,
             "align_program": selectedAlignmentProgram,
-            "num_seq": selectedNumSeq
+            "num_seq": selectedNumSeq,
+            "database": selectedDatabase
         }
 
         // Send JSON to backend
@@ -297,7 +299,7 @@ const Home = () => {
                                 <span className="bp3-button-text">{isSettingsVisible ? "Hide advanced settings" : "Show advanced settings"}</span>
                             </button>
                             <div className="bp3-collapse">
-                                <div className="bp3-collapse-body" style={{ transform: isSettingsVisible ? "translateY(0px)" : "translateY(-557px)", height: isSettingsVisible ? "480px" : "0" }}>
+                                <div className="bp3-collapse-body" style={{ transform: isSettingsVisible ? "translateY(0px)" : "translateY(-557px)", height: isSettingsVisible ? "540px" : "0" }}>
 
                                     <div className="bp3-card bp3-elevation-0">
                                         <div>
@@ -460,6 +462,27 @@ const Home = () => {
                                                     }}
                                                 >
                                                     clustalo
+                                                </button>
+                                            </span>
+                                            <p>Database:</p>
+                                            <span>
+                                                <button className="bp3-button bp3-minimal"
+                                                    onClick={() => setSelectedDatabase('GTDB')}
+                                                    style={{
+                                                        backgroundColor: selectedDatabase === 'GTDB' ? '#007bff' : '#eee',
+                                                        color: selectedDatabase === 'GTDB' ? 'white' : 'black'
+                                                    }}
+                                                >
+                                                    GTDB
+                                                </button>
+                                                <button className="bp3-button bp3-minimal"
+                                                    onClick={() => setSelectedDatabase('uniref90')}
+                                                    style={{
+                                                        backgroundColor: selectedDatabase === 'uniref90' ? '#007bff' : '#eee',
+                                                        color: selectedDatabase === 'uniref90' ? 'white' : 'black'
+                                                    }}
+                                                >
+                                                    uniref90
                                                 </button>
                                             </span>
                                         </div>

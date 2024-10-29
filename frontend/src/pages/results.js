@@ -737,6 +737,7 @@ const Results = () => {
                                     importantResiduesList={nodeData}
                                     removeNodeHandle={handleNodeRemove}
                                     applyStructColor={applyStructColor}
+                                    ref={logoStackRef}
                                 />
                             </div>
                         ) : (
