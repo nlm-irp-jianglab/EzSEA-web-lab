@@ -3,7 +3,7 @@ import { createPluginUI } from "molstar/lib/mol-plugin-ui";
 import { renderReact18 } from "molstar/lib/mol-plugin-ui/react18";
 import { DefaultPluginUISpec } from 'molstar/lib/mol-plugin-ui/spec';
 import { PluginCommands } from "molstar/lib/mol-plugin/commands";
-import { StructureSelection } from 'molstar/lib/mol-model/structure';
+import { StructureSelection, Structure, StructureProperties } from 'molstar/lib/mol-model/structure';
 import { ColorNames } from "molstar/lib/mol-util/color/names";
 import { Script } from 'molstar/lib/mol-script/script';
 import { setStructureOverpaint } from 'molstar/lib/mol-plugin-state/helpers/structure-overpaint';
@@ -23,7 +23,7 @@ const colorArr = [ // Color gradient for adding color to residues
   0xDF2F2F,
 ]
 
-export function MolStarWrapper({ structData, selectedResidue, hoveredResidue, colorFile }) {
+export function MolStarWrapper({ structData, selectedResidue, hoveredResidue, colorFile, scrollLogosTo }) {
   const parent = createRef();
   const [isStructureLoaded, setIsStructureLoaded] = useState(false);
 
@@ -58,11 +58,14 @@ export function MolStarWrapper({ structData, selectedResidue, hoveredResidue, co
       }
 
       // Loading the default pdb file
-      // TODO: Load PDB files dynamically
 
       if (structData == null) {
-        console.error("No structure data provided.");
-        return;
+        await fetch(`${process.env.PUBLIC_URL}/example_2/Visualization/seq.pdb`)
+          .then((response) => response.text())
+          .then((text) => {
+            structData = text;
+          })
+          .catch((error) => console.error("Error fetching struct data:", error));
       }
 
       const myData = await window.molstar.builders.data.rawData({
@@ -75,6 +78,30 @@ export function MolStarWrapper({ structData, selectedResidue, hoveredResidue, co
         trajectory,
         "default"
       );
+
+      window.molstar.behaviors.interaction.click.subscribe(
+        (event) => {
+          const selections = Array.from(
+            window.molstar.managers.structure.selection.entries.values()
+          );
+          // This bit can be customized to record any piece information you want
+          const localSelected = [];
+          for (const { structure } of selections) {
+            if (!structure) continue;
+            Structure.eachAtomicHierarchyElement(structure, {
+              residue: (loc) => {
+                const position = StructureProperties.residue.label_seq_id(loc);
+                localSelected.push({ position });
+              },
+            });
+          }
+          if (localSelected[0]) {
+            console.log(localSelected);
+            console.log(localSelected[0].position);
+
+            scrollLogosTo(localSelected[0].position);
+          }
+        });
 
       // Set the structure as loaded
       setIsStructureLoaded(true);
@@ -137,8 +164,6 @@ export function MolStarWrapper({ structData, selectedResidue, hoveredResidue, co
     // Clear previous selections
     window.molstar.managers.interactivity.lociSelects.deselectAll();
     window.molstar.managers.interactivity.lociSelects.select({ loci }); // Select the residue
-
-    // console.log("Selected residue", residueNumber);
   }
 
   async function applyColorFile(colorFile) {

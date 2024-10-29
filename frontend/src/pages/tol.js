@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import * as pt from 'phylotree';
-import { isLeafNode, getRootNode } from 'phylotree/src/nodes';
+import { isLeafNode } from 'phylotree/src/nodes';
 import { addCustomMenu } from 'phylotree/src/render/menus';
 import { selectAllDescendants } from 'phylotree/src/nodes';
 import Navbar from "../components/navbar";
@@ -267,7 +267,7 @@ const Tol = () => {
         setLogoContent(prevLogoContent => {
             const updatedLogoContent = { ...prevLogoContent };
 
-            // Add or remove node from logoContent
+            // Add node to logoContent
             if (node.data.name in updatedLogoContent) {
                 return updatedLogoContent;
             } else {
@@ -301,30 +301,26 @@ const Tol = () => {
     };
 
     const pushNodeToEntropyLogo = (node) => {
-        setEntropyLogoContent(prevLogoContent => {
+        setLogoContent(prevLogoContent => {
             const updatedLogoContent = { ...prevLogoContent };
 
             // Add or remove node from logoContent
-            if (node.data.name in updatedLogoContent) {
-                return updatedLogoContent;
-            } else {
-                node['compare-node'] = true;
-                node['compare-descendants'] = true;
-                var descendants = selectAllDescendants(node, false, true);
-                var desc_fa = "";
-                for (var desc of descendants) {
-                    desc_fa += `>${desc.data.name}\n${faData[desc.data.name]}\n`;
-                }
-                if (desc_fa === "") {
-                    console.log("No descendants found for node:", node.data.name);
-                    return updatedLogoContent;
-                }
-                // Calculates entropies, maps to colors and sets the colorArr state
-                calcEntropyFromMSA(desc_fa).then((entropy) => mapEntropyToColors(entropy)).then((colors) => { setColorArr(colors) });
-
-                updatedLogoContent[node.data.name] = desc_fa;
-                setNodeColor(node.data.name, "yellow");
+            node['compare-node'] = true;
+            node['compare-descendants'] = true;
+            var descendants = selectAllDescendants(node, false, true);
+            var desc_fa = "";
+            for (var desc of descendants) {
+                desc_fa += `>${desc.data.name}\n${faData[desc.data.name]}\n`;
             }
+            if (desc_fa === "") {
+                console.log("No descendants found for node:", node.data.name);
+                return updatedLogoContent;
+            }
+            // Calculates entropies, maps to colors and sets the colorArr state
+            calcEntropyFromMSA(desc_fa).then((entropy) => mapEntropyToColors(entropy)).then((colors) => { setColorArr(colors) });
+
+            updatedLogoContent["Descendants of " + node.data.name] = desc_fa;
+            setNodeColor(node.data.name, "yellow");
 
             return updatedLogoContent;  // Return the new state
         });
@@ -371,7 +367,6 @@ const Tol = () => {
     };
 
     const applyStructColor = (nodeId) => {
-        console.log("Applying structure color for node:", nodeId);
         // Grabbing node data from tree
         d3.selectAll('.internal-node')
             .each(function () {
@@ -385,6 +380,7 @@ const Tol = () => {
                     }
                     // Calculates entropies, maps to colors and sets the colorArr state
                     calcEntropyFromMSA(desc_fa).then((entropy) => mapEntropyToColors(entropy)).then((colors) => { setColorArr(colors) });
+                    return;
                 }
             });
     }
@@ -408,8 +404,7 @@ const Tol = () => {
     }
 
     const handleColumnHover = (index) => {
-        console.log("Column hovered:", index);
-        setHoveredResidue(index + 1);
+        logoStackRef.current.scrollToIndex(index);
     };
 
     const handleNodeRemove = (index) => {
@@ -519,55 +514,9 @@ const Tol = () => {
         </div>
     );
 
-    const downloadTreeAsSVG = () => {
-        const svgElement = treeRef.current.querySelector('svg'); // Select the SVG from the tree container
-        if (!svgElement) {
-            console.error("SVG element not found in treeRef.");
-            return;
-        }
-
-        // Serialize the SVG content
-        const serializer = new XMLSerializer();
-        let source = serializer.serializeToString(svgElement);
-
-        // Manually styling the SVG content. TODO: Maybe grab the styles from the CSS file?
-        const styleString = `
-            <style>
-                .branch {
-                    fill: none;
-                    stroke: #999;
-                    stroke-width: 2px;
-                }
-                .internal-node circle {
-                    fill: #CCC;
-                    stroke: black;
-                    stroke-width: 0.5px;
-                }
-                .node {
-                    font: 10px sans-serif;
-                }
-            </style>`;
-
-        // Ensure that we are not redefining the xmlns attribute
-        if (!source.includes('xmlns="http://www.w3.org/2000/svg"')) {
-            source = source.replace('<svg', `<svg xmlns="http://www.w3.org/2000/svg"`);
-        }
-
-        // Insert the style string into the SVG just before the closing tag
-        source = source.replace('</svg>', `${styleString}</svg>`);
-
-        // Create a Blob and trigger the download
-        const svgBlob = new Blob([source], { type: "image/svg+xml;charset=utf-8" });
-        const svgUrl = URL.createObjectURL(svgBlob);
-
-        // Create a download link and trigger the download
-        const downloadLink = document.createElement("a");
-        downloadLink.href = svgUrl;
-        downloadLink.download = "tree_with_styles.svg";
-        document.body.appendChild(downloadLink);
-        downloadLink.click();
-        document.body.removeChild(downloadLink);
-    };
+    useEffect(() => {
+        console.log("Logo Ref updated");
+    }, [logoStackRef]);
 
     function downloadCombinedSVG() {
         // Select all svg elements within a specific div (e.g., with id "svgContainer")
@@ -646,6 +595,10 @@ const Tol = () => {
                 <span>
                     {importantNodesDropdown()}
                     {downloadsDropdown()}
+                    <button onClick={() => logoStackRef.current.scrollToIndex(50)}>Scroll 50</button>
+                    <button onClick={() => logoStackRef.current.scrollToIndex(100)}>Scroll 100</button>
+                    <button onClick={() => logoStackRef.current.scrollToIndex(150)}>Scroll 150</button>
+                    <button onClick={() => logoStackRef.current.scrollToIndex(200)}>Scroll 200</button>
                 </span>
             </div>
             <div style={{ display: 'flex', height: '90vh', margin: '0 20px' }}>
@@ -716,7 +669,7 @@ const Tol = () => {
                             </div>
                         ) : (
                             <div className="expandedRight">
-                                <div className="logodiv" ref={logoStackRef} style={{ width: '100%', height: Object.keys(logoContent).length > 1 ? '380px' : '190px' }}>
+                                <div className="logodiv" style={{ width: '100%', height: Object.keys(logoContent).length > 2 ? '570px' : (Object.keys(logoContent).length > 1 ? '380px' : '190px') }}>
                                     <button
                                         className="logo-close-btn"
                                         onClick={() => {
@@ -732,20 +685,9 @@ const Tol = () => {
                                         importantResiduesList={nodeData}
                                         removeNodeHandle={handleNodeRemove}
                                         applyStructColor={applyStructColor}
+                                        ref={logoStackRef}
                                     />
                                 </div>
-                                {Object.keys(entropyLogoContent).length > 0 && (
-                                    <div className="logodiv entropyLogodiv" style={{ width: '100%', height: '190px', marginTop: "2px" }}>
-                                        <LogoStack
-                                            data={entropyLogoContent}
-                                            onColumnClick={handleColumnClick}
-                                            onColumnHover={handleColumnHover}
-                                            importantResiduesList={nodeData}
-                                            removeNodeHandle={handleNodeRemove}
-                                            applyStructColor={applyStructColor}
-                                        />
-                                    </div>
-                                )}
                             </div>
 
                         )}
@@ -756,6 +698,7 @@ const Tol = () => {
                                 selectedResidue={selectedResidue}
                                 colorFile={colorArr}
                                 hoveredResidue={hoveredResidue}
+                                scrollLogosTo={(index) => logoStackRef.current.scrollToIndex(index)}
                             />
                         </div>
                     </div>

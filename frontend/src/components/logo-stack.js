@@ -149,9 +149,9 @@ const LogoStack = React.forwardRef(
         };
 
         useImperativeHandle(ref, () => ({
-            scrollTo: (index) => {
+            scrollToIndex: (index) => {
                 backScrollers.current.forEach((scroller) => {
-                    scroller.scroller.__publish(index * 28.7, 1, 1, true);
+                    scroller.scroller.__publish(index * 21.5 - 310, 1, 1, true);
                 });
             },
             appendLogo: (key, path) => {
@@ -175,7 +175,7 @@ const LogoStack = React.forwardRef(
                                     <p style={{ paddingLeft: "30px" }}><b>{key}</b></p>
                                     <span style={{ paddingRight: "30px" }}>
                                         {fastaContent[key].substring(1).indexOf('>') > 0 && // If provided seq has more than one seq, must be comparing descendants. Shows color button
-                                            (<button className="logo-color-btn" style={styles.colorBtn} onClick={() => applyStructColor(key)}>
+                                            (<button className="logo-color-btn" style={styles.colorBtn} onClick={() => applyStructColor(key.substring(15))}>
                                                 <svg fill="#000000" width="23px" height="25px" viewBox="0 0 1920 1920" xmlns="http://www.w3.org/2000/svg">
                                                     <title>Color Entropy</title>
                                                     <path d="M392.26 1042.5c137.747-57.67 292.85-15.269 425.873 116.217l4.394 4.833c116.656 146.425 149.5 279.119 97.873 394.237-128.85 287.138-740.692 328.77-810.005 332.504L0 1896.442l61.953-91.83c.989-1.539 105.013-158.728 105.013-427.192 0-141.811 92.6-279.558 225.294-334.92ZM1728.701 23.052c54.923-1.099 99.96 15.268 135.111 49.43 40.643 40.644 58.109 87.877 56.021 140.603C1908.85 474.52 1423.33 953.447 1053.15 1280.79c-24.276-64.81-63.711-136.21-125.335-213.102l-8.787-9.886c-80.078-80.187-169.163-135.11-262.423-161.473C955.276 558.002 1460.677 33.927 1728.701 23.052Z" fillRule="evenodd" />
