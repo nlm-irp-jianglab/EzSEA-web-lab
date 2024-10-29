@@ -27,7 +27,6 @@ const Tol = () => {
 
     // State to store the logo content (formatted for logoJS) and color file
     const [logoContent, setLogoContent] = useState({});
-    const [entropyLogoContent, setEntropyLogoContent] = useState({});
     const [colorArr, setColorArr] = useState(null);
 
     // Toggle between radial and linear layout
@@ -514,9 +513,6 @@ const Tol = () => {
         </div>
     );
 
-    useEffect(() => {
-        console.log("Logo Ref updated");
-    }, [logoStackRef]);
 
     function downloadCombinedSVG() {
         // Select all svg elements within a specific div (e.g., with id "svgContainer")
@@ -650,7 +646,7 @@ const Tol = () => {
                         {isLeftCollapsed ? (
                             <div className="logodiv2" style={{ width: '50%' }}>
                                 <div className="btnbar" style={{ textAlign: "center", height: "32px" }}>
-                                    <button onClick={downloadCombinedSVG} style={{ borderRadius: "3px", backgroundColor: "#def2b3", border: "none", cursor: "pointer" }}>
+                                    <button className="download-stack-btn" onClick={downloadCombinedSVG} style={{ borderRadius: "3px", backgroundColor: "#def2b3", border: "none", cursor: "pointer" }}>
                                         <svg width="25px" height="25px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" version="1.1" fill="none" stroke="#000000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5">
                                             <title>Download Stack</title>
                                             <path d="m3.25 7.25-1.5.75 6.25 3.25 6.25-3.25-1.5-.75m-11 3.75 6.25 3.25 6.25-3.25" />
