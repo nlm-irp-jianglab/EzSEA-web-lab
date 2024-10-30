@@ -111,28 +111,29 @@ const Results = () => {
 
             const tree = new pt.phylotree(newickData);
 
-            var textsize = 0;
-            var padding = "";
+            // Dynamically sizing text and padding of node labels
+            // var textsize = 0;
+            // var padding = "";
 
-            if (Object.keys(faData).length > 400) {
-                textsize = 4;
-                padding = "\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0";
-            } else if (Object.keys(faData).length > 250) {
-                textsize = 4;
-                padding = "\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0";
-            } else if (Object.keys(faData).length > 100) {
-                textsize = 6;
-                padding = "\u00A0\u00A0\u00A0";
-            } else {
-                textsize = 20;
-                padding = "\u00A0";
-            }
+            // if (Object.keys(faData).length > 400) {
+            //     textsize = 4;
+            //     padding = "\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0";
+            // } else if (Object.keys(faData).length > 250) {
+            //     textsize = 4;
+            //     padding = "\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0";
+            // } else if (Object.keys(faData).length > 100) {
+            //     textsize = 6;
+            //     padding = "\u00A0\u00A0\u00A0";
+            // } else {
+            //     textsize = 20;
+            //     padding = "\u00A0";
+            // }
 
             function style_nodes(element, node_data) {
                 var node_label = element.select("text");
 
                 if (!isLeafNode(node_data)) { // edits to the internal nodes
-                    node_label.text(padding + node_label.text() + padding)
+                    node_label.text("\u00A0" + node_label.text() + "\u00A0")
                         .style("font-weight", "bold");
 
                     if (topNodes && node_data.data.name in topNodes) { // First condition to ensure topNodes is populated
@@ -261,7 +262,7 @@ const Results = () => {
                 'node-styler': style_nodes,
                 'edge-styler': style_edges,
                 'show-scale': false,
-                'font-size': textsize,
+                'font-size': 12,
                 'background-color': 'lightblue',
                 'collapsible': true,
                 'reroot': false,
@@ -374,7 +375,6 @@ const Results = () => {
                             console.log("Attempted to add circle to node with existing circle");
                         } else {
                             d3.select(this).insert("circle", ":first-child").attr("r", 5).style("fill", color);
-
                         }
                     }
                 }
@@ -555,10 +555,35 @@ const Results = () => {
         d3.selectAll('.node')
             .each(function () {
                 const node = d3.select(this).data()[0];
+                const elem = d3.select(this);
                 if (node.data.name === query) {
                     targetNode = node;
                     const targetX = node.x;
                     const targetY = node.y;
+
+                    const line = elem.select("line");
+
+                    line.transition()
+                        .delay(1000)
+                        .duration(500)
+                        .style("stroke", "red")
+                        .style("stroke-width", 5)
+                        .style("stroke-dasharray", "10,4")
+                        .transition()
+                        .duration(500)
+                        .style("stroke-width", 1)
+                        .style("stroke", null)
+                        .style("stroke-dasharray", "3,4")
+                        .transition()
+                        .duration(500)
+                        .style("stroke-width", 5)
+                        .style("stroke", "red")
+                        .style("stroke-dasharray", "10,4")
+                        .transition()
+                        .duration(500)
+                        .style("stroke-width", 1)
+                        .style("stroke", null)
+                        .style("stroke-dasharray", "3,4");
 
                     svg.transition()
                         .duration(750)
@@ -574,7 +599,28 @@ const Results = () => {
                     const targetX = node.x;
                     const targetY = node.y;
 
-                    console.log("Internal node found, zooming to:", targetX, targetY);
+                    const circle = d3.select(this).select("circle");
+                    const currRadius = circle.attr("r");
+                    const currColor = circle.style("fill");
+                    const newRadius = (currRadius * 2).toString();
+
+
+                    circle.transition()
+                        .delay(1000)
+                        .style("fill", "red")
+                        .style("r", newRadius)
+                        .transition()
+                        .duration(500)
+                        .style("fill", currColor)
+                        .style("r", currRadius)
+                        .transition()
+                        .duration(500)
+                        .style("fill", "red")
+                        .style("r", newRadius)
+                        .transition()
+                        .duration(500)
+                        .style("fill", currColor)
+                        .style("r", currRadius);
 
                     svg.transition()
                         .duration(750)

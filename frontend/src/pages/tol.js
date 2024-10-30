@@ -345,7 +345,6 @@ const Tol = () => {
                             console.log("Attempted to add circle to node with existing circle");
                         } else {
                             d3.select(this).insert("circle", ":first-child").attr("r", 5).style("fill", color);
-
                         }
                     }
                 }
@@ -526,10 +525,35 @@ const Tol = () => {
         d3.selectAll('.node')
             .each(function () {
                 const node = d3.select(this).data()[0];
+                const elem = d3.select(this);
                 if (node.data.name === query) {
                     targetNode = node;
                     const targetX = node.x;
                     const targetY = node.y;
+
+                    const line = elem.select("line");
+
+                    line.transition()
+                        .delay(1000)
+                        .duration(500)
+                        .style("stroke", "red")
+                        .style("stroke-width", 5)
+                        .style("stroke-dasharray", "10,4")
+                        .transition()
+                        .duration(500)
+                        .style("stroke-width", 1)
+                        .style("stroke", null)
+                        .style("stroke-dasharray", "3,4")
+                        .transition()
+                        .duration(500)
+                        .style("stroke-width", 5)
+                        .style("stroke", "red")
+                        .style("stroke-dasharray", "10,4")
+                        .transition()
+                        .duration(500)
+                        .style("stroke-width", 1)
+                        .style("stroke", null)
+                        .style("stroke-dasharray", "3,4");
 
                     svg.transition()
                         .duration(750)
@@ -545,14 +569,35 @@ const Tol = () => {
                     const targetX = node.x;
                     const targetY = node.y;
 
-                    console.log("Internal node found, zooming to:", targetX, targetY);
+                    const circle = d3.select(this).select("circle");
+                    const currRadius = circle.attr("r");
+                    const currColor = circle.style("fill");
+                    const newRadius = (currRadius * 2).toString();
+
+
+                    circle.transition()
+                        .delay(1000)
+                        .style("fill", "red")
+                        .style("r", newRadius)
+                        .transition()
+                        .duration(500)
+                        .style("fill", currColor)
+                        .style("r", currRadius)
+                        .transition()
+                        .duration(500)
+                        .style("fill", "red")
+                        .style("r", newRadius)
+                        .transition()
+                        .duration(500)
+                        .style("fill", currColor)
+                        .style("r", currRadius);
 
                     svg.transition()
                         .duration(750)
                         .call(zoom.transform, d3.zoomIdentity.scale(1).translate(-targetY + 672, -targetX + 376)); // Adjust the scale and translation as needed
                 }
             });
-        
+
         if (!targetNode) {
             console.log("Failed to find and zoom to node:", query);
         }
