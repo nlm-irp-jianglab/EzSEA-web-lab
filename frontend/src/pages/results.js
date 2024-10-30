@@ -41,6 +41,7 @@ const Results = () => {
     const treeRef = useRef(null);
     const pvdiv = useRef(null);
     const logoStackRef = useRef(null);
+    const zoomInputRef = useRef(null);
 
     // Storing tree reference itself
     const [treeObj, setTreeObj] = useState(null);
@@ -85,8 +86,8 @@ const Results = () => {
                         console.error("Error fetching nodes data:", data.nodesError);
                     } else {
                         const json = JSON.parse(data.nodes);
-                        parseNodeData(json.slice(0, 10)).then((parsedData) => setTopNodes(parsedData));
                         parseNodeData(json).then((parsedData) => setnodeData(parsedData));
+                        parseNodeData(json.slice(0, 10)).then((parsedData) => setTopNodes(parsedData));
                     }
 
                     if (data.structError) {
@@ -160,11 +161,10 @@ const Results = () => {
                     function compare(node, el) {
                         if (node['compare-node']) {
                             setNodeColor(node.data.name, null);
-                            node['compare-descendants'] = false;
+                            removeNodeFromLogo(node);
+                        } else {
+                            pushNodeToLogo(node);
                         }
-
-                        node['compare-node'] = !node['compare-node'];
-                        pushNodeToLogo(node);
                     }
 
                     function compareDescMenuCondition(node) {
@@ -178,12 +178,11 @@ const Results = () => {
                     function compareDescendants(node, el) {
                         // change color of circle to yellow
                         if (node['compare-descendants']) {
+                            removeNodeFromLogo(node);
                             setNodeColor(node.data.name, null);
+                        } else {
+                            pushNodeToEntropyLogo(node, true);
                         }
-                        node['compare-descendants'] = !node['compare-descendants'];
-                        node['compare-node'] = !node['compare-node'];
-
-                        pushNodeToLogo(node, true);
                     }
 
                     function showDescMenuOpt(node) {
@@ -334,8 +333,6 @@ const Results = () => {
             const updatedLogoContent = { ...prevLogoContent };
 
             // Add or remove node from logoContent
-            node['compare-node'] = true;
-            node['compare-descendants'] = true;
             var descendants = selectAllDescendants(node, false, true);
             var desc_fa = "";
             for (var desc of descendants) {
@@ -345,6 +342,9 @@ const Results = () => {
                 console.log("No descendants found for node:", node.data.name);
                 return updatedLogoContent;
             }
+
+            node['compare-node'] = true;
+            node['compare-descendants'] = true;
             // Calculates entropies, maps to colors and sets the colorArr state
             calcEntropyFromMSA(desc_fa).then((entropy) => mapEntropyToColors(entropy)).then((colors) => { setColorArr(colors) });
 
@@ -447,7 +447,7 @@ const Results = () => {
         d3.selectAll('.internal-node')
             .each(function () {
                 var node = d3.select(this).data()[0];
-                if (node.data.name === keys[index]) {
+                if (node.data.name === keys[index].replace("Descendants of ", "")) {
                     node['compare-node'] = false;
                     node['compare-descendants'] = false;
                     const circles = d3.select(this).selectAll('circle');
@@ -543,6 +543,49 @@ const Results = () => {
             </div>
         </div>
     );
+
+    const findAndZoom = (query) => {
+        const svg = d3.select("svg");
+        const zoom = d3.zoom().on("zoom", (event) => {
+            svg.select("g").attr("transform", event.transform);
+        });
+        svg.call(zoom);
+
+        var targetNode;
+        d3.selectAll('.node')
+            .each(function () {
+                const node = d3.select(this).data()[0];
+                if (node.data.name === query) {
+                    targetNode = node;
+                    const targetX = node.x;
+                    const targetY = node.y;
+
+                    svg.transition()
+                        .duration(750)
+                        .call(zoom.transform, d3.zoomIdentity.scale(1).translate(-targetY + 109, -targetX + 426)); // Adjust the scale and translation as needed
+                }
+            });
+
+        d3.selectAll('.internal-node')
+            .each(function () {
+                const node = d3.select(this).data()[0];
+                if (node.data.name === query) {
+                    targetNode = node;
+                    const targetX = node.x;
+                    const targetY = node.y;
+
+                    console.log("Internal node found, zooming to:", targetX, targetY);
+
+                    svg.transition()
+                        .duration(750)
+                        .call(zoom.transform, d3.zoomIdentity.scale(1).translate(-targetY + 672, -targetX + 376)); // Adjust the scale and translation as needed
+                }
+            });
+        
+        if (!targetNode) {
+            console.log("Failed to find and zoom to node:", query);
+        }
+    };
 
     const downloadTreeAsSVG = () => {
         const svgElement = treeRef.current.querySelector('svg'); // Select the SVG from the tree container
@@ -671,6 +714,8 @@ const Results = () => {
                 <span>
                     {importantNodesDropdown()}
                     {downloadsDropdown()}
+                    <input className="zoomInput" ref={zoomInputRef} placeholder='Find Node'></input>
+                    <button onClick={() => findAndZoom(zoomInputRef.current.value)}>Go</button>
                 </span>
             </div>
             <div style={{ display: 'flex', height: '90vh', margin: '0 20px' }}>
