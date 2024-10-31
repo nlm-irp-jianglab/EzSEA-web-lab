@@ -117,7 +117,7 @@ const Results = () => {
         if (treeRef.current && newickData && nodeData) {
             treeRef.current.innerHTML = '';
 
-            const inputHeader = input.split("\n")[0].substring(1);
+            const inputHeader = inputData.split("\n")[0].substring(1);
             const tree = new pt.phylotree(newickData);
 
             function style_nodes(element, node_data) {
