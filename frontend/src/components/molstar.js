@@ -81,13 +81,16 @@ export function MolStarWrapper({ structData, selectedResidue, hoveredResidue, co
 
       window.molstar.behaviors.interaction.click.subscribe(
         (event) => {
+          console.log(event);
           const selections = Array.from(
             window.molstar.managers.structure.selection.entries.values()
           );
-          // This bit can be customized to record any piece information you want
+          // selections is auto-sorted, lowest residue id first. Therefore, when multiple residues are selected, 
+          // the logo will only scroll to the residue with the lowest id.
           const localSelected = [];
           for (const { structure } of selections) {
             if (!structure) continue;
+            console.log(structure);
             Structure.eachAtomicHierarchyElement(structure, {
               residue: (loc) => {
                 const position = StructureProperties.residue.label_seq_id(loc);
@@ -96,9 +99,6 @@ export function MolStarWrapper({ structData, selectedResidue, hoveredResidue, co
             });
           }
           if (localSelected[0]) {
-            console.log(localSelected);
-            console.log(localSelected[0].position);
-
             scrollLogosTo(localSelected[0].position);
           }
         });

@@ -484,6 +484,15 @@ const Home = () => {
                                                 >
                                                     uniref90
                                                 </button>
+                                                <button className="bp3-button bp3-minimal"
+                                                    onClick={() => setSelectedDatabase('uniref50')}
+                                                    style={{
+                                                        backgroundColor: selectedDatabase === 'uniref50' ? '#007bff' : '#eee',
+                                                        color: selectedDatabase === 'uniref50' ? 'white' : 'black'
+                                                    }}
+                                                >
+                                                    uniref50
+                                                </button>
                                             </span>
                                         </div>
                                     </div>
