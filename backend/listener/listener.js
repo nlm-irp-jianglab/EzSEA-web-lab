@@ -19,11 +19,11 @@ const sendEmail = async (recipient, jobId) => {
         const response = await emailjs.send("service_key", "template_key", {
             recipient: recipient,
             jobId: jobId,
-        }, 
-        {
-            publicKey: "PUBLIC_KEY",
-            privateKey: "PRIVATE_KEY",
-        });
+        },
+            {
+                publicKey: "PUBLIC_KEY",
+                privateKey: "PRIVATE_KEY",
+            });
         console.log('Email sent successfully:', response);
     } catch (error) {
         console.error("Error sending email:", error);
@@ -68,6 +68,7 @@ app.get("/results/:id", async (req, res) => {
     const ancestralPath = path.join(folderPath, 'asr.fa');
     const nodesPath = path.join(folderPath, 'nodes.json');
     const structPath = path.join(folderPath, 'seq.pdb');
+    const inputPath = `/outputs/EzSEA_${id}/input.fasta`;
     logger.info("Serving results for job: " + id);
 
     // Read the files
@@ -106,8 +107,15 @@ app.get("/results/:id", async (req, res) => {
             return { structError: "Error reading struct file." };
         });
 
+    const inputPromise = fs.promises.readFile(inputPath, 'utf8')
+        .then(data => ({ input: data }))
+        .catch(err => {
+            logger.error("Error reading input file: " + err);
+            return { inputError: "Error reading input file." };
+        });
+
     // Run all the promises concurrently and gather the results
-    const results = await Promise.allSettled([treePromise, leafPromise, ancestralPromise, nodesPromise, structPromise]);
+    const results = await Promise.allSettled([treePromise, leafPromise, ancestralPromise, nodesPromise, structPromise, inputPromise]);
 
     // Collect the resolved results into one object
     const response = results.reduce((acc, result) => {
@@ -118,7 +126,7 @@ app.get("/results/:id", async (req, res) => {
     }, {});
 
     // Send response with the files that were successfully read and any error messages
-    if (response['treeError'] && response['leafError'] && response['ancestralError'] && response['nodesError'] && response['structError']) {
+    if (response['treeError'] && response['leafError'] && response['ancestralError'] && response['nodesError'] && response['structError'] && response['inputError']) {
         return res.status(500).json({ error: "Failed to read all files." });
     } else {
         return res.status(200).json(response);

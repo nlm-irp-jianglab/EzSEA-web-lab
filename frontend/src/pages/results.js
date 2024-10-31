@@ -22,6 +22,7 @@ const Results = () => {
     const [newickData, setNewickData] = useState(null); // Tree
     const [nodeData, setnodeData] = useState(null); // asr stats, important residues
     const [structData, setStructData] = useState(null); // Structure data
+    const [inputData, setInputData] = useState(null); // Query sequence 
     const [topNodes, setTopNodes] = useState({}); // Top 10 nodes for the tree
 
     // State to store the logo content (formatted for logoJS) and color file
@@ -97,6 +98,13 @@ const Results = () => {
                         setStructData(data.struct);
                     }
 
+                    if (data.inputError) {
+                        setErrorPopupVisible(true);
+                        console.error("Error fetching input sequence data:", data.inputError);
+                    } else {
+                        setInputData(data.input);
+                    }
+
                 });
         } catch (error) {
             setErrorPopupVisible(true);
@@ -109,25 +117,8 @@ const Results = () => {
         if (treeRef.current && newickData && nodeData) {
             treeRef.current.innerHTML = '';
 
+            const inputHeader = input.split("\n")[0].substring(1);
             const tree = new pt.phylotree(newickData);
-
-            // Dynamically sizing text and padding of node labels
-            // var textsize = 0;
-            // var padding = "";
-
-            // if (Object.keys(faData).length > 400) {
-            //     textsize = 4;
-            //     padding = "\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0";
-            // } else if (Object.keys(faData).length > 250) {
-            //     textsize = 4;
-            //     padding = "\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0";
-            // } else if (Object.keys(faData).length > 100) {
-            //     textsize = 6;
-            //     padding = "\u00A0\u00A0\u00A0";
-            // } else {
-            //     textsize = 20;
-            //     padding = "\u00A0";
-            // }
 
             function style_nodes(element, node_data) {
                 var node_label = element.select("text");
@@ -206,7 +197,9 @@ const Results = () => {
                         }, showDescMenuOpt);
                     }
                 } else { // edits to the leaf nodes
-
+                    if (inputHeader === node_data.data.name) {
+                        element.select("text").style("fill", "palevioletred").style("stoke", "palevioletred").style("font-size", "18px");
+                    }
                 }
             }
 
@@ -479,6 +472,14 @@ const Results = () => {
             .each(function () {
                 var node = d3.select(this).data()[0];
                 if (node.data.name === nodeId) {
+                    setLogoContent({});
+                    var desc = selectAllDescendants(treeObj.getNodes(), false, true);
+                    // Map set node-compare to false over desc
+                    desc.forEach(node => {
+                        node['compare-node'] = false;
+                        node['compare-descendants'] = false;
+                        setNodeColor(node.data.name, null);
+                    });
                     pushNodeToLogo(node)
                     pushNodeToLogo(node.parent);
                     pushNodeToEntropyLogo(node);
@@ -627,7 +628,7 @@ const Results = () => {
                         .call(zoom.transform, d3.zoomIdentity.scale(1).translate(-targetY + 672, -targetX + 376)); // Adjust the scale and translation as needed
                 }
             });
-        
+
         if (!targetNode) {
             console.log("Failed to find and zoom to node:", query);
         }

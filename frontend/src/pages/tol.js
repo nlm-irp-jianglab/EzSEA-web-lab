@@ -366,7 +366,6 @@ const Tol = () => {
     };
 
     const applyStructColor = (nodeId) => {
-        // Grabbing node data from tree
         console.log("Applying color to node:", nodeId);
         d3.selectAll('.internal-node')
             .each(function () {
@@ -450,11 +449,20 @@ const Tol = () => {
             .each(function () {
                 var node = d3.select(this).data()[0];
                 if (node.data.name === nodeId) {
+                    setLogoContent({});
+                    var desc = selectAllDescendants(treeObj.getNodes(), false, true);
+                    // Map set node-compare to false over desc
+                    desc.forEach(node => {
+                        node['compare-node'] = false;
+                        node['compare-descendants'] = false;
+                        setNodeColor(node.data.name, null);
+                    });
                     pushNodeToLogo(node)
                     pushNodeToLogo(node.parent);
                     pushNodeToEntropyLogo(node);
                 }
             });
+
         console.log("Viewing important node:", nodeId);
     }
 
