@@ -263,6 +263,9 @@ const Results = () => {
             });
 
             treeRef.current.appendChild(tree.display.show());
+
+            // Pan to input query
+            findAndZoom(inputHeader);
         }
     }, [newickData, faData]);
 

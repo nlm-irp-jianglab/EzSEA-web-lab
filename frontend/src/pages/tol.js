@@ -176,7 +176,7 @@ const Tol = () => {
                         }, showDescMenuOpt);
                     }
                 } else { // edits to the leaf nodes
-
+                    
                 }
             }
 
@@ -238,6 +238,9 @@ const Tol = () => {
             });
 
             treeRef.current.appendChild(tree.display.show());
+            
+            // Pan to input query
+            findAndZoom("PA14_rph");
         }
     }, [newickData, isRadial, faData]);
 
