@@ -115,7 +115,7 @@ const Results = () => {
                         for (const [key, value] of Object.entries(json)) {
                             ecDict[key] = value;
                         }
-                        
+
                         setEcData(ecDict);
                         console.log("EC data:", ecDict);
                     }
@@ -221,7 +221,10 @@ const Results = () => {
                         console.error("Error adding EC number to leaf node:", error);
                     }
                     if (inputHeader === node_data.data.name) {
+                        const node_label = element.select("text");
                         element.select("text").style("fill", "palevioletred").style("stoke", "palevioletred").style("font-size", "18px");
+                        element.append("circle").attr("r", 5).style("fill", "palevioletred");
+
                     }
                 }
             }
