@@ -222,8 +222,13 @@ const Results = () => {
                     }
                     if (inputHeader === node_data.data.name) {
                         const node_label = element.select("text");
+                        const transform = node_label.attr("transform");
+                        const translateRegex = /translate\s*\(\s*([\d.-]+)\s*,\s*([\d.-]+)\s*\)/;
+                        const match = transform.match(translateRegex);
+                        const x = parseFloat(match[1]);
+
                         element.select("text").style("fill", "palevioletred").style("stoke", "palevioletred").style("font-size", "18px");
-                        element.append("circle").attr("r", 5).style("fill", "palevioletred");
+                        element.append("circle").attr("r", 5).style("fill", "palevioletred").attr("transform", `translate(${x + 40}, 0)`);
 
                     }
                 }
