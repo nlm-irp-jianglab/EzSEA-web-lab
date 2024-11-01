@@ -215,20 +215,18 @@ const Results = () => {
                     try {
                         var ec = ecData[node_data.data.name];
                         if (ec) {
-                            node_label.text(node_label.text() + " " + ec.ec_number);
+                            const node_label = element.select("text");
+                            const transform = node_label.attr("transform");
+                            const translateRegex = /translate\s*\(\s*([\d.-]+)\s*,\s*([\d.-]+)\s*\)/;
+                            const match = transform.match(translateRegex);
+                            const x = parseFloat(match[1]);
+                            element.append("text").text(ec).attr("transform", `translate(${x + 400}, 0)`).style("font-size", "12px");
                         }
                     } catch (error) {
                         console.error("Error adding EC number to leaf node:", error);
                     }
                     if (inputHeader === node_data.data.name) {
-                        const node_label = element.select("text");
-                        const transform = node_label.attr("transform");
-                        const translateRegex = /translate\s*\(\s*([\d.-]+)\s*,\s*([\d.-]+)\s*\)/;
-                        const match = transform.match(translateRegex);
-                        const x = parseFloat(match[1]);
-
                         element.select("text").style("fill", "palevioletred").style("stoke", "palevioletred").style("font-size", "18px");
-                        element.append("circle").attr("r", 5).style("fill", "palevioletred").attr("transform", `translate(${x + 200}, 0)`);
 
                     }
                 }
