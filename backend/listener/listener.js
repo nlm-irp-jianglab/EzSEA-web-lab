@@ -69,6 +69,7 @@ app.get("/results/:id", async (req, res) => {
     const nodesPath = path.join(folderPath, 'nodes.json');
     const structPath = path.join(folderPath, 'seq.pdb');
     const inputPath = `/outputs/EzSEA_${id}/input.fasta`;
+    const ecPath = path.join(folderPath, 'ec.json');
     logger.info("Serving results for job: " + id);
 
     // Read the files
@@ -114,8 +115,15 @@ app.get("/results/:id", async (req, res) => {
             return { inputError: "Error reading input file." };
         });
 
+    const ecPromise = fs.promises.readFile(ecPath, 'utf8')
+        .then(data => ({ ec: data }))
+        .catch(err => {
+            logger.error("Error reading ec file: " + err);
+            return { ecError: "Error reading input file." };
+        });
+
     // Run all the promises concurrently and gather the results
-    const results = await Promise.allSettled([treePromise, leafPromise, ancestralPromise, nodesPromise, structPromise, inputPromise]);
+    const results = await Promise.allSettled([treePromise, leafPromise, ancestralPromise, nodesPromise, structPromise, inputPromise, ecPromise]);
 
     // Collect the resolved results into one object
     const response = results.reduce((acc, result) => {
@@ -126,7 +134,8 @@ app.get("/results/:id", async (req, res) => {
     }, {});
 
     // Send response with the files that were successfully read and any error messages
-    if (response['treeError'] && response['leafError'] && response['ancestralError'] && response['nodesError'] && response['structError'] && response['inputError']) {
+    if (response['treeError'] && response['leafError'] && response['ancestralError'] 
+        && response['nodesError'] && response['structError'] && response['inputError'] && response['ecError']) {
         return res.status(500).json({ error: "Failed to read all files." });
     } else {
         return res.status(200).json(response);

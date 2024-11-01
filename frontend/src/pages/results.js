@@ -23,6 +23,7 @@ const Results = () => {
     const [nodeData, setnodeData] = useState(null); // asr stats, important residues
     const [structData, setStructData] = useState(null); // Structure data
     const [inputData, setInputData] = useState(null); // Query sequence 
+    const [ecData, setEcData] = useState(null); // Query sequence 
     const [topNodes, setTopNodes] = useState({}); // Top 10 nodes for the tree
 
     // State to store the logo content (formatted for logoJS) and color file
@@ -70,14 +71,14 @@ const Results = () => {
 
                     if (data.leafError) {
                         setErrorPopupVisible(true);
-                        console.error("Error fetching leaf data:", data.leafError);
+                        console.error("Error fetching leaf sequence data:", data.leafError);
                     } else {
                         fastaToDict(data.leaf).then((fastaDict) => setLeafData(fastaDict));
                     }
 
                     if (data.ancestralError) {
                         setErrorPopupVisible(true);
-                        console.error("Error fetching ancestral data:", data.ancestralError);
+                        console.error("Error fetching ancestral state data:", data.ancestralError);
                     } else {
                         fastaToDict(data.ancestral).then((fastaDict) => setFaData(fastaDict));
                     }
@@ -103,6 +104,20 @@ const Results = () => {
                         console.error("Error fetching input sequence data:", data.inputError);
                     } else {
                         setInputData(data.input);
+                    }
+
+                    if (data.ecError) {
+                        // setErrorPopupVisible(true);
+                        console.error("Error fetching ec mappings:", data.ecError);
+                    } else {
+                        const json = JSON.parse(data.ec);
+                        var ecDict = {};
+                        for (const [key, value] of Object.entries(jsonData)) {
+                            ecDict[key] = value;
+                        }
+                        
+                        setEcData(ecDict);
+                        console.log("EC data:", ecDict);
                     }
 
                 });
