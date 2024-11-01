@@ -212,6 +212,14 @@ const Results = () => {
                         }, showDescMenuOpt);
                     }
                 } else { // edits to the leaf nodes
+                    try {
+                        var ec = ecData[node_data.data.name];
+                        if (ec) {
+                            node_label.text(node_label.text() + " " + ec);
+                        }
+                    } catch (error) {
+                        console.error("Error adding EC number to leaf node:", error);
+                    }
                     if (inputHeader === node_data.data.name) {
                         element.select("text").style("fill", "palevioletred").style("stoke", "palevioletred").style("font-size", "18px");
                     }
