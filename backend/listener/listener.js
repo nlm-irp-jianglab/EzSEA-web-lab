@@ -41,7 +41,7 @@ app.post("/submit", (req, res) => {
           --mount type=bind,source=/home/jiangak_ncbi_nlm_nih_gov/database/,target=/database \
           ezsea ezsea -i "${data.sequence}" --output "/data/EzSEA_${data.job_id}" -d "/database/${data.database}" \
           -n ${data.num_seq} -f "${data.folding_program}" --treeprogram "${data.tree_program}" \
-          --asrprogram "${data.asr_program}" --alignprogram "${data.align_program}" --threads 4\
+          --asrprogram "${data.asr_program}" --alignprogram "${data.align_program}" --threads 4 --ec_table /app/Tables/ec_dict.pkl\
           `;
     logger.info("Running: " + command);
     exec(command, (err, stdout, stderr) => {
