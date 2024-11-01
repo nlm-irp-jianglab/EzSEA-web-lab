@@ -220,7 +220,7 @@ const Results = () => {
                             const translateRegex = /translate\s*\(\s*([\d.-]+)\s*,\s*([\d.-]+)\s*\)/;
                             const match = transform.match(translateRegex);
                             const x = parseFloat(match[1]);
-                            element.append("text").text(ec).attr("transform", `translate(${x + 400}, 0)`).style("font-size", "12px");
+                            element.append("text").text(ec.ec_number).attr("transform", `translate(${x + 400}, 0)`).style("font-size", "12px");
                         }
                     } catch (error) {
                         console.error("Error adding EC number to leaf node:", error);
