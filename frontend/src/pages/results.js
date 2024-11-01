@@ -228,7 +228,7 @@ const Results = () => {
                         const x = parseFloat(match[1]);
 
                         element.select("text").style("fill", "palevioletred").style("stoke", "palevioletred").style("font-size", "18px");
-                        element.append("circle").attr("r", 5).style("fill", "palevioletred").attr("transform", `translate(${x + 40}, 0)`);
+                        element.append("circle").attr("r", 5).style("fill", "palevioletred").attr("transform", `translate(${x + 200}, 0)`);
 
                     }
                 }
