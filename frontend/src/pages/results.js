@@ -112,7 +112,7 @@ const Results = () => {
                     } else {
                         const json = JSON.parse(data.ec);
                         var ecDict = {};
-                        for (const [key, value] of Object.entries(jsonData)) {
+                        for (const [key, value] of Object.entries(json)) {
                             ecDict[key] = value;
                         }
                         
