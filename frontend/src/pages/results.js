@@ -215,7 +215,7 @@ const Results = () => {
                     try {
                         var ec = ecData[node_data.data.name];
                         if (ec) {
-                            node_label.text(node_label.text() + " " + ec);
+                            node_label.text(node_label.text() + " " + ec.ec_number);
                         }
                     } catch (error) {
                         console.error("Error adding EC number to leaf node:", error);
