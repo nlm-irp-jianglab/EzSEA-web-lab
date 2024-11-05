@@ -107,7 +107,7 @@ const Tol = () => {
                         .style("font-weight", "bold");
 
                     if (topNodes && node_data.data.name in topNodes) { // First condition to ensure nodeData is populated
-                        element.select("circle").style("fill", "green");
+                        element.select("circle").style("fill", "green").attr("r", 5);
                     }
 
                     // Unaligning the internal nodes
@@ -176,7 +176,7 @@ const Tol = () => {
                         }, showDescMenuOpt);
                     }
                 } else { // edits to the leaf nodes
-                    
+
                 }
             }
 
@@ -226,7 +226,7 @@ const Tol = () => {
                 'left-right-spacing': 'fit-to-size',
                 'brush': false,
                 'draw-size-bubbles': false, // Must be false so that nodes are clickable?
-                'bubble-styler': d => { return 1.5 },
+                'bubble-styler': d => { return 5 },
                 'node-styler': style_nodes,
                 'edge-styler': style_edges,
                 'show-scale': false,
@@ -238,7 +238,7 @@ const Tol = () => {
             });
 
             treeRef.current.appendChild(tree.display.show());
-            
+
             // Pan to input query
             findAndZoom("PA14_rph");
         }
@@ -347,7 +347,8 @@ const Tol = () => {
                         if (circles.size() === 2) {
                             console.log("Attempted to add circle to node with existing circle");
                         } else {
-                            d3.select(this).insert("circle", ":first-child").attr("r", 5).style("fill", color);
+                            const currRadius = parseInt(d3.select(this).select("circle").attr("r"));
+                            d3.select(this).insert("circle", ":first-child").attr("r", currRadius + 2).style("fill", color);
                         }
                     }
                 }
@@ -500,7 +501,12 @@ const Tol = () => {
 
     const downloadsDropdown = () => (
         <div className="dropdown">
-            <button className="dropbtn-downloads">Download Files</button>
+            <button className="dropbtn-downloads">
+                <svg width="25px" height="25px" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M13.5 3H12H7C5.89543 3 5 3.89543 5 5V19C5 20.1046 5.89543 21 7 21H7.5M13.5 3L19 8.625M13.5 3V7.625C13.5 8.17728 13.9477 8.625 14.5 8.625H19M19 8.625V9.75V12V19C19 20.1046 18.1046 21 17 21H16.5" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M12 12V20M12 20L9.5 17.5M12 20L14.5 17.5" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+            </button>
             <div className="dropdown-content" style={{ zIndex: "2" }}>
                 <button onClick={downloadNewickData}>Download Newick Data</button>
                 {Object.keys(logoFiles).map(fileName => (
@@ -514,7 +520,11 @@ const Tol = () => {
 
     const importantNodesDropdown = () => (
         <div className="dropdown">
-            <button className="dropbtn-nodes">Important Nodes</button>
+            <button className="dropbtn-nodes">
+                <svg fill="#000000" width="25px" height="25px" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M20,9H16a1,1,0,0,0-1,1v1H7V7H8A1,1,0,0,0,9,6V2A1,1,0,0,0,8,1H4A1,1,0,0,0,3,2V6A1,1,0,0,0,4,7H5V20a1,1,0,0,0,1,1h9v1a1,1,0,0,0,1,1h4a1,1,0,0,0,1-1V18a1,1,0,0,0-1-1H16a1,1,0,0,0-1,1v1H7V13h8v1a1,1,0,0,0,1,1h4a1,1,0,0,0,1-1V10A1,1,0,0,0,20,9ZM5,3H7V5H5ZM17,19h2v2H17Zm2-6H17V11h2Z" />
+                </svg>
+            </button>
             <div className="dropdown-content" style={{ zIndex: "2" }}>
                 {Object.keys(topNodes).map(key => (
                     <button key={key} onClick={() => setImportantView(key)}>
@@ -688,96 +698,70 @@ const Tol = () => {
             {isErrorPopupVisible && (
                 <ErrorPopup errorMessage="An error occurred!" onClose={closeErrorPopup} />
             )}
-            <div className="btn-toolbar" style={{ display: "flex", justifyContent: "space-between", height: "40px" }}>
-                <span>
+            <div style={{ display: 'flex' }}>
+                <div className="btn-toolbar" style={{ display: "flex", height: "90vh", width: "40px", float: "left", flexDirection: "column" }}>
                     {importantNodesDropdown()}
                     {downloadsDropdown()}
-                    <button onClick={() => logoStackRef.current.scrollToIndex(50)}>Scroll 50</button>
-                    <button onClick={() => logoStackRef.current.scrollToIndex(100)}>Scroll 100</button>
-                    <button onClick={() => logoStackRef.current.scrollToIndex(150)}>Scroll 150</button>
-                    <button onClick={() => logoStackRef.current.scrollToIndex(200)}>Scroll 200</button>
                     <input className="zoomInput" ref={zoomInputRef} placeholder='Find Node'></input>
                     <button onClick={() => findAndZoom(zoomInputRef.current.value)}>Go</button>
-                </span>
-            </div>
-            <div style={{ display: 'flex', height: '90vh', margin: '0 20px' }}>
-                <div
-                    id="tree_container"
-                    className="tree-div"
-                    ref={treeRef}
-                    style={{ width: isLeftCollapsed ? '2%' : (pipVisible ? '50%' : '100%') }}
-                ></div>
-
-                {Object.keys(logoContent).length > 0 && (
-                    <div className="center-console">
-                        {!isRightCollapsed && (
-                            <button className="triangle-button" onClick={toggleLeftCollapse}>
-                                {isLeftCollapsed ? <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <title>Expand Left</title>
-                                    <path d="M21 6H13M9 6V18M21 10H13M21 14H13M21 18H13M3 10L5 12L3 14" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                </svg> :
-                                    <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" transform='rotate(180)'>
-                                        <title>Collapse Left</title>
-                                        <path d="M21 6H13M9 6V18M21 10H13M21 14H13M21 18H13M3 10L5 12L3 14" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                    </svg>}
-                            </button>
-                        )}
-                        {!isLeftCollapsed && (
-                            <button className="triangle-button" onClick={toggleRightCollapse}>
-                                {isRightCollapsed ? <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" transform='rotate(180)'>
-                                    <title>Expand Right</title>
-                                    <path d="M21 6H13M9 6V18M21 10H13M21 14H13M21 18H13M3 10L5 12L3 14" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                </svg> :
-                                    <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <title>Collapse Right</title>
-                                        <path d="M21 6H13M9 6V18M21 10H13M21 14H13M21 18H13M3 10L5 12L3 14" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                    </svg>}
-                            </button>
-                        )}
-                    </div>
-                )}
-
-                {pipVisible && logoContent && (
+                </div>
+                <div className="view" style={{ display: 'flex', height: '92vh', margin: '0 20px', flexGrow: '1', overflow: 'hidden' }}>
                     <div
-                        className="right-div"
-                        style={{
-                            width: isRightCollapsed ? '2%' : (isLeftCollapsed ? '100%' : '50%'),
-                            display: 'flex', // Use flexbox to control layout
-                            flexDirection: isLeftCollapsed ? 'row' : 'column', // Side by side if left is collapsed
-                        }}
-                    >
-                        {isLeftCollapsed ? (
-                            <div className="logodiv2" style={{ width: '50%' }}>
-                                <div className="btnbar" style={{ textAlign: "center", height: "32px" }}>
-                                    <button className="download-stack-btn" onClick={downloadCombinedSVG} style={{ borderRadius: "3px", backgroundColor: "#def2b3", border: "none", cursor: "pointer" }}>
-                                        <svg width="25px" height="25px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" version="1.1" fill="none" stroke="#000000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5">
-                                            <title>Download Stack</title>
-                                            <path d="m3.25 7.25-1.5.75 6.25 3.25 6.25-3.25-1.5-.75m-11 3.75 6.25 3.25 6.25-3.25" />
-                                            <path d="m8 8.25v-6.5m-2.25 4.5 2.25 2 2.25-2" />
-                                        </svg>
-                                    </button>
-                                </div>
-                                <LogoStack
-                                    data={logoContent}
-                                    onColumnClick={handleColumnClick}
-                                    onColumnHover={handleColumnHover}
-                                    importantResiduesList={nodeData}
-                                    removeNodeHandle={handleNodeRemove}
-                                    applyStructColor={applyStructColor}
-                                    ref={logoStackRef}
-                                />
-                            </div>
-                        ) : (
-                            <div className="expandedRight">
-                                <div className="logodiv" style={{ width: '100%', height: Object.keys(logoContent).length > 2 ? '570px' : (Object.keys(logoContent).length > 1 ? '380px' : '190px') }}>
-                                    <button
-                                        className="logo-close-btn"
-                                        onClick={() => {
-                                            clearRightPanel();
-                                        }}
-                                    >
-                                        X
-                                    </button>
+                        id="tree_container"
+                        className="tree-div"
+                        ref={treeRef}
+                        style={{ width: isLeftCollapsed ? '2%' : (pipVisible ? '50%' : '100%') }}
+                    ></div>
+
+                    {Object.keys(logoContent).length > 0 && (
+                        <div className="center-console">
+                            {!isRightCollapsed && (
+                                <button className="triangle-button" onClick={toggleLeftCollapse}>
+                                    {isLeftCollapsed ? <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <title>Expand Left</title>
+                                        <path d="M21 6H13M9 6V18M21 10H13M21 14H13M21 18H13M3 10L5 12L3 14" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                    </svg> :
+                                        <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" transform='rotate(180)'>
+                                            <title>Collapse Left</title>
+                                            <path d="M21 6H13M9 6V18M21 10H13M21 14H13M21 18H13M3 10L5 12L3 14" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                        </svg>}
+                                </button>
+                            )}
+                            {!isLeftCollapsed && (
+                                <button className="triangle-button" onClick={toggleRightCollapse}>
+                                    {isRightCollapsed ? <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" transform='rotate(180)'>
+                                        <title>Expand Right</title>
+                                        <path d="M21 6H13M9 6V18M21 10H13M21 14H13M21 18H13M3 10L5 12L3 14" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                    </svg> :
+                                        <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <title>Collapse Right</title>
+                                            <path d="M21 6H13M9 6V18M21 10H13M21 14H13M21 18H13M3 10L5 12L3 14" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                        </svg>}
+                                </button>
+                            )}
+                        </div>
+                    )}
+
+                    {pipVisible && logoContent && (
+                        <div
+                            className="right-div"
+                            style={{
+                                width: isRightCollapsed ? '2%' : (isLeftCollapsed ? '100%' : '50%'),
+                                display: 'flex', // Use flexbox to control layout
+                                flexDirection: isLeftCollapsed ? 'row' : 'column', // Side by side if left is collapsed
+                            }}
+                        >
+                            {isLeftCollapsed ? (
+                                <div className="logodiv2" style={{ width: '50%' }}>
+                                    <div className="btnbar" style={{ textAlign: "center", height: "32px" }}>
+                                        <button className="download-stack-btn" onClick={downloadCombinedSVG} style={{ borderRadius: "3px", backgroundColor: "#def2b3", border: "none", cursor: "pointer" }}>
+                                            <svg width="25px" height="25px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" version="1.1" fill="none" stroke="#000000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5">
+                                                <title>Download Stack</title>
+                                                <path d="m3.25 7.25-1.5.75 6.25 3.25 6.25-3.25-1.5-.75m-11 3.75 6.25 3.25 6.25-3.25" />
+                                                <path d="m8 8.25v-6.5m-2.25 4.5 2.25 2 2.25-2" />
+                                            </svg>
+                                        </button>
+                                    </div>
                                     <LogoStack
                                         data={logoContent}
                                         onColumnClick={handleColumnClick}
@@ -788,22 +772,43 @@ const Tol = () => {
                                         ref={logoStackRef}
                                     />
                                 </div>
+                            ) : (
+                                <div className="expandedRight">
+                                    <div className="logodiv" style={{ width: '100%', height: Object.keys(logoContent).length > 2 ? '570px' : (Object.keys(logoContent).length > 1 ? '380px' : '190px') }}>
+                                        <button
+                                            className="logo-close-btn"
+                                            onClick={() => {
+                                                clearRightPanel();
+                                            }}
+                                        >
+                                            X
+                                        </button>
+                                        <LogoStack
+                                            data={logoContent}
+                                            onColumnClick={handleColumnClick}
+                                            onColumnHover={handleColumnHover}
+                                            importantResiduesList={nodeData}
+                                            removeNodeHandle={handleNodeRemove}
+                                            applyStructColor={applyStructColor}
+                                            ref={logoStackRef}
+                                        />
+                                    </div>
+                                </div>
+
+                            )}
+
+                            <div className="pvdiv" ref={pvdiv} style={{ width: isLeftCollapsed ? '50%' : '100%', height: '100%' }}>
+                                <MolstarViewer
+                                    structData={structData}
+                                    selectedResidue={selectedResidue}
+                                    colorFile={colorArr}
+                                    hoveredResidue={hoveredResidue}
+                                    scrollLogosTo={(index) => logoStackRef.current.scrollToIndex(index)}
+                                />
                             </div>
-
-                        )}
-
-                        <div className="pvdiv" ref={pvdiv} style={{ width: isLeftCollapsed ? '50%' : '100%', height: '100%' }}>
-                            <MolstarViewer
-                                structData={structData}
-                                selectedResidue={selectedResidue}
-                                colorFile={colorArr}
-                                hoveredResidue={hoveredResidue}
-                                scrollLogosTo={(index) => logoStackRef.current.scrollToIndex(index)}
-                            />
                         </div>
-                    </div>
-                )}
-
+                    )}
+                </div>
             </div>
             <Footer />
         </div>

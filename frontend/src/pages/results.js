@@ -117,7 +117,6 @@ const Results = () => {
                         }
 
                         setEcData(ecDict);
-                        console.log("EC data:", ecDict);
                     }
 
                 });
@@ -143,7 +142,7 @@ const Results = () => {
                         .style("font-weight", "bold");
 
                     if (topNodes && node_data.data.name in topNodes) { // First condition to ensure topNodes is populated
-                        element.select("circle").style("fill", "green");
+                        element.select("circle").style("fill", "green").attr("r", 5);
                     }
 
                     // Unaligning the internal nodes
@@ -213,6 +212,7 @@ const Results = () => {
                     }
                 } else { // edits to the leaf nodes
                     try {
+                        // Adding EC number to leaf nodes
                         var ec = ecData[node_data.data.name];
                         if (ec) {
                             const node_label = element.select("text");
@@ -220,7 +220,7 @@ const Results = () => {
                             const translateRegex = /translate\s*\(\s*([\d.-]+)\s*,\s*([\d.-]+)\s*\)/;
                             const match = transform.match(translateRegex);
                             const x = parseFloat(match[1]);
-                            element.append("text").text(ec.ec_number).attr("transform", `translate(${x + 400}, 0)`).style("font-size", "12px");
+                            element.append("text").text("EC " + ec.ec_number).attr("transform", `translate(${x + 400}, 0)`).style("font-size", "12px");
                         }
                     } catch (error) {
                         console.error("Error adding EC number to leaf node:", error);
@@ -399,7 +399,8 @@ const Results = () => {
                         if (circles.size() === 2) {
                             console.log("Attempted to add circle to node with existing circle");
                         } else {
-                            d3.select(this).insert("circle", ":first-child").attr("r", 5).style("fill", color);
+                            const currRadius = parseInt(d3.select(this).select("circle").attr("r"));
+                            d3.select(this).insert("circle", ":first-child").attr("r", currRadius + 2).style("fill", color);
                         }
                     }
                 }
@@ -421,7 +422,6 @@ const Results = () => {
     };
 
     const applyStructColor = (nodeId) => {
-        console.log("Applying structure color for node:", nodeId);
         // Grabbing node data from tree, note will not work if tree is not rendered
         d3.selectAll('.internal-node')
             .each(function () {
@@ -457,7 +457,6 @@ const Results = () => {
     }
 
     const handleColumnHover = (index) => {
-        console.log("Column hovered:", index);
         setHoveredResidue(index + 1);
     };
 

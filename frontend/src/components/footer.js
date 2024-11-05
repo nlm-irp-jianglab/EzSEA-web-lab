@@ -24,7 +24,7 @@ const Footer = () => {
 
 const styles = {
     footer: {
-        marginTop: "40px",
+        marginTop: "20px",
         backgroundColor: "#d4d0cf",
         color: "#fff",
         textAlign: "center",
