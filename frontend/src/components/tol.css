@@ -30,30 +30,46 @@
 
 /* Dropdown button */
 .dropbtn-nodes {
-    background-color: #137cbd;
-    color: white;
+    background-color: transparent;
     padding: 10px;
-    font-size: 16px;
     border: none;
     cursor: pointer;
     border-radius: 5px;
 }
 
+.dropbtn-nodes:hover svg path {
+    fill: #28A745;
+    filter: drop-shadow(0 0 8px rgba(0, 255, 34, 0.8));
+    /* Change the line color to blue on hover */
+}
+
+.dropbtn-nodes svg path {
+    transition: stroke 0.3s ease; /* Smooth color transition */
+  }
+
 .dropbtn-downloads {
-    background-color: #4CAF50;
-    color: white;
+    background-color: transparent;
     padding: 10px;
-    font-size: 16px;
     border: none;
     cursor: pointer;
     border-radius: 5px;
 }
+
+.dropbtn-downloads:hover svg path {
+    stroke: #007AFF;
+    filter: drop-shadow(0 0 8px rgba(0, 122, 255, 0.8));
+    /* Change the line color to blue on hover */
+}
+
+.dropbtn-downloads svg path {
+    stroke: #FFFFFF;
+    transition: stroke 0.3s ease; /* Smooth color transition */
+  }
 
 /* Dropdown container */
 .dropdown {
     position: relative;
     display: inline-block;
-    margin-left: 10px;
 }
 
 .dropdown-content {
@@ -84,45 +100,6 @@
 .dropdown-content button:hover {
     background-color: #ddd;
 }
-
-.radial-toggle-button {
-    background-color: #008CBA;
-    /* Blue background */
-    border: none;
-    color: white;
-    /* White text */
-    padding: 10px 24px;
-    font-size: 16px;
-    margin-left: 10px;
-    /* Spacing between dropdown and button */
-    cursor: pointer;
-    border-radius: 5px;
-}
-
-.radial-toggle-button:hover {
-    background-color: #006f9a;
-    /* Darker blue on hover */
-}
-
-/* Download SVG button */
-.download-svg-button {
-    background-color: #4CAF50;
-    /* Green background */
-    border: none;
-    color: white;
-    padding: 10px 24px;
-    font-size: 16px;
-    margin-left: 10px;
-    /* Spacing between buttons */
-    cursor: pointer;
-    border-radius: 5px;
-}
-
-.download-svg-button:hover {
-    background-color: #45a049;
-    /* Darker green on hover */
-}
-
 
 .logodiv {
     border: 3px solid black;

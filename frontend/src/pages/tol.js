@@ -503,8 +503,8 @@ const Tol = () => {
         <div className="dropdown">
             <button className="dropbtn-downloads">
                 <svg width="25px" height="25px" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M13.5 3H12H7C5.89543 3 5 3.89543 5 5V19C5 20.1046 5.89543 21 7 21H7.5M13.5 3L19 8.625M13.5 3V7.625C13.5 8.17728 13.9477 8.625 14.5 8.625H19M19 8.625V9.75V12V19C19 20.1046 18.1046 21 17 21H16.5" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                    <path d="M12 12V20M12 20L9.5 17.5M12 20L14.5 17.5" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M13.5 3H12H7C5.89543 3 5 3.89543 5 5V19C5 20.1046 5.89543 21 7 21H7.5M13.5 3L19 8.625M13.5 3V7.625C13.5 8.17728 13.9477 8.625 14.5 8.625H19M19 8.625V9.75V12V19C19 20.1046 18.1046 21 17 21H16.5" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M12 12V20M12 20L9.5 17.5M12 20L14.5 17.5" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
             </button>
             <div className="dropdown-content" style={{ zIndex: "2" }}>
@@ -521,7 +521,7 @@ const Tol = () => {
     const importantNodesDropdown = () => (
         <div className="dropdown">
             <button className="dropbtn-nodes">
-                <svg fill="#000000" width="25px" height="25px" xmlns="http://www.w3.org/2000/svg">
+                <svg fill="#FFFFFF" width="25px" height="25px" xmlns="http://www.w3.org/2000/svg">
                     <path d="M20,9H16a1,1,0,0,0-1,1v1H7V7H8A1,1,0,0,0,9,6V2A1,1,0,0,0,8,1H4A1,1,0,0,0,3,2V6A1,1,0,0,0,4,7H5V20a1,1,0,0,0,1,1h9v1a1,1,0,0,0,1,1h4a1,1,0,0,0,1-1V18a1,1,0,0,0-1-1H16a1,1,0,0,0-1,1v1H7V13h8v1a1,1,0,0,0,1,1h4a1,1,0,0,0,1-1V10A1,1,0,0,0,20,9ZM5,3H7V5H5ZM17,19h2v2H17Zm2-6H17V11h2Z" />
                 </svg>
             </button>
@@ -536,7 +536,7 @@ const Tol = () => {
     );
 
     const findAndZoom = (query) => {
-        const svg = d3.select("svg");
+        const svg = d3.select("#tree_container").select("svg");
         const zoom = d3.zoom().on("zoom", (event) => {
             svg.select("g").attr("transform", event.transform);
         });
@@ -693,19 +693,19 @@ const Tol = () => {
     }
 
     return (
-        <div>
+        <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
             <Navbar pageId={"Results: ru5hnx3m2np8010"} />
             {isErrorPopupVisible && (
                 <ErrorPopup errorMessage="An error occurred!" onClose={closeErrorPopup} />
             )}
-            <div style={{ display: 'flex' }}>
-                <div className="btn-toolbar" style={{ display: "flex", height: "90vh", width: "40px", float: "left", flexDirection: "column" }}>
+            <div style={{ display: 'flex', flexGrow: '1' }}>
+                <div className="sidebar" style={{ display: "flex", flewGrow: "1", width: "80px", flexDirection: "column", backgroundColor: "#666769" }}>
                     {importantNodesDropdown()}
                     {downloadsDropdown()}
                     <input className="zoomInput" ref={zoomInputRef} placeholder='Find Node'></input>
                     <button onClick={() => findAndZoom(zoomInputRef.current.value)}>Go</button>
                 </div>
-                <div className="view" style={{ display: 'flex', height: '92vh', margin: '0 20px', flexGrow: '1', overflow: 'hidden' }}>
+                <div className="view" style={{ display: 'flex', flexGrow: '1', margin: '10px 20px', flexGrow: '1', overflow: 'hidden' }}>
                     <div
                         id="tree_container"
                         className="tree-div"
@@ -794,7 +794,6 @@ const Tol = () => {
                                         />
                                     </div>
                                 </div>
-
                             )}
 
                             <div className="pvdiv" ref={pvdiv} style={{ width: isLeftCollapsed ? '50%' : '100%', height: '100%' }}>
@@ -810,7 +809,6 @@ const Tol = () => {
                     )}
                 </div>
             </div>
-            <Footer />
         </div>
     );
 };

@@ -10,7 +10,7 @@
   padding-left: 10px;
   padding-right: 10px;
   font-family: 'Montserrat', sans-serif;
-  position: fixed; /* Makes the navbar fixed at the top */
+  /*position: fixed; /* Makes the navbar fixed at the top */
   top: 0;
   left: 0;
   width: 100%;
