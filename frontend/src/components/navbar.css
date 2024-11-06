@@ -10,12 +10,11 @@
   padding-left: 10px;
   padding-right: 10px;
   font-family: 'Montserrat', sans-serif;
-  /*position: fixed; /* Makes the navbar fixed at the top */
   top: 0;
   left: 0;
   width: 100%;
   z-index: 1; /* Same z-value as pvdiv in tol.js, so when mol* is expanded, the navbar does not block sequence */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+  box-shadow: 0 2px 4px rgba(0, 0, 0, .4); 
 }
 
 .logo {
