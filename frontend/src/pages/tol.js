@@ -735,7 +735,7 @@ const Tol = () => {
             )}
             <div style={{ display: 'flex', flexGrow: '1' }}>
                 <div className="sidebar" style={{
-                    width: (sidebarExpanded ? "300px" : "80px")
+                    width: (sidebarExpanded ? "300px" : "50px")
                 }}>
                     <div className="sidebar-item nodes-label">
                         {zoomToElem()}

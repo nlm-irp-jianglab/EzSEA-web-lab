@@ -867,12 +867,12 @@ const Results = () => {
                         {sidebarExpanded && <span style={{ margin: "0px 10px", color: "#fff" }}>Downloads</span>}
                     </div>
                     <div className="downloads-dropdown-content dropdown-content" style={{ display: 'none' }}>
-                        <button onClick={downloadNewickData}>Download Newick Data</button>
-                        {Object.keys(logoFiles).map(fileName => (
-                            <button key={fileName} onClick={() => downloadLogoFile(fileName)}>
-                                Download {fileName} Logo File
-                            </button>
-                        ))}
+                        <button onClick={() => handleDownload(`${jobId}_asr_nodes.fa`, faData, true)}>Ancestral Sequences</button>
+                        <button onClick={() => handleDownload(`${jobId}_leaf_nodes.fa`, leafData, true)}>Leaf Sequences</button>
+                        <button onClick={() => handleDownload(`${jobId}_nodes.json`, nodeData)}>Node Info</button>
+                        <button onClick={() => handleDownload(`${jobId}_struct.pdb`, structData)}>Structure PDB</button>
+                        <button onClick={() => handleDownload(`${jobId}_tree_data.nwk`, newickData)}>Tree Newick</button>
+                        <button onClick={downloadTreeAsSVG}>Tree SVG</button>
                     </div>
                 </div>
                 <div className="view" style={{ display: 'flex', flexGrow: '1', margin: '10px 20px', flexGrow: '1', overflow: 'hidden' }}>

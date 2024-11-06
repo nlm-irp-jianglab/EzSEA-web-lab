@@ -187,7 +187,7 @@
 .sidebar {
     display: flex;
     flex-grow: 1;
-    width: 80px;
+    width: 50px;
     transition: width 0.3s ease;
     flex-direction: column;
     background-color: #666769;
