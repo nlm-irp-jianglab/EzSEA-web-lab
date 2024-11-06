@@ -44,7 +44,9 @@
 
 .dropbtn-nodes svg path {
     transition: fill 0.3s ease;
-    /* Smooth color transition */
+}
+
+.nodes-dropdown-content button {
 }
 
 .dropbtn-downloads:hover svg path {
@@ -74,11 +76,11 @@
 /* Dropdown container */
 .dropdown {
     position: relative;
-    display: inline-block;
+    display: flex;
+    align-items: center;
 }
 
 .dropdown-content {
-    display: none;
     min-width: 160px;
     box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
 }
@@ -93,11 +95,31 @@
     border: none;
     text-align: left;
     cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease; 
+    font-size: 14px; /* Adjust font size */
+    border-radius: 5px; /* Slightly round corners for a softer look */
 }
 
 .dropdown-content button:hover {
-    background-color: #ddd;
+    background-color: #518ca3;
+    transform: scale(1.05); /* Slightly increase size on hover */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15); 
 }
+
+/* Hidden state - effectively hides the element */
+.transition-element {
+    opacity: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: opacity 0.5s ease, max-height 0.5s ease;
+}
+
+/* Visible state - element expands and fades in */
+.transition-element.visible {
+    opacity: 1;
+    max-height: 500px; /* Adjust based on content height */
+}
+
 
 .logodiv {
     border: 3px solid black;
@@ -197,6 +219,7 @@
     display: flex;
     align-items: center;
     transition: background-color 0.2s ease;
+    transition: cubic-bezier(0.075, 0.82, 0.165, 1);
 }
 
 .sidebar-item:hover {

@@ -550,27 +550,30 @@ const Results = () => {
 
 
     const downloadsDropdown = () => {
-        const handleSidebarDownlaodsClick = () => {
+        const handleSidebarDownloadsClick = () => {
             const dropdownContent = document.querySelector('.downloads-dropdown-content');
-            if (dropdownContent.style.display === 'none') {
-                dropdownContent.style.display = 'block';
-                setSidebarExpanded(true);
-            } else {
-                dropdownContent.style.display = 'none';
-                if (document.querySelector('.nodes-dropdown-content').style.display === 'none') {
+
+            if (dropdownContent.classList.contains('visible')) {
+                dropdownContent.classList.remove('visible');
+                if (!document.querySelector('.nodes-dropdown-content').classList.contains('visible')) {
                     setSidebarExpanded(false);
                 }
+            } else {
+                dropdownContent.classList.add('visible');
+                setSidebarExpanded(true);
             }
         };
+
         return (
-            <div className="dropdown">
-                <button className="dropbtn-downloads dropbtn" onClick={handleSidebarDownlaodsClick}>
+            <div className="dropdown" onClick={handleSidebarDownloadsClick}>
+                <button className="dropbtn-downloads dropbtn" >
                     <svg width="25px" height="25px" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <title>Result files</title>
                         <path d="M13.5 3H12H7C5.89543 3 5 3.89543 5 5V19C5 20.1046 5.89543 21 7 21H7.5M13.5 3L19 8.625M13.5 3V7.625C13.5 8.17728 13.9477 8.625 14.5 8.625H19M19 8.625V9.75V12V19C19 20.1046 18.1046 21 17 21H16.5" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                         <path d="M12 12V20M12 20L9.5 17.5M12 20L14.5 17.5" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                 </button>
+                {sidebarExpanded && <span style={{ margin: "0px 10px", color: "#fff" }}>Downloads</span>}
             </div>
         );
     };
@@ -578,16 +581,18 @@ const Results = () => {
     const importantNodesDropdown = () => {
         const handleSidebarNodesClick = () => {
             const dropdownContent = document.querySelector('.nodes-dropdown-content');
-            if (dropdownContent.style.display === 'none') {
-                dropdownContent.style.display = 'block';
-                setSidebarExpanded(true);
-            } else {
-                dropdownContent.style.display = 'none';
-                if (document.querySelector('.downloads-dropdown-content').style.display === 'none') {
+
+            if (dropdownContent.classList.contains('visible')) {
+                dropdownContent.classList.remove('visible');
+                if (!document.querySelector('.downloads-dropdown-content').classList.contains('visible')) {
                     setSidebarExpanded(false);
                 }
+            } else {
+                dropdownContent.classList.add('visible');
+                setSidebarExpanded(true);
             }
         };
+
         return (
             <div className="dropdown" onClick={handleSidebarNodesClick}>
                 <button className="dropbtn-nodes dropbtn">
@@ -596,19 +601,21 @@ const Results = () => {
                         <path d="M20,9H16a1,1,0,0,0-1,1v1H7V7H8A1,1,0,0,0,9,6V2A1,1,0,0,0,8,1H4A1,1,0,0,0,3,2V6A1,1,0,0,0,4,7H5V20a1,1,0,0,0,1,1h9v1a1,1,0,0,0,1,1h4a1,1,0,0,0,1-1V18a1,1,0,0,0-1-1H16a1,1,0,0,0-1,1v1H7V13h8v1a1,1,0,0,0,1,1h4a1,1,0,0,0,1-1V10A1,1,0,0,0,20,9ZM5,3H7V5H5ZM17,19h2v2H17Zm2-6H17V11h2Z" />
                     </svg>
                 </button>
-            </div>
+                {sidebarExpanded && <span style={{ margin: "0px 10px", color: "#fff", whiteSpace: "nowrap" }}>Key Nodes</span>}
+                </div>
         );
     };
 
     const zoomToElem = () => {
         const handleSidebarSearchClick = () => {
-            if (document.querySelector('.downloads-dropdown-content').style.display === 'block'
-                || document.querySelector('.nodes-dropdown-content').style.display === 'block') {
+            if (document.querySelector('.downloads-dropdown-content').classList.contains('visible')
+                || document.querySelector('.nodes-dropdown-content').classList.contains('visible')) {
                 setSidebarExpanded(true);
             } else {
                 setSidebarExpanded(!sidebarExpanded);
             }
         };
+
         return (
             <div>
                 <button className="dropbtn-search dropbtn" onClick={handleSidebarSearchClick}>
@@ -835,7 +842,7 @@ const Results = () => {
             )}
             <div style={{ display: 'flex', flexGrow: '1' }}>
                 <div className="sidebar" style={{
-                    width: (sidebarExpanded ? "300px" : "80px")
+                    width: (sidebarExpanded ? "300px" : "50px")
                 }}>
                     <div className="sidebar-item nodes-label">
                         {zoomToElem()}
@@ -852,10 +859,8 @@ const Results = () => {
                     </div>
                     <div className="sidebar-item nodes-label">
                         {importantNodesDropdown()}
-                        {sidebarExpanded && <span style={{ margin: "0px 10px", color: "#fff", whiteSpace: "nowrap" }}>Key Nodes</span>}
-
                     </div>
-                    <div className="nodes-dropdown-content dropdown-content" style={{ display: 'none' }}>
+                    <div className="nodes-dropdown-content dropdown-content transition-element">
                         {Object.keys(topNodes).map(key => (
                             <button key={key} onClick={() => setImportantView(key)}>
                                 <span style={{ fontWeight: "bold" }}>{key}</span> Score: {topNodes[key]['score'].toFixed(2)}
@@ -864,9 +869,8 @@ const Results = () => {
                     </div>
                     <div className="sidebar-item downloads-label">
                         {downloadsDropdown()}
-                        {sidebarExpanded && <span style={{ margin: "0px 10px", color: "#fff" }}>Downloads</span>}
                     </div>
-                    <div className="downloads-dropdown-content dropdown-content" style={{ display: 'none' }}>
+                    <div className="downloads-dropdown-content dropdown-content transition-element">
                         <button onClick={() => handleDownload(`${jobId}_asr_nodes.fa`, faData, true)}>Ancestral Sequences</button>
                         <button onClick={() => handleDownload(`${jobId}_leaf_nodes.fa`, leafData, true)}>Leaf Sequences</button>
                         <button onClick={() => handleDownload(`${jobId}_nodes.json`, nodeData)}>Node Info</button>

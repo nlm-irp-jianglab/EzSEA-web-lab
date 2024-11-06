@@ -28,9 +28,6 @@ const Navbar = (options) => {
         <Link to="/" className="home">
           <li>Home</li>
         </Link>
-        <Link to="/tol" className="tol">
-          <li>Tree of Life</li>
-        </Link>
       </ul>
     </div>
   );
