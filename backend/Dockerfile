@@ -7,6 +7,7 @@ COPY /listener/package*.json ./
 RUN npm install
 RUN apk add --no-cache docker-cli
 RUN apk add --no-cache curl
+RUN apk add --no-cache python3
 # Downloading gcloud package
 RUN curl https://dl.google.com/dl/cloudsdk/release/google-cloud-sdk.tar.gz > /tmp/google-cloud-sdk.tar.gz
 
