@@ -39,7 +39,7 @@ app.post("/submit", (req, res) => {
     const command = `docker run --gpus all \
           --mount type=bind,source=/home/zhaoj16_ncbi_nlm_nih_gov/EzSEA/,target=/data \
           --mount type=bind,source=/home/jiangak_ncbi_nlm_nih_gov/database/,target=/database \
-          ezsea ezsea run -i "${data.sequence}" --output "/data/EzSEA_${data.job_id}" -db "/database/${data.database}" \
+          ezsea ezsea run -i "${data.sequence}" --output "/data/EzSEA_${data.job_id}" --db "/database/${data.database}" \
           -n ${data.num_seq} -f "${data.folding_program}" --treeprogram "${data.tree_program}" \
           --asrprogram "${data.asr_program}" --alignprogram "${data.align_program}" --threads 4 --ec_table /app/Tables/ec_dict.pkl\
           `;
