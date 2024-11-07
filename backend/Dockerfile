@@ -6,10 +6,20 @@ WORKDIR /usr/src/app
 COPY /listener/package*.json ./
 RUN npm install
 RUN apk add --no-cache docker-cli
+# Downloading gcloud package
+RUN curl https://dl.google.com/dl/cloudsdk/release/google-cloud-sdk.tar.gz > /tmp/google-cloud-sdk.tar.gz
+
+# Installing the package
+RUN mkdir -p /usr/local/gcloud \
+    && tar -C /usr/local/gcloud -xvf /tmp/google-cloud-sdk.tar.gz \
+    && /usr/local/gcloud/google-cloud-sdk/install.sh
+
+# Adding the package path to local
+ENV PATH $PATH:/usr/local/gcloud/google-cloud-sdk/bin
 
 RUN gcloud container clusters get-credentials ezsea-cluster --zone us-central1 --project ncbi-research-cbb-jiang
 
 COPY /listener/ .
 EXPOSE 5000
- 
+
 CMD ["node", "listener.js"]
