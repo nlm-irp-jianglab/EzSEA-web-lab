@@ -1,3 +1,11 @@
+.view {
+    display: flex;
+    flex-grow: 1;
+    margin: 10px 20px; 
+    overflow: hidden;
+    align-items: center;
+}
+
 .center-console {
     display: flex;
     flex-direction: column;
@@ -28,13 +36,18 @@
     color: #00bfff;
 }
 
-/* Dropdown button */
+/* Sidebar */
 .dropbtn {
     background-color: transparent;
     padding: 10px;
     border: none;
     cursor: pointer;
     border-radius: 5px;
+}
+
+.dropbtn.selected {
+    background-color: rgba(173, 216, 230, 0.3); /* Light blue background with transparency */
+    border-radius: 50%; /* Make it a circle */
 }
 
 .dropbtn-nodes:hover svg path {
@@ -44,9 +57,6 @@
 
 .dropbtn-nodes svg path {
     transition: fill 0.3s ease;
-}
-
-.nodes-dropdown-content button {
 }
 
 .dropbtn-downloads:hover svg path {
@@ -78,6 +88,25 @@
     position: relative;
     display: flex;
     align-items: center;
+    cursor: pointer;
+    flex-grow: 1;
+}
+
+.dropdown:hover .dropbtn-nodes svg path {
+    fill: #007AFF;
+    filter: drop-shadow(0 0 8px rgba(0, 122, 255, 0.8));
+}
+
+.dropdown:hover .dropbtn-downloads svg path {
+    stroke: #28A745;
+    filter: drop-shadow(0 0 8px rgba(0, 255, 34, 0.8));
+}
+
+.sidebar-label {
+    color: #fff;
+    font-size: 14px;
+    margin: 0px 10px;
+    font-weight: 700;
 }
 
 .dropdown-content {
@@ -106,7 +135,43 @@
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15); 
 }
 
-/* Hidden state - effectively hides the element */
+.sidebar {
+    display: flex;
+    flex-grow: 1;
+    width: 50px;
+    transition: width 0.3s ease;
+    flex-direction: column;
+    background-color: #666769;
+}
+
+.sidebar-item {
+    display: flex;
+    align-items: center;
+    transition: background-color 0.2s ease;
+    transition: cubic-bezier(0.075, 0.82, 0.165, 1);
+}
+
+.sidebar-item:hover {
+    background-color: #929396;
+}
+
+.zoomInput {
+    width: 100%;
+    padding: 8px;
+    border: none;
+    outline: none;
+    background-color: #f0f0f0;
+    color: #666;
+    font-size: 14px;
+    border-radius: 4px;
+    margin-right: 10px;
+}
+
+.zoomInput::placeholder {
+    color: #999;
+}
+
+/* Hidden state of dropdown content */
 .transition-element {
     opacity: 0;
     max-height: 0;
@@ -114,12 +179,13 @@
     transition: opacity 0.5s ease, max-height 0.5s ease;
 }
 
-/* Visible state - element expands and fades in */
+/* Visible state */
 .transition-element.visible {
     opacity: 1;
     max-height: 500px; /* Adjust based on content height */
 }
 
+/* Main view */
 
 .logodiv {
     border: 3px solid black;
@@ -206,39 +272,3 @@
     z-index: 1;
 }
 
-.sidebar {
-    display: flex;
-    flex-grow: 1;
-    width: 50px;
-    transition: width 0.3s ease;
-    flex-direction: column;
-    background-color: #666769;
-}
-
-.sidebar-item {
-    display: flex;
-    align-items: center;
-    transition: background-color 0.2s ease;
-    transition: cubic-bezier(0.075, 0.82, 0.165, 1);
-}
-
-.sidebar-item:hover {
-    background-color: #929396;
-}
-
-.zoomInput {
-    width: 100%;
-    padding: 8px;
-    border: none;
-    outline: none;
-    background-color: #f0f0f0;
-    color: #666;
-    font-size: 14px;
-    border-radius: 4px;
-    margin-right: 10px;
-}
-
-.zoomInput::placeholder {
-    color: #999;
-    /* Light gray placeholder text */
-}

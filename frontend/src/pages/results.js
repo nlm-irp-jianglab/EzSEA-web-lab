@@ -552,6 +552,9 @@ const Results = () => {
     const downloadsDropdown = () => {
         const handleSidebarDownloadsClick = () => {
             const dropdownContent = document.querySelector('.downloads-dropdown-content');
+            const btn = document.querySelector('.dropbtn-downloads');
+
+            btn.classList.contains('selected') ? btn.classList.remove('selected') : btn.classList.add('selected');
 
             if (dropdownContent.classList.contains('visible')) {
                 dropdownContent.classList.remove('visible');
@@ -573,7 +576,7 @@ const Results = () => {
                         <path d="M12 12V20M12 20L9.5 17.5M12 20L14.5 17.5" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                 </button>
-                {sidebarExpanded && <span style={{ margin: "0px 10px", color: "#fff" }}>Downloads</span>}
+                {sidebarExpanded && <span className="sidebar-label">Downloads</span>}
             </div>
         );
     };
@@ -581,6 +584,10 @@ const Results = () => {
     const importantNodesDropdown = () => {
         const handleSidebarNodesClick = () => {
             const dropdownContent = document.querySelector('.nodes-dropdown-content');
+            const btn = document.querySelector('.dropbtn-nodes');
+
+            // Highlight the button when selected
+            btn.classList.contains('selected') ? btn.classList.remove('selected') : btn.classList.add('selected');
 
             if (dropdownContent.classList.contains('visible')) {
                 dropdownContent.classList.remove('visible');
@@ -601,8 +608,8 @@ const Results = () => {
                         <path d="M20,9H16a1,1,0,0,0-1,1v1H7V7H8A1,1,0,0,0,9,6V2A1,1,0,0,0,8,1H4A1,1,0,0,0,3,2V6A1,1,0,0,0,4,7H5V20a1,1,0,0,0,1,1h9v1a1,1,0,0,0,1,1h4a1,1,0,0,0,1-1V18a1,1,0,0,0-1-1H16a1,1,0,0,0-1,1v1H7V13h8v1a1,1,0,0,0,1,1h4a1,1,0,0,0,1-1V10A1,1,0,0,0,20,9ZM5,3H7V5H5ZM17,19h2v2H17Zm2-6H17V11h2Z" />
                     </svg>
                 </button>
-                {sidebarExpanded && <span style={{ margin: "0px 10px", color: "#fff", whiteSpace: "nowrap" }}>Key Nodes</span>}
-                </div>
+                {sidebarExpanded && <span className="sidebar-label">Key Nodes</span>}
+            </div>
         );
     };
 
@@ -842,7 +849,7 @@ const Results = () => {
             )}
             <div style={{ display: 'flex', flexGrow: '1' }}>
                 <div className="sidebar" style={{
-                    width: (sidebarExpanded ? "300px" : "50px")
+                    width: (sidebarExpanded ? "250px" : "50px")
                 }}>
                     <div className="sidebar-item nodes-label">
                         {zoomToElem()}
@@ -879,7 +886,7 @@ const Results = () => {
                         <button onClick={downloadTreeAsSVG}>Tree SVG</button>
                     </div>
                 </div>
-                <div className="view" style={{ display: 'flex', flexGrow: '1', margin: '10px 20px', flexGrow: '1', overflow: 'hidden' }}>
+                <div className="view">
                     <div
                         id="tree_container"
                         className="tree-div"
