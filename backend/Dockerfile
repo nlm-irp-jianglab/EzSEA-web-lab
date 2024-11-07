@@ -7,6 +7,8 @@ COPY /listener/package*.json ./
 RUN npm install
 RUN apk add --no-cache docker-cli
 
+RUN gcloud container clusters get-credentials ezsea-cluster --zone us-central1 --project ncbi-research-cbb-jiang
+
 COPY /listener/ .
 EXPOSE 5000
  
