@@ -36,13 +36,57 @@ app.post("/submit", (req, res) => {
     var error = null;
     logger.info("Received Job: " + data.job_id);
 
-    const command = `docker run --gpus all \
-          --mount type=bind,source=/home/zhaoj16_ncbi_nlm_nih_gov/EzSEA/,target=/data \
-          --mount type=bind,source=/home/jiangak_ncbi_nlm_nih_gov/database/,target=/database \
-          ezsea ezsea run -i "${data.sequence}" --output "/data/EzSEA_${data.job_id}" --db "/database/${data.database}" \
-          -n ${data.num_seq} --fold "${data.folding_program}" --treeprogram "${data.tree_program}" \
-          --asrprogram "${data.asr_program}" --alignprogram "${data.align_program}" --threads 4 --ec_table /app/Tables/ec_dict.pkl\
-          `;
+    const command = {
+        "apiVersion": "batch/v1",
+        "kind": "Job",
+        "metadata": {
+            "name": data.job_id
+        },
+        "spec": {
+            "backoffLimit": 0,
+            "template": {
+                "spec": {
+                    "containers": {
+                        "name": "ezsea",
+                        "image": "gcr.io/ncbi-research-cbb-jiang/ezsea-image:latest",
+                        "args": ["ezsea", "run", "-i", data.sequence, "--output", `/database/output/EzSEA_${data.job_id}`, "--db",
+                            `/database/database/${data.database}`, "-n", data.num_seq, "--fold", data.folding_program,
+                            "--treeprogram", data.tree_program, "--asrprogram", data.asr_program, "--alignprogram", data.align_program,
+                            "--threads", "4", "--ec_table", "/database/database/ec_dict.pkl"],
+                        "resources": {
+                            "requests": {
+                                "cpu": "4",
+                                "memory": "8Gi"
+                            },
+                            "limits": {
+                                "cpu": "4",
+                                "memory": "8Gi"
+                            }
+                        },
+                        "volumeMounts": {
+                            "mountPath": "/database",
+                            "name": "ezsea-database-volumer"
+                        }
+                    },
+                    "restartPolicy": "Never",
+                    "volumes": {
+                        "name": "ezsea-database-volume",
+                        "persistentVolumeClaim": {
+                            "claimName": "ezsea-database-claim"
+                        }
+                    }
+                }
+            }
+        }
+    };
+
+    // const command = `docker run --gpus all \
+    //       --mount type=bind,source=/home/zhaoj16_ncbi_nlm_nih_gov/EzSEA/,target=/data \
+    //       --mount type=bind,source=/home/jiangak_ncbi_nlm_nih_gov/database/,target=/database \
+    //       ezsea ezsea run -i "${data.sequence}" --output "/data/EzSEA_${data.job_id}" --db "/database/${data.database}" \
+    //       -n ${data.num_seq} --fold "${data.folding_program}" --treeprogram "${data.tree_program}" \
+    //       --asrprogram "${data.asr_program}" --alignprogram "${data.align_program}" --threads 4 --ec_table /app/Tables/ec_dict.pkl\
+    //       `;
     logger.info("Running: " + command);
     exec(command, (err, stdout, stderr) => {
         if (err) {
@@ -134,7 +178,7 @@ app.get("/results/:id", async (req, res) => {
     }, {});
 
     // Send response with the files that were successfully read and any error messages
-    if (response['treeError'] && response['leafError'] && response['ancestralError'] 
+    if (response['treeError'] && response['leafError'] && response['ancestralError']
         && response['nodesError'] && response['structError'] && response['inputError'] && response['ecError']) {
         return res.status(500).json({ error: "Failed to read all files." });
     } else {
