@@ -46,39 +46,54 @@ app.post("/submit", (req, res) => {
             "backoffLimit": 0,
             "template": {
                 "spec": {
-                    "containers": {
-                        "name": "ezsea",
-                        "image": "gcr.io/ncbi-research-cbb-jiang/ezsea-image:latest",
-                        "args": ["ezsea", "run", "-i", data.sequence, "--output", `/database/output/EzSEA_${data.job_id}`, "--db",
-                            `/database/database/${data.database}`, "-n", data.num_seq, "--fold", data.folding_program,
-                            "--treeprogram", data.tree_program, "--asrprogram", data.asr_program, "--alignprogram", data.align_program,
-                            "--threads", "4", "--ec_table", "/database/database/ec_dict.pkl"],
-                        "resources": {
-                            "requests": {
-                                "cpu": "4",
-                                "memory": "8Gi"
+                    "containers": [
+                        {
+                            "name": "ezsea",
+                            "image": "gcr.io/ncbi-research-cbb-jiang/ezsea-image:latest",
+                            "args": ["ezsea", "run", "-i", data.sequence, "--output", `/database/output/EzSEA_${data.job_id}`, "--db",
+                                `/database/database/${data.database}`, "-n", data.num_seq, "--fold", data.folding_program,
+                                "--treeprogram", data.tree_program, "--asrprogram", data.asr_program, "--alignprogram", data.align_program,
+                                "--threads", "4", "--ec_table", "/database/database/ec_dict.pkl"],
+                            "resources": {
+                                "requests": {
+                                    "cpu": "4",
+                                    "memory": "8Gi"
+                                },
+                                "limits": {
+                                    "cpu": "4",
+                                    "memory": "8Gi"
+                                }
                             },
-                            "limits": {
-                                "cpu": "4",
-                                "memory": "8Gi"
-                            }
-                        },
-                        "volumeMounts": {
-                            "mountPath": "/database",
-                            "name": "ezsea-database-volumer"
+                            "volumeMounts": [
+                                {
+                                    "mountPath": "/database",
+                                    "name": "ezsea-database-volume"
+                                }
+                            ]
                         }
-                    },
+                    ],
                     "restartPolicy": "Never",
-                    "volumes": {
-                        "name": "ezsea-database-volume",
-                        "persistentVolumeClaim": {
-                            "claimName": "ezsea-database-claim"
+                    "volumes": [
+                        {
+                            "name": "ezsea-database-volume",
+                            "persistentVolumeClaim": {
+                                "claimName": "ezsea-database-claim"
+                            }
                         }
-                    }
+                    ]
                 }
             }
         }
     };
+
+    fs.writeFile('job-config.json', JSON.stringify(command, null, 2), (err) => {
+        if (err) {
+            console.error('Error writing Kubernetes job config to file', err);
+        } else {
+            console.log('Kubernetes job configuration saved to job-config.json');
+        }
+    });
+
 
     // const command = `docker run --gpus all \
     //       --mount type=bind,source=/home/zhaoj16_ncbi_nlm_nih_gov/EzSEA/,target=/data \
@@ -88,7 +103,7 @@ app.post("/submit", (req, res) => {
     //       --asrprogram "${data.asr_program}" --alignprogram "${data.align_program}" --threads 4 --ec_table /app/Tables/ec_dict.pkl\
     //       `;
     logger.info("Running: " + command);
-    exec(command, (err, stdout, stderr) => {
+    exec("kubectl apply -f ./job-config.json", (err, stdout, stderr) => {
         if (err) {
             error = "There was a problem initializing your job, please try again later";
             console.error(err); // Pino doesn't give new lines
