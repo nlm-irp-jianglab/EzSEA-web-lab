@@ -46,41 +46,44 @@ app.post("/submit", (req, res) => {
             "backoffLimit": 0,
             "template": {
                 "spec": {
-                    "containers": [
-                        {
-                            "name": "ezsea",
-                            "image": "gcr.io/ncbi-research-cbb-jiang/ezsea-image:latest",
-                            "args": ["ezsea", "run", "-i", data.sequence, "--output", `/database/output/EzSEA_${data.job_id}`, "--db",
-                                `/database/database/${data.database}`, "-n", data.num_seq, "--fold", data.folding_program,
-                                "--treeprogram", data.tree_program, "--asrprogram", data.asr_program, "--alignprogram", data.align_program,
-                                "--threads", "4", "--ec_table", "/database/database/ec_dict.pkl"],
-                            "resources": {
-                                "requests": {
-                                    "cpu": "4",
-                                    "memory": "8Gi"
-                                },
-                                "limits": {
-                                    "cpu": "4",
-                                    "memory": "8Gi"
-                                }
+                    "containers": [{
+                        "name": "ezsea",
+                        "image": "gcr.io/ncbi-research-cbb-jiang/ezsea-image:latest",
+                        "args": [
+                            "ezsea", "run",
+                            "-i", data.sequence,
+                            "--output", `/database/output/EzSEA_${data.job_id}`,
+                            "--db", `/database/database/${data.database}`,
+                            "-n", String(data.num_seq),          // Converted to string
+                            "--fold", data.folding_program,
+                            "--treeprogram", data.tree_program,
+                            "--asrprogram", data.asr_program,
+                            "--alignprogram", data.align_program,
+                            "--threads", "4",                    // Wrapped in quotes
+                            "--ec_table", "/database/database/ec_dict.pkl"
+                        ],
+                        "resources": {
+                            "requests": {
+                                "cpu": "4",                     // Wrapped in quotes
+                                "memory": "8Gi"
                             },
-                            "volumeMounts": [
-                                {
-                                    "mountPath": "/database",
-                                    "name": "ezsea-database-volume"
-                                }
-                            ]
-                        }
-                    ],
-                    "restartPolicy": "Never",
-                    "volumes": [
-                        {
-                            "name": "ezsea-database-volume",
-                            "persistentVolumeClaim": {
-                                "claimName": "ezsea-database-claim"
+                            "limits": {
+                                "cpu": "4",                     // Wrapped in quotes
+                                "memory": "8Gi"
                             }
+                        },
+                        "volumeMounts": [{
+                            "mountPath": "/database",
+                            "name": "ezsea-database-volume"
+                        }]
+                    }],
+                    "restartPolicy": "Never",
+                    "volumes": [{
+                        "name": "ezsea-database-volume",
+                        "persistentVolumeClaim": {
+                            "claimName": "ezsea-database-claim"
                         }
-                    ]
+                    }]
                 }
             }
         }
