@@ -11,10 +11,13 @@ RUN apk add --no-cache python3
 # Downloading gcloud package
 RUN curl https://dl.google.com/dl/cloudsdk/release/google-cloud-sdk.tar.gz > /tmp/google-cloud-sdk.tar.gz
 
-# Installing the package
+# Installing the gcloud
 RUN mkdir -p /usr/local/gcloud 
 RUN tar -C /usr/local/gcloud -xvf /tmp/google-cloud-sdk.tar.gz 
 RUN /usr/local/gcloud/google-cloud-sdk/install.sh
+
+# Installing kubectl
+RUN gcloud components install kubectl
 
 # Adding the package path to local
 ENV PATH $PATH:/usr/local/gcloud/google-cloud-sdk/bin
