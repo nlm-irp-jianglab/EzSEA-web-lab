@@ -36,7 +36,7 @@ app.post("/submit", (req, res) => {
     var error = null;
     logger.info("Received Job: " + data.job_id);
 
-    const command = {
+    const run_command = {
         "apiVersion": "batch/v1",
         "kind": "Job",
         "metadata": {
@@ -54,21 +54,21 @@ app.post("/submit", (req, res) => {
                             "-i", data.sequence,
                             "--output", `/database/output/EzSEA_${data.job_id}`,
                             "--db", `/database/database/${data.database}`,
-                            "-n", String(data.num_seq),          // Converted to string
-                            "--fold", data.folding_program,
+                            "-n", String(data.num_seq),
+                            "--fold", "none",
                             "--treeprogram", data.tree_program,
                             "--asrprogram", data.asr_program,
                             "--alignprogram", data.align_program,
-                            "--threads", "4",                    // Wrapped in quotes
+                            "--threads", "4",
                             "--ec_table", "/database/database/ec_dict.pkl"
                         ],
                         "resources": {
                             "requests": {
-                                "cpu": "8",                     // Wrapped in quotes
+                                "cpu": "8",
                                 "memory": "16Gi"
                             },
                             "limits": {
-                                "cpu": "8",                     // Wrapped in quotes
+                                "cpu": "8",
                                 "memory": "16Gi"
                             }
                         },
@@ -89,7 +89,57 @@ app.post("/submit", (req, res) => {
         }
     };
 
-    fs.writeFile('job-config.json', JSON.stringify(command, null, 2), (err) => {
+    const struct_command = {
+        "apiVersion": "batch/v1",
+        "kind": "Job",
+        "metadata": {
+            "name": data.job_id + "-struct"
+        },
+        "spec": {
+            "backoffLimit": 0,
+            "template": {
+                "spec": {
+                    "containers": [{
+                        "name": "ezsea",
+                        "image": "gcr.io/ncbi-research-cbb-jiang/ezsea-image:latest",
+                        "args": [
+                            "ezsea", "structure",
+                            "-i", data.sequence,
+                            "--output", `/database/output/EzSEA_${data.job_id}`,
+                            "--fold", data.folding_program,
+                        ],
+                        "resources": {
+                            "requests": {
+                                "nvidia.con/gpu": "1",
+                                "memory": "8Gi"
+                            },
+                            "limits": {
+                                "cpu": "4",
+                                "memory": "8Gi"
+                            }
+                        },
+                        "volumeMounts": [{
+                            "mountPath": "/database",
+                            "name": "ezsea-database-volume"
+                        }]
+                    }],
+                    "restartPolicy": "Never",
+                    "nodeSelector": {
+                        "cloud.google.com/gke-accelerator": "nvidia-tesla-a100",
+                        "cloud.google.com/gke-accelerator-count": "1",
+                    },
+                    "volumes": [{
+                        "name": "ezsea-database-volume",
+                        "persistentVolumeClaim": {
+                            "claimName": "ezsea-filestore-pvc"
+                        }
+                    }]
+                }
+            }
+        }
+    };
+
+    fs.writeFile('cpu-job-config.json', JSON.stringify(run_command, null, 2), (err) => {
         if (err) {
             console.error('Error writing Kubernetes job config to file', err);
         } else {
@@ -97,24 +147,31 @@ app.post("/submit", (req, res) => {
         }
     });
 
+    fs.writeFile('gpu-job-config.json', JSON.stringify(struct_command, null, 2), (err) => {
+        if (err) {
+            console.error('Error writing Kubernetes job config to file', err);
+        } else {
+            console.log('Kubernetes job configuration saved to job-config.json');
+        }
+    });
 
-    // const command = `docker run --gpus all \
-    //       --mount type=bind,source=/home/zhaoj16_ncbi_nlm_nih_gov/EzSEA/,target=/data \
-    //       --mount type=bind,source=/home/jiangak_ncbi_nlm_nih_gov/database/,target=/database \
-    //       ezsea ezsea run -i "${data.sequence}" --output "/data/EzSEA_${data.job_id}" --db "/database/${data.database}" \
-    //       -n ${data.num_seq} --fold "${data.folding_program}" --treeprogram "${data.tree_program}" \
-    //       --asrprogram "${data.asr_program}" --alignprogram "${data.align_program}" --threads 4 --ec_table /app/Tables/ec_dict.pkl\
-    //       `;
-    logger.info("Running: " + command);
-    exec("kubectl apply -f ./job-config.json", (err, stdout, stderr) => {
+    logger.info("Queuing job: " + data.job_id);
+
+    exec("kubectl apply -f ./cpu-job-config.json", (err, stdout, stderr) => {
         if (err) {
             error = "There was a problem initializing your job, please try again later";
             console.error(err); // Pino doesn't give new lines
         } else {
-            logger.info("Job COMPLETED:" + data.job_id);
-            if (data.email) {
-                sendEmail(data.email, data.job_id);
-            }
+            logger.info("EzSEA run job started:" + data.job_id);
+        }
+    });
+
+    exec("kubectl apply -f ./cpu-job-config.json", (err, stdout, stderr) => {
+        if (err) {
+            error = "There was a problem initializing your job, please try again later";
+            console.error(err); // Pino doesn't give new lines
+        } else {
+            logger.info("EzSEA structure job started:" + data.job_id);
         }
     });
     setTimeout(function () {

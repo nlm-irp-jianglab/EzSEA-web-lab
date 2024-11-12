@@ -65,14 +65,14 @@ export function MolStarWrapper({ structData, selectedResidue, hoveredResidue, co
 
       // Loading the default pdb file
 
-      if (structData == null) {
-        await fetch(`${process.env.PUBLIC_URL}/example_2/Visualization/seq.pdb`)
-          .then((response) => response.text())
-          .then((text) => {
-            structData = text;
-          })
-          .catch((error) => console.error("Error fetching struct data:", error));
-      }
+      // if (structData == null) {
+      //   await fetch(`${process.env.PUBLIC_URL}/example_2/Visualization/seq.pdb`)
+      //     .then((response) => response.text())
+      //     .then((text) => {
+      //       structData = text;
+      //     })
+      //     .catch((error) => console.error("Error fetching struct data:", error));
+      // }
 
       const myData = await window.molstar.builders.data.rawData({
         data: structData, /* string or number[] */
