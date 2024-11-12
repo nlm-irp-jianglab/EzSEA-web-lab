@@ -64,12 +64,12 @@ app.post("/submit", (req, res) => {
                         ],
                         "resources": {
                             "requests": {
-                                "cpu": "4",                     // Wrapped in quotes
-                                "memory": "8Gi"
+                                "cpu": "8",                     // Wrapped in quotes
+                                "memory": "16Gi"
                             },
                             "limits": {
-                                "cpu": "4",                     // Wrapped in quotes
-                                "memory": "8Gi"
+                                "cpu": "8",                     // Wrapped in quotes
+                                "memory": "16Gi"
                             }
                         },
                         "volumeMounts": [{
