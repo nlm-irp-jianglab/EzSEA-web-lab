@@ -9,7 +9,7 @@ services:
       - "8002:5000"
     privileged: true
     volumes:
-      - /home/zhaoj16_ncbi_nlm_nih_gov/EzSEA/:/outputs
+      - /mnt/filestore/output/:/outputs
       - /var/run/docker.sock:/var/run/docker.sock # Mounting Docker socket, allowing backend to start Docker containers. DANGEROUS security issues
     deploy:
       resources:
