@@ -115,6 +115,7 @@ app.post("/submit", (req, res) => {
                                 "memory": "8Gi"
                             },
                             "limits": {
+                                "nvidia.con/gpu": "1",
                                 "cpu": "4",
                                 "memory": "8Gi"
                             }
@@ -144,7 +145,7 @@ app.post("/submit", (req, res) => {
         if (err) {
             console.error('Error writing Kubernetes job config to file', err);
         } else {
-            console.log('Kubernetes job configuration saved to job-config.json');
+            console.log('Kubernetes cpu job configuration saved to cpu-job-config.json');
         }
     });
 
@@ -152,7 +153,7 @@ app.post("/submit", (req, res) => {
         if (err) {
             console.error('Error writing Kubernetes job config to file', err);
         } else {
-            console.log('Kubernetes job configuration saved to job-config.json');
+            console.log('Kubernetes gpu job configuration saved to gpu-job-config.json');
         }
     });
 
