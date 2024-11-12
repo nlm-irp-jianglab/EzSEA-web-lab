@@ -74,7 +74,7 @@ app.post("/submit", (req, res) => {
                         },
                         "volumeMounts": [{
                             "mountPath": "/database",
-                            "name": "ezsea-databases-volume"
+                            "name": "ezsea-database-volume"
                         }]
                     }],
                     "restartPolicy": "Never",
