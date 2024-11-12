@@ -23,5 +23,3 @@ services:
     build: ./proxy
     ports:
       - "80:80"
-  ezsea:
-    image: ezsea

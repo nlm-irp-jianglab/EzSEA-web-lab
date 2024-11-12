@@ -166,7 +166,7 @@ app.post("/submit", (req, res) => {
         }
     });
 
-    exec("kubectl apply -f ./cpu-job-config.json", (err, stdout, stderr) => {
+    exec("kubectl apply -f ./gpu-job-config.json", (err, stdout, stderr) => {
         if (err) {
             error = "There was a problem initializing your job, please try again later";
             console.error(err); // Pino doesn't give new lines
