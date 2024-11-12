@@ -111,6 +111,7 @@ app.post("/submit", (req, res) => {
                         "resources": {
                             "requests": {
                                 "nvidia.con/gpu": "1",
+                                "cpu": "4",
                                 "memory": "8Gi"
                             },
                             "limits": {
