@@ -74,14 +74,14 @@ app.post("/submit", (req, res) => {
                         },
                         "volumeMounts": [{
                             "mountPath": "/database",
-                            "name": "ezsea-database-volume"
+                            "name": "ezsea-databases-volume"
                         }]
                     }],
                     "restartPolicy": "Never",
                     "volumes": [{
                         "name": "ezsea-database-volume",
                         "persistentVolumeClaim": {
-                            "claimName": "ezsea-database-claim"
+                            "claimName": "ezsea-filestore-pvc"
                         }
                     }]
                 }
