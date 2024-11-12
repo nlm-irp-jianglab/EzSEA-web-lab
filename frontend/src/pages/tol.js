@@ -92,7 +92,7 @@ const Tol = () => {
         //     });
     }, []);
 
-    console.log(mapEntropyToColors([0.0,0.48,0.96,1.44,1.92,2.4,2.88,3.36,3.84,4.32]));
+    console.log(mapEntropyToColors([0.0, 0.48, 0.96, 1.44, 1.92, 2.4, 2.88, 3.36, 3.84, 4.32]));
 
     // Deals with tree rendering
     useEffect(() => {
@@ -536,7 +536,7 @@ const Tol = () => {
         const handleSidebarNodesClick = () => {
             const dropdownContent = document.querySelector('.nodes-dropdown-content');
             const btn = document.querySelector('.dropbtn-nodes');
-            
+
             // Highlight the button when selected
             btn.classList.contains('selected') ? btn.classList.remove('selected') : btn.classList.add('selected');
 
@@ -878,15 +878,32 @@ const Tol = () => {
                                     </div>
                                 </div>
                             )}
+                            <div style={{ display: "flex", height: "100%" }}>
+                                <div style={{ display: "flex", flexDirection: "column"}}>
+                                    <button>click</button>
+                                    <svg width="20" height="200" xmlns="http://www.w3.org/2000/svg">
+                                        <rect width="20" height="20" fill="#0000ff" y="0" />
+                                        <rect width="20" height="20" fill="#0056a9" y="20" />
+                                        <rect width="20" height="20" fill="#00ac53" y="40" />
+                                        <rect width="20" height="20" fill="#02ff00" y="60" />
+                                        <rect width="20" height="20" fill="#58ff00" y="80" />
+                                        <rect width="20" height="20" fill="#aeff00" y="100" />
+                                        <rect width="20" height="20" fill="#fffa00" y="120" />
+                                        <rect width="20" height="20" fill="#ffa700" y="140" />
+                                        <rect width="20" height="20" fill="#ff5400" y="160" />
+                                        <rect width="20" height="20" fill="#ff0000" y="180" />
+                                    </svg>
+                                </div>
 
-                            <div className="pvdiv" ref={pvdiv} style={{ width: isLeftCollapsed ? '50%' : '100%', height: '100%' }}>
-                                <MolstarViewer
-                                    structData={structData}
-                                    selectedResidue={selectedResidue}
-                                    colorFile={colorArr}
-                                    hoveredResidue={hoveredResidue}
-                                    scrollLogosTo={(index) => logoStackRef.current.scrollToIndex(index)}
-                                />
+                                <div className="pvdiv" ref={pvdiv} style={{ width: isLeftCollapsed ? '50%' : '100%', height: '100%' }}>
+                                    <MolstarViewer
+                                        structData={structData}
+                                        selectedResidue={selectedResidue}
+                                        colorFile={colorArr}
+                                        hoveredResidue={hoveredResidue}
+                                        scrollLogosTo={(index) => logoStackRef.current.scrollToIndex(index)}
+                                    />
+                                </div>
                             </div>
                         </div>
                     )}
