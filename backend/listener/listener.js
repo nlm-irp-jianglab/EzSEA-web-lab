@@ -271,7 +271,7 @@ app.get("/status/:id", (req, res) => {
     fs.readFile(filePath, 'utf8', (err, data) => {
         if (err) {
             logger.error("Error reading file:", err);
-            return res.status(500).json({ error: "Error reading log file. Please ensure you job ID is correct." });
+            return res.status(500).json({ error: "Error reading log file. Log generation may take a while." });
         }
         const logsArray = data.split('\n');
         var status = "Running";

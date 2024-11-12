@@ -305,72 +305,23 @@ const Home = () => {
                                         <div>
                                             <p>Number of Sequences:</p>
                                             <span>
-                                                <button className="bp3-button bp3-minimal"
-                                                    onClick={() => setSelectedNumSeq(1000)}
+                                                <input
+                                                    type="number"
+                                                    className="bp3-input"
+                                                    value={selectedNumSeq}
+                                                    onChange={(e) => setSelectedNumSeq(Number(e.target.value))}
+                                                    min="100" 
+                                                    max="1000" 
                                                     style={{
-                                                        backgroundColor: selectedNumSeq == 1000 ? '#007bff' : '#eee',
-                                                        color: selectedNumSeq == 1000 ? 'white' : 'black'
+                                                        width: '100px',
+                                                        padding: '5px',
+                                                        fontSize: '16px',
+                                                        backgroundColor: '#eee',
+                                                        color: 'black',
+                                                        borderRadius: '4px',
+                                                        border: selectedNumSeq ? '2px solid #007bff' : '1px solid #ccc' // border changes color if a value is selected
                                                     }}
-                                                >
-                                                    1000
-                                                </button>
-                                                <button className="bp3-button bp3-minimal"
-                                                    onClick={() => setSelectedNumSeq(500)}
-                                                    style={{
-                                                        backgroundColor: selectedNumSeq == 500 ? '#007bff' : '#eee',
-                                                        color: selectedNumSeq == 500 ? 'white' : 'black'
-                                                    }}
-                                                >
-                                                    500
-                                                </button>
-                                                <button className="bp3-button bp3-minimal"
-                                                    onClick={() => setSelectedNumSeq(200)}
-                                                    style={{
-                                                        backgroundColor: selectedNumSeq == 200 ? '#007bff' : '#eee',
-                                                        color: selectedNumSeq == 200 ? 'white' : 'black'
-                                                    }}
-                                                >
-                                                    200
-                                                </button>
-                                                <button className="bp3-button bp3-minimal"
-                                                    onClick={() => setSelectedNumSeq(100)}
-                                                    style={{
-                                                        backgroundColor: selectedNumSeq == 100 ? '#007bff' : '#eee',
-                                                        color: selectedNumSeq == 100 ? 'white' : 'black'
-                                                    }}
-                                                >
-                                                    100
-                                                </button>
-                                            </span>
-                                            <p>Protein Folding Program:</p>
-                                            <span>
-                                                <button className="bp3-button bp3-minimal"
-                                                    onClick={() => setSelectedFoldingProgram('colabfold')}
-                                                    style={{
-                                                        backgroundColor: selectedFoldingProgram === 'colabfold' ? '#007bff' : '#eee',
-                                                        color: selectedFoldingProgram === 'colabfold' ? 'white' : 'black'
-                                                    }}
-                                                >
-                                                    colabfold
-                                                </button>
-                                                <button className="bp3-button bp3-minimal"
-                                                    onClick={() => setSelectedFoldingProgram('pdb')}
-                                                    style={{
-                                                        backgroundColor: selectedFoldingProgram === 'pdb' ? '#007bff' : '#eee',
-                                                        color: selectedFoldingProgram === 'pdb' ? 'white' : 'black'
-                                                    }}
-                                                >
-                                                    pdb
-                                                </button>
-                                                <button className="bp3-button bp3-minimal"
-                                                    onClick={() => setSelectedFoldingProgram('none')}
-                                                    style={{
-                                                        backgroundColor: selectedFoldingProgram === 'none' ? '#007bff' : '#eee',
-                                                        color: selectedFoldingProgram === 'none' ? 'white' : 'black'
-                                                    }}
-                                                >
-                                                    none
-                                                </button>
+                                                />
                                             </span>
 
                                             <p>Phylogenetic Tree Program:</p>
