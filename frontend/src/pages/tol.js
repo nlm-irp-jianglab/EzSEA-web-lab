@@ -92,6 +92,8 @@ const Tol = () => {
         //     });
     }, []);
 
+    console.log(mapEntropyToColors([0.0,0.48,0.96,1.44,1.92,2.4,2.88,3.36,3.84,4.32]));
+
     // Deals with tree rendering
     useEffect(() => {
         if (treeRef.current && newickData && nodeData) {
