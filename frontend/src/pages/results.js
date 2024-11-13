@@ -35,7 +35,7 @@ const Results = () => {
     const [hoveredResidue, setHoveredResidue] = useState(null); // Currently not in use
 
     // States for rendering control
-    const [pipVisible, setPipVisible] = useState(false);
+    const [pipVisible, setPipVisible] = useState(false); // Show/hide the right side sequence logo, struct viewer
     const [isLeftCollapsed, setIsLeftCollapsed] = useState(false);
     const [isRightCollapsed, setIsRightCollapsed] = useState(false);
     const [sidebarExpanded, setSidebarExpanded] = useState(false);
@@ -53,6 +53,7 @@ const Results = () => {
     // Fetch the tree data and node data on component mount, store data into states
     useEffect(() => {
         try {
+            // Fetching data from the backend
             const response = fetch(`/api/results/${jobId}`);
             response.then(res => res.json())
                 .then(data => {
@@ -154,6 +155,7 @@ const Results = () => {
                     // Deleting the line tracer
                     element.select("line").remove();
 
+                    // Adding custom menu options (compare ancestral state, compare descendants)
                     function compareMenuCondition(node) {
                         if (node['compare-node']) {
                             return "Remove from compare";
@@ -199,8 +201,7 @@ const Results = () => {
                         return true;
                     }
 
-                    // Toggling selection options causes this code to run in duplicate. Patchy fix
-
+                    // Toggling selection options causes this code to run in duplicate. Patching it here
                     if (!node_data['menu_items'] || node_data['menu_items'].length != 2) {
                         // Adding my custom menu
                         addCustomMenu(node_data, compareMenuCondition, function () {
@@ -235,6 +236,7 @@ const Results = () => {
 
             function style_edges(element, edge_data) {
                 try {
+                    // Clicking on a branch adds parent and child node to comparison
                     element.on('click', async (event, branch) => {
                         if (branch.selected) {
                             branch.selected = false;
@@ -294,13 +296,16 @@ const Results = () => {
 
             treeRef.current.appendChild(tree.display.show());
 
-            // Pan to input query
+            // Start with pan to input query
             findAndZoom(inputHeader);
         }
     }, [newickData, faData]);
 
+    /* 
+        Remove a node from the comparison
+        node: a node object 
+    */
     const removeNodeFromLogo = (node) => {
-        // Remove node from logoContent
         setLogoContent(prevLogoContent => {
             const updatedLogoContent = { ...prevLogoContent };
 
@@ -317,37 +322,21 @@ const Results = () => {
         });
     };
 
-
-    const pushNodeToLogo = (node, comp_desc = false) => {
-        // Add node to logoContent, if already in list, remove it
+    /* 
+        Add a node's ASR to the comparison
+        node: a node object 
+    */
+    const pushNodeToLogo = (node) => {
         setLogoContent(prevLogoContent => {
             const updatedLogoContent = { ...prevLogoContent };
-
             // Add or do nothing if node is already in logoContent
             if (node.data.name in updatedLogoContent) {
                 return updatedLogoContent;
             } else {
-                if (comp_desc) {
-                    var descendants = selectAllDescendants(node, false, true);
-                    var desc_fa = "";
-                    for (var desc of descendants) {
-                        desc_fa += `>${desc.data.name}\n${faData[desc.data.name]}\n`;
-                    }
-                    if (desc_fa === "") {
-                        console.log("No descendants found for node:", node.data.name);
-                        return updatedLogoContent;
-                    }
+                node['compare-node'] = true;
+                updatedLogoContent[node.data.name] = `>${node.data.name}\n${faData[node.data.name]}`;
+                setNodeColor(node.data.name, "red");
 
-                    node['compare-node'] = true;
-                    node['compare-descendants'] = true;
-
-                    updatedLogoContent[node.data.name] = desc_fa;
-                    setNodeColor(node.data.name, "yellow");
-                } else {
-                    node['compare-node'] = true;
-                    updatedLogoContent[node.data.name] = `>${node.data.name}\n${faData[node.data.name]}`;
-                    setNodeColor(node.data.name, "red");
-                }
             }
 
             return updatedLogoContent;  // Return the new state
@@ -355,15 +344,18 @@ const Results = () => {
 
     };
 
+    /* 
+        Add a node's descendants to the comparison
+        node: a node object 
+    */
     const pushNodeToEntropyLogo = (node) => {
         setLogoContent(prevLogoContent => {
             const updatedLogoContent = { ...prevLogoContent };
 
-            // Add or remove node from logoContent
-            var descendants = selectAllDescendants(node, false, true);
+            var descendants = selectAllDescendants(node, true, false);
             var desc_fa = "";
             for (var desc of descendants) {
-                desc_fa += `>${desc.data.name}\n${faData[desc.data.name]}\n`;
+                desc_fa += `>${desc.data.name}\n${leafData[desc.data.name]}\n`; // Concat fasta of descendants
             }
             if (desc_fa === "") {
                 console.log("No descendants found for node:", node.data.name);
@@ -382,6 +374,11 @@ const Results = () => {
         });
     };
 
+    /* 
+        Set the color of a node in the tree
+        nodeId: the name of the node
+        color: the color to set the node to, or null to remove the color
+    */
     const setNodeColor = (nodeId, color = null) => {
         d3.selectAll('.internal-node')
             .each(function () {
@@ -407,7 +404,10 @@ const Results = () => {
                 }
             });
     };
-
+    
+    /* 
+        Handles rednering of the right panel based on state of logoContent
+    */
     useEffect(() => {
         if (Object.keys(logoContent).length == 0) {
             setIsLeftCollapsed(false);
@@ -418,10 +418,17 @@ const Results = () => {
         }
     }, [logoContent]);
 
+    /*
+        Callback for clicking on a column in the sequence logo
+    */
     const handleColumnClick = (index) => {
         setSelectedResidue(index + 1);
     };
 
+    /*
+        Calculates the entropy of the selected node's descendants and applies the color to the tree
+        nodeId: the name of the node
+    */
     const applyEntropyStructColor = (nodeId) => {
         d3.selectAll('.internal-node')
             .each(function () {
@@ -432,12 +439,16 @@ const Results = () => {
                     for (var desc of descendants) {
                         desc_fa += `>${desc.data.name}\n${faData[desc.data.name]}\n`;
                     }
-                    // Calculates entropies, maps to colors and sets the colorArr state
                     calcEntropyFromMSA(desc_fa).then((entropy) => mapEntropyToColors(entropy)).then((colors) => { setColorArr(colors) });
                 }
             });
     }
 
+    /*
+        Applies the color to the tree for the selected residues
+        residueList: a list of residue indices
+        nodeFasta: the fasta sequence of the node - used to determine the length of the color array
+    */
     const applyImportantStructColor = (residueList, nodeFasta) => {
         var fa = nodeFasta.split('\n').slice(1).join('\n');
         var importantColors = Array(fa.length).fill(0x00FF00);
@@ -449,6 +460,9 @@ const Results = () => {
         setColorArr(importantColors);
     }
 
+    /*
+        Clears the right panel and resets view
+    */
     const clearRightPanel = () => {
         setPipVisible(false);
         setSelectedResidue(null);
@@ -467,10 +481,18 @@ const Results = () => {
         treeRef.current.style.width = '100%';
     }
 
+    /*
+        Callback for hovering over a column in the sequence logo
+        Currently not in use due to performance issues
+    */
     const handleColumnHover = (index) => {
         setHoveredResidue(index + 1);
     };
 
+    /*
+        Removes a node from the logo stack, and thus the comparison
+        index: the index of the node in the logo stack
+    */
     const handleNodeRemove = (index) => {
         // Remove node from logoContent
         const newLogoContent = { ...logoContent };
@@ -495,20 +517,10 @@ const Results = () => {
             });
     }
 
-    const selectNode = (nodeId) => {
-        if (nodeId in logoContent) { // If already selected, do nothing
-            return;
-        }
-        d3.selectAll('.internal-node')
-            .each(function () {
-                var node = d3.select(this).data()[0];
-                if (node.data.name === nodeId) {
-                    node['compare-node'] = true;
-                    pushNodeToLogo(node);
-                }
-            });
-    }
-
+    /* 
+        Sets the preset view for an important node
+        nodeId: the name of the node
+    */
     const setImportantView = (nodeId) => {
         d3.selectAll('.internal-node')
             .each(function () {
@@ -529,122 +541,9 @@ const Results = () => {
             });
     }
 
-    const toggleLeftCollapse = () => {
-        setIsLeftCollapsed(!isLeftCollapsed);
-    };
-
-    const toggleRightCollapse = () => {
-        console.log("Toggling right collapse");
-        setIsRightCollapsed(!isRightCollapsed);
-        isRightCollapsed ? setPipVisible(true) : setPipVisible(false);
-    };
-
-    const handleDownload = (filename, content, fasta = false) => {
-        // If content is an object, stringify it; otherwise, use the content as it is
-        var fileContent;
-        if (fasta) {
-            fileContent = jsonToFasta(content);
-        } else {
-            fileContent = typeof content === 'object' ? JSON.stringify(content, null, 2) : content;
-        }
-
-        // Create a Blob and download the file
-        const element = document.createElement("a");
-        const file = new Blob([fileContent], { type: 'text/plain' });
-        element.href = URL.createObjectURL(file);
-        element.download = filename;
-        document.body.appendChild(element); // Required for this to work in FireFox
-        element.click();
-        document.body.removeChild(element);
-    };
-
-
-    const downloadsDropdown = () => {
-        const handleSidebarDownloadsClick = () => {
-            const dropdownContent = document.querySelector('.downloads-dropdown-content');
-            const btn = document.querySelector('.dropbtn-downloads');
-
-            btn.classList.contains('selected') ? btn.classList.remove('selected') : btn.classList.add('selected');
-
-            if (dropdownContent.classList.contains('visible')) {
-                dropdownContent.classList.remove('visible');
-                if (!document.querySelector('.nodes-dropdown-content').classList.contains('visible')) {
-                    setSidebarExpanded(false);
-                }
-            } else {
-                dropdownContent.classList.add('visible');
-                setSidebarExpanded(true);
-            }
-        };
-
-        return (
-            <div className="dropdown" onClick={handleSidebarDownloadsClick}>
-                <button className="dropbtn-downloads dropbtn" >
-                    <svg width="25px" height="25px" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <title>Result files</title>
-                        <path d="M13.5 3H12H7C5.89543 3 5 3.89543 5 5V19C5 20.1046 5.89543 21 7 21H7.5M13.5 3L19 8.625M13.5 3V7.625C13.5 8.17728 13.9477 8.625 14.5 8.625H19M19 8.625V9.75V12V19C19 20.1046 18.1046 21 17 21H16.5" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                        <path d="M12 12V20M12 20L9.5 17.5M12 20L14.5 17.5" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                </button>
-                {sidebarExpanded && <span className="sidebar-label">Downloads</span>}
-            </div>
-        );
-    };
-
-    const importantNodesDropdown = () => {
-        const handleSidebarNodesClick = () => {
-            const dropdownContent = document.querySelector('.nodes-dropdown-content');
-            const btn = document.querySelector('.dropbtn-nodes');
-
-            // Highlight the button when selected
-            btn.classList.contains('selected') ? btn.classList.remove('selected') : btn.classList.add('selected');
-
-            if (dropdownContent.classList.contains('visible')) {
-                dropdownContent.classList.remove('visible');
-                if (!document.querySelector('.downloads-dropdown-content').classList.contains('visible')) {
-                    setSidebarExpanded(false);
-                }
-            } else {
-                dropdownContent.classList.add('visible');
-                setSidebarExpanded(true);
-            }
-        };
-
-        return (
-            <div className="dropdown" onClick={handleSidebarNodesClick}>
-                <button className="dropbtn-nodes dropbtn">
-                    <svg fill="#FFFFFF" width="25px" height="25px" xmlns="http://www.w3.org/2000/svg">
-                        <title>Candidate nodes for clade delineation</title>
-                        <path d="M20,9H16a1,1,0,0,0-1,1v1H7V7H8A1,1,0,0,0,9,6V2A1,1,0,0,0,8,1H4A1,1,0,0,0,3,2V6A1,1,0,0,0,4,7H5V20a1,1,0,0,0,1,1h9v1a1,1,0,0,0,1,1h4a1,1,0,0,0,1-1V18a1,1,0,0,0-1-1H16a1,1,0,0,0-1,1v1H7V13h8v1a1,1,0,0,0,1,1h4a1,1,0,0,0,1-1V10A1,1,0,0,0,20,9ZM5,3H7V5H5ZM17,19h2v2H17Zm2-6H17V11h2Z" />
-                    </svg>
-                </button>
-                {sidebarExpanded && <span className="sidebar-label">Key Nodes</span>}
-            </div>
-        );
-    };
-
-    const zoomToElem = () => {
-        const handleSidebarSearchClick = () => {
-            if (document.querySelector('.downloads-dropdown-content').classList.contains('visible')
-                || document.querySelector('.nodes-dropdown-content').classList.contains('visible')) {
-                setSidebarExpanded(true);
-            } else {
-                setSidebarExpanded(!sidebarExpanded);
-            }
-        };
-
-        return (
-            <div>
-                <button className="dropbtn-search dropbtn" onClick={handleSidebarSearchClick}>
-                    <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <title>Search for nodes in the tree</title>
-                        <path d="M11 6C13.7614 6 16 8.23858 16 11M16.6588 16.6549L21 21M19 11C19 15.4183 15.4183 19 11 19C6.58172 19 3 15.4183 3 11C3 6.58172 6.58172 3 11 3C15.4183 3 19 6.58172 19 11Z" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                </button>
-            </div>
-        );
-    };
-
+    /*
+        Search function to find and pan to a node
+    */
     const findAndZoom = (query) => {
         const svg = d3.select("#tree_container").select("svg");
         const zoom = d3.zoom().on("zoom", (event) => {
@@ -730,8 +629,138 @@ const Results = () => {
             });
 
         if (!targetNode) {
+            // TODO: Provide feedback if node is not found
             console.log("Failed to find and zoom to node:", query);
         }
+    };
+
+    /*
+        Handle for collapsing the left panel
+    */
+    const toggleLeftCollapse = () => {
+        setIsLeftCollapsed(!isLeftCollapsed);
+    };
+
+    /*
+        Handle for collapsing the right panel
+    */
+    const toggleRightCollapse = () => {
+        setIsRightCollapsed(!isRightCollapsed);
+        isRightCollapsed ? setPipVisible(true) : setPipVisible(false);
+    };
+
+    const handleDownload = (filename, content, fasta = false) => {
+        // If content is an object, stringify it; otherwise, use the content as it is
+        var fileContent;
+        if (fasta) {
+            fileContent = jsonToFasta(content);
+        } else {
+            fileContent = typeof content === 'object' ? JSON.stringify(content, null, 2) : content;
+        }
+
+        // Create a Blob and download the file
+        const element = document.createElement("a");
+        const file = new Blob([fileContent], { type: 'text/plain' });
+        element.href = URL.createObjectURL(file);
+        element.download = filename;
+        document.body.appendChild(element); // Required for this to work in FireFox
+        element.click();
+        document.body.removeChild(element);
+    };
+
+    /*
+        Handles rendering of the downloads dropdown
+    */
+    const downloadsDropdown = () => {
+        const handleSidebarDownloadsClick = () => {
+            const dropdownContent = document.querySelector('.downloads-dropdown-content');
+            const btn = document.querySelector('.dropbtn-downloads');
+
+            btn.classList.contains('selected') ? btn.classList.remove('selected') : btn.classList.add('selected');
+
+            if (dropdownContent.classList.contains('visible')) {
+                dropdownContent.classList.remove('visible');
+                if (!document.querySelector('.nodes-dropdown-content').classList.contains('visible')) {
+                    setSidebarExpanded(false);
+                }
+            } else {
+                dropdownContent.classList.add('visible');
+                setSidebarExpanded(true);
+            }
+        };
+
+        return (
+            <div className="dropdown" onClick={handleSidebarDownloadsClick}>
+                <button className="dropbtn-downloads dropbtn" >
+                    <svg width="25px" height="25px" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <title>Result files</title>
+                        <path d="M13.5 3H12H7C5.89543 3 5 3.89543 5 5V19C5 20.1046 5.89543 21 7 21H7.5M13.5 3L19 8.625M13.5 3V7.625C13.5 8.17728 13.9477 8.625 14.5 8.625H19M19 8.625V9.75V12V19C19 20.1046 18.1046 21 17 21H16.5" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M12 12V20M12 20L9.5 17.5M12 20L14.5 17.5" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                </button>
+                {sidebarExpanded && <span className="sidebar-label">Downloads</span>}
+            </div>
+        );
+    };
+
+    /*
+        Handles rendering of the important nodes dropdown
+    */
+    const importantNodesDropdown = () => {
+        const handleSidebarNodesClick = () => {
+            const dropdownContent = document.querySelector('.nodes-dropdown-content');
+            const btn = document.querySelector('.dropbtn-nodes');
+
+            // Highlight the button when selected
+            btn.classList.contains('selected') ? btn.classList.remove('selected') : btn.classList.add('selected');
+
+            if (dropdownContent.classList.contains('visible')) {
+                dropdownContent.classList.remove('visible');
+                if (!document.querySelector('.downloads-dropdown-content').classList.contains('visible')) {
+                    setSidebarExpanded(false);
+                }
+            } else {
+                dropdownContent.classList.add('visible');
+                setSidebarExpanded(true);
+            }
+        };
+
+        return (
+            <div className="dropdown" onClick={handleSidebarNodesClick}>
+                <button className="dropbtn-nodes dropbtn">
+                    <svg fill="#FFFFFF" width="25px" height="25px" xmlns="http://www.w3.org/2000/svg">
+                        <title>Candidate nodes for clade delineation</title>
+                        <path d="M20,9H16a1,1,0,0,0-1,1v1H7V7H8A1,1,0,0,0,9,6V2A1,1,0,0,0,8,1H4A1,1,0,0,0,3,2V6A1,1,0,0,0,4,7H5V20a1,1,0,0,0,1,1h9v1a1,1,0,0,0,1,1h4a1,1,0,0,0,1-1V18a1,1,0,0,0-1-1H16a1,1,0,0,0-1,1v1H7V13h8v1a1,1,0,0,0,1,1h4a1,1,0,0,0,1-1V10A1,1,0,0,0,20,9ZM5,3H7V5H5ZM17,19h2v2H17Zm2-6H17V11h2Z" />
+                    </svg>
+                </button>
+                {sidebarExpanded && <span className="sidebar-label">Key Nodes</span>}
+            </div>
+        );
+    };
+
+    /*
+        Handles rendering of the search button
+    */
+    const zoomToElem = () => {
+        const handleSidebarSearchClick = () => {
+            if (document.querySelector('.downloads-dropdown-content').classList.contains('visible')
+                || document.querySelector('.nodes-dropdown-content').classList.contains('visible')) {
+                setSidebarExpanded(true);
+            } else {
+                setSidebarExpanded(!sidebarExpanded);
+            }
+        };
+
+        return (
+            <div>
+                <button className="dropbtn-search dropbtn" onClick={handleSidebarSearchClick}>
+                    <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <title>Search for nodes in the tree</title>
+                        <path d="M11 6C13.7614 6 16 8.23858 16 11M16.6588 16.6549L21 21M19 11C19 15.4183 15.4183 19 11 19C6.58172 19 3 15.4183 3 11C3 6.58172 6.58172 3 11 3C15.4183 3 19 6.58172 19 11Z" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                </button>
+            </div>
+        );
     };
 
     const downloadTreeAsSVG = () => {
@@ -745,7 +774,7 @@ const Results = () => {
         const serializer = new XMLSerializer();
         let source = serializer.serializeToString(svgElement);
 
-        // Manually styling the SVG content. TODO: Maybe grab the styles from the CSS file?
+        // Manually styling the SVG content.
         const styleString = `
             <style>
                 .branch {
@@ -763,12 +792,9 @@ const Results = () => {
                 }
             </style>`;
 
-        // Ensure that we are not redefining the xmlns attribute
         if (!source.includes('xmlns="http://www.w3.org/2000/svg"')) {
             source = source.replace('<svg', `<svg xmlns="http://www.w3.org/2000/svg"`);
         }
-
-        // Insert the style string into the SVG just before the closing tag
         source = source.replace('</svg>', `${styleString}</svg>`);
 
         // Create a Blob and trigger the download
@@ -989,7 +1015,7 @@ const Results = () => {
                                 </div>
                             )}
 
-<div style={{ display: "flex", height: "100%", flexGrow: "1", flexDirection: isLeftCollapsed ? "column" : "row" }}>
+                            <div style={{ display: "flex", height: "100%", flexGrow: "1", flexDirection: isLeftCollapsed ? "column" : "row" }}>
                                 <div style={{ display: "flex", flexDirection: isLeftCollapsed ? "row" : "column", justifyContent: "space-between", alignItems: "center" }}>
                                     {isLeftCollapsed ? (
                                         <svg width="100%" height="20" viewBox="0 0 200 20" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">

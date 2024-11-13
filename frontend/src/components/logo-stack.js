@@ -150,8 +150,15 @@ const LogoStack = React.forwardRef(
 
         useImperativeHandle(ref, () => ({
             scrollToIndex: (index) => {
+                var firstFa = fastaContent[Object.keys(fastaContent)[0]];
+                // Remove first line of fasta string
+                firstFa = firstFa.substring(firstFa.indexOf('\n') + 1);
+
+                console.log(firstFa.length);
+
+                var rectSize = firstFa.length > 999 ? 20.43 : 21.5;
                 backScrollers.current.forEach((scroller) => {
-                    scroller.scroller.__publish(index * 20.4, 1, 1, true);
+                    scroller.scroller.__publish(index * rectSize, 1, 1, true);
                 });
             },
             appendLogo: (key, path) => {

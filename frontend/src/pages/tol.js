@@ -24,6 +24,7 @@ const Tol = () => {
     const [structData, setStructData] = useState(null); // Structure data
     const [nodeData, setnodeData] = useState(null);
     const [topNodes, setTopNodes] = useState({}); // Top 10 nodes for the tree
+    const [leafData, setLeafData] = useState({});
 
     // State to store the logo content (formatted for logoJS) and color file
     const [logoContent, setLogoContent] = useState({});
@@ -84,6 +85,8 @@ const Tol = () => {
                 parseNodeData(json.slice(0, 10)).then((parsedData) => setTopNodes(parsedData));
                 parseNodeData(json).then((parsedData) => setnodeData(parsedData));
             });
+
+        readFastaToDict(`${process.env.PUBLIC_URL}/example_2/Visualization/seq_trimmed.afa`).then(data => { setLeafData(data) });
 
         // fetch(`${process.env.PUBLIC_URL}/example_2/Visualization/seq.pdb`)
         //     .then(response => response.text())
@@ -306,12 +309,11 @@ const Tol = () => {
     const pushNodeToEntropyLogo = (node) => {
         setLogoContent(prevLogoContent => {
             const updatedLogoContent = { ...prevLogoContent };
-
-            // Add or remove node from logoContent
-            var descendants = selectAllDescendants(node, false, true);
+            
+            var descendants = selectAllDescendants(node, true, false);
             var desc_fa = "";
             for (var desc of descendants) {
-                desc_fa += `>${desc.data.name}\n${faData[desc.data.name]}\n`;
+                desc_fa += `>${desc.data.name}\n${leafData[desc.data.name]}\n`;
             }
             if (desc_fa === "") {
                 console.log("No descendants found for node:", node.data.name);
