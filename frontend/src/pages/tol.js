@@ -891,7 +891,8 @@ const Tol = () => {
                             <div style={{ display: "flex", height: "100%", flexGrow: "1", flexDirection: isLeftCollapsed ? "column" : "row" }}>
                                 <div style={{ display: "flex", flexDirection: isLeftCollapsed ? "row" : "column", justifyContent: "space-between", alignItems: "center" }}>
                                     {isLeftCollapsed ? (
-                                        <svg width="100%" height="20" viewBox="0 0 200 20" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+                                        <svg width="100%" height="20" viewBox="0 0 200 20" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">                                            <title>Entropy Scale</title>
+                                            <title>Entropy Scale</title>
                                             <rect width="20" height="20" fill="#0000ff" x="0" />
                                             <rect width="20" height="20" fill="#0056a9" x="20" />
                                             <rect width="20" height="20" fill="#00ac53" x="40" />
@@ -912,6 +913,7 @@ const Tol = () => {
                                         </svg>
                                     ) : (
                                         <svg width="20" height="100%" preserveAspectRatio='none' viewBox="0 0 20 200" xmlns="http://www.w3.org/2000/svg">
+                                            <title>Entropy Scale</title>
                                             <rect width="20" height="20" fill="#0000ff" y="180" />
                                             <rect width="20" height="20" fill="#0056a9" y="160" />
                                             <rect width="20" height="20" fill="#00ac53" y="140" />

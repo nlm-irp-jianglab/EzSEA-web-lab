@@ -184,7 +184,13 @@ const LogoStack = React.forwardRef(
                                         }
                                         {importantResiduesList[key] && importantResiduesList[key].differing_residues.length > 0 && // If important residues are provided, show color button
                                             <button className="logo-color-btn" style={styles.colorBtn} onClick={() => applyImportantStructColor(importantResiduesList[key].differing_residues, fastaContent[key])}>
-                                                <svg width="25px" height="25px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M6.5 4l5.5 6 5.5-6zm2.273 1h6.454L12 8.52zM23 20v-8H1v8zM2 19v-6h20v6z"/><path opacity=".5" d="M8 13h8v6H8z"/><path opacity=".25" d="M8 19H2v-6h6z"/><path opacity=".75" d="M22 19h-6v-6h6z"/><path fill="none" d="M0 0h24v24H0z"/></svg>
+                                                <svg width="25px" height="25px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                    <title>Color Important Residues</title>
+                                                    <path d="M6.5 4l5.5 6 5.5-6zm2.273 1h6.454L12 8.52zM23 20v-8H1v8zM2 19v-6h20v6z" />
+                                                    <path opacity=".5" d="M8 13h8v6H8z" /><path opacity=".25" d="M8 19H2v-6h6z" />
+                                                    <path opacity=".75" d="M22 19h-6v-6h6z" />
+                                                    <path fill="none" d="M0 0h24v24H0z" />
+                                                </svg>
                                             </button>
                                         }
                                         <button className="logo-download-btn" style={styles.downloadBtn} onClick={() => downloadLogoSVG(index, 'seqlogo_' + key + '.svg')}>
