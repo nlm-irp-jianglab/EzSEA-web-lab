@@ -443,7 +443,7 @@ const Results = () => {
         var importantColors = Array(fa.length).fill(0x00FF00);
 
         for (var res of residueList) {
-            importantColors[res - 1] = 0xFF0000;
+            importantColors[res] = 0xFF0000;
         }
 
         setColorArr(importantColors);
