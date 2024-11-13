@@ -151,7 +151,7 @@ const LogoStack = React.forwardRef(
         useImperativeHandle(ref, () => ({
             scrollToIndex: (index) => {
                 backScrollers.current.forEach((scroller) => {
-                    scroller.scroller.__publish(index * 21.5, 1, 1, true);
+                    scroller.scroller.__publish(index * 21, 1, 1, true);
                 });
             },
             appendLogo: (key, path) => {
