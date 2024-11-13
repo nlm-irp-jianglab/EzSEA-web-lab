@@ -423,7 +423,6 @@ const Results = () => {
     };
 
     const applyStructColor = (nodeId) => {
-        // Grabbing node data from tree, note will not work if tree is not rendered
         d3.selectAll('.internal-node')
             .each(function () {
                 var node = d3.select(this).data()[0];
@@ -437,6 +436,17 @@ const Results = () => {
                     calcEntropyFromMSA(desc_fa).then((entropy) => mapEntropyToColors(entropy)).then((colors) => { setColorArr(colors) });
                 }
             });
+    }
+
+    const applyImportantStructColor = (residueList, nodeFasta) => {
+        var fa = nodeFasta.split('\n').slice(1).join('\n');
+        var importantColors = Array(fa.length).fill(0x00FF00);
+
+        for (var res of residueList) {
+            importantColors[res - 1] = 0xFF0000;
+        }
+
+        setColorArr(importantColors);
     }
 
     const clearRightPanel = () => {
@@ -949,7 +959,8 @@ const Results = () => {
                                         onColumnHover={handleColumnHover}
                                         importantResiduesList={nodeData}
                                         removeNodeHandle={handleNodeRemove}
-                                        applyStructColor={applyStructColor}
+                                        applyEntropyStructColor={applyEntropyStructColor}
+                                        applyImportantStructColor={applyImportantStructColor}
                                         ref={logoStackRef}
                                     />
                                 </div>
@@ -970,21 +981,69 @@ const Results = () => {
                                             onColumnHover={handleColumnHover}
                                             importantResiduesList={nodeData}
                                             removeNodeHandle={handleNodeRemove}
-                                            applyStructColor={applyStructColor}
+                                            applyEntropyStructColor={applyEntropyStructColor}
+                                            applyImportantStructColor={applyImportantStructColor}
                                             ref={logoStackRef}
                                         />
                                     </div>
                                 </div>
                             )}
 
-                            <div className="pvdiv" ref={pvdiv} style={{ width: isLeftCollapsed ? '50%' : '100%', height: '100%' }}>
-                                <MolstarViewer
-                                    structData={structData}
-                                    selectedResidue={selectedResidue}
-                                    colorFile={colorArr}
-                                    hoveredResidue={hoveredResidue}
-                                    scrollLogosTo={(index) => logoStackRef.current.scrollToIndex(index)}
-                                />
+<div style={{ display: "flex", height: "100%", flexGrow: "1", flexDirection: isLeftCollapsed ? "column" : "row" }}>
+                                <div style={{ display: "flex", flexDirection: isLeftCollapsed ? "row" : "column", justifyContent: "space-between", alignItems: "center" }}>
+                                    {isLeftCollapsed ? (
+                                        <svg width="100%" height="20" viewBox="0 0 200 20" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+                                            <rect width="20" height="20" fill="#0000ff" x="0" />
+                                            <rect width="20" height="20" fill="#0056a9" x="20" />
+                                            <rect width="20" height="20" fill="#00ac53" x="40" />
+                                            <rect width="20" height="20" fill="#02ff00" x="60" />
+                                            <rect width="20" height="20" fill="#58ff00" x="80" />
+                                            <rect width="20" height="20" fill="#aeff00" x="100" />
+                                            <rect width="20" height="20" fill="#fffa00" x="120" />
+                                            <rect width="20" height="20" fill="#ffa700" x="140" />
+                                            <rect width="20" height="20" fill="#ff5400" x="160" />
+                                            <rect width="20" height="20" fill="#ff0000" x="180" />
+                                            <line x1="0" y1="10" x2="190" y2="10" stroke="black" stroke-width="2" marker-end="url(#arrowhead)" />
+
+                                            <defs>
+                                                <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="5" refY="3.5" orient="auto">
+                                                    <polygon points="0 0, 10 3.5, 0 7" fill="black" />
+                                                </marker>
+                                            </defs>
+                                        </svg>
+                                    ) : (
+                                        <svg width="20" height="100%" preserveAspectRatio='none' viewBox="0 0 20 200" xmlns="http://www.w3.org/2000/svg">
+                                            <rect width="20" height="20" fill="#0000ff" y="180" />
+                                            <rect width="20" height="20" fill="#0056a9" y="160" />
+                                            <rect width="20" height="20" fill="#00ac53" y="140" />
+                                            <rect width="20" height="20" fill="#02ff00" y="120" />
+                                            <rect width="20" height="20" fill="#58ff00" y="100" />
+                                            <rect width="20" height="20" fill="#aeff00" y="80" />
+                                            <rect width="20" height="20" fill="#fffa00" y="60" />
+                                            <rect width="20" height="20" fill="#ffa700" y="40" />
+                                            <rect width="20" height="20" fill="#ff5400" y="20" />
+                                            <rect width="20" height="20" fill="#ff0000" y="0" />
+                                            <line x1="10" y1="200" x2="10" y2="10" stroke="black" stroke-width="2" marker-end="url(#arrowhead)" />
+
+                                            <defs>
+                                                <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="5" refY="3.5" orient="auto">
+                                                    <polygon points="0 0, 10 3.5, 0 7" fill="black" />
+                                                </marker>
+                                            </defs>
+                                        </svg>
+                                    )}
+
+                                </div>
+                                
+                                <div className="pvdiv" ref={pvdiv} style={{ height: '100%', flexGrow: "1" }}>
+                                    <MolstarViewer
+                                        structData={structData}
+                                        selectedResidue={selectedResidue}
+                                        colorFile={colorArr}
+                                        hoveredResidue={hoveredResidue}
+                                        scrollLogosTo={(index) => logoStackRef.current.scrollToIndex(index)}
+                                    />
+                                </div>
                             </div>
                         </div>
                     )}

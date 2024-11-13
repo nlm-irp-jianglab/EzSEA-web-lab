@@ -10,7 +10,7 @@ const LogoStack = React.forwardRef(
         onColumnClick (optional): A function to handle click events on the logo
         onColumnHover (optional): A function to handle hover events on the logo
     */
-    ({ data, onColumnClick, onColumnHover, importantResiduesList, removeNodeHandle, applyStructColor }, ref) => {
+    ({ data, onColumnClick, onColumnHover, importantResiduesList, removeNodeHandle, applyEntropyStructColor, applyImportantStructColor }, ref) => {
         const [fastaContent, setFastaContent] = useState({});
         const [refsUpdated, setRefsUpdated] = useState(0);
         const logoRefs = useRef([]);
@@ -175,12 +175,17 @@ const LogoStack = React.forwardRef(
                                     <p style={{ paddingLeft: "30px" }}><b>{key}</b></p>
                                     <span style={{ paddingRight: "30px" }}>
                                         {fastaContent[key].substring(1).indexOf('>') > 0 && // If provided seq has more than one seq, must be comparing descendants. Shows color button
-                                            (<button className="logo-color-btn" style={styles.colorBtn} onClick={() => applyStructColor(key.substring(15))}>
+                                            (<button className="logo-color-btn" style={styles.colorBtn} onClick={() => applyEntropyStructColor(key.substring(15))}>
                                                 <svg fill="#000000" width="23px" height="25px" viewBox="0 0 1920 1920" xmlns="http://www.w3.org/2000/svg">
                                                     <title>Color Entropy</title>
                                                     <path d="M392.26 1042.5c137.747-57.67 292.85-15.269 425.873 116.217l4.394 4.833c116.656 146.425 149.5 279.119 97.873 394.237-128.85 287.138-740.692 328.77-810.005 332.504L0 1896.442l61.953-91.83c.989-1.539 105.013-158.728 105.013-427.192 0-141.811 92.6-279.558 225.294-334.92ZM1728.701 23.052c54.923-1.099 99.96 15.268 135.111 49.43 40.643 40.644 58.109 87.877 56.021 140.603C1908.85 474.52 1423.33 953.447 1053.15 1280.79c-24.276-64.81-63.711-136.21-125.335-213.102l-8.787-9.886c-80.078-80.187-169.163-135.11-262.423-161.473C955.276 558.002 1460.677 33.927 1728.701 23.052Z" fillRule="evenodd" />
                                                 </svg>
                                             </button>)
+                                        }
+                                        {importantResiduesList[key] && importantResiduesList[key].differing_residues.length > 0 && // If important residues are provided, show color button
+                                            <button className="logo-color-btn" style={styles.colorBtn} onClick={() => applyImportantStructColor(importantResiduesList[key].differing_residues, fastaContent[key])}>
+                                                <svg width="25px" height="25px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M6.5 4l5.5 6 5.5-6zm2.273 1h6.454L12 8.52zM23 20v-8H1v8zM2 19v-6h20v6z"/><path opacity=".5" d="M8 13h8v6H8z"/><path opacity=".25" d="M8 19H2v-6h6z"/><path opacity=".75" d="M22 19h-6v-6h6z"/><path fill="none" d="M0 0h24v24H0z"/></svg>
+                                            </button>
                                         }
                                         <button className="logo-download-btn" style={styles.downloadBtn} onClick={() => downloadLogoSVG(index, 'seqlogo_' + key + '.svg')}>
                                             <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

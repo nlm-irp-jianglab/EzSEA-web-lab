@@ -11,18 +11,6 @@ import { Color } from 'molstar/lib/mol-util/color';
 import { ViewportControls } from 'molstar/lib/mol-plugin-ui/viewport';
 import "molstar/lib/mol-plugin-ui/skin/dark.scss";
 
-const colorArr = [ // Color gradient for adding color to residues
-  0x5A72DB,
-  0x6B6AC6,
-  0x7B61B0,
-  0x8C599B,
-  0x9D5185,
-  0xAD4870,
-  0xBE405A,
-  0xCE3745,
-  0xDF2F2F,
-]
-
 export function MolStarWrapper({ structData, selectedResidue, hoveredResidue, colorFile, scrollLogosTo }) {
   const parent = createRef();
   const [isStructureLoaded, setIsStructureLoaded] = useState(false);
@@ -65,14 +53,14 @@ export function MolStarWrapper({ structData, selectedResidue, hoveredResidue, co
 
       // Loading the default pdb file
 
-      // if (structData == null) {
-      //   await fetch(`${process.env.PUBLIC_URL}/example_2/Visualization/seq.pdb`)
-      //     .then((response) => response.text())
-      //     .then((text) => {
-      //       structData = text;
-      //     })
-      //     .catch((error) => console.error("Error fetching struct data:", error));
-      // }
+      if (structData == null) {
+        await fetch(`${process.env.PUBLIC_URL}/example_2/Visualization/seq.pdb`)
+          .then((response) => response.text())
+          .then((text) => {
+            structData = text;
+          })
+          .catch((error) => console.error("Error fetching struct data:", error));
+      }
 
       const myData = await window.molstar.builders.data.rawData({
         data: structData, /* string or number[] */
