@@ -422,7 +422,7 @@ const Results = () => {
         setSelectedResidue(index + 1);
     };
 
-    const applyStructColor = (nodeId) => {
+    const applyEntropyStructColor = (nodeId) => {
         d3.selectAll('.internal-node')
             .each(function () {
                 var node = d3.select(this).data()[0];
@@ -1034,7 +1034,7 @@ const Results = () => {
                                     )}
 
                                 </div>
-                                
+
                                 <div className="pvdiv" ref={pvdiv} style={{ height: '100%', flexGrow: "1" }}>
                                     <MolstarViewer
                                         structData={structData}
