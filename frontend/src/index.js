@@ -2,8 +2,7 @@ import React, { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./styles.css";
 
-import Home from "./pages/home";
-import PV from "./pages/pv";
+import About from "./pages/about";
 import Tol from "./pages/tol";
 import Playground from "./pages/playground";
 import NotFoundPage from "./pages/notfoundpage";
@@ -39,10 +38,6 @@ root.render(
                         element={<Submit />}
                     />
                     <Route
-                        path="/pv"
-                        element={<PV />}
-                    />
-                    <Route
                         path="/results/:jobId"
                         element={<Results />}
                     />
@@ -61,6 +56,11 @@ root.render(
                     <Route
                         exact path="/playground"
                         element={<Playground />}
+                    />
+                    <Route
+                        exact
+                        path="/about"
+                        element={<About />}
                     />
                     <Route
                         path="*"

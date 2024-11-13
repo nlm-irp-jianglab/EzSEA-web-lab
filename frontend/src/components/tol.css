@@ -125,7 +125,7 @@
     text-align: left;
     cursor: pointer;
     transition: transform 0.2s ease, box-shadow 0.2s ease; 
-    font-size: 14px; /* Adjust font size */
+    font-size: 12px; 
     border-radius: 5px; /* Slightly round corners for a softer look */
 }
 
