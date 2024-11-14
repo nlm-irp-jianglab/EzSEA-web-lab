@@ -45,6 +45,12 @@ app.post("/submit", (req, res) => {
         "spec": {
             "backoffLimit": 0,
             "template": {
+                "metadata": {
+                    "labels": {
+                        "id": data.job_id,
+                        "type": "run"
+                    }
+                },
                 "spec": {
                     "containers": [{
                         "name": "ezsea",
@@ -100,6 +106,12 @@ app.post("/submit", (req, res) => {
         "spec": {
             "backoffLimit": 0,
             "template": {
+                "metadata": {
+                    "labels": {
+                        "id": data.job_id,
+                        "type": "structure"
+                    }
+                },
                 "spec": {
                     "containers": [{
                         "name": "ezsea",
