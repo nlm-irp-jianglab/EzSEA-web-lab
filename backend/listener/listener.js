@@ -288,25 +288,31 @@ app.get("/status/:id", (req, res) => {
     exec(`kubectl get pods -l id=${id},type=structure --no-headers -o custom-columns=":status.phase"`, (err, stdout, stderr) => {
         if (err) {
             logger.error("Error getting GKE logs:", err);
-            //return res.status(500).json({ error: "There was an error queuing your job. Please try again later." });
+            return res.status(500).json({ error: "There was an error queuing your job. Please try again later." });
+        } else {
+            const status = stdout.trim();
+            if (status === "Running" || status === "Completed" || status === "Error") {
+                fs.readFile(filePath, 'utf8', (err, data) => {
+                    if (err) {
+                        logger.error("Error reading file:", err);
+                        return res.status(500).json({ error: "There was an error reading the log file. Please ensure your job ID is correct." });
+                    }
+                    const logsArray = data.split('\n');
+                    var status = "Running";
+                    if (logsArray[logsArray.length - 2].includes("Done. Goodbye!")) {
+                        status = "Completed";
+                    } else if (logsArray[logsArray.length - 2].includes("Stopping with exit code 1.")) {
+                        status = "Error";
+                    }
+                    return res.status(200).json({ logs: logsArray, status: status });
+                });
+            } else { // Status = "Pending"
+                return res.status(200).json({ status: "Allocating resources for job" });
+            }
         }
-        console.log("GKE Output: ", stdout);
     });
 
-    fs.readFile(filePath, 'utf8', (err, data) => {
-        if (err) {
-            logger.error("Error reading file:", err);
-            return res.status(500).json({ error: "Allocating resources for job, this may take a few minutes." });
-        }
-        const logsArray = data.split('\n');
-        var status = "Running";
-        if (logsArray[logsArray.length - 2].includes("Done. Goodbye!")) {
-            status = "Completed";
-        } else if (logsArray[logsArray.length - 2].includes("Stopping with exit code 1.")) {
-            status = "Error";
-        }
-        return res.status(200).json({ logs: logsArray, status: status });
-    });
+
 });
 
 // Server listening on PORT 5000
