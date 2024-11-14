@@ -282,6 +282,9 @@ app.get("/status/:id", (req, res) => {
     const filePath = `/outputs/EzSEA_${id}/EzSEA.log`;
     logger.info("Serving status for job: " + id);
 
+    // Query kubectl pods for job status
+    // kubectl get pods -l id=xqqya4zm3hondnw,type=structure
+
     fs.readFile(filePath, 'utf8', (err, data) => {
         if (err) {
             logger.error("Error reading file:", err);
