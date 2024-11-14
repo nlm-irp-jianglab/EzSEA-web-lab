@@ -71,7 +71,7 @@ app.post("/submit", (req, res) => {
                             },
                             "limits": {
                                 "cpu": "8",
-                                "memory": "16Gi"
+                                "memory": "32Gi"
                             }
                         },
                         "volumeMounts": [{
