@@ -285,6 +285,14 @@ app.get("/status/:id", (req, res) => {
     // Query kubectl pods for job status
     // kubectl get pods -l id=xqqya4zm3hondnw,type=structure
 
+    exec(`kubectl logs -l id=${id},type=run`, (err, stdout, stderr) => {
+        if (err) {
+            logger.error("Error getting GKE logs:", err);
+            //return res.status(500).json({ error: "There was an error queuing your job. Please try again later." });
+        }
+        console.log(stdout);
+    });
+
     fs.readFile(filePath, 'utf8', (err, data) => {
         if (err) {
             logger.error("Error reading file:", err);
