@@ -291,7 +291,9 @@ app.get("/status/:id", (req, res) => {
             return res.status(500).json({ error: "There was an error queuing your job. Please try again later." });
         } else {
             const status = stdout.trim();
-            if (status === "Running" || status === "Completed" || status === "Error") {
+            if (status === "Pending") {
+                return res.status(200).json({ status: "Allocating resources for job, this may take a few minutes." });
+            } else {
                 fs.readFile(filePath, 'utf8', (err, data) => {
                     if (err) {
                         logger.error("Error reading file:", err);
@@ -306,8 +308,6 @@ app.get("/status/:id", (req, res) => {
                     }
                     return res.status(200).json({ logs: logsArray, status: status });
                 });
-            } else { // Status = "Pending"
-                return res.status(200).json({ status: "Allocating resources for job" });
             }
         }
     });
