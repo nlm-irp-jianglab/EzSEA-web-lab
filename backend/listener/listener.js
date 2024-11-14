@@ -159,42 +159,25 @@ app.post("/submit", (req, res) => {
             }
         }
     };
-
-    fs.writeFile('cpu-job-config.json', JSON.stringify(run_command, null, 2), (err) => {
-        if (err) {
-            console.error('Error writing Kubernetes job config to file', err);
-        } else {
-            console.log('Kubernetes cpu job configuration saved to cpu-job-config.json');
-        }
-    });
-
-    fs.writeFile('gpu-job-config.json', JSON.stringify(struct_command, null, 2), (err) => {
-        if (err) {
-            console.error('Error writing Kubernetes job config to file', err);
-        } else {
-            console.log('Kubernetes gpu job configuration saved to gpu-job-config.json');
-        }
-    });
-
+    
     logger.info("Queuing job: " + data.job_id);
 
-    exec("kubectl apply -f ./cpu-job-config.json", (err, stdout, stderr) => {
-        if (err) {
-            error = "There was a problem initializing your job, please try again later";
-            console.error(err); // Pino doesn't give new lines
-        } else {
-            logger.info("EzSEA run job started:" + data.job_id);
-        }
+    k8sApi.createNamespacedPod('default', run_command).then((res) => {  
+        console.log("Res of run job: ", res);
+        logger.info("EzSEA run job started:" + data.job_id);
+    }).catch((err) => {
+        error = "There was a problem initializing your job, please try again later";
+        console.error(err);
     });
 
-    exec("kubectl apply -f ./gpu-job-config.json", (err, stdout, stderr) => {
-        if (err) {
-            error = "There was a problem initializing your job, please try again later";
-            console.error(err); // Pino doesn't give new lines
-        } else {
-            logger.info("EzSEA structure job started:" + data.job_id);
-        }
+    k8sApi.createNamespacedPod('default', struct_command).then((res) => {  
+        console.log("Res of struct job: ", res);
+        logger.info("EzSEA structure job started:" + data.job_id);
+    }).catch((err) => {
+        error = "There was a problem initializing your job, please try again later";
+        console.error(err);
     });
+    
     setTimeout(function () {
         res.status(200).json({ body: "Job submitted successfully", error: error });
     }, 7000);
