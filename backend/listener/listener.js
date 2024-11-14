@@ -61,8 +61,8 @@ app.post("/submit", (req, res) => {
                             "--alignprogram", data.align_program,
                             "--threads", "4",
                             "--ec_table", "/database/database/ec_dict.pkl",
-                            "--lenweight", data.len_weight,
-                            "--conweight", data.con_weight,
+                            "--lenweight", String(data.len_weight),
+                            "--conweight", String(data.con_weight),
                         ],
                         "resources": {
                             "requests": {
@@ -273,7 +273,7 @@ app.get("/status/:id", (req, res) => {
     fs.readFile(filePath, 'utf8', (err, data) => {
         if (err) {
             logger.error("Error reading file:", err);
-            return res.status(500).json({ error: "Error reading log file. Log generation may take a while." });
+            return res.status(500).json({ error: "Allocating resources for job, this may take a few minutes." });
         }
         const logsArray = data.split('\n');
         var status = "Running";
