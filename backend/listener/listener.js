@@ -287,14 +287,14 @@ app.get("/status/:id", (req, res) => {
     const filePath = `/outputs/EzSEA_${id}/EzSEA.log`;
     logger.info("Serving status for job: " + id);
     try {
-        const podsRes = k8sApi.listNamespacedPod('default');
-        console.log(podsRes.body);
+        const podsRes = k8sApi.listNamespacedPod('default', undefined, undefined, undefined, undefined, `id=${id},type=run`, );
+        console.log("Status using API", podsRes.body);
     } catch (err) {
         console.error(err);
     }
 
     // Query kubectl pods for job status
-    exec(`kubectl get pods -l id=${id},type=structure --no-headers -o custom-columns=":status.phase"`, (err, stdout, stderr) => {
+    exec(`kubectl get pods -l id=${id},type=run --no-headers -o custom-columns=":status.phase"`, (err, stdout, stderr) => {
         if (err) {
             logger.error("Error getting GKE logs:", err);
             return res.status(500).json({ error: "There was an error queuing your job. Please try again later." });
