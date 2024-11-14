@@ -287,7 +287,7 @@ app.get("/status/:id", (req, res) => {
     const filePath = `/outputs/EzSEA_${id}/EzSEA.log`;
     logger.info("Serving status for job: " + id);
     try {
-        const podsRes = k8sApi.listNamespacedPod('default', undefined, undefined, undefined, undefined, `id=${id},type=run`).then((res) => {
+        const podsRes = k8sApi.listNamespacedPod('default').then((res) => {
             console.log("Status using API", res.body);
         });
     } catch (err) {
