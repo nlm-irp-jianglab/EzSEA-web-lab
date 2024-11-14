@@ -13,12 +13,13 @@ const Home = () => {
     const emailInput = useRef(null);
     const fastaInput = useRef(null);
 
-    const [selectedNumSeq, setSelectedNumSeq] = useState(1000);
-    const [selectedFoldingProgram, setSelectedFoldingProgram] = useState("colabfold");
-    const [selectedPhylogeneticProgram, setSelectedPhylogeneticProgram] = useState("FastTree");
-    const [selectedAncestralProgram, setSelectedAncestralProgram] = useState("GRASP");
-    const [selectedAlignmentProgram, setSelectedAlignmentProgram] = useState("muscle");
-    const [selectedDatabase, setSelectedDatabase] = useState("GTDB");
+    const [numSeq, setNumSeq] = useState(1000);
+    const [phylogeneticProgram, setPhylogeneticProgram] = useState("FastTree");
+    const [ancestralProgram, setAncestralProgram] = useState("GRASP");
+    const [alignmentProgram, setAlignmentProgram] = useState("muscle");
+    const [database, setDatabase] = useState("GTDB");
+    const [lenWeight, setLenWeight] = useState(50);
+    const [conWeight, setConWeight] = useState(.5);
 
     let navigate = useNavigate();
 
@@ -96,13 +97,14 @@ const Home = () => {
             "job_name": jobName,
             "job_id": id,
             "email": emailInput.current.value,
-            "sequence": fastaInput.current.value.trim(), //Trim whitespace, it can cause errors in pipeline
-            "folding_program": selectedFoldingProgram,
-            "tree_program": selectedPhylogeneticProgram,
-            "asr_program": selectedAncestralProgram,
-            "align_program": selectedAlignmentProgram,
-            "num_seq": selectedNumSeq,
-            "database": selectedDatabase
+            "sequence": fastaInput.current.value.trim(), //Trim whitespace, it can cause errors in pipeline=
+            "tree_program": phylogeneticProgram,
+            "asr_program": ancestralProgram,
+            "align_program": alignmentProgram,
+            "num_seq": numSeq,
+            "database": database,
+            "len_weight": lenWeight,
+            "con_weight": conWeight
         }
 
         // Send JSON to backend
@@ -261,7 +263,7 @@ const Home = () => {
                     <h1 style={{ fontSize: "2em", marginBottom: "0.5em" }}>EzSEA</h1>
                     <p>Enzyme Sequence Evolution Analysis is a tool that combines structure, phylogenetics, and ancestral state reconstruction to delineate an enzyme from its closest relatives and identify evolutionarily important residues.</p>
                     <div>
-                        <div> {/* This div is for text input and examples */}
+                        <div> 
                             <textarea placeholder="Sequence in FASTA format" className="data-input" ref={fastaInput} onChange={validateInput} style={{ height: "150px", width: "100%", resize: "vertical", minHeight: "100px" }}></textarea>
                             <div>
                                 <div style={{ display: "flex", marginTop: "0.3em", justifyContent: "space-between" }}>
@@ -277,7 +279,7 @@ const Home = () => {
                                     </span>
                                 </div>
                             </div>
-                        </div> {/* End div for text input and examples */}
+                        </div> 
                         <div style={{ display: "flex", marginTop: "1em", marginBottom: "1em", minHeight: "2pt", placeContent: "center" }}></div>
                         <div style={{ marginTop: "2em" }}>
                             <button type="button" className="bp3-button bp3-minimal" onClick={() => toggleSettingsDropdown()}>
@@ -299,17 +301,23 @@ const Home = () => {
                                 <span className="bp3-button-text">{isSettingsVisible ? "Hide advanced settings" : "Show advanced settings"}</span>
                             </button>
                             <div className="bp3-collapse">
-                                <div className="bp3-collapse-body" style={{ transform: isSettingsVisible ? "translateY(0px)" : "translateY(-557px)", height: isSettingsVisible ? "540px" : "0" }}>
+                                <div className="bp3-collapse-body" style={{ transform: isSettingsVisible ? "translateY(0px)" : "translateY(-557px)", height: isSettingsVisible ? "610px" : "0" }}>
 
                                     <div className="bp3-card bp3-elevation-0">
                                         <div>
-                                            <p>Number of Sequences:</p>
+                                            <p>Number of Sequences (100-1000):</p>
                                             <span>
                                                 <input
                                                     type="number"
                                                     className="bp3-input"
-                                                    value={selectedNumSeq}
-                                                    onChange={(e) => setSelectedNumSeq(Number(e.target.value))}
+                                                    value={numSeq}
+                                                    onChange={(e) => setNumSeq(Number(e.target.value))}
+                                                    onBlur={() => {
+                                                        // Clamp value to range on blur
+                                                        setNumSeq(prevValue => 
+                                                            prevValue < 100 ? 100 : prevValue > 1000 ? 1000 : prevValue
+                                                        );
+                                                    }}
                                                     min="100" 
                                                     max="1000" 
                                                     style={{
@@ -319,7 +327,7 @@ const Home = () => {
                                                         backgroundColor: '#eee',
                                                         color: 'black',
                                                         borderRadius: '4px',
-                                                        border: selectedNumSeq ? '2px solid #007bff' : '1px solid #ccc' // border changes color if a value is selected
+                                                        border: numSeq ? '2px solid #007bff' : '1px solid #ccc' 
                                                     }}
                                                 />
                                             </span>
@@ -327,28 +335,28 @@ const Home = () => {
                                             <p>Phylogenetic Tree Program:</p>
                                             <span>
                                                 <button className="bp3-button bp3-minimal"
-                                                    onClick={() => setSelectedPhylogeneticProgram('FastTree')}
+                                                    onClick={() => setPhylogeneticProgram('FastTree')}
                                                     style={{
-                                                        backgroundColor: selectedPhylogeneticProgram === 'FastTree' ? '#007bff' : '#eee',
-                                                        color: selectedPhylogeneticProgram === 'FastTree' ? 'white' : 'black'
+                                                        backgroundColor: phylogeneticProgram === 'FastTree' ? '#007bff' : '#eee',
+                                                        color: phylogeneticProgram === 'FastTree' ? 'white' : 'black'
                                                     }}
                                                 >
                                                     FastTree
                                                 </button>
                                                 <button className="bp3-button bp3-minimal"
-                                                    onClick={() => setSelectedPhylogeneticProgram('iqtree')}
+                                                    onClick={() => setPhylogeneticProgram('iqtree')}
                                                     style={{
-                                                        backgroundColor: selectedPhylogeneticProgram === 'iqtree' ? '#007bff' : '#eee',
-                                                        color: selectedPhylogeneticProgram === 'iqtree' ? 'white' : 'black'
+                                                        backgroundColor: phylogeneticProgram === 'iqtree' ? '#007bff' : '#eee',
+                                                        color: phylogeneticProgram === 'iqtree' ? 'white' : 'black'
                                                     }}
                                                 >
                                                     iqtree
                                                 </button>
                                                 <button className="bp3-button bp3-minimal"
-                                                    onClick={() => setSelectedPhylogeneticProgram('raxml')}
+                                                    onClick={() => setPhylogeneticProgram('raxml')}
                                                     style={{
-                                                        backgroundColor: selectedPhylogeneticProgram === 'raxml' ? '#007bff' : '#eee',
-                                                        color: selectedPhylogeneticProgram === 'raxml' ? 'white' : 'black'
+                                                        backgroundColor: phylogeneticProgram === 'raxml' ? '#007bff' : '#eee',
+                                                        color: phylogeneticProgram === 'raxml' ? 'white' : 'black'
                                                     }}
                                                 >
                                                     raxml
@@ -358,28 +366,28 @@ const Home = () => {
                                             <p>Ancestral State Inference Program:</p>
                                             <span>
                                                 <button className="bp3-button bp3-minimal"
-                                                    onClick={() => setSelectedAncestralProgram('GRASP')}
+                                                    onClick={() => setAncestralProgram('GRASP')}
                                                     style={{
-                                                        backgroundColor: selectedAncestralProgram === 'GRASP' ? '#007bff' : '#eee',
-                                                        color: selectedAncestralProgram === 'GRASP' ? 'white' : 'black'
+                                                        backgroundColor: ancestralProgram === 'GRASP' ? '#007bff' : '#eee',
+                                                        color: ancestralProgram === 'GRASP' ? 'white' : 'black'
                                                     }}
                                                 >
                                                     GRASP
                                                 </button>
                                                 <button className="bp3-button bp3-minimal"
-                                                    onClick={() => setSelectedAncestralProgram('iqtree')}
+                                                    onClick={() => setAncestralProgram('iqtree')}
                                                     style={{
-                                                        backgroundColor: selectedAncestralProgram === 'iqtree' ? '#007bff' : '#eee',
-                                                        color: selectedAncestralProgram === 'iqtree' ? 'white' : 'black'
+                                                        backgroundColor: ancestralProgram === 'iqtree' ? '#007bff' : '#eee',
+                                                        color: ancestralProgram === 'iqtree' ? 'white' : 'black'
                                                     }}
                                                 >
                                                     iqtree
                                                 </button>
                                                 <button className="bp3-button bp3-minimal"
-                                                    onClick={() => setSelectedAncestralProgram('raxml-ng')}
+                                                    onClick={() => setAncestralProgram('raxml-ng')}
                                                     style={{
-                                                        backgroundColor: selectedAncestralProgram === 'raxml-ng' ? '#007bff' : '#eee',
-                                                        color: selectedAncestralProgram === 'raxml-ng' ? 'white' : 'black'
+                                                        backgroundColor: ancestralProgram === 'raxml-ng' ? '#007bff' : '#eee',
+                                                        color: ancestralProgram === 'raxml-ng' ? 'white' : 'black'
                                                     }}
                                                 >
                                                     raxml-ng
@@ -388,28 +396,28 @@ const Home = () => {
                                             <p>Alignment Program:</p>
                                             <span>
                                                 <button className="bp3-button bp3-minimal"
-                                                    onClick={() => setSelectedAlignmentProgram('muscle')}
+                                                    onClick={() => setAlignmentProgram('muscle')}
                                                     style={{
-                                                        backgroundColor: selectedAlignmentProgram === 'muscle' ? '#007bff' : '#eee',
-                                                        color: selectedAlignmentProgram === 'muscle' ? 'white' : 'black'
+                                                        backgroundColor: alignmentProgram === 'muscle' ? '#007bff' : '#eee',
+                                                        color: alignmentProgram === 'muscle' ? 'white' : 'black'
                                                     }}
                                                 >
                                                     MUSCLE
                                                 </button>
                                                 <button className="bp3-button bp3-minimal"
-                                                    onClick={() => setSelectedAlignmentProgram('mafft')}
+                                                    onClick={() => setAlignmentProgram('mafft')}
                                                     style={{
-                                                        backgroundColor: selectedAlignmentProgram === 'mafft' ? '#007bff' : '#eee',
-                                                        color: selectedAlignmentProgram === 'mafft' ? 'white' : 'black'
+                                                        backgroundColor: alignmentProgram === 'mafft' ? '#007bff' : '#eee',
+                                                        color: alignmentProgram === 'mafft' ? 'white' : 'black'
                                                     }}
                                                 >
                                                     mafft
                                                 </button>
                                                 <button className="bp3-button bp3-minimal"
-                                                    onClick={() => setSelectedAlignmentProgram('clustalo')}
+                                                    onClick={() => setAlignmentProgram('clustalo')}
                                                     style={{
-                                                        backgroundColor: selectedAlignmentProgram === 'clustalo' ? '#007bff' : '#eee',
-                                                        color: selectedAlignmentProgram === 'clustalo' ? 'white' : 'black'
+                                                        backgroundColor: alignmentProgram === 'clustalo' ? '#007bff' : '#eee',
+                                                        color: alignmentProgram === 'clustalo' ? 'white' : 'black'
                                                     }}
                                                 >
                                                     clustalo
@@ -418,32 +426,85 @@ const Home = () => {
                                             <p>Database:</p>
                                             <span>
                                                 <button className="bp3-button bp3-minimal"
-                                                    onClick={() => setSelectedDatabase('GTDB')}
+                                                    onClick={() => setDatabase('GTDB')}
                                                     style={{
-                                                        backgroundColor: selectedDatabase === 'GTDB' ? '#007bff' : '#eee',
-                                                        color: selectedDatabase === 'GTDB' ? 'white' : 'black'
+                                                        backgroundColor: database === 'GTDB' ? '#007bff' : '#eee',
+                                                        color: database === 'GTDB' ? 'white' : 'black'
                                                     }}
                                                 >
                                                     GTDB
                                                 </button>
                                                 <button className="bp3-button bp3-minimal"
-                                                    onClick={() => setSelectedDatabase('uniref90')}
+                                                    onClick={() => setDatabase('uniref90')}
                                                     style={{
-                                                        backgroundColor: selectedDatabase === 'uniref90' ? '#007bff' : '#eee',
-                                                        color: selectedDatabase === 'uniref90' ? 'white' : 'black'
+                                                        backgroundColor: database === 'uniref90' ? '#007bff' : '#eee',
+                                                        color: database === 'uniref90' ? 'white' : 'black'
                                                     }}
                                                 >
                                                     uniref90
                                                 </button>
                                                 <button className="bp3-button bp3-minimal"
-                                                    onClick={() => setSelectedDatabase('uniref50')}
+                                                    onClick={() => setDatabase('uniref50')}
                                                     style={{
-                                                        backgroundColor: selectedDatabase === 'uniref50' ? '#007bff' : '#eee',
-                                                        color: selectedDatabase === 'uniref50' ? 'white' : 'black'
+                                                        backgroundColor: database === 'uniref50' ? '#007bff' : '#eee',
+                                                        color: database === 'uniref50' ? 'white' : 'black'
                                                     }}
                                                 >
                                                     uniref50
                                                 </button>
+                                            </span>
+                                            <p>Weight of branch length in delination step (0-100):</p>
+                                            <span>
+                                                <input
+                                                    type="number"
+                                                    className="bp3-input"
+                                                    value={lenWeight}
+                                                    onChange={(e) => setLenWeight(Number(e.target.value))}
+                                                    onBlur={() => {
+                                                        // Clamp value to range on blur
+                                                        setLenWeight(prevValue => 
+                                                            prevValue < 0 ? 0 : prevValue > 100 ? 100 : prevValue
+                                                        );
+                                                    }}
+                                                    min="0" 
+                                                    max="100" 
+                                                    style={{
+                                                        width: '100px',
+                                                        padding: '5px',
+                                                        fontSize: '16px',
+                                                        backgroundColor: '#eee',
+                                                        color: 'black',
+                                                        borderRadius: '4px',
+                                                        border: lenWeight ? '2px solid #007bff' : '1px solid #ccc' 
+                                                    }}
+                                                />
+                                            </span>
+                                            <p>Weight of conserved residues in delination step (0.0-1.0):</p>
+                                            <span>
+                                                <input
+                                                    type="number"
+                                                    step="0.01"
+                                                    className="bp3-input"
+                                                    value={conWeight}
+                                                    onChange={(e) => setConWeight(Number(e.target.value))}
+                                                    onBlur={() => {
+                                                        // Clamp value to range on blur
+                                                        setConWeight(prevValue => 
+                                                            prevValue < 0.0 ? 0.0 : prevValue > 1.0 ? 1.0 : prevValue
+                                                        );
+                                                    }}
+                                                    min="0.0" 
+                                                    max="1.0" 
+                                                    style={{
+                                                        width: '100px',
+                                                        padding: '5px',
+                                                        fontSize: '16px',
+                                                        backgroundColor: '#eee',
+                                                        color: 'black',
+                                                        borderRadius: '4px',
+                                                        border: conWeight ? '2px solid #007bff' : '1px solid #ccc' 
+                                                    }}
+                                                />
                                             </span>
                                         </div>
                                     </div>

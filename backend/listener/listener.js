@@ -60,7 +60,9 @@ app.post("/submit", (req, res) => {
                             "--asrprogram", data.asr_program,
                             "--alignprogram", data.align_program,
                             "--threads", "4",
-                            "--ec_table", "/database/database/ec_dict.pkl"
+                            "--ec_table", "/database/database/ec_dict.pkl",
+                            "--lenweight", data.len_weight,
+                            "--conweight", data.con_weight,
                         ],
                         "resources": {
                             "requests": {
@@ -106,7 +108,7 @@ app.post("/submit", (req, res) => {
                             "ezsea", "structure",
                             "-i", data.sequence,
                             "--output", `/database/output/EzSEA_${data.job_id}`,
-                            "--fold", data.folding_program,
+                            "--fold", "colabfold",
                         ],
                         "resources": {
                             "requests": {
