@@ -292,7 +292,7 @@ app.get("/status/:id", (req, res) => {
         } else {
             const status = stdout.trim();
             if (status === "Pending") {
-                return res.status(200).json({ status: "Allocating resources for job, this may take a few minutes." });
+                return res.status(200).json({ logs: ["Allocating resources for job, this may take a few minutes."] , status: status });
             } else {
                 fs.readFile(filePath, 'utf8', (err, data) => {
                     if (err) {
