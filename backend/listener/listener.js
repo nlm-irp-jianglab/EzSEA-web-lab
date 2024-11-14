@@ -288,7 +288,7 @@ app.get("/status/:id", (req, res) => {
     logger.info("Serving status for job: " + id);
     try {
         const podsRes = k8sApi.listNamespacedPod('default');
-        console.log("Status using API", podsRes.body);
+        console.log("Status using API", podsRes);
     } catch (err) {
         console.error(err);
     }
