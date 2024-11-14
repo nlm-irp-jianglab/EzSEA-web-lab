@@ -287,8 +287,8 @@ app.get("/status/:id", (req, res) => {
     const filePath = `/outputs/EzSEA_${id}/EzSEA.log`;
     logger.info("Serving status for job: " + id);
     try {
-        k8sApi.listNamespacedPod('default', undefined, undefined, undefined, undefined, `id=${id},type=run`).then((res) => {
-            const status = res.body.items[0].status.phase.trim();
+        k8sApi.listNamespacedPod('default', undefined, undefined, undefined, undefined, `id=${id},type=run`).then((podsRes) => {
+            const status = podsRes.body.items[0].status.phase.trim();
             if (status === "Pending") {
                 return res.status(200).json({ logs: ["Allocating resources for job, this may take a few minutes."], status: status });
             } else {
