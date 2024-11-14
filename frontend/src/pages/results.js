@@ -539,10 +539,13 @@ const Results = () => {
                     pushNodeToEntropyLogo(node);
                 }
             });
+        
+        findAndZoom(nodeId); // Zoom to the node
     }
 
     /*
         Search function to find and pan to a node
+        query: the name of the node to search for
     */
     const findAndZoom = (query) => {
         const svg = d3.select("#tree_container").select("svg");
