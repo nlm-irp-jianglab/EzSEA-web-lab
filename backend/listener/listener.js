@@ -287,20 +287,8 @@ app.get("/status/:id", (req, res) => {
     const filePath = `/outputs/EzSEA_${id}/EzSEA.log`;
     logger.info("Serving status for job: " + id);
     try {
-        const podsRes = k8sApi.listNamespacedPod('default', undefined, undefined, undefined, undefined, `id=${id},type=run`).then((res) => {
-            console.log("Status using API", res.body.items[0].status);
-        });
-    } catch (err) {
-        console.error(err);
-    }
-
-    // Query kubectl pods for job status
-    exec(`kubectl get pods -l id=${id},type=run --no-headers -o custom-columns=":status.phase"`, (err, stdout, stderr) => {
-        if (err) {
-            logger.error("Error getting GKE logs:", err);
-            return res.status(500).json({ error: "There was an error queuing your job. Please try again later." });
-        } else {
-            const status = stdout.trim();
+        k8sApi.listNamespacedPod('default', undefined, undefined, undefined, undefined, `id=${id},type=run`).then((res) => {
+            const status = res.body.items[0].status.phase.trim();
             if (status === "Pending") {
                 return res.status(200).json({ logs: ["Allocating resources for job, this may take a few minutes."], status: status });
             } else {
@@ -319,10 +307,14 @@ app.get("/status/:id", (req, res) => {
                     return res.status(200).json({ logs: logsArray, status: status });
                 });
             }
-        }
-    });
+        });
+    } catch (err) {
+        logger.error("Error getting GKE logs:", err);
+        return res.status(500).json({ error: "There was an error queuing your job. Please try again later." });
+    }
 
-
+    // Query kubectl pods for job status 
+    // `kubectl get pods -l id=${id},type=run --no-headers -o custom-columns=":status.phase"`
 });
 
 // Server listening on PORT 5000
