@@ -5,6 +5,11 @@ const { exec } = require('child_process');
 const fs = require('fs');
 const pino = require('pino');
 const emailjs = require('@emailjs/nodejs');
+const k8s = require('@kubernetes/client-node');
+
+const kc = new k8s.KubeConfig();
+kc.loadFromDefault();
+const k8sApi = kc.makeApiClient(k8s.CoreV1Api);
 
 var app = express();
 const logger = pino();
@@ -281,10 +286,14 @@ app.get("/status/:id", (req, res) => {
     const id = req.params.id;
     const filePath = `/outputs/EzSEA_${id}/EzSEA.log`;
     logger.info("Serving status for job: " + id);
+    try {
+        const podsRes = k8sApi.listNamespacedPod('default');
+        console.log(podsRes.body);
+    } catch (err) {
+        console.error(err);
+    }
 
     // Query kubectl pods for job status
-    // kubectl get pods -l id=xqqya4zm3hondnw,type=structure
-
     exec(`kubectl get pods -l id=${id},type=structure --no-headers -o custom-columns=":status.phase"`, (err, stdout, stderr) => {
         if (err) {
             logger.error("Error getting GKE logs:", err);
@@ -292,7 +301,7 @@ app.get("/status/:id", (req, res) => {
         } else {
             const status = stdout.trim();
             if (status === "Pending") {
-                return res.status(200).json({ logs: ["Allocating resources for job, this may take a few minutes."] , status: status });
+                return res.status(200).json({ logs: ["Allocating resources for job, this may take a few minutes."], status: status });
             } else {
                 fs.readFile(filePath, 'utf8', (err, data) => {
                     if (err) {
