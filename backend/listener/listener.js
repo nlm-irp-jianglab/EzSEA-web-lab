@@ -178,7 +178,7 @@ app.post("/submit", (req, res) => {
 
     logger.info("Queuing job: " + data.job_id);
 
-    k8sApi.createNamespacedPod('default', run_command).catch((e) => {
+    k8sApi.createNamespacedPod('default', JSON.stringify(run_command)).catch((e) => {
         console.log(e);
     })
     // exec("kubectl apply -f ./cpu-job-config.json", (err, stdout, stderr) => {
