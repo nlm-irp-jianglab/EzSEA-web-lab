@@ -200,7 +200,7 @@ app.post("/submit", (req, res) => {
 
     setTimeout(function () {
         res.status(200).json({ body: "Job submitted successfully", error: error });
-    }, 7000);
+    }, 3000);
 });
 
 app.get("/results/:id", async (req, res) => {
@@ -291,6 +291,9 @@ app.get("/status/:id", (req, res) => {
     logger.info("Serving status for job: " + id);
     try {
         k8sApi.listNamespacedPod('default', undefined, undefined, undefined, undefined, `id=${id},type=run`).then((podsRes) => {
+            if (podsRes.body.items.length < 1) {
+                return res.status(500).json({ error: "There was an error reading the log file. Please ensure your job ID is correct." });
+            }
             const status = podsRes.body.items[0].status.phase.trim();
             if (status === "Pending") {
                 return res.status(200).json({ logs: ["Allocating resources for job, this may take a few minutes."], status: status });
@@ -298,7 +301,7 @@ app.get("/status/:id", (req, res) => {
                 fs.readFile(filePath, 'utf8', (err, data) => {
                     if (err) {
                         logger.error("Error reading file:", err);
-                        return res.status(500).json({ error: "There was an error reading the log file. Please ensure your job ID is correct." });
+                        return res.status(500).json({ error: "No log file was found for this job." });
                     }
                     const logsArray = data.split('\n');
                     return res.status(200).json({ logs: logsArray, status: status });
