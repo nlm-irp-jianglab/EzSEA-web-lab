@@ -6,8 +6,8 @@ import Glyph from '../glyphs/glyph';
  * 
  */
 const GlyphStack = ({ height, width, indices, alphabet, lv, transform, alpha, inverted, onSymbolMouseOver, onSymbolMouseOut, onSymbolClick, curr, important }) => {
-	// TODO: Implement coloring to border important residues. Will be done by editing "glyphrect"
-	// TODO: Implement opacity to highlight important residues. Will be done by editing "fillOpacity={alpha}"
+	// Implemented coloring to border important residues. Will be done by editing "glyphrect"
+	// Implemented opacity to highlight important residues. Will be done by editing "fillOpacity={alpha}"
 	// Index stored in curr, can use this to determine opacity, color, importance
 
 	/* move up from bottom */

@@ -301,12 +301,6 @@ app.get("/status/:id", (req, res) => {
                         return res.status(500).json({ error: "There was an error reading the log file. Please ensure your job ID is correct." });
                     }
                     const logsArray = data.split('\n');
-                    var status = "Running";
-                    if (logsArray[logsArray.length - 2].includes("Done. Goodbye!")) {
-                        status = "Completed";
-                    } else if (logsArray[logsArray.length - 2].includes("Stopping with exit code 1.")) {
-                        status = "Error";
-                    }
                     return res.status(200).json({ logs: logsArray, status: status });
                 });
             }
