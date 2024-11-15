@@ -51,7 +51,6 @@ app.post("/submit", (req, res) => {
             "backoffLimit": 0,
             "template": {
                 "metadata": {
-                    "name": "arandomname",
                     "labels": {
                         "id": data.job_id,
                         "type": "run"
@@ -179,7 +178,7 @@ app.post("/submit", (req, res) => {
 
     logger.info("Queuing job: " + data.job_id);
 
-    k8sApi.createNamespacedPod('default', JSON.stringify(run_command)).catch((e) => {
+    k8sApi.createNamespacedPod('default', JSON.stringify(run_command, null, 2)).catch((e) => {
         console.log(e);
     })
     // exec("kubectl apply -f ./cpu-job-config.json", (err, stdout, stderr) => {
