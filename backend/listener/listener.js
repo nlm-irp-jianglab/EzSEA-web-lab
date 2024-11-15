@@ -112,6 +112,7 @@ app.post("/submit", (req, res) => {
             "backoffLimit": 0,
             "template": {
                 "metadata": {
+                    "name": "ezsea",
                     "labels": {
                         "id": data.job_id,
                         "type": "structure"
@@ -119,9 +120,7 @@ app.post("/submit", (req, res) => {
                 },
                 "spec": {
                     "containers": [{
-                        "metadata": {
-                            "name": "ezsea",
-                        },
+                        "name": "ezsea",
                         "image": "gcr.io/ncbi-research-cbb-jiang/ezsea-image:latest",
                         "args": [
                             "ezsea", "structure",
@@ -180,7 +179,7 @@ app.post("/submit", (req, res) => {
 
     logger.info("Queuing job: " + data.job_id);
 
-    k8sApi.createNamespacedPod('default', JSON.stringify(run_command), dryRun = "All").catch((e) => {
+    k8sApi.createNamespacedPod('default', JSON.stringify(run_command), dryRun="All").catch((e) => {
         console.log(e);
     })
     // exec("kubectl apply -f ./cpu-job-config.json", (err, stdout, stderr) => {
