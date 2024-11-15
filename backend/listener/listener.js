@@ -163,16 +163,12 @@ app.post("/submit", (req, res) => {
     fs.writeFile('cpu-job-config.json', JSON.stringify(run_command, null, 2), (err) => {
         if (err) {
             console.error('Error writing Kubernetes job config to file', err);
-        } else {
-            console.log('Kubernetes cpu job configuration saved to cpu-job-config.json');
         }
     });
 
     fs.writeFile('gpu-job-config.json', JSON.stringify(struct_command, null, 2), (err) => {
         if (err) {
             console.error('Error writing Kubernetes job config to file', err);
-        } else {
-            console.log('Kubernetes gpu job configuration saved to gpu-job-config.json');
         }
     });
 
