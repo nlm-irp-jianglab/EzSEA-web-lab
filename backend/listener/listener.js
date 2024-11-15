@@ -45,7 +45,7 @@ app.post("/submit", (req, res) => {
         "apiVersion": "batch/v1",
         "kind": "Job",
         "metadata": {
-            "name": data.job_id
+            "name": String(data.job_id)
         },
         "spec": {
             "backoffLimit": 0,
@@ -178,7 +178,7 @@ app.post("/submit", (req, res) => {
 
     logger.info("Queuing job: " + data.job_id);
 
-    k8sApi.createNamespacedPod('default', JSON.stringify(run_command, null, 2)).catch((e) => {
+    k8sApi.createNamespacedPod('default', JSON.stringify(run_command)).catch((e) => {
         console.log(e);
     })
     // exec("kubectl apply -f ./cpu-job-config.json", (err, stdout, stderr) => {
