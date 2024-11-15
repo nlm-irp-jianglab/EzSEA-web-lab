@@ -45,12 +45,13 @@ app.post("/submit", (req, res) => {
         "apiVersion": "batch/v1",
         "kind": "Job",
         "metadata": {
-            "name": "EzSea-run"
+            "name": data.job_id
         },
         "spec": {
             "backoffLimit": 0,
             "template": {
                 "metadata": {
+                    "name": "arandomname",
                     "labels": {
                         "id": data.job_id,
                         "type": "run"
