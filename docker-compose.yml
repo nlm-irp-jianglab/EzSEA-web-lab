@@ -10,14 +10,6 @@ services:
     privileged: true
     volumes:
       - /mnt/filestore/output/:/outputs
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - capabilities: [gpu]
-    runtime: nvidia
-    environment:
-      - NVIDIA_VISIBLE_DEVICES=all
   proxy:
     build: ./proxy
     ports:

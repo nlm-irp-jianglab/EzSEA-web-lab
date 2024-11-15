@@ -178,23 +178,26 @@ app.post("/submit", (req, res) => {
 
     logger.info("Queuing job: " + data.job_id);
 
-    exec("kubectl apply -f ./cpu-job-config.json", (err, stdout, stderr) => {
-        if (err) {
-            error = "There was a problem initializing your job, please try again later";
-            console.error(err); // Pino doesn't give new lines
-        } else {
-            logger.info("EzSEA run job started:" + data.job_id);
-        }
-    });
+    k8sApi.createNamespacedPod('default', run_command).catch((e) => {
+        console.log(e);
+    })
+    // exec("kubectl apply -f ./cpu-job-config.json", (err, stdout, stderr) => {
+    //     if (err) {
+    //         error = "There was a problem initializing your job, please try again later";
+    //         console.error(err); // Pino doesn't give new lines
+    //     } else {
+    //         logger.info("EzSEA run job started:" + data.job_id);
+    //     }
+    // });
 
-    exec("kubectl apply -f ./gpu-job-config.json", (err, stdout, stderr) => {
-        if (err) {
-            error = "There was a problem initializing your job, please try again later";
-            console.error(err); // Pino doesn't give new lines
-        } else {
-            logger.info("EzSEA structure job started:" + data.job_id);
-        }
-    });
+    // exec("kubectl apply -f ./gpu-job-config.json", (err, stdout, stderr) => {
+    //     if (err) {
+    //         error = "There was a problem initializing your job, please try again later";
+    //         console.error(err); // Pino doesn't give new lines
+    //     } else {
+    //         logger.info("EzSEA structure job started:" + data.job_id);
+    //     }
+    // });
     setTimeout(function () {
         res.status(200).json({ body: "Job submitted successfully", error: error });
     }, 7000);
