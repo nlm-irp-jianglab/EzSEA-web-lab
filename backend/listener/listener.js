@@ -287,9 +287,36 @@ app.get("/status/:id", (req, res) => {
     logger.info("Serving status for job: " + id);
     try {
         k8sApi.listNamespacedPod('default', undefined, undefined, undefined, undefined, `id=${id},type=run`).then((podsRes) => {
-            if (podsRes.body.items.length < 1) {
-                return res.status(500).json({ error: "There was an error reading the log file. Please ensure your job ID is correct." });
+            if (podsRes.body.items.length < 1) { // Kubectl no longer tracking job or job not present
+                fs.readFile(filePath, 'utf8', (err, data) => {
+                    if (err) {
+                        logger.error("Error reading file:", err);
+                        return res.status(500).json({ error: "There was an error reading the log file. Please ensure your job ID is correct." });
+                    }
+                    const logsArray = data.split('\n').filter(line => line.trim() !== ''); // Remove empty lines
+                    let status = "Unknown"; // Default status
+
+                    // Dynamically check for status based on the last line of logs
+                    if (logsArray.length > 0) {
+                        const lastLine = logsArray[logsArray.length - 1];
+
+                        if (/Error|failed/i.test(lastLine)) {
+                            status = "Error"; // Check for error keywords
+                        } else if (/completed|success|Done/i.test(lastLine)) {
+                            status = "Completed"; // Check for successful completion
+                        } else if (/in-progress|running/i.test(lastLine)) {
+                            status = "In Progress"; // Check for ongoing status
+                        } else {
+                            status = "Unknown"; // If none of the above conditions match
+                        }
+                    } else {
+                        status = "Empty"; // No logs in the file
+                    }
+
+                    return res.status(200).json({ logs: logsArray, status: status }); // Possibly missing cases here
+                });
             }
+
             const status = podsRes.body.items[0].status.phase.trim();
             if (status === "Pending") {
                 return res.status(200).json({ logs: ["Allocating resources for job, this may take a few minutes."], status: status });
@@ -306,7 +333,7 @@ app.get("/status/:id", (req, res) => {
         });
     } catch (err) {
         logger.error("Error getting GKE logs:", err);
-        return res.status(500).json({ error: "There was an error queuing your job. Please try again later." });
+        return res.status(500).json({ error: "There was a backend error. Please try again later." });
     }
 
     // Query kubectl pods for job status 
