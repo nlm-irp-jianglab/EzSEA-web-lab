@@ -300,7 +300,7 @@ app.get("/status/:id", (req, res) => {
                     if (logsArray.length > 0) {
                         const lastLine = logsArray[logsArray.length - 1];
 
-                        if (/Error|failed/i.test(lastLine)) {
+                        if (/Error|failed|Stopping/i.test(lastLine)) {
                             status = "Error"; // Check for error keywords
                         } else if (/completed|success|Done/i.test(lastLine)) {
                             status = "Completed"; // Check for successful completion
