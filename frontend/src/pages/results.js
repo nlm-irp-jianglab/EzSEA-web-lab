@@ -39,6 +39,7 @@ const Results = () => {
     const [isLeftCollapsed, setIsLeftCollapsed] = useState(false);
     const [isRightCollapsed, setIsRightCollapsed] = useState(false);
     const [sidebarExpanded, setSidebarExpanded] = useState(false);
+    const [notification, setNotification] = useState('');
 
     // References for rendering
     const treeRef = useRef(null);
@@ -404,7 +405,7 @@ const Results = () => {
                 }
             });
     };
-    
+
     /* 
         Handles rednering of the right panel based on state of logoContent
     */
@@ -539,7 +540,7 @@ const Results = () => {
                     pushNodeToEntropyLogo(node);
                 }
             });
-        
+
         findAndZoom(nodeId); // Zoom to the node
     }
 
@@ -632,8 +633,10 @@ const Results = () => {
             });
 
         if (!targetNode) {
-            // TODO: Provide feedback if node is not found
-            console.log("Failed to find and zoom to node:", query);
+            setNotification('Node not found');
+            setTimeout(() => {
+                setNotification('');
+            }, 2000);
         }
     };
 
@@ -902,6 +905,11 @@ const Results = () => {
                                 }
                             }}
                         />}
+                        {notification && (
+                            <div className="notification">
+                                {notification}
+                            </div>
+                        )}
                     </div>
                     <div className="sidebar-item nodes-label">
                         {importantNodesDropdown()}

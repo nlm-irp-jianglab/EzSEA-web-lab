@@ -42,6 +42,7 @@ const Tol = () => {
     const [isLeftCollapsed, setIsLeftCollapsed] = useState(false);
     const [isRightCollapsed, setIsRightCollapsed] = useState(false);
     const [sidebarExpanded, setSidebarExpanded] = useState(false);
+    const [notification, setNotification] = useState('');
 
     // References for rendering
     const treeRef = useRef(null);
@@ -267,38 +268,17 @@ const Tol = () => {
     };
 
 
-    const pushNodeToLogo = (node, comp_desc = false) => {
-        // Add node to logoContent, if already in list, remove it
+    const pushNodeToLogo = (node) => {
         setLogoContent(prevLogoContent => {
             const updatedLogoContent = { ...prevLogoContent };
-
-            // Add node to logoContent
+            // Add or do nothing if node is already in logoContent
             if (node.data.name in updatedLogoContent) {
                 return updatedLogoContent;
             } else {
-                if (comp_desc) {
-                    var descendants = selectAllDescendants(node, false, true);
-                    var desc_fa = "";
-                    for (var desc of descendants) {
-                        desc_fa += `>${desc.data.name}\n${faData[desc.data.name]}\n`;
-                    }
-                    if (desc_fa === "") {
-                        console.log("No descendants found for node:", node.data.name);
-                        return updatedLogoContent;
-                    }
+                node['compare-node'] = true;
+                updatedLogoContent[node.data.name] = `>${node.data.name}\n${faData[node.data.name]}`;
+                setNodeColor(node.data.name, "red");
 
-                    node['compare-node'] = true;
-                    node['compare-descendants'] = true;
-                    // Calculates entropies, maps to colors and sets the colorArr state
-                    // calcEntropyFromMSA(desc_fa).then((entropy) => mapEntropyToColors(entropy)).then((colors) => { setColorArr(colors) });
-
-                    updatedLogoContent[node.data.name] = desc_fa;
-                    setNodeColor(node.data.name, "yellow");
-                } else {
-                    node['compare-node'] = true;
-                    updatedLogoContent[node.data.name] = `>${node.data.name}\n${faData[node.data.name]}`;
-                    setNodeColor(node.data.name, "red");
-                }
             }
 
             return updatedLogoContent;  // Return the new state
@@ -377,7 +357,6 @@ const Tol = () => {
             .each(function () {
                 var node = d3.select(this).data()[0];
                 if (node.data.name === nodeId) {
-                    console.log("Node data:", node.data);
                     var descendants = selectAllDescendants(node, false, true);
                     var desc_fa = "";
                     for (var desc of descendants) {
@@ -385,7 +364,6 @@ const Tol = () => {
                     }
                     // Calculates entropies, maps to colors and sets the colorArr state
                     calcEntropyFromMSA(desc_fa).then((entropy) => mapEntropyToColors(entropy)).then((colors) => { setColorArr(colors) });
-                    return;
                 }
             });
     }
@@ -479,6 +457,8 @@ const Tol = () => {
                     pushNodeToEntropyLogo(node);
                 }
             });
+
+            findAndZoom(nodeId);
     }
 
     const toggleLeftCollapse = () => {
@@ -681,7 +661,10 @@ const Tol = () => {
             });
 
         if (!targetNode) {
-            console.log("Failed to find and zoom to node:", query);
+            setNotification('Node not found');
+            setTimeout(() => {
+                setNotification('');
+            }, 2000);
         }
     };
 
@@ -775,6 +758,11 @@ const Tol = () => {
                                 }
                             }}
                         />}
+                        {notification && (
+                            <div className="notification">
+                                {notification}
+                            </div>
+                        )}
                     </div>
                     <div className="sidebar-item nodes-label">
                         {importantNodesDropdown()}
@@ -893,6 +881,7 @@ const Tol = () => {
                                     </div>
                                 </div>
                             )}
+
                             <div style={{ display: "flex", height: "100%", flexGrow: "1", flexDirection: isLeftCollapsed ? "column" : "row" }}>
                                 <div style={{ display: "flex", flexDirection: isLeftCollapsed ? "row" : "column", justifyContent: "space-between", alignItems: "center" }}>
                                     {isLeftCollapsed ? (

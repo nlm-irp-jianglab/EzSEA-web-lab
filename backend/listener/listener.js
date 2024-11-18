@@ -5,6 +5,11 @@ const { exec } = require('child_process');
 const fs = require('fs');
 const pino = require('pino');
 const emailjs = require('@emailjs/nodejs');
+const k8s = require('@kubernetes/client-node');
+
+const kc = new k8s.KubeConfig();
+kc.loadFromDefault();
+const k8sApi = kc.makeApiClient(k8s.CoreV1Api);
 
 var app = express();
 const logger = pino();
@@ -158,20 +163,18 @@ app.post("/submit", (req, res) => {
     fs.writeFile('cpu-job-config.json', JSON.stringify(run_command, null, 2), (err) => {
         if (err) {
             console.error('Error writing Kubernetes job config to file', err);
-        } else {
-            console.log('Kubernetes cpu job configuration saved to cpu-job-config.json');
         }
     });
 
     fs.writeFile('gpu-job-config.json', JSON.stringify(struct_command, null, 2), (err) => {
         if (err) {
             console.error('Error writing Kubernetes job config to file', err);
-        } else {
-            console.log('Kubernetes gpu job configuration saved to gpu-job-config.json');
         }
     });
 
     logger.info("Queuing job: " + data.job_id);
+
+    // Forgoing k8sapi.createNamespacedPod, running into issues with proper formatting 
 
     exec("kubectl apply -f ./cpu-job-config.json", (err, stdout, stderr) => {
         if (err) {
@@ -190,9 +193,10 @@ app.post("/submit", (req, res) => {
             logger.info("EzSEA structure job started:" + data.job_id);
         }
     });
+
     setTimeout(function () {
         res.status(200).json({ body: "Job submitted successfully", error: error });
-    }, 7000);
+    }, 3000);
 });
 
 app.get("/results/:id", async (req, res) => {
@@ -281,24 +285,32 @@ app.get("/status/:id", (req, res) => {
     const id = req.params.id;
     const filePath = `/outputs/EzSEA_${id}/EzSEA.log`;
     logger.info("Serving status for job: " + id);
+    try {
+        k8sApi.listNamespacedPod('default', undefined, undefined, undefined, undefined, `id=${id},type=run`).then((podsRes) => {
+            if (podsRes.body.items.length < 1) {
+                return res.status(500).json({ error: "There was an error reading the log file. Please ensure your job ID is correct." });
+            }
+            const status = podsRes.body.items[0].status.phase.trim();
+            if (status === "Pending") {
+                return res.status(200).json({ logs: ["Allocating resources for job, this may take a few minutes."], status: status });
+            } else {
+                fs.readFile(filePath, 'utf8', (err, data) => {
+                    if (err) {
+                        logger.error("Error reading file:", err);
+                        return res.status(500).json({ error: "No log file was found for this job." });
+                    }
+                    const logsArray = data.split('\n');
+                    return res.status(200).json({ logs: logsArray, status: status });
+                });
+            }
+        });
+    } catch (err) {
+        logger.error("Error getting GKE logs:", err);
+        return res.status(500).json({ error: "There was an error queuing your job. Please try again later." });
+    }
 
-    // Query kubectl pods for job status
-    // kubectl get pods -l id=xqqya4zm3hondnw,type=structure
-
-    fs.readFile(filePath, 'utf8', (err, data) => {
-        if (err) {
-            logger.error("Error reading file:", err);
-            return res.status(500).json({ error: "Allocating resources for job, this may take a few minutes." });
-        }
-        const logsArray = data.split('\n');
-        var status = "Running";
-        if (logsArray[logsArray.length - 2].includes("Done. Goodbye!")) {
-            status = "Completed";
-        } else if (logsArray[logsArray.length - 2].includes("Stopping with exit code 1.")) {
-            status = "Error";
-        }
-        return res.status(200).json({ logs: logsArray, status: status });
-    });
+    // Query kubectl pods for job status 
+    // `kubectl get pods -l id=${id},type=run --no-headers -o custom-columns=":status.phase"`
 });
 
 // Server listening on PORT 5000
