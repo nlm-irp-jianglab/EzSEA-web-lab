@@ -315,7 +315,7 @@ app.get("/status/:id", (req, res) => {
 
                     return res.status(200).json({ logs: logsArray, status: status }); // Possibly missing cases here
                 });
-                return res.status(500).json({ logs: ["No pod was found, and no logs were found"], status: "Unknown"})
+                return;
             }
 
             const status = podsRes.body.items[0].status.phase.trim();
