@@ -182,7 +182,7 @@ const LogoStack = React.forwardRef(
                                     <p style={{ paddingLeft: "30px" }}><b>{key}</b></p>
                                     <span style={{ paddingRight: "30px" }}>
                                         {fastaContent[key].substring(1).indexOf('>') > 0 && // If provided seq has more than one seq, must be comparing descendants. Shows color button
-                                            (<button className="logo-color-btn" style={styles.colorBtn} onClick={() => applyEntropyStructColor(key.substring(15))}>
+                                            (<button className="logo-color-btn logo-btn" style={styles.colorBtn} onClick={() => applyEntropyStructColor(key.substring(15))}>
                                                 <svg fill="#000000" width="23px" height="25px" viewBox="0 0 1920 1920" xmlns="http://www.w3.org/2000/svg">
                                                     <title>Color Entropy</title>
                                                     <path d="M392.26 1042.5c137.747-57.67 292.85-15.269 425.873 116.217l4.394 4.833c116.656 146.425 149.5 279.119 97.873 394.237-128.85 287.138-740.692 328.77-810.005 332.504L0 1896.442l61.953-91.83c.989-1.539 105.013-158.728 105.013-427.192 0-141.811 92.6-279.558 225.294-334.92ZM1728.701 23.052c54.923-1.099 99.96 15.268 135.111 49.43 40.643 40.644 58.109 87.877 56.021 140.603C1908.85 474.52 1423.33 953.447 1053.15 1280.79c-24.276-64.81-63.711-136.21-125.335-213.102l-8.787-9.886c-80.078-80.187-169.163-135.11-262.423-161.473C955.276 558.002 1460.677 33.927 1728.701 23.052Z" fillRule="evenodd" />
@@ -190,8 +190,8 @@ const LogoStack = React.forwardRef(
                                             </button>)
                                         }
                                         {importantResiduesList[key] && importantResiduesList[key].differing_residues.length > 0 && // If important residues are provided, show color button
-                                            <button className="logo-color-btn" style={styles.colorBtn} onClick={() => applyImportantStructColor(importantResiduesList[key].differing_residues, fastaContent[key])}>
-                                                <svg width="25px" height="25px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                            <button className="logo-color-btn logo-btn" style={styles.colorBtn} onClick={() => applyImportantStructColor(importantResiduesList[key].differing_residues, fastaContent[key])}>
+                                                <svg width="22px" height="25px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                                     <title>Color Important Residues</title>
                                                     <path d="M6.5 4l5.5 6 5.5-6zm2.273 1h6.454L12 8.52zM23 20v-8H1v8zM2 19v-6h20v6z" />
                                                     <path opacity=".5" d="M8 13h8v6H8z" /><path opacity=".25" d="M8 19H2v-6h6z" />
@@ -200,16 +200,16 @@ const LogoStack = React.forwardRef(
                                                 </svg>
                                             </button>
                                         }
-                                        <button className="logo-download-btn" style={styles.downloadBtn} onClick={() => downloadLogoSVG(index, 'seqlogo_' + key + '.svg')}>
+                                        <button className="logo-download-btn logo-btn" style={styles.downloadBtn} onClick={() => downloadLogoSVG(index, 'seqlogo_' + key + '.svg')}>
                                             <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                 <title>Download Individual</title>
                                                 <path fillRule="evenodd" clipRule="evenodd" d="M2 12C2 7.28595 2 4.92893 3.46447 3.46447C4.92893 2 7.28595 2 12 2C16.714 2 19.0711 2 20.5355 3.46447C22 4.92893 22 7.28595 22 12C22 16.714 22 19.0711 20.5355 20.5355C19.0711 22 16.714 22 12 22C7.28595 22 4.92893 22 3.46447 20.5355C2 19.0711 2 16.714 2 12ZM12 6.25C12.4142 6.25 12.75 6.58579 12.75 7V12.1893L14.4697 10.4697C14.7626 10.1768 15.2374 10.1768 15.5303 10.4697C15.8232 10.7626 15.8232 11.2374 15.5303 11.5303L12.5303 14.5303C12.3897 14.671 12.1989 14.75 12 14.75C11.8011 14.75 11.6103 14.671 11.4697 14.5303L8.46967 11.5303C8.17678 11.2374 8.17678 10.7626 8.46967 10.4697C8.76256 10.1768 9.23744 10.1768 9.53033 10.4697L11.25 12.1893V7C11.25 6.58579 11.5858 6.25 12 6.25ZM8 16.25C7.58579 16.25 7.25 16.5858 7.25 17C7.25 17.4142 7.58579 17.75 8 17.75H16C16.4142 17.75 16.75 17.4142 16.75 17C16.75 16.5858 16.4142 16.25 16 16.25H8Z" fill="#1C274C" />
                                             </svg>
                                         </button>
-                                        <button className="logo-remove-btn" style={styles.removeBtn} onClick={() => removeLogo(index)}>
-                                            <svg fill="#000000" width="25px" height="25px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+                                        <button className="logo-remove-btn logo-btn" style={styles.removeBtn} onClick={() => removeLogo(index)}>
+                                            <svg width="25px" height="25px" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
                                                 <title>Remove from Comparison</title>
-                                                <path d="M16 29c-7.18 0-13-5.82-13-13s5.82-13 13-13 13 5.82 13 13-5.82 13-13 13zM21.961 12.209c0.244-0.244 0.244-0.641 0-0.885l-1.328-1.327c-0.244-0.244-0.641-0.244-0.885 0l-3.761 3.761-3.761-3.761c-0.244-0.244-0.641-0.244-0.885 0l-1.328 1.327c-0.244 0.244-0.244 0.641 0 0.885l3.762 3.762-3.762 3.76c-0.244 0.244-0.244 0.641 0 0.885l1.328 1.328c0.244 0.244 0.641 0.244 0.885 0l3.761-3.762 3.761 3.762c0.244 0.244 0.641 0.244 0.885 0l1.328-1.328c0.244-0.244 0.244-0.641 0-0.885l-3.762-3.76 3.762-3.762z"></path>
+                                                <path fill="#000000" d="M512 64a448 448 0 1 1 0 896 448 448 0 0 1 0-896zM288 512a38.4 38.4 0 0 0 38.4 38.4h371.2a38.4 38.4 0 0 0 0-76.8H326.4A38.4 38.4 0 0 0 288 512z" />
                                             </svg>
                                         </button>
                                     </span>

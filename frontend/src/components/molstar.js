@@ -73,6 +73,7 @@ export function MolStarWrapper({ structData, selectedResidue, hoveredResidue, co
         "default"
       );
 
+      // Scrolls seqlogos to selection position
       window.molstar.behaviors.interaction.click.subscribe(
         (event) => {
           const selections = Array.from(

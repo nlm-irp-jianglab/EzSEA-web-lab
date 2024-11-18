@@ -1,7 +1,7 @@
 .view {
     display: flex;
     flex-grow: 1;
-    margin: 10px 20px; 
+    margin: 10px 20px;
     overflow: hidden;
     align-items: center;
 }
@@ -46,8 +46,10 @@
 }
 
 .dropbtn.selected {
-    background-color: rgba(173, 216, 230, 0.3); /* Light blue background with transparency */
-    border-radius: 50%; /* Make it a circle */
+    background-color: rgba(173, 216, 230, 0.3);
+    /* Light blue background with transparency */
+    border-radius: 50%;
+    /* Make it a circle */
 }
 
 .dropbtn-nodes:hover svg path {
@@ -124,15 +126,17 @@
     border: none;
     text-align: left;
     cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease; 
-    font-size: 12px; 
-    border-radius: 5px; /* Slightly round corners for a softer look */
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    font-size: 12px;
+    border-radius: 5px;
+    /* Slightly round corners for a softer look */
 }
 
 .dropdown-content button:hover {
     background-color: #518ca3;
-    transform: scale(1.05); /* Slightly increase size on hover */
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15); 
+    transform: scale(1.05);
+    /* Slightly increase size on hover */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .sidebar {
@@ -182,7 +186,8 @@
 /* Visible state */
 .transition-element.visible {
     opacity: 1;
-    max-height: 500px; /* Adjust based on content height */
+    max-height: 500px;
+    /* Adjust based on content height */
 }
 
 /* Main view */
@@ -260,22 +265,31 @@
     position: absolute;
     top: 5px;
     right: 5px;
+    border-radius: 50%;
     background-color: #ff5c5c;
     color: #fff;
     border: none;
-    border-radius: 50%;
     width: 20px;
     height: 20px;
     cursor: pointer;
     text-align: center;
     line-height: 20px;
     z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    vertical-align: middle;
+}
+
+.logo-close-btn:hover {
+    transform: scale(1.1); 
+    transition: transform 0.2s ease-in-out; 
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
 }
 
 .tree-div text {
     -webkit-user-select: all;
-    -moz-user-select: all; 
+    -moz-user-select: all;
     -ms-user-select: all;
     user-select: all;
 }
-

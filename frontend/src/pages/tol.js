@@ -309,7 +309,7 @@ const Tol = () => {
     const pushNodeToEntropyLogo = (node) => {
         setLogoContent(prevLogoContent => {
             const updatedLogoContent = { ...prevLogoContent };
-            
+
             var descendants = selectAllDescendants(node, true, false);
             var desc_fa = "";
             for (var desc of descendants) {
@@ -532,7 +532,7 @@ const Tol = () => {
             <div className="dropdown" onClick={handleSidebarDownloadsClick}>
                 <button className="dropbtn-downloads dropbtn" >
                     <svg width="25px" height="25px" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <title>Result files</title>
+                        <title>Downloads</title>
                         <path d="M13.5 3H12H7C5.89543 3 5 3.89543 5 5V19C5 20.1046 5.89543 21 7 21H7.5M13.5 3L19 8.625M13.5 3V7.625C13.5 8.17728 13.9477 8.625 14.5 8.625H19M19 8.625V9.75V12V19C19 20.1046 18.1046 21 17 21H16.5" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                         <path d="M12 12V20M12 20L9.5 17.5M12 20L14.5 17.5" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
@@ -565,7 +565,7 @@ const Tol = () => {
             <div className="dropdown" onClick={handleSidebarNodesClick}>
                 <button className="dropbtn-nodes dropbtn">
                     <svg fill="#FFFFFF" width="25px" height="25px" xmlns="http://www.w3.org/2000/svg">
-                        <title>Candidate nodes for clade delineation</title>
+                        <title>Candidates for clade delineation</title>
                         <path d="M20,9H16a1,1,0,0,0-1,1v1H7V7H8A1,1,0,0,0,9,6V2A1,1,0,0,0,8,1H4A1,1,0,0,0,3,2V6A1,1,0,0,0,4,7H5V20a1,1,0,0,0,1,1h9v1a1,1,0,0,0,1,1h4a1,1,0,0,0,1-1V18a1,1,0,0,0-1-1H16a1,1,0,0,0-1,1v1H7V13h8v1a1,1,0,0,0,1,1h4a1,1,0,0,0,1-1V10A1,1,0,0,0,20,9ZM5,3H7V5H5ZM17,19h2v2H17Zm2-6H17V11h2Z" />
                     </svg>
                 </button>
@@ -588,7 +588,7 @@ const Tol = () => {
             <div>
                 <button className="dropbtn-search dropbtn" onClick={handleSidebarSearchClick}>
                     <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <title>Search for nodes in the tree</title>
+                        <title>Search for node</title>
                         <path d="M11 6C13.7614 6 16 8.23858 16 11M16.6588 16.6549L21 21M19 11C19 15.4183 15.4183 19 11 19C6.58172 19 3 15.4183 3 11C3 6.58172 6.58172 3 11 3C15.4183 3 19 6.58172 19 11Z" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                 </button>
@@ -875,7 +875,10 @@ const Tol = () => {
                                                 clearRightPanel();
                                             }}
                                         >
-                                            X
+                                            <svg fill="#000000" width="25px" height="25px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+                                                <title>Clear All</title>
+                                                <path d="M16 29c-7.18 0-13-5.82-13-13s5.82-13 13-13 13 5.82 13 13-5.82 13-13 13zM21.961 12.209c0.244-0.244 0.244-0.641 0-0.885l-1.328-1.327c-0.244-0.244-0.641-0.244-0.885 0l-3.761 3.761-3.761-3.761c-0.244-0.244-0.641-0.244-0.885 0l-1.328 1.327c-0.244 0.244-0.244 0.641 0 0.885l3.762 3.762-3.762 3.76c-0.244 0.244-0.244 0.641 0 0.885l1.328 1.328c0.244 0.244 0.641 0.244 0.885 0l3.761-3.762 3.761 3.762c0.244 0.244 0.641 0.244 0.885 0l1.328-1.328c0.244-0.244 0.244-0.641 0-0.885l-3.762-3.76 3.762-3.762z"></path>
+                                            </svg>
                                         </button>
                                         <LogoStack
                                             data={logoContent}
@@ -893,7 +896,7 @@ const Tol = () => {
                             <div style={{ display: "flex", height: "100%", flexGrow: "1", flexDirection: isLeftCollapsed ? "column" : "row" }}>
                                 <div style={{ display: "flex", flexDirection: isLeftCollapsed ? "row" : "column", justifyContent: "space-between", alignItems: "center" }}>
                                     {isLeftCollapsed ? (
-                                        <svg width="100%" height="20" viewBox="0 0 200 20" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">                                            <title>Entropy Scale</title>
+                                        <svg width="100%" height="20" viewBox="0 0 200 20" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">                                            
                                             <title>Entropy Scale</title>
                                             <rect width="20" height="20" fill="#0000ff" x="0" />
                                             <rect width="20" height="20" fill="#0056a9" x="20" />
