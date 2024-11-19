@@ -304,8 +304,6 @@ app.get("/status/:id", (req, res) => {
                             status = "Error"; // Check for error keywords
                         } else if (/completed|success|Done/i.test(lastLine)) {
                             status = "Completed"; // Check for successful completion
-                        } else if (/in-progress|running/i.test(lastLine)) {
-                            status = "In Progress"; // Check for ongoing status
                         } else {
                             status = "Unknown"; // If none of the above conditions match
                         }

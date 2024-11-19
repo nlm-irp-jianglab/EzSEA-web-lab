@@ -217,7 +217,7 @@ const Results = () => {
                     try {
                         // Adding EC number to leaf nodes
                         var ec = ecData[node_data.data.name];
-                        if (ec) {
+                        if (ec.ec_number) {
                             const node_label = element.select("text");
                             const transform = node_label.attr("transform");
                             const translateRegex = /translate\s*\(\s*([\d.-]+)\s*,\s*([\d.-]+)\s*\)/;
