@@ -1129,7 +1129,7 @@ const Results = () => {
                                         selectedResidue={selectedResidue}
                                         colorFile={colorArr}
                                         hoveredResidue={hoveredResidue}
-                                        scrollLogosTo={(index) => scrollLogosTo(index)}
+                                        scrollLogosTo={(index) => handleScrollLogosTo(index)}
                                     />
                                 </div>
                             </div>
