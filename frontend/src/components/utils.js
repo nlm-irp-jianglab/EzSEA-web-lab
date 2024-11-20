@@ -192,10 +192,8 @@ export const calcGapOffsetArr = (faString) => {
     for (let i = 0; i < faString.length; i++) {
         if (faString[i] === "-") {
             gaps++;
-            gapOffsetArr[i] = -1;
-        } else {
-            gapOffsetArr[i] = gaps;
         }
+        gapOffsetArr[i] = gaps;
     }
 
     return gapOffsetArr;

@@ -459,13 +459,8 @@ const Results = () => {
 
         for (var res of residueList) {
             // Applying gap offset
-            if (gapOffsetArr[res] < 0) {
-                console.log("Important residue landed on gap of input sequence!")
-            } else {
-                console.log("Current pos is: ", res, " gap offset is: ", gapOffsetArr[res])
-                const pos = res - gapOffsetArr[res]
-                importantColors[pos] = 0xFF0000;
-            }
+            const pos = res - gapOffsetArr[res]
+            importantColors[pos] = 0xFF0000;
         }
 
         setColorArr(importantColors);
