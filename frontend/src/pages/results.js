@@ -229,7 +229,7 @@ const Results = () => {
                             element.append("text").text("EC " + ec.ec_number || "not found").attr("transform", `translate(${x + 400}, 0)`).style("font-size", "12px");
                         }
                     } catch (error) {
-                        console.error("Error adding EC number to leaf node:", error);
+                        console.error("Error adding EC number to leaf node: ", node_data.data.name, error);
                     }
                     if (inputHeader === node_data.data.name) {
                         element.select("text").style("fill", "palevioletred").style("stoke", "palevioletred").style("font-size", "18px");
@@ -461,9 +461,11 @@ const Results = () => {
             // Applying gap offset
             if (gapOffsetArr[res] < 0) {
                 console.log("Important residue landed on gap of input sequence!")
+            } else {
+                console.log("Current pos is: ", res, " gap offset is: ", gapOffsetArr[res])
+                const pos = res - gapOffsetArr[res]
+                importantColors[pos] = 0xFF0000;
             }
-            const pos = res - gapOffsetArr[res]
-            importantColors[pos] = 0xFF0000;
         }
 
         setColorArr(importantColors);
