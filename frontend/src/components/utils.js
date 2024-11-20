@@ -183,3 +183,20 @@ export const jsonToFasta = (jsonObject) => {
 
     return fastaContent;
 };
+
+export const calcGapOffsetArr = (faString) => {
+    var gapOffsetArr = [];
+    var gaps = 0;
+
+    // Iterate through string and increment gaps if encounters "-", else set current index in gapOffsetArr to gaps value
+    for (let i = 0; i < faString.length; i++) {
+        if (faString[i] === "-") {
+            gaps++;
+            gapOffsetArr[i] = -1;
+        } else {
+            gapOffsetArr[i] = gaps;
+        }
+    }
+
+    return gapOffsetArr;
+}
