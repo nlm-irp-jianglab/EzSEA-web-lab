@@ -461,7 +461,7 @@ const Results = () => {
 
         for (var res of residueList) {
             // Applying gap offset
-            if (gapOffsetArr[res] > 0) {
+            if (gapOffsetArr[res] >= 0) {
                 const pos = res - gapOffsetArr[res]
                 importantColors[pos] = 0xFF0000;
             }
