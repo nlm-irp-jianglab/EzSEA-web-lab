@@ -12,7 +12,7 @@ import { fastaToDict, parseNodeData, calcEntropyFromMSA, mapEntropyToColors, jso
 import { useParams } from 'react-router-dom';
 import * as d3 from 'd3';
 import ErrorPopup from '../components/errorpopup';
-import Footer from '../components/footer';
+import JSZip from 'jszip';
 
 const Results = () => {
     const { jobId } = useParams();
@@ -23,7 +23,7 @@ const Results = () => {
     const [nodeData, setnodeData] = useState(null); // asr stats, important residues
     const [structData, setStructData] = useState(null); // Structure data
     const [inputData, setInputData] = useState(null); // Query sequence 
-    const [ecData, setEcData] = useState(null); // Query sequence 
+    const [ecData, setEcData] = useState(null); // EC codes 
     const [topNodes, setTopNodes] = useState({}); // Top 10 nodes for the tree
 
     // State to store the logo content (formatted for logoJS) and color file
@@ -673,6 +673,25 @@ const Results = () => {
         element.click();
         document.body.removeChild(element);
     };
+
+    const downloadZip = () => {
+        const element = document.createElement("a");
+        var zip = new JSZip();
+
+        zip.file("asr.fa", jsonToFasta(faData))
+            .file("leaf.afa", jsonToFasta(leafData))
+            .file("tree.nwk", newickData)
+            .file("nodes.json", JSON.stringify(nodeData, null, 2))
+            .file("seq.pdb", structData);
+
+        zip.generateAsync({ type: "blob" }).then(function (blob) {
+            element.href = URL.createObjectURL(blob);
+            element.download = `${jobId}_all.zip`;
+            document.body.appendChild(element); // Required for this to work in FireFox
+            element.click();
+            document.body.removeChild(element);
+        });
+    }
 
     /*
         Handles rendering of the downloads dropdown

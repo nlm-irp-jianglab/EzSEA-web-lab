@@ -8,11 +8,11 @@ import "../components/phylotree.css";
 import "../components/tol.css";
 import MolstarViewer from "../components/molstar";
 import LogoStack from '../components/logo-stack';
-import { readFastaToDict, parseNodeData, calcEntropyFromMSA, mapEntropyToColors } from '../components/utils';
+import { readFastaToDict, parseNodeData, calcEntropyFromMSA, mapEntropyToColors, jsonToFasta } from '../components/utils';
 import { useParams } from 'react-router-dom';
 import * as d3 from 'd3';
 import ErrorPopup from '../components/errorpopup';
-import Footer from '../components/footer';
+import JSZip from "jszip";
 
 const logoFiles = {};
 
@@ -458,7 +458,7 @@ const Tol = () => {
                 }
             });
 
-            findAndZoom(nodeId);
+        findAndZoom(nodeId);
     }
 
     const toggleLeftCollapse = () => {
@@ -480,6 +480,21 @@ const Tol = () => {
         element.click();
         document.body.removeChild(element);
     };
+
+    const downloadZip = () => {
+        const element = document.createElement("a");
+        var zip = new JSZip();
+
+        zip.file("tree.nwk", newickData).file("asr.fa", jsonToFasta(faData)).file("seq.pdb", structData);
+
+        zip.generateAsync({ type: "blob" }).then(function (blob) {
+            element.href = URL.createObjectURL(blob);
+            element.download = "files.zip";
+            document.body.appendChild(element); // Required for this to work in FireFox
+            element.click();
+            document.body.removeChild(element);
+        });
+    }
 
     const downloadNewickData = () => {
         handleDownload('tree_data.nwk', newickData);
@@ -516,6 +531,9 @@ const Tol = () => {
                         <path d="M13.5 3H12H7C5.89543 3 5 3.89543 5 5V19C5 20.1046 5.89543 21 7 21H7.5M13.5 3L19 8.625M13.5 3V7.625C13.5 8.17728 13.9477 8.625 14.5 8.625H19M19 8.625V9.75V12V19C19 20.1046 18.1046 21 17 21H16.5" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                         <path d="M12 12V20M12 20L9.5 17.5M12 20L14.5 17.5" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
+                </button>
+                <button onClick={downloadZip}>
+                    zip
                 </button>
                 {sidebarExpanded && <span className="sidebar-label">Downloads</span>}
             </div>
@@ -885,7 +903,7 @@ const Tol = () => {
                             <div style={{ display: "flex", height: "100%", flexGrow: "1", flexDirection: isLeftCollapsed ? "column" : "row" }}>
                                 <div style={{ display: "flex", flexDirection: isLeftCollapsed ? "row" : "column", justifyContent: "space-between", alignItems: "center" }}>
                                     {isLeftCollapsed ? (
-                                        <svg width="100%" height="20" viewBox="0 0 200 20" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">                                            
+                                        <svg width="100%" height="20" viewBox="0 0 200 20" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
                                             <title>Entropy Scale</title>
                                             <rect width="20" height="20" fill="#0000ff" x="0" />
                                             <rect width="20" height="20" fill="#0056a9" x="20" />
