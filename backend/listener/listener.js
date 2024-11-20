@@ -322,8 +322,12 @@ app.get("/status/:id", (req, res) => {
             } else {
                 fs.readFile(filePath, 'utf8', (err, data) => {
                     if (err) {
-                        logger.error("Error reading file:", err);
-                        return res.status(500).json({ error: "No log file was found for this job." });
+                        if (status === "Running") {
+                            return res.status(200).json({ logs: ['Generating logs...'], status: status})
+                        } else {
+                            logger.error("Error reading file:", err);
+                            return res.status(500).json({ error: "No log file was found for this job." });
+                        }
                     }
                     const logsArray = data.split('\n');
                     return res.status(200).json({ logs: logsArray, status: status });

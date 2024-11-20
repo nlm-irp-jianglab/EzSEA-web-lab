@@ -185,16 +185,31 @@ export const jsonToFasta = (jsonObject) => {
 };
 
 export const calcGapOffsetArr = (faString) => {
-    var gapOffsetArr = [];
+    var gapOffsetArr = new Array(faString.length);
     var gaps = 0;
 
     // Iterate through string and increment gaps if encounters "-", else set current index in gapOffsetArr to gaps value
     for (let i = 0; i < faString.length; i++) {
         if (faString[i] === "-") {
             gaps++;
+            gapOffsetArr[i] = -1;
+        } else {
+            gapOffsetArr[i] = gaps;
         }
-        gapOffsetArr[i] = gaps;
     }
 
     return gapOffsetArr;
+}
+
+export const calcStructToLogoMap = (gappedFaString) => {
+    var structToLogoMapArr = [];
+
+    for (let i = 0; i < gappedFaString.length; i++) {
+        if (gappedFaString[i] !== "-") {
+            structToLogoMapArr.append(i);
+        }
+    }
+
+    console.log(structToLogoMapArr)
+    return structToLogoMapArr;
 }

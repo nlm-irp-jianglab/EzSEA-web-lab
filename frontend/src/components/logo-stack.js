@@ -154,8 +154,6 @@ const LogoStack = React.forwardRef(
                 // Remove first line of fasta string
                 firstFa = firstFa.substring(firstFa.indexOf('\n') + 1);
 
-                console.log(firstFa.length);
-
                 var rectSize = firstFa.length > 999 ? 20 : 21.5;
                 backScrollers.current.forEach((scroller) => {
                     scroller.scroller.__publish(index * rectSize, 1, 1, true);
