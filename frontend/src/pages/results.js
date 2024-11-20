@@ -815,6 +815,11 @@ const Results = () => {
                 .node {
                     font: 10px sans-serif;
                 }
+                .branch-tracer {
+                    stroke: #bbb;
+					stroke-dasharray: 3, 4;
+					stroke-width: 1px;
+                }
             </style>`;
 
         if (!source.includes('xmlns="http://www.w3.org/2000/svg"')) {
@@ -949,6 +954,7 @@ const Results = () => {
                         <button onClick={() => handleDownload(`${jobId}_nodes.json`, nodeData)}>Node Info</button>
                         <button onClick={() => handleDownload(`${jobId}_struct.pdb`, structData)}>Structure PDB</button>
                         <button onClick={() => handleDownload(`${jobId}_tree_data.nwk`, newickData)}>Tree Newick</button>
+                        <button onClick={() => downloadZip()}>All</button>
                         <button onClick={downloadTreeAsSVG}>Tree SVG</button>
                     </div>
                 </div>
