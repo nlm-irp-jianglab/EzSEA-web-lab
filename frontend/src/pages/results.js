@@ -135,6 +135,7 @@ const Results = () => {
             treeRef.current.innerHTML = '';
 
             const inputHeader = inputData.split("\n")[0].substring(1);
+            console.log("Gapped input: ", leafData[inputHeader]);
             const tree = new pt.phylotree(newickData);
 
             function style_nodes(element, node_data) {
@@ -674,6 +675,10 @@ const Results = () => {
         document.body.removeChild(element);
     };
 
+    /*
+        Downloads all output files as a zip using JSZip. 
+        Call to .generateAsync holds full result in memory, possible performance issues
+    */
     const downloadZip = () => {
         const element = document.createElement("a");
         var zip = new JSZip();
