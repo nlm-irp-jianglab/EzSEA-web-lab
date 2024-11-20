@@ -210,6 +210,5 @@ export const calcStructToLogoMap = (gappedFaString) => {
         }
     }
 
-    console.log(structToLogoMapArr)
     return structToLogoMapArr;
 }

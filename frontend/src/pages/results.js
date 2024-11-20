@@ -25,6 +25,7 @@ const Results = () => {
 
     const [inputData, setInputData] = useState(null); // Query sequence 
     const [gapOffsetArr, setGapOffsetArr] = useState([]);
+    const [structLogoMapArr, setStructLogoMapArr] = useState([]);
     const [ecData, setEcData] = useState(null); // EC codes 
     const [topNodes, setTopNodes] = useState({}); // Top 10 nodes for the tree
 
@@ -138,7 +139,7 @@ const Results = () => {
 
             const inputHeader = inputData.split("\n")[0].substring(1);
             setGapOffsetArr(calcGapOffsetArr(leafData[inputHeader])); // Setting precalculated offsets for coloring important residues
-            calcStructToLogoMap(leafData[inputHeader]);
+            setStructLogoMapArr(calcStructToLogoMap(leafData[inputHeader]));
             const tree = new pt.phylotree(newickData);
 
             function style_nodes(element, node_data) {
@@ -497,6 +498,14 @@ const Results = () => {
     const handleColumnHover = (index) => {
         setHoveredResidue(index + 1);
     };
+
+    /*
+        Accounts for gaps when scrolling to residue highlighted in structure viewer
+    */
+
+    const handleScrollLogosTo = (index) => {
+        logoStackRef.current.scrollToIndex(structLogoMapArr[index]);
+    }
 
     /*
         Removes a node from the logo stack, and thus the comparison
@@ -1120,7 +1129,7 @@ const Results = () => {
                                         selectedResidue={selectedResidue}
                                         colorFile={colorArr}
                                         hoveredResidue={hoveredResidue}
-                                        scrollLogosTo={(index) => logoStackRef.current.scrollToIndex(index)}
+                                        scrollLogosTo={(index) => scrollLogosTo(index)}
                                     />
                                 </div>
                             </div>
