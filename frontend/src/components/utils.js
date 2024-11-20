@@ -205,7 +205,7 @@ export const calcStructToLogoMap = (gappedFaString) => {
     var structToLogoMapArr = [];
 
     for (let i = 0; i < gappedFaString.length; i++) {
-        if (gappedFaString[i] !== "-") {
+        if (gappedFaString[i] != "-") {
             structToLogoMapArr.push(i);
         }
     }
