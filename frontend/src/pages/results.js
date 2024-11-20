@@ -22,7 +22,9 @@ const Results = () => {
     const [newickData, setNewickData] = useState(null); // Tree
     const [nodeData, setnodeData] = useState(null); // asr stats, important residues
     const [structData, setStructData] = useState(null); // Structure data
+
     const [inputData, setInputData] = useState(null); // Query sequence 
+    const [gapOffsetArr, setGapOffsetArr] = useState([]);
     const [ecData, setEcData] = useState(null); // EC codes 
     const [topNodes, setTopNodes] = useState({}); // Top 10 nodes for the tree
 
@@ -135,8 +137,7 @@ const Results = () => {
             treeRef.current.innerHTML = '';
 
             const inputHeader = inputData.split("\n")[0].substring(1);
-            console.log("Gapped input: ", leafData[inputHeader]);
-            console.log("GapOffsetArr: ", calcGapOffsetArr(leafData[inputHeader]));
+            setGapOffsetArr(calcGapOffsetArr(leafData[inputHeader])); // Setting precalculated offsets for coloring important residues
             const tree = new pt.phylotree(newickData);
 
             function style_nodes(element, node_data) {
@@ -457,7 +458,12 @@ const Results = () => {
         var importantColors = Array(fa.length).fill(0x00FF00);
 
         for (var res of residueList) {
-            importantColors[res] = 0xFF0000;
+            // Applying gap offset
+            if (gapOffsetArr[res] < 0) {
+                console.log("Important residue landed on gap of input sequence!")
+            }
+            const pos = res - gapOffsetArr[res]
+            importantColors[pos] = 0xFF0000;
         }
 
         setColorArr(importantColors);
