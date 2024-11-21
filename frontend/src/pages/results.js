@@ -558,7 +558,7 @@ const Results = () => {
                     pushNodeToEntropyLogo(node);
                 }
             });
-
+        toggleRightCollapse();
         findAndZoom(nodeId); // Zoom to the node
     }
 

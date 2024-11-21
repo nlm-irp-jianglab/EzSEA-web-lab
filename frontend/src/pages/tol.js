@@ -463,8 +463,101 @@ const Tol = () => {
                 }
             });
 
+        toggleRightCollapse();
         findAndZoom(nodeId);
     }
+
+    const findAndZoom = (query) => {
+        const svg = d3.select("#tree_container").select("svg");
+        const zoom = d3.zoom().on("zoom", (event) => {
+            svg.select("g").attr("transform", event.transform);
+        });
+        svg.call(zoom);
+
+        var targetNode;
+        d3.selectAll('.node')
+            .each(function () {
+                const node = d3.select(this).data()[0];
+                const elem = d3.select(this);
+                if (node.data.name === query) {
+                    targetNode = node;
+                    const targetX = node.x;
+                    const targetY = node.y;
+
+                    const line = elem.select("line");
+
+                    line.transition()
+                        .delay(1000)
+                        .duration(500)
+                        .style("stroke", "red")
+                        .style("stroke-width", 5)
+                        .style("stroke-dasharray", "10,4")
+                        .transition()
+                        .duration(500)
+                        .style("stroke-width", 1)
+                        .style("stroke", null)
+                        .style("stroke-dasharray", "3,4")
+                        .transition()
+                        .duration(500)
+                        .style("stroke-width", 5)
+                        .style("stroke", "red")
+                        .style("stroke-dasharray", "10,4")
+                        .transition()
+                        .duration(500)
+                        .style("stroke-width", 1)
+                        .style("stroke", null)
+                        .style("stroke-dasharray", "3,4");
+
+                    svg.transition()
+                        .duration(750)
+                        .call(zoom.transform, d3.zoomIdentity.scale(1).translate(-targetY + 109, -targetX + 426)); // Adjust the scale and translation as needed
+                }
+            });
+
+        d3.selectAll('.internal-node')
+            .each(function () {
+                const node = d3.select(this).data()[0];
+                if (node.data.name === query) {
+                    targetNode = node;
+                    const targetX = node.x;
+                    const targetY = node.y;
+
+                    const circle = d3.select(this).select("circle");
+                    const currRadius = circle.attr("r");
+                    const currColor = circle.style("fill");
+                    const newRadius = (currRadius * 2).toString();
+
+
+                    circle.transition()
+                        .delay(1000)
+                        .style("fill", "red")
+                        .style("r", newRadius)
+                        .transition()
+                        .duration(500)
+                        .style("fill", currColor)
+                        .style("r", currRadius)
+                        .transition()
+                        .duration(500)
+                        .style("fill", "red")
+                        .style("r", newRadius)
+                        .transition()
+                        .duration(500)
+                        .style("fill", currColor)
+                        .style("r", currRadius);
+
+                    svg.transition()
+                        .duration(750)
+                        .call(zoom.transform, d3.zoomIdentity.scale(1).translate(-targetY + 672, -targetX + 376)); // Adjust the scale and translation as needed
+                }
+            });
+
+        if (!targetNode) {
+            setNotification('Node not found');
+            setTimeout(() => {
+                setNotification('');
+            }, 2000);
+        }
+    };
 
     const toggleLeftCollapse = () => {
         setIsLeftCollapsed(!isLeftCollapsed);
@@ -596,97 +689,6 @@ const Tol = () => {
         );
     };
 
-    const findAndZoom = (query) => {
-        const svg = d3.select("#tree_container").select("svg");
-        const zoom = d3.zoom().on("zoom", (event) => {
-            svg.select("g").attr("transform", event.transform);
-        });
-        svg.call(zoom);
-
-        var targetNode;
-        d3.selectAll('.node')
-            .each(function () {
-                const node = d3.select(this).data()[0];
-                const elem = d3.select(this);
-                if (node.data.name === query) {
-                    targetNode = node;
-                    const targetX = node.x;
-                    const targetY = node.y;
-
-                    const line = elem.select("line");
-
-                    line.transition()
-                        .delay(1000)
-                        .duration(500)
-                        .style("stroke", "red")
-                        .style("stroke-width", 5)
-                        .style("stroke-dasharray", "10,4")
-                        .transition()
-                        .duration(500)
-                        .style("stroke-width", 1)
-                        .style("stroke", null)
-                        .style("stroke-dasharray", "3,4")
-                        .transition()
-                        .duration(500)
-                        .style("stroke-width", 5)
-                        .style("stroke", "red")
-                        .style("stroke-dasharray", "10,4")
-                        .transition()
-                        .duration(500)
-                        .style("stroke-width", 1)
-                        .style("stroke", null)
-                        .style("stroke-dasharray", "3,4");
-
-                    svg.transition()
-                        .duration(750)
-                        .call(zoom.transform, d3.zoomIdentity.scale(1).translate(-targetY + 109, -targetX + 426)); // Adjust the scale and translation as needed
-                }
-            });
-
-        d3.selectAll('.internal-node')
-            .each(function () {
-                const node = d3.select(this).data()[0];
-                if (node.data.name === query) {
-                    targetNode = node;
-                    const targetX = node.x;
-                    const targetY = node.y;
-
-                    const circle = d3.select(this).select("circle");
-                    const currRadius = circle.attr("r");
-                    const currColor = circle.style("fill");
-                    const newRadius = (currRadius * 2).toString();
-
-
-                    circle.transition()
-                        .delay(1000)
-                        .style("fill", "red")
-                        .style("r", newRadius)
-                        .transition()
-                        .duration(500)
-                        .style("fill", currColor)
-                        .style("r", currRadius)
-                        .transition()
-                        .duration(500)
-                        .style("fill", "red")
-                        .style("r", newRadius)
-                        .transition()
-                        .duration(500)
-                        .style("fill", currColor)
-                        .style("r", currRadius);
-
-                    svg.transition()
-                        .duration(750)
-                        .call(zoom.transform, d3.zoomIdentity.scale(1).translate(-targetY + 672, -targetX + 376)); // Adjust the scale and translation as needed
-                }
-            });
-
-        if (!targetNode) {
-            setNotification('Node not found');
-            setTimeout(() => {
-                setNotification('');
-            }, 2000);
-        }
-    };
 
 
     function downloadCombinedSVG() {

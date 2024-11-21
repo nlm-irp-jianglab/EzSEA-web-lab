@@ -160,6 +160,8 @@ const LogoStack = React.forwardRef(
                 logoRefs.current.forEach((ref, refIndex) => {
                     try {
                         const target = ref.firstChild.children[2].children[index - 1].lastChild;
+                        //const originalFill = target.getAttribute("fill");
+                        // TODO for important residues, background is blue, change to red temporarily for highlighting?
 
                         target.style.transition = "fill-opacity 0.3s ease";
                         let pulseCount = 0;
