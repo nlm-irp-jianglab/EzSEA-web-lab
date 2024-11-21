@@ -463,7 +463,8 @@ const Tol = () => {
                 }
             });
 
-        toggleRightCollapse();
+        setIsRightCollapsed(false);
+        setPipVisible(true);
         findAndZoom(nodeId);
     }
 

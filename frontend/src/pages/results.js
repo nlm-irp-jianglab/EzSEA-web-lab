@@ -558,7 +558,9 @@ const Results = () => {
                     pushNodeToEntropyLogo(node);
                 }
             });
-        toggleRightCollapse();
+            
+        setIsRightCollapsed(false);
+        setPipVisible(true);
         findAndZoom(nodeId); // Zoom to the node
     }
 
