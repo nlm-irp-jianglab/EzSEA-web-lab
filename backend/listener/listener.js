@@ -126,6 +126,7 @@ app.post("/submit", (req, res) => {
                             "-i", data.sequence,
                             "--output", `/database/output/EzSEA_${data.job_id}`,
                             "--fold", "colabfold",
+                            "--weights", "/database/database/weights"
                         ],
                         "resources": {
                             "requests": {

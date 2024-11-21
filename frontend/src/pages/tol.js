@@ -12,7 +12,7 @@ import { readFastaToDict, parseNodeData, calcEntropyFromMSA, mapEntropyToColors,
 import { useParams } from 'react-router-dom';
 import * as d3 from 'd3';
 import ErrorPopup from '../components/errorpopup';
-import JSZip from "jszip";
+import JSZip from 'jszip';
 
 const logoFiles = {};
 
@@ -49,6 +49,7 @@ const Tol = () => {
     const pvdiv = useRef(null);
     const logoStackRef = useRef(null);
     const zoomInputRef = useRef(null);
+    const scrollInputRef = useRef(null);
 
     // Storing tree reference itself
     const [treeObj, setTreeObj] = useState(null);
@@ -401,6 +402,10 @@ const Tol = () => {
         logoStackRef.current.scrollToIndex(index);
     };
 
+    const handleScrollLogosTo = (index) => {
+        logoStackRef.current.scrollToIndex(structLogoMapArr[index]);
+    }
+
     const handleNodeRemove = (index) => {
         // Remove node from logoContent
         const newLogoContent = { ...logoContent };
@@ -531,9 +536,6 @@ const Tol = () => {
                         <path d="M13.5 3H12H7C5.89543 3 5 3.89543 5 5V19C5 20.1046 5.89543 21 7 21H7.5M13.5 3L19 8.625M13.5 3V7.625C13.5 8.17728 13.9477 8.625 14.5 8.625H19M19 8.625V9.75V12V19C19 20.1046 18.1046 21 17 21H16.5" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                         <path d="M12 12V20M12 20L9.5 17.5M12 20L14.5 17.5" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
-                </button>
-                <button onClick={downloadZip}>
-                    zip
                 </button>
                 {sidebarExpanded && <span className="sidebar-label">Downloads</span>}
             </div>
@@ -852,7 +854,7 @@ const Tol = () => {
                         >
                             {isLeftCollapsed ? (
                                 <div className="logodiv2" style={{ width: '50%' }}>
-                                    <div className="btnbar" style={{ textAlign: "center", height: "32px" }}>
+                                    <div className="logo-btnbar" style={{ textAlign: "center", height: "32px", justifyContent: "space-between", display: "flex", flexDirection: "row", margin: "2px 20px" }}>
                                         <button className="download-stack-btn" onClick={downloadCombinedSVG} style={{ borderRadius: "3px", backgroundColor: "#def2b3", border: "none", cursor: "pointer" }}>
                                             <svg width="25px" height="25px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" version="1.1" fill="none" stroke="#000000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5">
                                                 <title>Download Stack</title>
@@ -860,6 +862,23 @@ const Tol = () => {
                                                 <path d="m8 8.25v-6.5m-2.25 4.5 2.25 2 2.25-2" />
                                             </svg>
                                         </button>
+                                        <input
+                                            className="scrollInput zoomInput"
+                                            ref={scrollInputRef}
+                                            placeholder="Scroll to position"
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter') {
+                                                    try {
+                                                        logoStackRef.current.scrollToIndex(scrollInputRef.current.value);
+                                                    } catch (e) {
+                                                        setNotification('Residue not found');
+                                                        setTimeout(() => {
+                                                            setNotification('');
+                                                        }, 2000);
+                                                    }
+                                                }
+                                            }}
+                                        />
                                     </div>
                                     <LogoStack
                                         data={logoContent}

@@ -49,6 +49,7 @@ const Results = () => {
     const pvdiv = useRef(null);
     const logoStackRef = useRef(null);
     const zoomInputRef = useRef(null);
+    const scrollInputRef = useRef(null);
 
     // Storing tree reference itself
     const [treeObj, setTreeObj] = useState(null);
@@ -1027,7 +1028,7 @@ const Results = () => {
                         >
                             {isLeftCollapsed ? (
                                 <div className="logodiv2" style={{ width: '50%' }}>
-                                    <div className="btnbar" style={{ textAlign: "center", height: "32px" }}>
+                                    <div className="logo-btnbar" style={{ textAlign: "center", height: "32px", justifyContent: "space-between", display: "flex", flexDirection: "row", margin: "2px 20px" }}>
                                         <button className="download-stack-btn" onClick={downloadCombinedSVG} style={{ borderRadius: "3px", backgroundColor: "#def2b3", border: "none", cursor: "pointer" }}>
                                             <svg width="25px" height="25px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" version="1.1" fill="none" stroke="#000000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5">
                                                 <title>Download Stack</title>
@@ -1035,6 +1036,23 @@ const Results = () => {
                                                 <path d="m8 8.25v-6.5m-2.25 4.5 2.25 2 2.25-2" />
                                             </svg>
                                         </button>
+                                        <input
+                                            className="scrollInput zoomInput"
+                                            ref={scrollInputRef}
+                                            placeholder="Scroll to position"
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter') {
+                                                    try {
+                                                        logoStackRef.current.scrollToIndex(scrollInputRef.current.value);
+                                                    } catch (e) {
+                                                        setNotification('Residue not found');
+                                                        setTimeout(() => {
+                                                            setNotification('');
+                                                        }, 2000);
+                                                    }
+                                                }
+                                            }}
+                                        />
                                     </div>
                                     <LogoStack
                                         data={logoContent}

@@ -155,6 +155,33 @@ const LogoStack = React.forwardRef(
                 firstFa = firstFa.substring(firstFa.indexOf('\n') + 1);
 
                 var rectSize = firstFa.length > 999 ? 20 : 21.5;
+
+                // Pulse the residue number we scrolled to
+                logoRefs.current.forEach((ref, refIndex) => {
+                    try {
+                        const target = ref.firstChild.children[2].children[index - 1].lastChild;
+
+                        target.style.transition = "fill-opacity 0.3s ease";
+                        let pulseCount = 0;
+                        const pulseInterval = setInterval(() => {
+                            if (target.style.fillOpacity === "0.3") {
+                                target.style.fillOpacity = "0";
+                            } else {
+                                target.style.fillOpacity = "0.3";
+                            }
+
+                            pulseCount++;
+                            if (pulseCount >= 6) {
+                                clearInterval(pulseInterval);
+                                target.style.fillOpacity = "0";
+                            }
+                        }, 300);
+                    } catch (e) {
+                        throw (e);
+                    }
+                })
+
+                
                 backScrollers.current.forEach((scroller) => {
                     scroller.scroller.__publish(index * rectSize, 1, 1, true);
                 });
