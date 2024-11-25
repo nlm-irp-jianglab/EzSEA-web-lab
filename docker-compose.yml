@@ -14,3 +14,5 @@ services:
     build: ./proxy
     ports:
       - "80:80"
+    volumes:
+      - /home/zhaoj16_ncbi_nlm_nih_gov/EzSEA/:/logs
