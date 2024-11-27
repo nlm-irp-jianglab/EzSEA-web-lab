@@ -58,6 +58,8 @@ const ConsoleLogs = React.forwardRef(({ jobid, updateStatusCallback }, ref) => {
                 return styles.errorStatus;
             case 'Completed':
                 return styles.completedStatus;
+            case 'Succeeded':
+                return styles.completedStatus;
             default:
                 return styles.unknownStatus;
         }

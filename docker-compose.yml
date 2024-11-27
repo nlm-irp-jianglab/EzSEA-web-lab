@@ -7,7 +7,6 @@ services:
     build: ./backend
     ports:
       - "8002:5000"
-    privileged: true
     volumes:
       - /mnt/filestore/output/:/outputs
   proxy:

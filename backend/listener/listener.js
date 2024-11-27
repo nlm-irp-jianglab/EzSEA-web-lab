@@ -12,7 +12,16 @@ kc.loadFromDefault();
 const k8sApi = kc.makeApiClient(k8s.CoreV1Api);
 
 var app = express();
-const logger = pino();
+const logger = pino({
+    transport: {
+        target: 'pino-pretty',
+        options: {
+            colorize: true,
+            levelFirst: true,
+            
+        }
+    },
+});
 let data = null;
 
 app.use(bodyParser.json({ limit: '50mb' }));
