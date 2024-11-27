@@ -305,33 +305,7 @@ const Home = () => {
 
                                     <div className="bp3-card bp3-elevation-0">
                                         <div>
-                                            <p>Number of Sequences (100-1000):</p>
-                                            <span>
-                                                <input
-                                                    type="number"
-                                                    className="bp3-input"
-                                                    value={numSeq}
-                                                    onChange={(e) => setNumSeq(Number(e.target.value))}
-                                                    onBlur={() => {
-                                                        // Clamp value to range on blur
-                                                        setNumSeq(prevValue => 
-                                                            prevValue < 100 ? 100 : prevValue > 1000 ? 1000 : prevValue
-                                                        );
-                                                    }}
-                                                    min="100" 
-                                                    max="1000" 
-                                                    style={{
-                                                        width: '100px',
-                                                        padding: '5px',
-                                                        fontSize: '16px',
-                                                        backgroundColor: '#eee',
-                                                        color: 'black',
-                                                        borderRadius: '4px',
-                                                        border: numSeq ? '2px solid #007bff' : '1px solid #ccc' 
-                                                    }}
-                                                />
-                                            </span>
-
+                                            
                                             <p>Phylogenetic Tree Program:</p>
                                             <span>
                                                 <button className="bp3-button bp3-minimal"
@@ -453,6 +427,33 @@ const Home = () => {
                                                     uniref50
                                                 </button>
                                             </span>
+                                            <p>Number of Sequences (100-1000):</p>
+                                            <span>
+                                                <input
+                                                    type="number"
+                                                    className="bp3-input"
+                                                    value={numSeq}
+                                                    onChange={(e) => setNumSeq(Number(e.target.value))}
+                                                    onBlur={() => {
+                                                        // Clamp value to range on blur
+                                                        setNumSeq(prevValue => 
+                                                            prevValue < 100 ? 100 : prevValue > 1000 ? 1000 : prevValue
+                                                        );
+                                                    }}
+                                                    min="100" 
+                                                    max="1000" 
+                                                    style={{
+                                                        width: '100px',
+                                                        padding: '5px',
+                                                        fontSize: '16px',
+                                                        backgroundColor: '#eee',
+                                                        color: 'black',
+                                                        borderRadius: '4px',
+                                                        border: numSeq ? '2px solid #007bff' : '1px solid #ccc' 
+                                                    }}
+                                                />
+                                            </span>
+
                                             <p>Weight of branch length in delination step (0-100):</p>
                                             <span>
                                                 <input
