@@ -297,7 +297,7 @@ const Results = () => {
                 'font-size': 12,
                 'background-color': 'lightblue',
                 'collapsible': true,
-                'reroot': false,
+                'reroot': true,
                 'hide': false, // Causes weird rendering in radial
             });
 
@@ -372,7 +372,7 @@ const Results = () => {
             node['compare-node'] = true;
             node['compare-descendants'] = true;
             // Calculates entropies, maps to colors and sets the colorArr state
-            calcEntropyFromMSA(desc_fa).then((entropy) => mapEntropyToColors(entropy)).then((colors) => { setColorArr(colors) });
+            //calcEntropyFromMSA(desc_fa).then((entropy) => mapEntropyToColors(entropy)).then((colors) => { setColorArr(colors) });
 
             updatedLogoContent["Descendants of " + node.data.name] = desc_fa;
             setNodeColor(node.data.name, "yellow");
@@ -558,7 +558,7 @@ const Results = () => {
                     pushNodeToEntropyLogo(node);
                 }
             });
-            
+
         setIsRightCollapsed(false);
         setPipVisible(true);
         findAndZoom(nodeId); // Zoom to the node
@@ -1092,6 +1092,14 @@ const Results = () => {
                                             ref={logoStackRef}
                                         />
                                     </div>
+                                    <div
+                                        style={{
+                                            width: '100%',
+                                            height: '1px',
+                                            backgroundColor: '#ccc',
+                                            margin: '3px 0px'
+                                        }}
+                                    ></div>
                                 </div>
                             )}
 

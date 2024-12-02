@@ -9,7 +9,7 @@ import { Script } from 'molstar/lib/mol-script/script';
 import { setStructureOverpaint } from 'molstar/lib/mol-plugin-state/helpers/structure-overpaint';
 import { Color } from 'molstar/lib/mol-util/color';
 import { ViewportControls } from 'molstar/lib/mol-plugin-ui/viewport';
-import "molstar/lib/mol-plugin-ui/skin/dark.scss";
+import "./molstar/skin/light.scss";
 
 export function MolStarWrapper({ structData, selectedResidue, hoveredResidue, colorFile, scrollLogosTo }) {
   const parent = createRef();
@@ -39,7 +39,7 @@ export function MolStarWrapper({ structData, selectedResidue, hoveredResidue, co
           settings: {
             renderer: {
               ...renderer,
-              backgroundColor: ColorNames.gray,
+              backgroundColor: ColorNames.white,
               spin: true,
             },
           },
