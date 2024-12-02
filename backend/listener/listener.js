@@ -18,7 +18,7 @@ const logger = pino({
         options: {
             colorize: true,
             levelFirst: true,
-            
+
         }
     },
 });
@@ -27,6 +27,37 @@ let data = null;
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ extended: false, limit: '50mb' }));
 app.use(express.static(path.join(__dirname, 'build')));
+
+// Monitor for job completion
+function monitorJob(jobId, jobType, recipient) {
+    const completionCmd = `kubectl wait --for=condition=complete job/${jobId}`;
+    const failureCmd = `kubectl wait --for=condition=failed job/${jobId}`;
+
+    const completionProcess = exec(completionCmd);
+    const failureProcess = exec(failureCmd);
+
+    let hasResponded = false;
+
+    completionProcess.on('exit', (code) => {
+        if (!hasResponded) {
+            if (code === 0) {
+                logger.info(`${jobType} job ${jobId} completed successfully, sending push email.`);
+                hasResponded = true;
+                sendEmail(recipient, jobId);
+            }
+        }
+    });
+
+    failureProcess.on('exit', (code) => {
+        if (!hasResponded) {
+            if (code === 0) {
+                logger.error(`${jobType} job ${jobId} failed.`);
+                hasResponded = true;
+                // Handle failure case
+            }
+        }
+    });
+}
 
 const sendEmail = async (recipient, jobId) => {
     try {
@@ -38,9 +69,9 @@ const sendEmail = async (recipient, jobId) => {
                 publicKey: "PUBLIC_KEY",
                 privateKey: "PRIVATE_KEY",
             });
-        console.log('Email sent successfully:', response);
+        logger.info('Email sent successfully:', response);
     } catch (error) {
-        console.error("Error sending email:", error);
+        logger.info("Error sending email:", error);
     }
 };
 
@@ -192,6 +223,7 @@ app.post("/submit", (req, res) => {
             console.error(err); // Pino doesn't give new lines
         } else {
             logger.info("EzSEA run job started:" + data.job_id);
+            monitorJob(data.job_id, "CPU", data.email);
         }
     });
 
@@ -201,6 +233,7 @@ app.post("/submit", (req, res) => {
             console.error(err); // Pino doesn't give new lines
         } else {
             logger.info("EzSEA structure job started:" + data.job_id);
+            //monitorJob(data.job_id + "-struct", "GPU");
         }
     });
 
@@ -333,7 +366,7 @@ app.get("/status/:id", (req, res) => {
                 fs.readFile(filePath, 'utf8', (err, data) => {
                     if (err) {
                         if (status === "Running") {
-                            return res.status(200).json({ logs: ['Generating logs...'], status: status})
+                            return res.status(200).json({ logs: ['Generating logs...'], status: status })
                         } else {
                             logger.error("Error reading file:", err);
                             return res.status(500).json({ error: "No log file was found for this job." });
