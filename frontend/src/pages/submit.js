@@ -13,9 +13,9 @@ const Home = () => {
     const emailInput = useRef(null);
     const fastaInput = useRef(null);
 
-    const [numSeq, setNumSeq] = useState(1000);
+    const [numSeq, setNumSeq] = useState(500);
     const [phylogeneticProgram, setPhylogeneticProgram] = useState("FastTree");
-    const [ancestralProgram, setAncestralProgram] = useState("GRASP");
+    const [ancestralProgram, setAncestralProgram] = useState("iqtree");
     const [alignmentProgram, setAlignmentProgram] = useState("muscle");
     const [database, setDatabase] = useState("GTDB");
     const [lenWeight, setLenWeight] = useState(50);
@@ -263,7 +263,7 @@ const Home = () => {
                     <h1 style={{ fontSize: "2em", marginBottom: "0.5em" }}>EzSEA</h1>
                     <p>Enzyme Sequence Evolution Analysis is a tool that combines structure, phylogenetics, and ancestral state reconstruction to delineate an enzyme from its closest relatives and identify evolutionarily important residues.</p>
                     <div>
-                        <div> 
+                        <div>
                             <textarea placeholder="Sequence in FASTA format" className="data-input" ref={fastaInput} onChange={validateInput} style={{ height: "150px", width: "100%", resize: "vertical", minHeight: "100px" }}></textarea>
                             <div>
                                 <div style={{ display: "flex", marginTop: "0.3em", justifyContent: "space-between" }}>
@@ -279,7 +279,7 @@ const Home = () => {
                                     </span>
                                 </div>
                             </div>
-                        </div> 
+                        </div>
                         <div style={{ display: "flex", marginTop: "1em", marginBottom: "1em", minHeight: "2pt", placeContent: "center" }}></div>
                         <div style={{ marginTop: "2em" }}>
                             <button type="button" className="bp3-button bp3-minimal" onClick={() => toggleSettingsDropdown()}>
@@ -305,9 +305,27 @@ const Home = () => {
 
                                     <div className="bp3-card bp3-elevation-0">
                                         <div>
-                                            
+
                                             <p>Phylogenetic Tree Program:</p>
                                             <span>
+                                                <button className="bp3-button bp3-minimal"
+                                                    onClick={() => setPhylogeneticProgram('famsa')}
+                                                    style={{
+                                                        backgroundColor: phylogeneticProgram === 'famsa' ? '#007bff' : '#eee',
+                                                        color: phylogeneticProgram === 'famsa' ? 'white' : 'black'
+                                                    }}
+                                                >
+                                                    famsa
+                                                </button>
+                                                <button className="bp3-button bp3-minimal"
+                                                    onClick={() => setPhylogeneticProgram('veryfasttree')}
+                                                    style={{
+                                                        backgroundColor: phylogeneticProgram === 'veryfasttree' ? '#007bff' : '#eee',
+                                                        color: phylogeneticProgram === 'veryfasttree' ? 'white' : 'black'
+                                                    }}
+                                                >
+                                                    veryfasttree
+                                                </button>
                                                 <button className="bp3-button bp3-minimal"
                                                     onClick={() => setPhylogeneticProgram('FastTree')}
                                                     style={{
@@ -436,12 +454,12 @@ const Home = () => {
                                                     onChange={(e) => setNumSeq(Number(e.target.value))}
                                                     onBlur={() => {
                                                         // Clamp value to range on blur
-                                                        setNumSeq(prevValue => 
+                                                        setNumSeq(prevValue =>
                                                             prevValue < 100 ? 100 : prevValue > 1000 ? 1000 : prevValue
                                                         );
                                                     }}
-                                                    min="100" 
-                                                    max="1000" 
+                                                    min="100"
+                                                    max="1000"
                                                     style={{
                                                         width: '100px',
                                                         padding: '5px',
@@ -449,7 +467,7 @@ const Home = () => {
                                                         backgroundColor: '#eee',
                                                         color: 'black',
                                                         borderRadius: '4px',
-                                                        border: numSeq ? '2px solid #007bff' : '1px solid #ccc' 
+                                                        border: numSeq ? '2px solid #007bff' : '1px solid #ccc'
                                                     }}
                                                 />
                                             </span>
@@ -463,12 +481,12 @@ const Home = () => {
                                                     onChange={(e) => setLenWeight(Number(e.target.value))}
                                                     onBlur={() => {
                                                         // Clamp value to range on blur
-                                                        setLenWeight(prevValue => 
+                                                        setLenWeight(prevValue =>
                                                             prevValue < 0 ? 0 : prevValue > 100 ? 100 : prevValue
                                                         );
                                                     }}
-                                                    min="0" 
-                                                    max="100" 
+                                                    min="0"
+                                                    max="100"
                                                     style={{
                                                         width: '100px',
                                                         padding: '5px',
@@ -476,7 +494,7 @@ const Home = () => {
                                                         backgroundColor: '#eee',
                                                         color: 'black',
                                                         borderRadius: '4px',
-                                                        border: lenWeight ? '2px solid #007bff' : '1px solid #ccc' 
+                                                        border: lenWeight ? '2px solid #007bff' : '1px solid #ccc'
                                                     }}
                                                 />
                                             </span>
@@ -490,12 +508,12 @@ const Home = () => {
                                                     onChange={(e) => setConWeight(Number(e.target.value))}
                                                     onBlur={() => {
                                                         // Clamp value to range on blur
-                                                        setConWeight(prevValue => 
+                                                        setConWeight(prevValue =>
                                                             prevValue < 0.0 ? 0.0 : prevValue > 1.0 ? 1.0 : prevValue
                                                         );
                                                     }}
-                                                    min="0.0" 
-                                                    max="1.0" 
+                                                    min="0.0"
+                                                    max="1.0"
                                                     style={{
                                                         width: '100px',
                                                         padding: '5px',
@@ -503,7 +521,7 @@ const Home = () => {
                                                         backgroundColor: '#eee',
                                                         color: 'black',
                                                         borderRadius: '4px',
-                                                        border: conWeight ? '2px solid #007bff' : '1px solid #ccc' 
+                                                        border: conWeight ? '2px solid #007bff' : '1px solid #ccc'
                                                     }}
                                                 />
                                             </span>

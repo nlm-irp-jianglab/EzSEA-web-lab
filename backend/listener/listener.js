@@ -99,7 +99,7 @@ app.post("/submit", (req, res) => {
                 "spec": {
                     "containers": [{
                         "name": "ezsea",
-                        "image": "gcr.io/ncbi-research-cbb-jiang/ezsea-image:latest",
+                        "image": "us-central1-docker.pkg.dev/ncbi-research-cbb-jiang/ezsea/ezsea-image:latest",
                         "args": [
                             "ezsea", "run",
                             "-i", data.sequence,
@@ -160,7 +160,7 @@ app.post("/submit", (req, res) => {
                 "spec": {
                     "containers": [{
                         "name": "ezsea",
-                        "image": "gcr.io/ncbi-research-cbb-jiang/ezsea-image:latest",
+                        "image": "us-central1-docker.pkg.dev/ncbi-research-cbb-jiang/ezsea/ezsea-image:latest",
                         "args": [
                             "ezsea", "structure",
                             "-i", data.sequence,
