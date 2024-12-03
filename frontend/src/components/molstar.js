@@ -8,6 +8,7 @@ import { ColorNames } from "molstar/lib/mol-util/color/names";
 import { Script } from 'molstar/lib/mol-script/script';
 import { setStructureOverpaint } from 'molstar/lib/mol-plugin-state/helpers/structure-overpaint';
 import { Color } from 'molstar/lib/mol-util/color';
+import { CartoonRepresentationProvider } from 'molstar/lib/mol-repr/structure/representation/cartoon' 
 import { ViewportControls } from 'molstar/lib/mol-plugin-ui/viewport';
 import "./molstar/skin/light.scss";
 
@@ -40,7 +41,6 @@ export function MolStarWrapper({ structData, selectedResidue, hoveredResidue, co
             renderer: {
               ...renderer,
               backgroundColor: ColorNames.white,
-              spin: true,
             },
           },
         });
@@ -68,10 +68,48 @@ export function MolStarWrapper({ structData, selectedResidue, hoveredResidue, co
       });
 
       const trajectory = await window.molstar.builders.structure.parseTrajectory(myData, "pdb");
-      await window.molstar.builders.structure.hierarchy.applyPreset(
+      const structure = await window.molstar.builders.structure.hierarchy.applyPreset(
         trajectory,
         "default"
       );
+
+      const cartoon = structure.representation.representations.polymer.data.repr;
+      const reprCtx = window.molstar.representation.structure;
+      // console.log(reprCtx)
+
+      // console.log(cartoon)
+
+      cartoon.setTheme({
+        "color": {
+          "granularity": "uniform",
+          "props": {
+            "value": 13421772,
+            "saturation": 0,
+            "lightness": 0
+          },
+          "description": "Gives everything the same, uniform color.",
+          "legend": {
+            "kind": "table-legend",
+            "table": [
+              [
+                "uniform",
+                13421772
+              ]
+            ]
+          }
+        },
+        "size": {
+          "granularity": "uniform",
+          "props": {
+            "value": 1
+          },
+          "description": "Gives everything the same, uniform size."
+        }
+      });
+      // await cartoon.createOrUpdate({ ...CartoonRepresentationProvider.defaultValues, quality: 'auto' }, structure).run();
+      // this.canvas3d.add(cartoonRepresentation);
+
+
 
       // Scrolls seqlogos to selection position
       window.molstar.behaviors.interaction.click.subscribe(
