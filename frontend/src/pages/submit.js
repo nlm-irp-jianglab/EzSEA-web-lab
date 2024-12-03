@@ -17,7 +17,7 @@ const Home = () => {
     const [phylogeneticProgram, setPhylogeneticProgram] = useState("FastTree");
     const [ancestralProgram, setAncestralProgram] = useState("iqtree");
     const [alignmentProgram, setAlignmentProgram] = useState("muscle");
-    const [database, setDatabase] = useState("GTDB");
+    const [database, setDatabase] = useState("uniref90");
     const [lenWeight, setLenWeight] = useState(50);
     const [conWeight, setConWeight] = useState(.5);
 
@@ -309,15 +309,6 @@ const Home = () => {
                                             <p>Phylogenetic Tree Program:</p>
                                             <span>
                                                 <button className="bp3-button bp3-minimal"
-                                                    onClick={() => setPhylogeneticProgram('famsa')}
-                                                    style={{
-                                                        backgroundColor: phylogeneticProgram === 'famsa' ? '#007bff' : '#eee',
-                                                        color: phylogeneticProgram === 'famsa' ? 'white' : 'black'
-                                                    }}
-                                                >
-                                                    famsa
-                                                </button>
-                                                <button className="bp3-button bp3-minimal"
                                                     onClick={() => setPhylogeneticProgram('veryfasttree')}
                                                     style={{
                                                         backgroundColor: phylogeneticProgram === 'veryfasttree' ? '#007bff' : '#eee',
@@ -413,6 +404,15 @@ const Home = () => {
                                                     }}
                                                 >
                                                     clustalo
+                                                </button>
+                                                <button className="bp3-button bp3-minimal"
+                                                    onClick={() => setAlignmentProgram('famsa')}
+                                                    style={{
+                                                        backgroundColor: alignmentProgram === 'famsa' ? '#007bff' : '#eee',
+                                                        color: alignmentProgram === 'famsa' ? 'white' : 'black'
+                                                    }}
+                                                >
+                                                    famsa
                                                 </button>
                                             </span>
                                             <p>Database:</p>
