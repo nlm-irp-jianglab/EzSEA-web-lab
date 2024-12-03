@@ -874,7 +874,7 @@ const Tol = () => {
                                                     try {
                                                         logoStackRef.current.scrollToIndex(scrollInputRef.current.value);
                                                     } catch (e) {
-                                                        setNotification('Residue not found');
+                                                        setNotification('Position not found');
                                                         setTimeout(() => {
                                                             setNotification('');
                                                         }, 2000);

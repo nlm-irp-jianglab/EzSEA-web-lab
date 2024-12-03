@@ -16,7 +16,7 @@ const _position = (width, height) => (lv, transform, key, alphabet, events, impo
             onSymbolMouseOver={onSymbolMouseOver ? s => onSymbolMouseOver(key, s) : null}
             onSymbolClick={onSymbolClick ? s => onSymbolClick(key, s) : null}
             onSymbolMouseOut={onSymbolMouseOut ? s => onSymbolMouseOut(key, s) : null}
-            lv={lv} transform={transform} width={width} height={height} key={key} curr={key} important={important}/>
+            lv={lv} transform={transform} width={width} height={height} key={key} curr={key} important={important} />
     );
 };
 
@@ -117,7 +117,11 @@ const Logo = React.forwardRef(
 
         // EDIT: hardcoded width and height 
         return (
-            <svg width="fit-content" height="150" viewBox={'0 0 ' + viewBoxW + ' ' + viewBoxH} ref={ref}> 
+            <svg width="fit-content" height="150" viewBox={'0 0 ' + viewBoxW + ' ' + viewBoxH} ref={ref}>
+                <g transform="translate(80,10)">
+                    <RawLogo values={likelihood} glyphWidth={glyphWidth} stackHeight={maxHeight} alphabet={alphabet}
+                        onSymbolMouseOver={onSymbolMouseOver} onSymbolMouseOut={onSymbolMouseOut} onSymbolClick={onSymbolClick} importantResidues={importantResidues.differing_residues} />
+                </g>
                 {showGridLines && (
                     <YGridlines
                         {...{
@@ -133,12 +137,8 @@ const Logo = React.forwardRef(
                 <XAxis transform={'translate(80,' + (maxHeight + 20) + ')'} n={likelihood.length}
                     glyphWidth={glyphWidth} startpos={startpos} />
                 {mode === FREQUENCY
-                    ? <YAxisFrequency transform="translate(0,10)" width={65} height={maxHeight} ticks={2} />
-                    : <YAxis transform="translate(0,10)" width={65} height={maxHeight} bits={max} zeroPoint={zeroPoint} />}
-                <g transform="translate(80,10)">
-                    <RawLogo values={likelihood} glyphWidth={glyphWidth} stackHeight={maxHeight} alphabet={alphabet}
-                        onSymbolMouseOver={onSymbolMouseOver} onSymbolMouseOut={onSymbolMouseOut} onSymbolClick={onSymbolClick} importantResidues={importantResidues.differing_residues} />
-                </g>
+                    ? <YAxisFrequency className="yaxis" transform="translate(0,10)" width={65} height={maxHeight} ticks={2} />
+                    : <YAxis className="yaxis" transform="translate(0,10)" width={65} height={maxHeight} bits={max} zeroPoint={zeroPoint} />}
             </svg>
         );
 

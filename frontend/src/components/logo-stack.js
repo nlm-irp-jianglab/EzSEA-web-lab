@@ -67,6 +67,7 @@ const LogoStack = React.forwardRef(
                 scroller.destroy();
             });
             // init two layers of scrollers for each logo
+            // also init a listener for mousewheel events
             logoRefs.current.forEach((ref, index) => {
                 const frontScroller = new EasyScroller(ref, {
                     scrollingX: true,
@@ -89,6 +90,29 @@ const LogoStack = React.forwardRef(
                 });
                 backScrollers.current.push(backScroller);
                 frontScrollers.current.push(frontScroller);
+
+                ref.addEventListener('wheel', (event) => {
+                    event.preventDefault();
+
+
+                    if (event.deltaY < 0) {
+                        if (backScrollers.current[0].scroller.__scrollLeft < 16) {
+                            backScrollers.current.forEach((scroller) => {
+                                scroller.scroller.__publish(0, 1, 1, true);
+                            });
+                        } else {
+                            backScrollers.current.forEach((scroller) => {
+                                scroller.scroller.__publish(scroller.scroller.__scrollLeft - 15, 1, 1, true);
+                            });
+                        }
+
+                    } else {
+                        backScrollers.current.forEach((scroller) => { // TODO: BOUND UPPER LIMIT = px size of logo svg
+                            scroller.scroller.__publish(scroller.scroller.__scrollLeft + 15, 1, 1, true);
+                        });
+                    }
+
+                });
             });
 
             // Connect back and front layer of scrollers
@@ -104,6 +128,15 @@ const LogoStack = React.forwardRef(
                         if (index !== frontIndex) {
                             frontScroller.scroller.__publish(left, 0, 1, true);
                         }
+                    });
+
+                    const elements = document.getElementsByClassName("yaxis")
+                    Array.from(elements).forEach((element, index) => {
+                        // Adjust the translation value as needed (e.g., based on index or other logic)
+                        const translationValue = left / 4.6332; // Offsets the scrolling
+
+                        // Apply the translation
+                        element.style.transform = `translate(${translationValue}em, 10px)`;
                     });
                 }
             });
@@ -163,7 +196,9 @@ const LogoStack = React.forwardRef(
                     try {
                         console.log("pulsing")
                         centerOffset = ref.parentNode.clientWidth / 2;
-                        const target = ref.firstChild.children[2].children[index - 1].lastChild;
+                        console.log(ref.firstChild)
+
+                        const target = ref.firstChild.firstChild.children[index - 1].lastChild; // Target by class instead. TODO
                         //const originalFill = target.getAttribute("fill");
                         // TODO for important residues, background is blue, change to red temporarily for highlighting?
 
