@@ -170,13 +170,6 @@ const Results = () => {
                         return "Compare ancestral state";
                     }
 
-                    function showMenuOpt(node) {
-                        if (node['compare-node']) {
-                            return false;
-                        }
-                        return true;
-                    }
-
                     function compare(node, el) {
                         if (node['compare-node']) {
                             setNodeColor(node.data.name, null);
@@ -204,23 +197,16 @@ const Results = () => {
                         }
                     }
 
-                    function showDescMenuOpt(node) {
-                        if (node['compare-descendants']) {
-                            return false;
-                        }
-                        return true;
-                    }
-
                     // Toggling selection options causes this code to run in duplicate. Patching it here
                     if (!node_data['menu_items'] || node_data['menu_items'].length != 2) {
                         // Adding my custom menu
                         addCustomMenu(node_data, compareMenuCondition, function () {
                             compare(node_data, element);
-                        }, showMenuOpt);
+                        }, () => true);
 
                         addCustomMenu(node_data, compareDescMenuCondition, function () {
                             compareDescendants(node_data, element);
-                        }, showDescMenuOpt);
+                        }, () => true);
                     }
                 } else { // edits to the leaf nodes
                     try {

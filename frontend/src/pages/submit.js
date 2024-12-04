@@ -255,13 +255,12 @@ const Home = () => {
     };
 
     return (
-        <div style={{ userSelect: "none" }}>
+        <div style={{ userSelect: "none", display: "flex", flexDirection: "column", flexGrow: "1" }}>
             <Navbar />
             <div style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", flex: "1 0 auto" }}>
                 <div style={{ textAlign: "center", margin: "2em auto 0px", width: "40%", padding: "0.5em", flex: "1 1 0" }}>
-                    <img src={process.env.PUBLIC_URL + "/ezsea_logo.svg"} alt="Logo" style={{ width: "35%", marginBottom: "1em" }}></img>
-                    <h1 style={{ fontSize: "2em", marginBottom: "0.5em" }}>EzSEA</h1>
-                    <p>Enzyme Sequence Evolution Analysis is a tool that combines structure, phylogenetics, and ancestral state reconstruction to delineate an enzyme from its closest relatives and identify evolutionarily important residues.</p>
+                    <img src={process.env.PUBLIC_URL + "/ezsea_logo.svg"} alt="Logo" style={{ width: "75%", marginBottom: "1em" }}></img>
+                    <p>A tool that combines structure, phylogenetics, and ancestral state reconstruction to delineate an enzyme from its closest relatives and identify evolutionarily important residues.</p>
                     <div>
                         <div>
                             <textarea placeholder="Sequence in FASTA format" className="data-input" ref={fastaInput} onChange={validateInput} style={{ height: "150px", width: "100%", resize: "vertical", minHeight: "100px" }}></textarea>
