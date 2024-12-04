@@ -132,6 +132,9 @@ const Tol = () => {
                     }
 
                     function showMenuOpt(node) {
+                        if (node['compare-node']) {
+                            return false;
+                        }
                         return true;
                     }
 
@@ -163,7 +166,7 @@ const Tol = () => {
                     }
 
                     function showDescMenuOpt(node) {
-                        if (node['compare-descendants'] || node['compare-node']) {
+                        if (node['compare-descendants']) {
                             return false;
                         }
                         return true;
@@ -175,11 +178,11 @@ const Tol = () => {
                         // Adding my custom menu
                         addCustomMenu(node_data, compareMenuCondition, function () {
                             compare(node_data, element);
-                        }, showMenuOpt);
+                        }, () => true);
 
                         addCustomMenu(node_data, compareDescMenuCondition, function () {
                             compareDescendants(node_data, element);
-                        }, showDescMenuOpt);
+                        }, () => true);
                     }
                 } else { // edits to the leaf nodes
 
@@ -301,7 +304,6 @@ const Tol = () => {
                 return updatedLogoContent;
             }
 
-            node['compare-node'] = true;
             node['compare-descendants'] = true;
             // Calculates entropies, maps to colors and sets the colorArr state
             //calcEntropyFromMSA(desc_fa).then((entropy) => mapEntropyToColors(entropy)).then((colors) => { setColorArr(colors) });

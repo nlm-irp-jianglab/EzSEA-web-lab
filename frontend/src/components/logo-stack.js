@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useImperativeHandle } from "react";
+import React, { useState, useRef, useEffect, useImperativeHandle, useCallback } from "react";
 import Logo from './logo/logo.jsx';
 import { EasyScroller } from 'easyscroller';
 import { ProteinAlphabet } from "./logo/proteinlogo.jsx";
@@ -44,11 +44,13 @@ const LogoStack = React.forwardRef(
             }
         };
 
-        useEffect(() => { // First call should use this function
+        useEffect(() => {
             if (!data) {
                 console.error('No data provided to render Logo');
                 return;
             }
+            // Clear logoRefs
+            logoRefs.current = []; // TODO test for bugs on this
 
             setFastaContent(data);
         }, [data]);
@@ -58,17 +60,47 @@ const LogoStack = React.forwardRef(
         }, [fastaContent]);
 
         // Handling Sync Scrolling
+        const handleWheel = useCallback((event) => {
+            event.preventDefault();
+            const currScroller = backScrollers.current[0].scroller;
+            const viewWidth = logoRefs.current[0].parentNode.clientWidth; // This sucks. Have a useRef for the container. May need to pass in.
+            const logoWidth = logoRefs.current[0].clientWidth;
+
+            if (event.deltaY < 0) {
+                if (currScroller.__scrollLeft - 45 < 0) {
+                    currScroller.__publish(0, 1, 1, true);
+                } else {
+                    currScroller.__publish(currScroller.__scrollLeft - 45, 1, 1, true);
+                }
+            } else {
+                if (currScroller.__scrollLeft + 45 > logoWidth - viewWidth) {
+                    currScroller.__publish(logoWidth - viewWidth, 1, 1, true);
+                } else {
+                    currScroller.__publish(currScroller.__scrollLeft + 45, 1, 1, true);
+                }
+            }
+            // Last update to last (final logo) backScroller does not update it's own frontScroller (so no cyclical updates)
+            // Manually updating frontScroller of final logo
+            frontScrollers.current[0].scroller.__publish(currScroller.__scrollLeft, 1, 1, true);
+            // TODO: Debug
+
+        }, []);
+
         useEffect(() => {
-            // Destroy existing scrollers - This is done to prevent overlapping scrollers
+            // Cleanup previous listeners and scrollers before initializing new ones
+            logoRefs.current.forEach((ref) => {
+                ref.removeEventListener('wheel', handleWheel); // Cleanup event listeners
+            });
+
             backScrollers.current.forEach((scroller) => {
-                scroller.destroy();
+                scroller.destroy(); // Destroy back scrollers
             });
             frontScrollers.current.forEach((scroller) => {
-                scroller.destroy();
+                scroller.destroy(); // Destroy front scrollers
             });
-            // init two layers of scrollers for each logo
-            // also init a listener for mousewheel events
-            logoRefs.current.forEach((ref, index) => {
+
+            // Initialize scrollers and add event listeners
+            logoRefs.current.forEach((ref) => {
                 const frontScroller = new EasyScroller(ref, {
                     scrollingX: true,
                     scrollingY: false,
@@ -88,60 +120,55 @@ const LogoStack = React.forwardRef(
                     maxZoom: 1,
                     bouncing: false,
                 });
+
                 backScrollers.current.push(backScroller);
                 frontScrollers.current.push(frontScroller);
 
-                ref.addEventListener('wheel', (event) => {
-                    event.preventDefault();
-
-
-                    if (event.deltaY < 0) {
-                        if (backScrollers.current[0].scroller.__scrollLeft < 16) {
-                            backScrollers.current.forEach((scroller) => {
-                                scroller.scroller.__publish(0, 1, 1, true);
-                            });
-                        } else {
-                            backScrollers.current.forEach((scroller) => {
-                                scroller.scroller.__publish(scroller.scroller.__scrollLeft - 15, 1, 1, true);
-                            });
-                        }
-
-                    } else {
-                        backScrollers.current.forEach((scroller) => { // TODO: BOUND UPPER LIMIT = px size of logo svg
-                            scroller.scroller.__publish(scroller.scroller.__scrollLeft + 15, 1, 1, true);
-                        });
-                    }
-
-                });
+                // Add the wheel event listener
+                ref.addEventListener('wheel', handleWheel);
             });
 
-            // Connect back and front layer of scrollers
+            // Connect back and front layers of scrollers
             backScrollers.current.forEach((curr, index) => {
-                curr.scroller.__callback = (left, top, zoom) => {
-                    backScrollers.current.forEach((otherRef, otherIndex) => { // Set location of back scrollers
+                curr.scroller.__callback = (left) => {
+                    backScrollers.current.forEach((otherRef, otherIndex) => {
                         if (index !== otherIndex) {
                             otherRef.scroller.__scrollLeft = left;
                         }
                     });
 
-                    frontScrollers.current.forEach((frontScroller, frontIndex) => { // Update and render front scrollers
+                    frontScrollers.current.forEach((frontScroller, frontIndex) => {
                         if (index !== frontIndex) {
                             frontScroller.scroller.__publish(left, 0, 1, true);
                         }
                     });
 
-                    const elements = document.getElementsByClassName("yaxis")
-                    Array.from(elements).forEach((element, index) => {
-                        // Adjust the translation value as needed (e.g., based on index or other logic)
-                        const translationValue = left / 4.6332; // Offsets the scrolling
-
-                        // Apply the translation
+                    const elements = document.getElementsByClassName('yaxis');
+                    Array.from(elements).forEach((element) => {
+                        const translationValue = left / 4.6332; // Offset the scrolling
                         element.style.transform = `translate(${translationValue}em, 10px)`;
                     });
-                }
+                };
             });
 
-        }, [refsUpdated, fastaContent]);
+            // Cleanup function to remove listeners and destroy scrollers
+            return () => {
+                logoRefs.current.forEach((ref) => {
+                    ref.removeEventListener('wheel', handleWheel);
+                });
+
+                backScrollers.current.forEach((scroller) => {
+                    scroller.destroy();
+                });
+                frontScrollers.current.forEach((scroller) => {
+                    scroller.destroy();
+                });
+
+                backScrollers.current = [];
+                frontScrollers.current = [];
+            };
+        }, [refsUpdated, fastaContent, handleWheel]); // Add handleWheel as a dependency
+
 
         // Function to download SVG
         const downloadLogoSVG = (logoIndex, fileName) => {
@@ -194,9 +221,7 @@ const LogoStack = React.forwardRef(
                 // Pulse the residue number we scrolled to
                 logoRefs.current.forEach((ref, refIndex) => {
                     try {
-                        console.log("pulsing")
                         centerOffset = ref.parentNode.clientWidth / 2;
-                        console.log(ref.firstChild)
 
                         const target = ref.firstChild.firstChild.children[index - 1].lastChild; // Target by class instead. TODO
                         //const originalFill = target.getAttribute("fill");

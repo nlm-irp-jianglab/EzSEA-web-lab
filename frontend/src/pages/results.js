@@ -171,6 +171,9 @@ const Results = () => {
                     }
 
                     function showMenuOpt(node) {
+                        if (node['compare-node']) {
+                            return false;
+                        }
                         return true;
                     }
 
@@ -202,7 +205,7 @@ const Results = () => {
                     }
 
                     function showDescMenuOpt(node) {
-                        if (node['compare-descendants'] || node['compare-node']) {
+                        if (node['compare-descendants']) {
                             return false;
                         }
                         return true;
@@ -369,7 +372,6 @@ const Results = () => {
                 return updatedLogoContent;
             }
 
-            node['compare-node'] = true;
             node['compare-descendants'] = true;
             // Calculates entropies, maps to colors and sets the colorArr state
             //calcEntropyFromMSA(desc_fa).then((entropy) => mapEntropyToColors(entropy)).then((colors) => { setColorArr(colors) });
