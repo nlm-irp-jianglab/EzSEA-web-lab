@@ -27,7 +27,7 @@ const Status = () => {
     };
 
     return (
-        <div>
+        <div style={{ userSelect: "none", flexGrow: "1" }}>
             <Navbar />
             <ConsoleLogs jobid={jobId} ref={logs} updateStatusCallback={updateStatus} />
             {renderButtons()}
@@ -40,8 +40,6 @@ const styles = {
         opacity: '1',
         alignItems: 'center',
         display: 'flex',
-        justifyContent: 'center',
-        minHeight: '100%',
         flexDirection: 'column',
         userSelect: 'none',
         width: '100%'
