@@ -1,0 +1,479 @@
+[
+    {
+        "node": "N136",
+        "differing_residues": [
+            94,
+            148,
+            150,
+            151,
+            182,
+            183,
+            186,
+            201,
+            202,
+            208,
+            221,
+            224,
+            265,
+            267,
+            284,
+            285,
+            294,
+            296,
+            301,
+            309,
+            326
+        ],
+        "score": 203.12376136381033
+    },
+    {
+        "node": "N25",
+        "differing_residues": [
+            141,
+            304
+        ],
+        "score": 155.66432751487218
+    },
+    {
+        "node": "N20",
+        "differing_residues": [
+            147,
+            295
+        ],
+        "score": 141.43122518759657
+    },
+    {
+        "node": "N37",
+        "differing_residues": [
+            9,
+            10,
+            12,
+            15,
+            16,
+            17,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            28,
+            29,
+            32,
+            33,
+            34,
+            37,
+            38,
+            39,
+            40,
+            42,
+            43,
+            46,
+            47,
+            49,
+            52,
+            53,
+            58,
+            60,
+            61,
+            62,
+            63,
+            64,
+            65,
+            66,
+            67,
+            68,
+            71,
+            76,
+            78,
+            79,
+            80,
+            83,
+            84
+        ],
+        "score": 128.68771073437716
+    },
+    {
+        "node": "N138",
+        "differing_residues": [
+            86,
+            114,
+            115,
+            194,
+            198,
+            213,
+            272,
+            274,
+            314,
+            320,
+            345,
+            348,
+            351,
+            355
+        ],
+        "score": 108.21067933156881
+    },
+    {
+        "node": "N114",
+        "differing_residues": [
+            179,
+            191,
+            193,
+            231,
+            284,
+            357
+        ],
+        "score": 89.50234941186389
+    },
+    {
+        "node": "N163",
+        "differing_residues": [
+            87,
+            104,
+            107,
+            116,
+            160,
+            190,
+            203,
+            250,
+            252,
+            281,
+            312,
+            313,
+            358
+        ],
+        "score": 89.11642103892513
+    },
+    {
+        "node": "N19",
+        "differing_residues": [
+            0
+        ],
+        "score": 82.95025568818517
+    },
+    {
+        "node": "N101",
+        "differing_residues": [
+            30,
+            31,
+            36,
+            48,
+            129,
+            164,
+            171,
+            193,
+            290,
+            303,
+            307,
+            354
+        ],
+        "score": 56.222232403652555
+    },
+    {
+        "node": "N30",
+        "differing_residues": [
+            145,
+            259,
+            262,
+            273,
+            296
+        ],
+        "score": 52.9476187737487
+    },
+    {
+        "node": "N162",
+        "differing_residues": [
+            105,
+            202,
+            248,
+            259,
+            348,
+            354,
+            359
+        ],
+        "score": 51.02640072661239
+    },
+    {
+        "node": "N161",
+        "differing_residues": [
+            95,
+            108,
+            273,
+            285,
+            287,
+            309
+        ],
+        "score": 47.2379081462878
+    },
+    {
+        "node": "N111",
+        "differing_residues": [
+            117,
+            353
+        ],
+        "score": 44.21025642132837
+    },
+    {
+        "node": "N50",
+        "differing_residues": [
+            131,
+            284,
+            320,
+            347
+        ],
+        "score": 37.81221653248952
+    },
+    {
+        "node": "N56",
+        "differing_residues": [
+            126,
+            206,
+            221,
+            228,
+            270,
+            305,
+            313
+        ],
+        "score": 36.36072655332882
+    },
+    {
+        "node": "N193",
+        "differing_residues": [
+            2,
+            3,
+            85,
+            153
+        ],
+        "score": 33.4810848
+    },
+    {
+        "node": "N49",
+        "differing_residues": [
+            247,
+            286
+        ],
+        "score": 29.561097820247568
+    },
+    {
+        "node": "N33",
+        "differing_residues": [
+            187,
+            199,
+            272
+        ],
+        "score": 27.305884520734118
+    },
+    {
+        "node": "N134",
+        "differing_residues": [
+            190
+        ],
+        "score": 23.17048325126684
+    },
+    {
+        "node": "N77",
+        "differing_residues": [
+            220
+        ],
+        "score": 22.255019675561513
+    },
+    {
+        "node": "N139",
+        "differing_residues": [
+            104,
+            191,
+            260
+        ],
+        "score": 20.835896515898455
+    },
+    {
+        "node": "N32",
+        "differing_residues": [
+            98,
+            311
+        ],
+        "score": 19.551436250106065
+    },
+    {
+        "node": "N137",
+        "differing_residues": [
+            166,
+            228
+        ],
+        "score": 19.30222603238257
+    },
+    {
+        "node": "N85",
+        "differing_residues": [
+            305,
+            372
+        ],
+        "score": 19.029143488135357
+    },
+    {
+        "node": "N38",
+        "differing_residues": [
+            99,
+            193
+        ],
+        "score": 16.82887530454566
+    },
+    {
+        "node": "N31",
+        "differing_residues": [
+            366
+        ],
+        "score": 15.931607612930199
+    },
+    {
+        "node": "N194",
+        "differing_residues": [
+            105,
+            128
+        ],
+        "score": 13.523369692314542
+    },
+    {
+        "node": "N183",
+        "differing_residues": [
+            106
+        ],
+        "score": 9.132728749893277
+    },
+    {
+        "node": "N34",
+        "differing_residues": [],
+        "score": 0
+    },
+    {
+        "node": "N51",
+        "differing_residues": [],
+        "score": 0
+    },
+    {
+        "node": "N29",
+        "differing_residues": [],
+        "score": 0
+    },
+    {
+        "node": "N28",
+        "differing_residues": [],
+        "score": 0
+    },
+    {
+        "node": "N81",
+        "differing_residues": [],
+        "score": 0
+    },
+    {
+        "node": "N78",
+        "differing_residues": [],
+        "score": 0
+    },
+    {
+        "node": "N113",
+        "differing_residues": [],
+        "score": 0
+    },
+    {
+        "node": "N112",
+        "differing_residues": [],
+        "score": 0
+    },
+    {
+        "node": "N100",
+        "differing_residues": [],
+        "score": 0
+    },
+    {
+        "node": "N99",
+        "differing_residues": [],
+        "score": 0
+    },
+    {
+        "node": "N98",
+        "differing_residues": [],
+        "score": 0
+    },
+    {
+        "node": "N97",
+        "differing_residues": [],
+        "score": 0
+    },
+    {
+        "node": "N76",
+        "differing_residues": [],
+        "score": 0
+    },
+    {
+        "node": "N75",
+        "differing_residues": [],
+        "score": 0
+    },
+    {
+        "node": "N27",
+        "differing_residues": [],
+        "score": 0
+    },
+    {
+        "node": "N135",
+        "differing_residues": [],
+        "score": 0
+    },
+    {
+        "node": "N26",
+        "differing_residues": [],
+        "score": 0
+    },
+    {
+        "node": "N18",
+        "differing_residues": [],
+        "score": 0
+    },
+    {
+        "node": "N17",
+        "differing_residues": [],
+        "score": 0
+    },
+    {
+        "node": "N16",
+        "differing_residues": [],
+        "score": 0
+    },
+    {
+        "node": "N7",
+        "differing_residues": [],
+        "score": 0
+    },
+    {
+        "node": "N6",
+        "differing_residues": [],
+        "score": 0
+    },
+    {
+        "node": "N5",
+        "differing_residues": [],
+        "score": 0
+    },
+    {
+        "node": "N4",
+        "differing_residues": [],
+        "score": 0
+    },
+    {
+        "node": "N3",
+        "differing_residues": [],
+        "score": 0
+    },
+    {
+        "node": "N2",
+        "differing_residues": [],
+        "score": 0
+    },
+    {
+        "node": "N1",
+        "differing_residues": [],
+        "score": 0
+    }
+]
