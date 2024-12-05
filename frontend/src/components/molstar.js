@@ -54,7 +54,7 @@ export function MolStarWrapper({ structData, selectedResidue, hoveredResidue, co
       // Loading the default pdb file
 
       if (structData == null) {
-        await fetch(`${process.env.PUBLIC_URL}/example_2/Visualization/seq.pdb`)
+        await fetch(`${process.env.PUBLIC_URL}/example/seq.pdb`)
           .then((response) => response.text())
           .then((text) => {
             structData = text;

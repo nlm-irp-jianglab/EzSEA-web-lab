@@ -922,7 +922,7 @@ const Results = () => {
     }
 
     return (
-        <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+        <div style={{ height: '100%', display: 'flex', flexDirection: 'column', maxWidth: '100vw' }}>
             <Navbar pageId={`Results: ${jobId}`} />
             {isErrorPopupVisible && (
                 <ErrorPopup errorMessage="Results not available" onClose={() => setErrorPopupVisible(false)} />

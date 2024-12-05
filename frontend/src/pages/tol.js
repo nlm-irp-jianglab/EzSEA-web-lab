@@ -68,7 +68,7 @@ const Tol = () => {
     useEffect(() => {
         const fetchDefaultTree = async () => {
             try {
-                const response = await fetch(`${process.env.PUBLIC_URL}/example_2/Visualization/asr.tree`);
+                const response = await fetch(`${process.env.PUBLIC_URL}/example/asr.tree`);
                 const text = await response.text();
                 setNewickData(text);
             } catch (error) {
@@ -78,19 +78,19 @@ const Tol = () => {
 
         fetchDefaultTree();
 
-        readFastaToDict(`${process.env.PUBLIC_URL}/example_2/Visualization/asr.fa`).then(data => { setFaData(data) });
+        readFastaToDict(`${process.env.PUBLIC_URL}/example/asr.fa`).then(data => { setFaData(data) });
 
 
-        fetch(`${process.env.PUBLIC_URL}/example_2/Visualization/nodes.json`)
+        fetch(`${process.env.PUBLIC_URL}/example/nodes.json`)
             .then(response => response.json())
             .then((json) => {
                 parseNodeData(json.slice(0, 10)).then((parsedData) => setTopNodes(parsedData));
                 parseNodeData(json).then((parsedData) => setnodeData(parsedData));
             });
 
-        readFastaToDict(`${process.env.PUBLIC_URL}/example_2/Visualization/seq_trimmed.afa`).then(data => { setLeafData(data) });
+        readFastaToDict(`${process.env.PUBLIC_URL}/example/seq_trimmed.afa`).then(data => { setLeafData(data) });
 
-        // fetch(`${process.env.PUBLIC_URL}/example_2/Visualization/seq.pdb`)
+        // fetch(`${process.env.PUBLIC_URL}/example/seq.pdb`)
         //     .then(response => response.text())
         //     .then((text) => {
         //         setStructData(text);
@@ -762,7 +762,7 @@ const Tol = () => {
     }
 
     return (
-        <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+        <div style={{ height: '100%', display: 'flex', flexDirection: 'column', maxWidth: '100vw' }}>
             <Navbar pageId={"Results: ru5hnx3m2np8010"} />
             {isErrorPopupVisible && (
                 <ErrorPopup errorMessage="An error occurred!" onClose={closeErrorPopup} />
