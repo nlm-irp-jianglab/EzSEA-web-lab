@@ -113,7 +113,7 @@ const ConsoleLogs = React.forwardRef(({ jobid, updateStatusCallback }, ref) => {
 // Styling for the console-like output
 const styles = {
     container: {
-        width: '80%',
+        width: '70vw',
         margin: '20px auto',
         backgroundColor: '#2d2d2d',
         borderRadius: '5px',

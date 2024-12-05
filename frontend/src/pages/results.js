@@ -139,6 +139,8 @@ const Results = () => {
             treeRef.current.innerHTML = '';
 
             const inputHeader = inputData.split("\n")[0].substring(1);
+            console.log("Input header:", inputHeader);
+            console.log("Input Leaf Data: ", leafData[inputHeader]);
             setGapOffsetArr(calcGapOffsetArr(leafData[inputHeader])); // Setting precalculated offsets for coloring important residues
             setStructLogoMapArr(calcStructToLogoMap(leafData[inputHeader]));
             const tree = new pt.phylotree(newickData);
