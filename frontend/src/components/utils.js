@@ -133,32 +133,25 @@ export const mapEntropyToColors = async (entropyArray) => {
 
     // Function to interpolate colors based on normalized value
     const interpolateColor = (value) => {
-        // Define color stops for heatmap: from blue (low entropy) to red (high entropy)
+        // Define color stops for heatmap: from blue (low entropy) to white (moderate entropy) to red (high entropy)
         const colorStops = [
             { r: 0, g: 0, b: 255 },   // Blue (low entropy)
-            { r: 0, g: 255, b: 0 },   // Green (mid entropy)
-            { r: 255, g: 255, b: 0 }, // Yellow (high-mid entropy)
+            { r: 255, g: 255, b: 255 }, // White (moderate entropy)
             { r: 255, g: 0, b: 0 }    // Red (high entropy)
         ];
 
         // Map normalized value to a position in the color stop range
-        if (value <= 0.33) {
-            const localValue = normalize(value, 0, 0.33);
+        if (value <= 0.5) {
+            const localValue = normalize(value, 0, 0.5);
             const r = Math.round(colorStops[0].r + (colorStops[1].r - colorStops[0].r) * localValue);
             const g = Math.round(colorStops[0].g + (colorStops[1].g - colorStops[0].g) * localValue);
             const b = Math.round(colorStops[0].b + (colorStops[1].b - colorStops[0].b) * localValue);
             return `0x${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
-        } else if (value <= 0.66) {
-            const localValue = normalize(value, 0.33, 0.66);
+        } else {
+            const localValue = normalize(value, 0.5, 1);
             const r = Math.round(colorStops[1].r + (colorStops[2].r - colorStops[1].r) * localValue);
             const g = Math.round(colorStops[1].g + (colorStops[2].g - colorStops[1].g) * localValue);
             const b = Math.round(colorStops[1].b + (colorStops[2].b - colorStops[1].b) * localValue);
-            return `0x${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
-        } else {
-            const localValue = normalize(value, 0.66, 1);
-            const r = Math.round(colorStops[2].r + (colorStops[3].r - colorStops[2].r) * localValue);
-            const g = Math.round(colorStops[2].g + (colorStops[3].g - colorStops[2].g) * localValue);
-            const b = Math.round(colorStops[2].b + (colorStops[3].b - colorStops[2].b) * localValue);
             return `0x${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
         }
     };

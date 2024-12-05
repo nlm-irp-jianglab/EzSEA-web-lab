@@ -32,7 +32,7 @@ const JobQueued = () => {
             return (
                 <div className="dialog-container">
                     <p>Job ID: <span style={{ fontWeight: "bold" }}>{location.state.jobId}</span> queued on: <span style={{ fontWeight: "bold" }}>{location.state.time}</span> </p>
-                    <img src={process.env.PUBLIC_URL + "/ezsea_logo.svg"} alt="Logo" style={{ width: "15%", marginBottom: "1em" }}></img>
+                    <img src={process.env.PUBLIC_URL + "/ezsea_logo.svg"} alt="Logo" style={{ width: "60%", marginBottom: "1em" }}></img>
                     {location.state.email && <p>Completion notification will be sent via to: <span style={{ fontWeight: "bold" }}>{location.state.email}</span></p>}
                     <div className="dialog-buttons">
                         <button type="button" class="jobqueue-button" onClick={() => toSubmit()}><span class="bp3-button-text">Submit another job</span></button>
@@ -44,7 +44,7 @@ const JobQueued = () => {
     }
 
     return (
-        <div>
+        <div style={{ userSelect: "none", flexGrow: "1" }}>
             <Navbar />
             {rootMsg()}
         </div>

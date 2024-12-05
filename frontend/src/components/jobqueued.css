@@ -4,7 +4,6 @@
     align-items: center;
     display: flex;
     justify-content: center;
-    min-height: 100%;
     pointer-events: none;
     flex-direction: column;
     user-select: none;

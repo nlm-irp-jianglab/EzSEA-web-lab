@@ -177,7 +177,7 @@ app.post("/submit", (req, res) => {
                             "limits": {
                                 "nvidia.com/gpu": "1",
                                 "cpu": "4",
-                                "memory": "8Gi"
+                                "memory": "16Gi"
                             }
                         },
                         "volumeMounts": [{

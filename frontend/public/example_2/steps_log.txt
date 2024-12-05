@@ -1,9 +1,0 @@
-diamond blastp -d /database/GTDB.dmnd -q /data/EzSEA_l8rd0u3m24xwu6d/input.fasta -o /data/EzSEA_l8rd0u3m24xwu6d/Sequence/diamond_output.m8 -k 100 --quiet --threads 8
-bash -c seqtk subseq /database/GTDB.faa <(cut -f 2 /data/EzSEA_l8rd0u3m24xwu6d/Sequence/diamond_output.m8) > /data/EzSEA_l8rd0u3m24xwu6d/Sequence/seq.faa
-cd-hit -i /data/EzSEA_l8rd0u3m24xwu6d/Sequence/seq.faa -o /data/EzSEA_l8rd0u3m24xwu6d/Sequence/seq_no_dups.faa -c 1.0 -n 5
-muscle -super5 /data/EzSEA_l8rd0u3m24xwu6d/Sequence/seq_no_dups.faa -threads 8 -output /data/EzSEA_l8rd0u3m24xwu6d/Alignment/seq.afa
-goalign clean sites --char=GAP -c 0.97 -i /data/EzSEA_l8rd0u3m24xwu6d/Alignment/seq.afa -o /data/EzSEA_l8rd0u3m24xwu6d/Alignment/seq_trimmed.afa
-FastTree -lg -gamma -out /data/EzSEA_l8rd0u3m24xwu6d/Tree/seq.tree /data/EzSEA_l8rd0u3m24xwu6d/Alignment/seq_trimmed.afa
-java -jar /usr/src/app/localcolabfold/colabfold-conda/lib/python3.10/site-packages/ActEvo/bnkit.jar --aln /data/EzSEA_l8rd0u3m24xwu6d/Alignment/seq_trimmed.afa --nwk /data/EzSEA_l8rd0u3m24xwu6d/Tree/seq.tree --output-folder /data/EzSEA_l8rd0u3m24xwu6d/Ancestral --prefix seq_trimmed
-plmc
-clade_finder
