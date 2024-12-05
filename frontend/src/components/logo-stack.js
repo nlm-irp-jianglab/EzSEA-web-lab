@@ -264,7 +264,7 @@ const LogoStack = React.forwardRef(
         }));
 
         return (
-            <div style={{ overflowX: 'hidden' }}>
+            <div style={{ overflowX: 'scroll' }}>
                 {renderLogos ? (
                     Object.keys(fastaContent).map((key, index) => {
                         return (

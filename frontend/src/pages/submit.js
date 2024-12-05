@@ -23,7 +23,7 @@ const Home = () => {
     const [database, setDatabase] = useState("uniref90");
     const [lenWeight, setLenWeight] = useState(50);
     const [conWeight, setConWeight] = useState(.5);
-    const [submenu, setSubmenu] = useState("homologSearch");
+    const [submenu, setSubmenu] = useState(0);
 
     let navigate = useNavigate();
 

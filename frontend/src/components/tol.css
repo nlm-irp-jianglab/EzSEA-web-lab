@@ -231,10 +231,6 @@
     margin-right: 10px
 }
 
-.logodiv2::-webkit-scrollbar {
-    display: none;
-}
-
 .pvdiv {
     margin-top: 2px;
     height: calc(90vh - 250px);
