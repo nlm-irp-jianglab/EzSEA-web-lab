@@ -67,16 +67,16 @@ const LogoStack = React.forwardRef(
             const logoWidth = logoRefs.current[0].clientWidth;
 
             if (event.deltaY < 0) {
-                if (currScroller.__scrollLeft - 45 < 0) {
+                if (currScroller.__scrollLeft - 90 < 0) {
                     currScroller.__publish(0, 1, 1, true);
                 } else {
-                    currScroller.__publish(currScroller.__scrollLeft - 45, 1, 1, true);
+                    currScroller.__publish(currScroller.__scrollLeft - 90, 1, 1, true);
                 }
             } else {
-                if (currScroller.__scrollLeft + 45 > logoWidth - viewWidth) {
+                if (currScroller.__scrollLeft + 90 > logoWidth - viewWidth) {
                     currScroller.__publish(logoWidth - viewWidth, 1, 1, true);
                 } else {
-                    currScroller.__publish(currScroller.__scrollLeft + 45, 1, 1, true);
+                    currScroller.__publish(currScroller.__scrollLeft + 90, 1, 1, true);
                 }
             }
             // Last update to last (final logo) backScroller does not update it's own frontScroller (so no cyclical updates)
