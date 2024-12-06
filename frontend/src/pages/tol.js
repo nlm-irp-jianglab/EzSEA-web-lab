@@ -13,6 +13,11 @@ import { useParams } from 'react-router-dom';
 import * as d3 from 'd3';
 import ErrorPopup from '../components/errorpopup';
 import JSZip from 'jszip';
+import Button from '@mui/material/Button';
+import ButtonGroup from '@mui/material/ButtonGroup';
+import FilterCenterFocusIcon from '@mui/icons-material/FilterCenterFocus';
+import LabelIcon from '@mui/icons-material/Label';
+import Tooltip from '@mui/material/Tooltip';
 
 const logoFiles = {};
 
@@ -546,6 +551,18 @@ const Tol = () => {
         }
     };
 
+    const toggleLeafLabels = () => {
+        d3.selectAll('.leaf-node-label')
+            .each(function () {
+                const label = d3.select(this);
+                if (label.style("display") === "none") {
+                    label.style("display", "block");
+                } else {
+                    label.style("display", "none");
+                }
+            });
+    };
+
     const toggleLeftCollapse = () => {
         setIsLeftCollapsed(!isLeftCollapsed);
     };
@@ -796,12 +813,21 @@ const Tol = () => {
                     </div>
                 </div>
                 <div className="view">
-                    <div
-                        id="tree_container"
-                        className="tree-div"
-                        ref={treeRef}
-                        style={{ width: isLeftCollapsed ? '2%' : (pipVisible ? '50%' : '100%') }}
-                    ></div>
+                    <div className="tree-div" style={{ width: isLeftCollapsed ? '2%' : (pipVisible ? '50%' : '100%'), textAlign: "center" }}>
+                        <ButtonGroup variant="contained" aria-label="Basic button group">
+                            <Tooltip title="Recenter on input">
+                                <Button onClick={() => findAndZoom("PA14_rph")}><FilterCenterFocusIcon /></Button>
+                            </Tooltip>
+                            <Tooltip title="Toggle leaf labels">
+                                <Button onClick={() => toggleLeafLabels()}><LabelIcon /></Button>
+                            </Tooltip>
+                            <Button>Three</Button>
+                        </ButtonGroup>
+                        <div
+                            id="tree_container"
+                            ref={treeRef}
+                        ></div>
+                    </div>
 
                     {Object.keys(logoContent).length > 0 && (
                         <div className="center-console">

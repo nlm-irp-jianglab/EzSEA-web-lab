@@ -80,7 +80,7 @@ const LogoStack = React.forwardRef(
         const handleSlider = (e, value) => {
             console.log(e)
             setScrollPosition(value);
-            scrollToIndex(value-1);
+            scrollToIndex(value - 1);
         };
 
         // Handling Sync Scrolling
@@ -290,19 +290,21 @@ const LogoStack = React.forwardRef(
         }));
 
         return (
-            <div style={{ overflowX: 'hidden', textAlign: "center" }}>
-                <Slider
-                    size="small"
-                    defaultValue={1}
-                    aria-label="default"
-                    valueLabelDisplay="auto"
-                    labelPlacement="bottom"
-                    min={1}
-                    max={seqLength-1}
-                    value={scrollPosition}
-                    onChange={handleSlider}
-                    style={{ width: '70%', marginTop: '2em' }}
-                />
+            <div style={{ overflowX: 'hidden'}}>
+                <div style={{overflowY: "show", textAlign: "center"}}>
+                    <Slider
+                        size="small"
+                        defaultValue={1}
+                        aria-label="default"
+                        valueLabelDisplay="auto"
+                        labelPlacement="bottom"
+                        min={1}
+                        max={seqLength - 1}
+                        value={scrollPosition}
+                        onChange={handleSlider}
+                        style={{ width: '70%'}}
+                    />
+                </div>
                 {renderLogos ? (
                     Object.keys(fastaContent).map((key, index) => {
                         return (

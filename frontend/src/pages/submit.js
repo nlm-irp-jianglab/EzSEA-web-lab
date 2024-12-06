@@ -318,6 +318,9 @@ const Home = () => {
                     <button className="bp3-button bp3-minimal" onClick={() => setDatabase('uniref50')} style={{ backgroundColor: database === 'uniref50' ? '#007bff' : '#eee', color: database === 'uniref50' ? 'white' : 'black' }} >
                         uniref50
                     </button>
+                    <button className="bp3-button bp3-minimal" onClick={() => setDatabase('uniref100')} style={{ backgroundColor: database === 'uniref100' ? '#007bff' : '#eee', color: database === 'uniref100' ? 'white' : 'black' }} >
+                        uniref100
+                    </button>
                 </span>
                 <p>Number of Sequences to Retrieve</p>
                 <span>
