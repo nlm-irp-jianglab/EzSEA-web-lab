@@ -16,6 +16,7 @@ const YAxis = ({ bits, transform, height, width, zeroPoint }) => {
     if (zeroPoint === undefined) zeroPoint = 1.0;
     return (
 	<g transform={transform} className="yaxis">
+	  <rect height={height} width={width+2} x= "-2" fill="#FFFFFF"/>
 	  <rect height={height} width={4} x={width + 1} y={0}
 	        fill="#000000" />
 	  {ticks.map( i => (

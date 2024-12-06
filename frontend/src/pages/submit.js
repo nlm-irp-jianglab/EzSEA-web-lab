@@ -263,6 +263,9 @@ const Home = () => {
             <div>
                 <p>Alignment Program:</p>
                 <span>
+                    <button className="bp3-button bp3-minimal" onClick={() => setAlignmentProgram('famsa')} style={{ backgroundColor: alignmentProgram === 'famsa' ? '#007bff' : '#eee', color: alignmentProgram === 'famsa' ? 'white' : 'black' }} >
+                        FAMSA
+                    </button>
                     <button className="bp3-button bp3-minimal" onClick={() => setAlignmentProgram('muscle')} style={{ backgroundColor: alignmentProgram === 'muscle' ? '#007bff' : '#eee', color: alignmentProgram === 'muscle' ? 'white' : 'black' }} >
                         MUSCLE
                     </button>
@@ -271,9 +274,6 @@ const Home = () => {
                     </button>
                     <button className="bp3-button bp3-minimal" onClick={() => setAlignmentProgram('clustalo')} style={{ backgroundColor: alignmentProgram === 'clustalo' ? '#007bff' : '#eee', color: alignmentProgram === 'clustalo' ? 'white' : 'black' }} >
                         Clustal Omega
-                    </button>
-                    <button className="bp3-button bp3-minimal" onClick={() => setAlignmentProgram('famsa')} style={{ backgroundColor: alignmentProgram === 'famsa' ? '#007bff' : '#eee', color: alignmentProgram === 'famsa' ? 'white' : 'black' }} >
-                        FAMSA
                     </button>
                 </span>
                 <p>Phylogenetic Tree Program:</p>
@@ -293,11 +293,11 @@ const Home = () => {
                 </span>
                 <p>Ancestral State Inference Program:</p>
                 <span>
-                    <button className="bp3-button bp3-minimal" onClick={() => setAncestralProgram('GRASP')} style={{ backgroundColor: ancestralProgram === 'GRASP' ? '#007bff' : '#eee', color: ancestralProgram === 'GRASP' ? 'white' : 'black' }} >
-                        GRASP
-                    </button>
                     <button className="bp3-button bp3-minimal" onClick={() => setAncestralProgram('iqtree')} style={{ backgroundColor: ancestralProgram === 'iqtree' ? '#007bff' : '#eee', color: ancestralProgram === 'iqtree' ? 'white' : 'black' }} >
                         IQ-TREE
+                    </button>
+                    <button className="bp3-button bp3-minimal" onClick={() => setAncestralProgram('GRASP')} style={{ backgroundColor: ancestralProgram === 'GRASP' ? '#007bff' : '#eee', color: ancestralProgram === 'GRASP' ? 'white' : 'black' }} >
+                        GRASP
                     </button>
                     <button className="bp3-button bp3-minimal" onClick={() => setAncestralProgram('raxml-ng')} style={{ backgroundColor: ancestralProgram === 'raxml-ng' ? '#007bff' : '#eee', color: ancestralProgram === 'raxml-ng' ? 'white' : 'black' }} >
                         RAxML-NG
@@ -453,8 +453,8 @@ const Home = () => {
 
                                     <div className="bp3-card bp3-elevation-0">
                                         <div>
-                                            <Tabs value={submenu} onChange={(e, value) => setSubmenu(value)} aria-label="basic tabs example" style={{ justifyContent: "center"}}
-                                                variant="scrollable" 
+                                            <Tabs value={submenu} onChange={(e, value) => setSubmenu(value)} aria-label="basic tabs example" style={{ justifyContent: "center" }}
+                                                variant="scrollable"
                                             >
                                                 <Tab label="Homolog" />
                                                 <Tab label="Phylogeny" />

@@ -175,7 +175,7 @@ const Results = () => {
                     function compare(node, el) {
                         if (node['compare-node']) {
                             setNodeColor(node.data.name, null);
-                            removeNodeFromLogo(node);
+                            removeNodeFromLogo(node, false);
                         } else {
                             pushNodeToLogo(node);
                         }
@@ -192,7 +192,7 @@ const Results = () => {
                     function compareDescendants(node, el) {
                         // change color of circle to yellow
                         if (node['compare-descendants']) {
-                            removeNodeFromLogo(node);
+                            removeNodeFromLogo(node, true);
                             setNodeColor(node.data.name, null);
                         } else {
                             pushNodeToEntropyLogo(node, true);
@@ -216,6 +216,7 @@ const Results = () => {
                         var ec = ecData[node_data.data.name];
                         if (ec.ec_number) {
                             const node_label = element.select("text");
+                            node_label.node().classList.add("leaf-node-label");
                             const transform = node_label.attr("transform");
                             const translateRegex = /translate\s*\(\s*([\d.-]+)\s*,\s*([\d.-]+)\s*\)/;
                             const match = transform.match(translateRegex);
@@ -227,7 +228,6 @@ const Results = () => {
                     }
                     if (inputHeader === node_data.data.name) {
                         element.select("text").style("fill", "palevioletred").style("stoke", "palevioletred").style("font-size", "18px");
-
                     }
                 }
             }
@@ -309,10 +309,13 @@ const Results = () => {
 
             // Add or remove node from logoContent
             if (node.data.name in updatedLogoContent) {
-                node['compare-node'] = false;
-                node['compare-descendants'] = false;
-
-                delete updatedLogoContent[node.data.name];  // Remove the node
+                if (clade) {
+                    node['compare-descendants'] = false;
+                    delete updatedLogoContent["Clade of " + node.data.name];  // Remove the node
+                } else {
+                    node['compare-node'] = false;
+                    delete updatedLogoContent["ASR of " + node.data.name];  // Remove the node
+                }
                 setNodeColor(node.data.name, null);
             }
 
@@ -328,14 +331,9 @@ const Results = () => {
         setLogoContent(prevLogoContent => {
             const updatedLogoContent = { ...prevLogoContent };
             // Add or do nothing if node is already in logoContent
-            if (node.data.name in updatedLogoContent) {
-                return updatedLogoContent;
-            } else {
-                node['compare-node'] = true;
-                updatedLogoContent[node.data.name] = `>${node.data.name}\n${faData[node.data.name]}`;
-                setNodeColor(node.data.name, "red");
-
-            }
+            node['compare-node'] = true;
+            updatedLogoContent["ASR of " + node.data.name] = `>${node.data.name}\n${faData[node.data.name]}`;
+            setNodeColor(node.data.name, "red");
 
             return updatedLogoContent;  // Return the new state
         });
@@ -364,7 +362,7 @@ const Results = () => {
             // Calculates entropies, maps to colors and sets the colorArr state
             //calcEntropyFromMSA(desc_fa).then((entropy) => mapEntropyToColors(entropy)).then((colors) => { setColorArr(colors) });
 
-            updatedLogoContent["Descendants of " + node.data.name] = desc_fa;
+            updatedLogoContent["Clade of " + node.data.name] = desc_fa;
             setNodeColor(node.data.name, "yellow");
 
             return updatedLogoContent;  // Return the new state
@@ -1037,7 +1035,7 @@ const Results = () => {
                                                     try {
                                                         logoStackRef.current.scrollToIndex(scrollInputRef.current.value);
                                                     } catch (e) {
-                                                        setNotification('Residue not found');
+                                                        setNotification('Position not found');
                                                         setTimeout(() => {
                                                             setNotification('');
                                                         }, 2000);

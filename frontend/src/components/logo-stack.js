@@ -3,6 +3,8 @@ import Logo from './logo/logo.jsx';
 import { EasyScroller } from 'easyscroller';
 import { ProteinAlphabet } from "./logo/proteinlogo.jsx";
 import "./logojs.css";
+import { Slider } from '@mui/material';
+import { E } from "./glyphs/E.jsx";
 
 const LogoStack = React.forwardRef(
     /*
@@ -18,6 +20,8 @@ const LogoStack = React.forwardRef(
         const backScrollers = useRef([]);
         const frontScrollers = useRef([]);
         const [renderLogos, setRenderLogos] = useState(false);
+        const [scrollPosition, setScrollPosition] = useState(0);
+        const [seqLength, setSeqLength] = useState(0);
 
         const fetchFastaFiles = async (data) => {
             let fastaData = {};
@@ -57,40 +61,60 @@ const LogoStack = React.forwardRef(
 
         useEffect(() => {
             setRenderLogos(true);
+
+            if (Object.keys(fastaContent).length > 0) {
+                var firstFa = fastaContent[Object.keys(fastaContent)[0]];
+                firstFa = firstFa.substring(firstFa.indexOf('\n') + 1);
+                setSeqLength(firstFa.length);
+            }
         }, [fastaContent]);
 
+        const scrollToIndex = (index) => {
+            var rectSize = seqLength > 999 ? 20 : 21.5;
+
+            backScrollers.current.forEach((scroller) => {
+                scroller.scroller.__publish(index * rectSize, 1, 1, true);
+            });
+        };
+
+        const handleSlider = (e, value) => {
+            console.log(e)
+            setScrollPosition(value);
+            scrollToIndex(value-1);
+        };
+
         // Handling Sync Scrolling
-        const handleWheel = useCallback((event) => {
-            event.preventDefault();
-            const currScroller = backScrollers.current[0].scroller;
-            const viewWidth = logoRefs.current[0].parentNode.clientWidth; // This sucks. Have a useRef for the container. May need to pass in.
-            const logoWidth = logoRefs.current[0].clientWidth;
+        // const handleWheel = useCallback((event) => {
+        //     event.preventDefault();
+        //     const currScroller = backScrollers.current[0].scroller;
+        //     const viewWidth = logoRefs.current[0].parentNode.clientWidth; // This sucks. Have a useRef for the container. May need to pass in.
+        //     const logoWidth = logoRefs.current[0].clientWidth;
 
-            if (event.deltaY < 0) {
-                if (currScroller.__scrollLeft - 90 < 0) {
-                    currScroller.__publish(0, 1, 1, true);
-                } else {
-                    currScroller.__publish(currScroller.__scrollLeft - 90, 1, 1, true);
-                }
-            } else {
-                if (currScroller.__scrollLeft + 90 > logoWidth - viewWidth) {
-                    currScroller.__publish(logoWidth - viewWidth, 1, 1, true);
-                } else {
-                    currScroller.__publish(currScroller.__scrollLeft + 90, 1, 1, true);
-                }
-            }
-            // Last update to last (final logo) backScroller does not update it's own frontScroller (so no cyclical updates)
-            // Manually updating frontScroller of final logo
-            frontScrollers.current[0].scroller.__publish(currScroller.__scrollLeft, 1, 1, true);
-            // TODO: Debug
+        //     if (event.deltaY < 0) {
+        //         if (currScroller.__scrollLeft - 90 < 0) {
+        //             currScroller.__publish(0, 1, 1, true);
+        //         } else {
+        //             currScroller.__publish(currScroller.__scrollLeft - 90, 1, 1, true);
+        //         }
+        //     } else {
+        //         if (currScroller.__scrollLeft + 90 > logoWidth - viewWidth) {
+        //             currScroller.__publish(logoWidth - viewWidth, 1, 1, true);
+        //         } else {
+        //             currScroller.__publish(currScroller.__scrollLeft + 90, 1, 1, true);
+        //         }
+        //     }
+        //     // Last update to last (final logo) backScroller does not update it's own frontScroller (so no cyclical updates)
+        //     // Manually updating frontScroller of final logo
+        //     frontScrollers.current[0].scroller.__publish(currScroller.__scrollLeft, 1, 1, true);
+        //     // TODO: Debug
 
-        }, []);
+        // }, []);
 
         useEffect(() => {
             // Cleanup previous listeners and scrollers before initializing new ones
-            logoRefs.current.forEach((ref) => {
-                ref.removeEventListener('wheel', handleWheel); // Cleanup event listeners
-            });
+            // logoRefs.current.forEach((ref) => {
+            //     ref.removeEventListener('wheel', handleWheel); // Cleanup event listeners
+            // });
 
             backScrollers.current.forEach((scroller) => {
                 scroller.destroy(); // Destroy back scrollers
@@ -125,7 +149,7 @@ const LogoStack = React.forwardRef(
                 frontScrollers.current.push(frontScroller);
 
                 // Add the wheel event listener
-                ref.addEventListener('wheel', handleWheel);
+                // ref.addEventListener('wheel', handleWheel);
             });
 
             // Connect back and front layers of scrollers
@@ -148,14 +172,16 @@ const LogoStack = React.forwardRef(
                         const translationValue = left / 4.6332; // Offset the scrolling
                         element.style.transform = `translate(${translationValue}em, 10px)`;
                     });
+
+                    setScrollPosition(Math.round(left / 21.5));
                 };
             });
 
             // Cleanup function to remove listeners and destroy scrollers
             return () => {
-                logoRefs.current.forEach((ref) => {
-                    ref.removeEventListener('wheel', handleWheel);
-                });
+                // logoRefs.current.forEach((ref) => {
+                //     ref.removeEventListener('wheel', handleWheel);
+                // });
 
                 backScrollers.current.forEach((scroller) => {
                     scroller.destroy();
@@ -167,7 +193,7 @@ const LogoStack = React.forwardRef(
                 backScrollers.current = [];
                 frontScrollers.current = [];
             };
-        }, [refsUpdated, fastaContent, handleWheel]); // Add handleWheel as a dependency
+        }, [refsUpdated, fastaContent]); // Add handleWheel as a dependency
 
 
         // Function to download SVG
@@ -264,7 +290,19 @@ const LogoStack = React.forwardRef(
         }));
 
         return (
-            <div style={{ overflowX: 'scroll' }}>
+            <div style={{ overflowX: 'hidden', textAlign: "center" }}>
+                <Slider
+                    size="small"
+                    defaultValue={1}
+                    aria-label="default"
+                    valueLabelDisplay="auto"
+                    labelPlacement="bottom"
+                    min={1}
+                    max={seqLength-1}
+                    value={scrollPosition}
+                    onChange={handleSlider}
+                    style={{ width: '70%', marginTop: '2em' }}
+                />
                 {renderLogos ? (
                     Object.keys(fastaContent).map((key, index) => {
                         return (
@@ -296,7 +334,7 @@ const LogoStack = React.forwardRef(
                                                 }}
                                                 onClick={() => {
                                                     setActiveButton(`entropy-${index}`);
-                                                    applyEntropyStructColor(key.substring(15));
+                                                    applyEntropyStructColor(key.replace("Clade of ", ""));
                                                 }}
                                             >
                                                 <svg
@@ -311,8 +349,8 @@ const LogoStack = React.forwardRef(
                                                 </svg>
                                             </button>
                                         )}
-                                        {importantResiduesList[key] &&
-                                            importantResiduesList[key].differing_residues.length > 0 && (
+                                        {importantResiduesList[key.replace("ASR of ", "")] &&
+                                            importantResiduesList[key.replace("ASR of ", "")].differing_residues.length > 0 && (
                                                 <button
                                                     className={`logo-color-btn logo-btn ${activeButton === `important-${index}` ? "active" : ""
                                                         }`}
@@ -327,7 +365,7 @@ const LogoStack = React.forwardRef(
                                                     onClick={() => {
                                                         setActiveButton(`important-${index}`);
                                                         applyImportantStructColor(
-                                                            importantResiduesList[key].differing_residues,
+                                                            importantResiduesList[key.replace("ASR of ", "")].differing_residues,
                                                             fastaContent[key]
                                                         );
                                                     }}
@@ -404,7 +442,7 @@ const LogoStack = React.forwardRef(
                                         alphabet={ProteinAlphabet}
                                         onSymbolClick={onColumnClick}
                                         importantResidues={
-                                            importantResiduesList[key] || {
+                                            importantResiduesList[key.replace("ASR of ", "")] || {
                                                 differing_residues: [], // Default to empty list if no important residues are provided
                                             }
                                         }

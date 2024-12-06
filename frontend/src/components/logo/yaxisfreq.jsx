@@ -14,6 +14,7 @@ const YAxisFrequency = ({ ticks, transform, height, width }) => {
     const _ticks = xrange(ticks + 1).map(x => x / ticks);
     return (
 	<g transform={transform} className="yaxis">
+	  <rect height={height} width={width+2} x= "-2" fill="#FFFFFF"/>
 	  <rect height={height} width={4} x={width + 1} y="0"
 	        fill="#000000" />
 	  {_ticks.map( x => (

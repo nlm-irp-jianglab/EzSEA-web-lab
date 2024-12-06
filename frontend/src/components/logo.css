@@ -96,6 +96,7 @@
 }
 .logo_yaxis {
   position: absolute;
+  opacity: 1;
 }
 .logo_wrapper {
   background: #eee;

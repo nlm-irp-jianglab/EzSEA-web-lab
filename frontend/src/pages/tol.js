@@ -131,17 +131,10 @@ const Tol = () => {
                         return "Compare ancestral state";
                     }
 
-                    function showMenuOpt(node) {
-                        if (node['compare-node']) {
-                            return false;
-                        }
-                        return true;
-                    }
-
                     function compare(node, el) {
                         if (node['compare-node']) {
                             setNodeColor(node.data.name, null);
-                            removeNodeFromLogo(node);
+                            removeNodeFromLogo(node, false);
                         } else {
                             pushNodeToLogo(node);
                         }
@@ -158,18 +151,11 @@ const Tol = () => {
                     function compareDescendants(node, el) {
                         // change color of circle to yellow
                         if (node['compare-descendants']) {
-                            removeNodeFromLogo(node);
+                            removeNodeFromLogo(node, true);
                             setNodeColor(node.data.name, null);
                         } else {
                             pushNodeToEntropyLogo(node, true);
                         }
-                    }
-
-                    function showDescMenuOpt(node) {
-                        if (node['compare-descendants']) {
-                            return false;
-                        }
-                        return true;
                     }
 
                     // Toggling selection options causes this code to run in duplicate. Patchy fix
@@ -184,8 +170,8 @@ const Tol = () => {
                             compareDescendants(node_data, element);
                         }, () => true);
                     }
-                } else { // edits to the leaf nodes
-
+                } else { // append classname to leaf nodes
+                    element.select("text").node().classList.add("leaf-node-label");
                 }
             }
 
@@ -248,22 +234,25 @@ const Tol = () => {
 
             treeRef.current.appendChild(tree.display.show());
 
-            // Pan to input query
+            // Start with pan to input query
             findAndZoom("PA14_rph");
         }
-    }, [newickData, isRadial, faData]);
+    }, [newickData, faData]);
 
-    const removeNodeFromLogo = (node) => {
+    const removeNodeFromLogo = (node, clade = false) => {
         // Remove node from logoContent
         setLogoContent(prevLogoContent => {
             const updatedLogoContent = { ...prevLogoContent };
 
             // Add or remove node from logoContent
             if (node.data.name in updatedLogoContent) {
-                node['compare-node'] = false;
-                node['compare-descendants'] = false;
-
-                delete updatedLogoContent[node.data.name];  // Remove the node
+                if (clade) {
+                    node['compare-descendants'] = false;
+                    delete updatedLogoContent["Clade of " + node.data.name];  // Remove the node
+                } else {
+                    node['compare-node'] = false;
+                    delete updatedLogoContent["ASR of " + node.data.name];  // Remove the node
+                }
                 setNodeColor(node.data.name, null);
             }
 
@@ -276,14 +265,9 @@ const Tol = () => {
         setLogoContent(prevLogoContent => {
             const updatedLogoContent = { ...prevLogoContent };
             // Add or do nothing if node is already in logoContent
-            if (node.data.name in updatedLogoContent) {
-                return updatedLogoContent;
-            } else {
-                node['compare-node'] = true;
-                updatedLogoContent[node.data.name] = `>${node.data.name}\n${faData[node.data.name]}`;
-                setNodeColor(node.data.name, "red");
-
-            }
+            node['compare-node'] = true;
+            updatedLogoContent["ASR of " + node.data.name] = `>${node.data.name}\n${faData[node.data.name]}`;
+            setNodeColor(node.data.name, "red");
 
             return updatedLogoContent;  // Return the new state
         });
@@ -308,7 +292,7 @@ const Tol = () => {
             // Calculates entropies, maps to colors and sets the colorArr state
             //calcEntropyFromMSA(desc_fa).then((entropy) => mapEntropyToColors(entropy)).then((colors) => { setColorArr(colors) });
 
-            updatedLogoContent["Descendants of " + node.data.name] = desc_fa;
+            updatedLogoContent["Clade of " + node.data.name] = desc_fa;
             setNodeColor(node.data.name, "yellow");
 
             return updatedLogoContent;  // Return the new state
