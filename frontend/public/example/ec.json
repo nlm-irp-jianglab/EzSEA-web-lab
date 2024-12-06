@@ -1,853 +1,2001 @@
 {
-    "GCA_934295145.1_01971": {
-        "ec_number": null,
+    "RNPH_PSEAE": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": true
+    },
+    "RNPH_PSEMY": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_934358495.1_01397": {
-        "ec_number": null,
+    "N2JHL7_9PSED": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_022781925.1_02381": {
-        "ec_number": null,
+    "A0A178LIA6_9PSED": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_902475415.1_00344": {
-        "ec_number": null,
+    "A0A839T263_AZOMA": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_944380065.1_01046": {
-        "ec_number": null,
+    "A0A1H1XD34_9PSED": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_946546945.1_00145": {
-        "ec_number": null,
+    "A0A562I1K0_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_946491665.1_02493": {
-        "ec_number": null,
+    "RNPH_PSEF5": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_018716485.1_00446": {
-        "ec_number": null,
+    "A0A8D3XYE5_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_016902345.1_00330": {
-        "ec_number": null,
+    "RNPH_PSEU2": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_019120075.1_00231": {
-        "ec_number": null,
+    "RNPH_PSESM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_025566885.1_00903": {
-        "ec_number": null,
+    "A0A1H2I351_9PSED": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_029101305.1_01539": {
-        "ec_number": null,
+    "A0A553GYI7_9PSED": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_944385995.1_00508": {
-        "ec_number": null,
+    "RNPH_AZOVD": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_947385875.1_00298": {
-        "ec_number": null,
+    "A0AA47E2Y7_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_900759575.1_01937": {
-        "ec_number": null,
+    "A0A1I5JN19_9PSED": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_900167005.1_02186": {
-        "ec_number": null,
+    "A0A2I0CPK9_9PSED": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_946484175.1_00613": {
-        "ec_number": null,
+    "A0A7L5RVC9_9PSED": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_937902625.1_00558": {
-        "ec_number": null,
+    "A0A0B3BK83_9PSED": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_000424105.1_00487": {
-        "ec_number": null,
+    "Q1I2T6_PSEE4": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_022796875.1_01250": {
-        "ec_number": null,
+    "RNPH_PSEPK": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_002159185.1_00721": {
-        "ec_number": null,
+    "A0A1H4VB17_9PSED": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_905215645.1_00900": {
-        "ec_number": null,
+    "A0A1H7NE76_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_017084465.1_05809": {
-        "ec_number": null,
+    "A0A7U7EKF7_9PSED": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_000270305.1_00386": {
-        "ec_number": null,
+    "A0A2Z3I827_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_900543305.1_01963": {
-        "ec_number": null,
+    "A0A1V0B2T4_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_947167105.1_02853": {
-        "ec_number": null,
+    "A0A0K1XDM3_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_944380675.1_00677": {
-        "ec_number": null,
+    "A0A1I6C334_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_026723765.1_02752": {
-        "ec_number": null,
+    "A0A1H2HTY3_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_900095825.1_01879": {
-        "ec_number": null,
+    "A0A2P4F0Q0_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_000025305.1_01003": {
-        "ec_number": null,
+    "A0A1S8DLV4_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_016901605.1_01610": {
-        "ec_number": null,
+    "A0A974RWP0_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_902785705.1_00036": {
-        "ec_number": null,
+    "A0A1I4QSV4_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_937915725.1_01780": {
-        "ec_number": null,
+    "A0A1I4M0C1_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_937915885.1_01303": {
-        "ec_number": null,
+    "A0A1H1XGY3_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_946403735.1_00048": {
+    "UPI0012398C9A": {
         "ec_number": null,
         "is_top_homolog": false
     },
-    "GCA_900545545.1_02329": {
-        "ec_number": null,
+    "A0A5J6QBM4_9PSED": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_937877565.1_02545": {
+    "UPI001C97FDF5": {
         "ec_number": null,
         "is_top_homolog": false
     },
-    "GCA_905233135.1_01376": {
-        "ec_number": null,
+    "A0A139SUW9_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_947165185.1_01278": {
-        "ec_number": null,
+    "A0A437Q5A2_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_937916025.1_02608": {
-        "ec_number": null,
+    "A0A2G4DXP5_9PSED": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_900141865.1_01679": {
+    "UPI0005509A17": {
         "ec_number": null,
         "is_top_homolog": false
     },
-    "GCA_946407175.1_00985": {
-        "ec_number": null,
+    "A0A2A5CJJ2_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_949287625.1_01180": {
+    "UPI00100E66B8": {
         "ec_number": null,
         "is_top_homolog": false
     },
-    "GCA_937877545.1_01406": {
-        "ec_number": null,
+    "A0A3P3VLD7_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_902773295.1_01593": {
-        "ec_number": null,
+    "K4KL28_SIMAS": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_905201305.1_00201": {
-        "ec_number": null,
+    "A0A1D2X5R2_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_946611595.1_00209": {
-        "ec_number": null,
+    "A0A081K6F4_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_900554855.1_01200": {
-        "ec_number": null,
+    "A0A1X7AQC3_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_902475455.1_00182": {
+    "UPI0006843F50": {
         "ec_number": null,
         "is_top_homolog": false
     },
-    "GCA_006742065.1_04040": {
-        "ec_number": null,
+    "A0A853I893_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_959602365.1_00044": {
-        "ec_number": null,
+    "A0A4R6TYK0_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_029211325.2_00663": {
-        "ec_number": null,
+    "A0A1N6W123_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_900764925.1_02115": {
+    "A0AAP4X2L3_9GAMM": {
         "ec_number": null,
         "is_top_homolog": false
     },
-    "GCA_958477305.1_01613": {
-        "ec_number": null,
+    "A0A9E8KJR5_9ALTE": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_019116915.1_00274": {
-        "ec_number": null,
+    "A0A9E4DAE7_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_025566885.1_01773": {
+    "UPI001F976C39": {
         "ec_number": null,
         "is_top_homolog": false
     },
-    "GCA_902475455.1_01137": {
-        "ec_number": null,
+    "A0A2E0YWF8_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_900551775.1_02648": {
-        "ec_number": null,
+    "A0A8J7FIQ2_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_900086585.1_02735": {
-        "ec_number": null,
+    "A0A1X9NE49_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_949451265.1_01269": {
+    "UPI000AD3DE2D": {
         "ec_number": null,
         "is_top_homolog": false
     },
-    "GCA_944385615.1_01426": {
+    "UPI00259389FD": {
         "ec_number": null,
         "is_top_homolog": false
     },
-    "GCA_910587205.1_01888": {
-        "ec_number": null,
+    "A0A369WCP0_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_019119085.1_00721": {
-        "ec_number": null,
+    "A0A2E0VKU6_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_949916125.1_00590": {
-        "ec_number": null,
+    "A0A9X3EDV0_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_000239295.1_00585": {
-        "ec_number": null,
+    "A0A430KLT1_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_949289455.1_00057": {
-        "ec_number": null,
+    "A0A1A9F3U2_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_022846095.1_02343": {
+    "UPI0023DCD3C2": {
         "ec_number": null,
         "is_top_homolog": false
     },
-    "GCA_937863835.1_02377": {
-        "ec_number": null,
+    "A0A1I2V9M8_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_946546945.1_01827": {
-        "ec_number": null,
+    "A0A7U8C478_NEPCE": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_029265405.1_01970": {
-        "ec_number": null,
+    "A0A4R2KMF7_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_025566885.1_00190": {
-        "ec_number": null,
+    "A0A4Y8UGC9_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_029267955.1_00915": {
-        "ec_number": null,
+    "A0A928UYH1_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_946614405.1_00557": {
-        "ec_number": null,
+    "A0A3N2QEI4_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_029267755.1_00999": {
-        "ec_number": null,
+    "S6GM19_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_002385825.1_01315": {
+    "UPI00124D4817": {
         "ec_number": null,
         "is_top_homolog": false
     },
-    "GCA_000270305.1_01068": {
-        "ec_number": null,
+    "F3KH80_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_030266915.1_00653": {
-        "ec_number": null,
+    "A0A966DVU1_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_902475415.1_01904": {
-        "ec_number": null,
+    "A0A7Y6Y9G7_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_944380065.1_00208": {
-        "ec_number": null,
+    "A0A839IQL8_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_900557275.1_00584": {
-        "ec_number": null,
+    "A0A352R297_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_902475415.1_00911": {
+    "UPI00201B45CD": {
         "ec_number": null,
         "is_top_homolog": false
     },
-    "GCA_946491665.1_02554": {
-        "ec_number": null,
+    "A0A1R1LKR8_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_946491665.1_02306": {
-        "ec_number": null,
+    "A0A2A2FCH4_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_944380065.1_00020": {
+    "UPI00232EF4E9": {
         "ec_number": null,
         "is_top_homolog": false
     },
-    "GCA_900182905.1_01727": {
+    "UPI0020BF6B82": {
         "ec_number": null,
         "is_top_homolog": false
     },
-    "GCA_003122485.1_01672": {
-        "ec_number": null,
+    "A0A0F2NSI2_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_004345265.1_03461": {
-        "ec_number": null,
+    "A0A2A2I0G9_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_946546945.1_02211": {
+    "UPI001D0D199A": {
         "ec_number": null,
         "is_top_homolog": false
     },
-    "GCA_022781925.1_00121": {
-        "ec_number": null,
+    "A0A4Z0LZD3_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_000270305.1_00148": {
-        "ec_number": null,
+    "A0A1Y0FZZ2_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_025566885.1_02132": {
+    "UPI000DB92042": {
         "ec_number": null,
         "is_top_homolog": false
     },
-    "GCA_958477305.1_02176": {
-        "ec_number": null,
+    "A0A0P7Z742_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_031263335.1_01097": {
-        "ec_number": null,
+    "A0A6C1MVN0_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_910588885.1_02541": {
-        "ec_number": null,
+    "A0A5C9A377_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_022796875.1_02972": {
-        "ec_number": null,
+    "A0A2G2QTL4_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_905199445.1_02556": {
-        "ec_number": null,
+    "A0A2S5KSA8_9PROT": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_934358495.1_02199": {
-        "ec_number": null,
+    "A0A962JQN8_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_022796875.1_01591": {
+    "UPI00040B4A97": {
         "ec_number": null,
         "is_top_homolog": false
     },
-    "GCA_902475415.1_01379": {
+    "UPI002ED4AB5D": {
         "ec_number": null,
         "is_top_homolog": false
     },
-    "GCA_946491665.1_00048": {
-        "ec_number": null,
+    "A0A3N1P383_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_947649225.1_01495": {
-        "ec_number": null,
+    "A0A7R6SUQ0_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_015057825.1_02114": {
-        "ec_number": null,
+    "A0A3D2A0J3_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_031261295.1_00586": {
+    "UPI000FCA21C0": {
         "ec_number": null,
         "is_top_homolog": false
     },
-    "GCA_025566885.1_01042": {
-        "ec_number": null,
+    "A0A4P7XDC3_9ALTE": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_000270305.1_02003": {
-        "ec_number": null,
+    "A0A3N2DH21_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_031270275.1_01070": {
-        "ec_number": null,
+    "A0A0S2KH29_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_022796875.1_00769": {
-        "ec_number": null,
+    "A0A661HFI9_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_029265975.1_00807": {
+    "UPI001265431D": {
         "ec_number": null,
         "is_top_homolog": false
     },
-    "GCA_030915445.1_02622": {
-        "ec_number": null,
+    "A0A1N7P3K2_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_029268065.1_00301": {
-        "ec_number": null,
+    "A0A2D4S2R8_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_003641185.1_02897": {
-        "ec_number": null,
+    "A0A5A9W5W7_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_000176175.1_04301": {
+    "UPI0022FD7089": {
         "ec_number": null,
         "is_top_homolog": false
     },
-    "GCA_946549035.1_02691": {
-        "ec_number": null,
+    "W9VP95_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_015057825.1_00221": {
-        "ec_number": null,
+    "A0A099LC81_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_946546945.1_01384": {
-        "ec_number": null,
+    "C7R955_KANKD": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_910588885.1_02007": {
-        "ec_number": null,
+    "A0A2D5WR61_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_014202115.1_01334": {
-        "ec_number": null,
+    "A0A2G6KU94_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_949744165.1_01450": {
-        "ec_number": null,
+    "A0A0J7J494_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_026415615.1_00135": {
-        "ec_number": null,
+    "A0A936D2G3_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_017511185.1_01349": {
+    "UPI00129AB85F": {
         "ec_number": null,
         "is_top_homolog": false
     },
-    "GCA_028704435.1_01127": {
-        "ec_number": null,
+    "A0A1E7PXD3_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_946407675.1_01409": {
-        "ec_number": null,
+    "A0A081NGW5_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_028697725.1_02185": {
-        "ec_number": null,
+    "A0A165SLE0_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_947649225.1_01990": {
-        "ec_number": null,
+    "A0A845FU16_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_946611595.1_01461": {
-        "ec_number": null,
+    "A0A962ZTA8_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_947302945.1_00220": {
-        "ec_number": null,
+    "B7S0M4_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_947307505.1_00277": {
-        "ec_number": null,
+    "RNPH_MARN8": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_022796875.1_00279": {
-        "ec_number": null,
+    "N6X0Q6_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_030587365.1_02930": {
-        "ec_number": null,
+    "A0A3D2APN2_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_900086595.1_01340": {
-        "ec_number": null,
+    "A0A5J6L941_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_022781925.1_02323": {
-        "ec_number": null,
+    "A0Y9L4_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_946407675.1_00694": {
-        "ec_number": null,
+    "A0A081FXS7_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_934295145.1_00397": {
-        "ec_number": null,
+    "RNPH_CELJU": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_937148845.1_01352": {
-        "ec_number": null,
+    "A0A6L5QTV7_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_947165825.1_01727": {
-        "ec_number": null,
+    "A0A2E5MKL6_9ALTE": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_017515185.1_01883": {
-        "ec_number": null,
+    "A0A0F7M165_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_947307365.1_01654": {
+    "UPI0030DC8245": {
         "ec_number": null,
         "is_top_homolog": false
     },
-    "GCA_022796875.1_01376": {
-        "ec_number": null,
+    "A0A5C8ZV99_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_946611595.1_01058": {
-        "ec_number": null,
+    "A0A1Y0I7Q8_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_947169005.1_01067": {
-        "ec_number": null,
+    "A0A1T1HBW1_OCELI": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_946546945.1_01850": {
+    "UPI0025B4C319": {
         "ec_number": null,
         "is_top_homolog": false
     },
-    "GCA_900130055.1_04571": {
-        "ec_number": null,
+    "A0A9J7AF48_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_947649225.1_00455": {
+    "UPI00242A7220": {
         "ec_number": null,
         "is_top_homolog": false
     },
-    "GCA_025566885.1_01680": {
+    "UPI0014242C5A": {
         "ec_number": null,
         "is_top_homolog": false
     },
-    "GCA_934358495.1_00071": {
+    "UPI002484D33D": {
         "ec_number": null,
         "is_top_homolog": false
     },
-    "GCA_030837345.1_01308": {
+    "UPI00242CD94A": {
         "ec_number": null,
         "is_top_homolog": false
     },
-    "GCA_003122485.1_00855": {
-        "ec_number": null,
+    "A0A976PET5_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_026650985.1_02278": {
-        "ec_number": null,
+    "A0AA95NCI7_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_017442785.1_00267": {
-        "ec_number": null,
+    "I2JFN6_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_937148845.1_00147": {
-        "ec_number": null,
+    "E4PL22_MARAH": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_012719455.1_01917": {
+    "UPI001C09AAD2": {
         "ec_number": null,
         "is_top_homolog": false
     },
-    "GCA_001705305.1_04737": {
-        "ec_number": null,
+    "A0A0J8GZK7_9ALTE": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_004345265.1_03462": {
-        "ec_number": null,
+    "A0A2E0HCM1_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_946611595.1_00316": {
+    "UPI00299EFB2B": {
         "ec_number": null,
         "is_top_homolog": false
     },
-    "GCA_900130055.1_01108": {
-        "ec_number": null,
+    "I3IDR4_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_944380065.1_01606": {
-        "ec_number": null,
+    "A0A1T4SIM3_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_026415675.1_01986": {
-        "ec_number": null,
+    "A0A136HQ72_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_910588885.1_01124": {
+    "UPI001C8F1C77": {
         "ec_number": null,
         "is_top_homolog": false
     },
-    "GCA_900557275.1_00135": {
+    "UPI001CBFC0E0": {
         "ec_number": null,
         "is_top_homolog": false
     },
-    "GCA_029974875.1_01181": {
-        "ec_number": null,
+    "A0A962LST4_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_902803485.1_00483": {
-        "ec_number": null,
+    "A0A7D4SZN3_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_027493445.1_03684": {
-        "ec_number": null,
+    "A0A6M4ME76_9ALTE": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_028277985.1_04810": {
-        "ec_number": null,
+    "M5DLI8_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_910588125.1_02894": {
-        "ec_number": null,
+    "A0A9E1KS15_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_022796875.1_01747": {
-        "ec_number": null,
+    "A0A7W2TX61_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_015057825.1_00700": {
-        "ec_number": null,
+    "A0A2E2HEN9_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_025566885.1_01804": {
-        "ec_number": null,
+    "A0A0F6RBH9_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_029564515.1_02032": {
-        "ec_number": null,
+    "E1VH07_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_937148845.1_00149": {
+    "UPI001554A344": {
         "ec_number": null,
         "is_top_homolog": false
     },
-    "GCA_017511185.1_01008": {
-        "ec_number": null,
+    "A0A1Y5D154_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_902797015.1_00810": {
-        "ec_number": null,
+    "A0A7C1ULH4_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_000270305.1_01639": {
+    "UPI001448A222": {
         "ec_number": null,
         "is_top_homolog": false
     },
-    "GCA_946491665.1_01946": {
-        "ec_number": null,
+    "A0A5S9QG32_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_000270305.1_00089": {
-        "ec_number": null,
+    "A0A936AKP9_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_016702655.1_02957": {
-        "ec_number": null,
+    "A0A975R9I1_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_946491665.1_00883": {
-        "ec_number": null,
+    "A0A432W3I1_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_026414765.1_00758": {
-        "ec_number": null,
+    "A0A2T6E8B6_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_028727605.1_00857": {
-        "ec_number": null,
+    "A0A2A5GJK0_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_021824175.1_04964": {
+    "UPI00227A1E7E": {
         "ec_number": null,
         "is_top_homolog": false
     },
-    "GCA_937148845.1_02350": {
-        "ec_number": null,
+    "R8AXL2_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_934295145.1_00402": {
-        "ec_number": null,
+    "A0A2G6L1T4_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_022781925.1_02328": {
-        "ec_number": null,
+    "A0A962KJJ6_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_934358495.1_00066": {
-        "ec_number": null,
+    "A0AA37W7Q8_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_028275245.1_00200": {
+    "UPI0027B5CCE7": {
         "ec_number": null,
         "is_top_homolog": false
     },
-    "GCA_004565475.1_00542": {
-        "ec_number": null,
+    "A0A839UX23_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_030019255.1_00245": {
-        "ec_number": null,
+    "A0A918XJM3_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_947307365.1_01777": {
-        "ec_number": null,
+    "K2K2N8_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_029574005.1_00150": {
-        "ec_number": null,
+    "A0AAN1WH58_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_946491665.1_02734": {
-        "ec_number": null,
+    "A0A929EWR9_UNCPS": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_029243485.1_04434": {
-        "ec_number": null,
+    "A0A0C5UXW9_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_025566885.1_00938": {
-        "ec_number": null,
+    "A0A496WZI7_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_937884995.1_00370": {
-        "ec_number": null,
+    "A0A094ISI7_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_947165755.1_00802": {
+    "UPI000DB905C9": {
         "ec_number": null,
         "is_top_homolog": false
     },
-    "GCA_028278065.1_02383": {
-        "ec_number": null,
+    "A0A2D8ISC0_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_944349735.1_00502": {
-        "ec_number": null,
+    "A0A2H9T6V8_9ZZZZ": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_025464955.1_05186": {
+    "UPI0032215AFC": {
         "ec_number": null,
         "is_top_homolog": false
     },
-    "GCA_026626635.1_00681": {
-        "ec_number": null,
+    "A0A858R1R0_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_029261905.1_02069": {
-        "ec_number": null,
+    "A0A939IMQ4_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A962K0P4_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A2D7WCI4_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A4P9VG86_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A7C1NPV3_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_002440635.1_02537": {
+    "UPI00242CEE74": {
         "ec_number": null,
+        "is_top_homolog": false
+    },
+    "A0A9J7A8Y3_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A3M2DMT5_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A2K9LKS6_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A1Y1R198_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_029261855.1_05793": {
+    "UPI0006738A7A": {
         "ec_number": null,
         "is_top_homolog": false
     },
-    "GCA_937863115.1_03754": {
+    "UPI0006B55E34": {
         "ec_number": null,
+        "is_top_homolog": false
+    },
+    "A0A5B0WU86_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A917YWF7_9ALTE": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A3B9WWZ5_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A0U3AN03_9ALTE": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A327WWK1_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A1I6JVG2_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A6M8W7M0_UNCPS": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_902797015.1_01043": {
+    "A0AAP2CDQ3_9GAMM": {
         "ec_number": null,
         "is_top_homolog": false
     },
-    "GCA_014287615.1_01246": {
+    "UPI002D6F536C": {
         "ec_number": null,
+        "is_top_homolog": false
+    },
+    "F7RY11_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A370DB69_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A0B4XER4_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A2K8KUF5_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_938041725.1_01891": {
+    "UPI002096D542": {
         "ec_number": null,
+        "is_top_homolog": false
+    },
+    "A0A962PXE7_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A094IUD9_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A2E2TM82_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A941ZE03_UNCPS": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A075PB85_9ALTE": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_030538115.1_02159": {
+    "UPI00109FBA67": {
         "ec_number": null,
+        "is_top_homolog": false
+    },
+    "A0A2E2XF85_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_015486075.1_02164": {
+    "UPI002673DC15": {
         "ec_number": null,
         "is_top_homolog": false
     },
-    "GCA_937916025.1_02609": {
+    "UPI0019E447F4": {
         "ec_number": null,
+        "is_top_homolog": false
+    },
+    "A0A657ANM4_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_910588285.1_04417": {
+    "UPI0028756C64": {
         "ec_number": null,
+        "is_top_homolog": false
+    },
+    "RNPH_MARMS": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A4Q5V8Q8_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_030538175.1_00259": {
+    "UPI0025B29BA0": {
         "ec_number": null,
         "is_top_homolog": false
     },
-    "GCA_947258625.1_02545": {
+    "UPI003017C6EA": {
         "ec_number": null,
+        "is_top_homolog": false
+    },
+    "A0A2A4MTC1_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A9J6RPG7_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "M1FBY9_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A3D4UCV1_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A4R3IBS5_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A4BA80_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A5B7YGW1_9ALTE": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A4R5H1Z9_9ALTE": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "RNPH_HAHCH": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A545TZB6_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "Q1N437_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A3F2UZB4_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A7C1XII0_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_947331465.1_02143": {
+    "UPI00140AC341": {
         "ec_number": null,
+        "is_top_homolog": false
+    },
+    "F3L3L0_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A918K5G2_9GAMM": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_900106935.1_01186": {
+    "UPI001CD8ADB5": {
         "ec_number": null,
+        "is_top_homolog": false
+    },
+    "RNPH_ALTMD": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A6C0U0C4_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "M7NXL3_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A9D9U2D1_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A4P7JS89_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0AA90NMP9_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A432ZPY2_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A917GM38_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "UPI0031E247E9": {
+        "ec_number": null,
+        "is_top_homolog": false
+    },
+    "A0A2G6CX45_UNCPS": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A3N5Y7H2_9ALTE": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A545T948_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A1G0JCB2_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "RNPH_SACD2": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A3N1Y5P5_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A7W4W7F1_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A2E9SJL2_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A2S0VRV8_9ALTE": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "UPI0025B39C6C": {
+        "ec_number": null,
+        "is_top_homolog": false
+    },
+    "A0A8J7FZH1_9NEIS": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "F6CV36_MARPP": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A3C1KJ00_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A261GRR4_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "UPI00271E3F1B": {
+        "ec_number": null,
+        "is_top_homolog": false
+    },
+    "UPI000C7CAEDB": {
+        "ec_number": null,
+        "is_top_homolog": false
+    },
+    "UPI000BB591CF": {
+        "ec_number": null,
+        "is_top_homolog": false
+    },
+    "A0A317MWB2_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "F2K047_MARM1": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A352Q7P5_9GAMM": {
+        "ec_number": null,
+        "is_top_homolog": false
+    },
+    "A0A0N0Z9P8_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "H5TAK7_9ALTE": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "W7QF83_9ALTE": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "RNPH_ALKEH": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "H1G503_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A2S6G6J9_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A1I4PCL6_ECTMO": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "UPI00165F0732": {
+        "ec_number": null,
+        "is_top_homolog": false
+    },
+    "A0A2E0LJ71_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A8J6ITQ8_9ALTE": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "UPI0022829657": {
+        "ec_number": null,
+        "is_top_homolog": false
+    },
+    "A0A2A5CTS6_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A7Z1AHH2_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A3B1B8S2_9ZZZZ": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A927GUV8_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A657AVH5_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "UPI000FDAAF86": {
+        "ec_number": null,
+        "is_top_homolog": false
+    },
+    "RNPH_XANCP": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A432WW56_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A0J6RE84_9NEIS": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A850L3H6_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A167A4I6_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "UPI000F658AE0": {
+        "ec_number": null,
+        "is_top_homolog": false
+    },
+    "A0A6L6JIH3_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "UPI0010566186": {
+        "ec_number": null,
+        "is_top_homolog": false
+    },
+    "RNPH_PHOLL": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A0Q7X962_9BURK": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0AA37WKC9_9ALTE": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "UPI0013D6AC90": {
+        "ec_number": null,
+        "is_top_homolog": false
+    },
+    "A0A3M0YJJ2_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A1K1WM59_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "RNPH_COLP3": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "G4QNZ2_GLANF": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A2T6F804_9BURK": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "UPI0031E26D86": {
+        "ec_number": null,
+        "is_top_homolog": false
+    },
+    "UPI0025B5C7A2": {
+        "ec_number": null,
+        "is_top_homolog": false
+    },
+    "A0A2E7IKA5_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "J7TDS3_MORMO": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A6B3SG72_9BURK": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "UPI002B45A709": {
+        "ec_number": null,
+        "is_top_homolog": false
+    },
+    "A0A356S529_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "UPI00036149EC": {
+        "ec_number": null,
+        "is_top_homolog": false
+    },
+    "A0A2E6BHF1_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A7C1VDC2_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "I1YHU2_METFJ": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A847SJP5_9NEIS": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "UPI0010BDB75C": {
+        "ec_number": null,
+        "is_top_homolog": false
+    },
+    "UPI00295E46F2": {
+        "ec_number": null,
+        "is_top_homolog": false
+    },
+    "A0A0K0SS30_9PROT": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "UPI0002E1CA2C": {
+        "ec_number": null,
+        "is_top_homolog": false
+    },
+    "A0A4V2G677_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A136A3S0_9ALTE": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "RNPH_PROMH": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A084A2D1_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A2N6GNP6_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "RNPH_SODGM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A522AH36_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A1I1I9Y9_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A962HFT7_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A4R3HSS9_PAULE": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A1S1Y0Q7_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "RNPH_TOLAT": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A525CPP2_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A516HG78_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A2H0DET0_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A7V7WMM3_9BURK": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "UPI0018AAE98C": {
+        "ec_number": null,
+        "is_top_homolog": false
+    },
+    "UPI0023B02FED": {
+        "ec_number": null,
+        "is_top_homolog": false
+    },
+    "W2UJF0_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A1U9JMH5_9NEIS": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "UPI00188E447A": {
+        "ec_number": null,
+        "is_top_homolog": false
+    },
+    "B5JW75_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A095BRW3_PISSA": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A4R3YM28_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A0Q8QPP3_9BURK": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A2E3MJP4_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0AA37RUZ1_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "UPI0032996BFC": {
+        "ec_number": null,
+        "is_top_homolog": false
+    },
+    "RNPH_SERP5": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A9D0R9H4_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "K0C7J5_ALCDB": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A1I4X0I5_9NEIS": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "X7EAB6_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A1C9W555_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A962LIW6_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A293NHZ4_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "UPI0016525C51": {
+        "ec_number": null,
+        "is_top_homolog": false
+    },
+    "RNPH_XANOP": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A2T0V3N5_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A022PGS6_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A432ZFN8_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "UPI000C28A5E2": {
+        "ec_number": null,
+        "is_top_homolog": false
+    },
+    "A0A0S8DZ10_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "UPI00022C0AE2": {
+        "ec_number": null,
+        "is_top_homolog": false
+    },
+    "A0A832Q9X6_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A126T601_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A3A4VWT3_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A7C1TPK7_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A1D2QR06_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A7Y1ZH81_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A9E0WTX3_UNCPS": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A4R0YHY0_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "RNPH_IDILO": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A2S2E933_9ALTE": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0AAE9Z2V0_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "UPI001BDA318E": {
+        "ec_number": null,
+        "is_top_homolog": false
+    },
+    "D0I413_GRIHO": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A836TT04_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "UPI002B227B0E": {
+        "ec_number": null,
+        "is_top_homolog": false
+    },
+    "A0A349X8S1_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A6N1DN11_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A348HBC1_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A9C9XD29_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A1A9M686_9XANT": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A450X0M5_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A0Q5HHK4_9BURK": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A962NNK5_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "W0UZC4_9BURK": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "G0AH35_COLFT": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A545UH48_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A3B0YY13_9ZZZZ": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "UPI00037651B8": {
+        "ec_number": null,
+        "is_top_homolog": false
+    },
+    "A0A1F6T6W3_9PROT": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A9D0LKN2_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "UPI00224375C2": {
+        "ec_number": null,
+        "is_top_homolog": false
+    },
+    "A0A3D0GQ27_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A940KZQ5_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A809RJT4_9PROT": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A222FFB9_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A5P9F376_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "F3LJ26_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A2N5Y531_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A661GTP9_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A2N5X8W7_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "G0A3U7_METMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A9C9BTQ2_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "G2DBJ3_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A7C5KVP2_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A2K9LDB9_9RHOO": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "UPI00040506D8": {
+        "ec_number": null,
+        "is_top_homolog": false
+    },
+    "UPI000FDD2BFD": {
+        "ec_number": null,
+        "is_top_homolog": false
+    },
+    "A0A7C1T0P0_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A4R3MZI3_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A2A4MTJ8_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "F1VV10_9BURK": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A4Y9SWD0_9BURK": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "UPI001E4C3333": {
+        "ec_number": null,
+        "is_top_homolog": false
+    },
+    "UPI0018A93FEA": {
+        "ec_number": null,
+        "is_top_homolog": false
+    },
+    "A0A498C5L4_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A2Z6GG55_9PROT": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A1J4Z856_9PROT": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "UPI001DFBE98C": {
+        "ec_number": null,
+        "is_top_homolog": false
+    },
+    "UPI00307D08D1": {
+        "ec_number": null,
+        "is_top_homolog": false
+    },
+    "RNPH_TERTT": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A350J0Q2_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A172YAW3_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A3M1DI07_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "UPI0018DC1F6A": {
+        "ec_number": null,
+        "is_top_homolog": false
+    },
+    "A0A916M2J1_9RHOO": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A1C2FZV4_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A7C5GL67_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "I2BEJ0_SHIBC": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A845BGL3_9NEIS": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A7C1TZI0_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A2A4RM48_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A7Y3N8D9_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "UPI0025AA7FF5": {
+        "ec_number": null,
+        "is_top_homolog": false
+    },
+    "D5BXG1_NITHN": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "UPI0005F7BEB2": {
+        "ec_number": null,
+        "is_top_homolog": false
+    },
+    "A0AA96HNN1_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A496NFN8_MORSP": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A095WZY0_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A512L4T9_9PROT": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A0G9HB26_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A924VDH8_9PROT": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A933Y8E7_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0AA48KN10_9ALTE": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A0A7EB45_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A507WIK2_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A161SGX8_9NEIS": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A849MN00_UNCPS": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "G2IX04_PSEUL": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A7W4ZAT8_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A559QH57_9ALTE": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A401JH80_9PROT": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0AA41X517_9ALTE": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A2C6DBJ8_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A2A4MPK6_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "UPI00235BE167": {
+        "ec_number": null,
+        "is_top_homolog": false
+    },
+    "A0A3S0U8A3_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A091AVY6_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A091BME4_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0AA37T5C6_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A095W2W2_BURGA": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A0Q7F4Z1_9BURK": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A0J1GFC2_9BURK": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A2M7D4Z7_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A7X0JQC1_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "UPI002C9C3F20": {
+        "ec_number": null,
+        "is_top_homolog": false
+    },
+    "A0A177NFI3_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A521ZD13_9BURK": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "E6KZT4_9PAST": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "RNPH_YERPE": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "RNPH_EDWI9": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "RNPH_PASMU": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A8T7D7F4_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A5C1DII1_9NEIS": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A7C5KUG0_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A2N2AG31_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A7C5WUC2_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0AAE3G7S9_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "UPI001E35BCE6": {
+        "ec_number": null,
+        "is_top_homolog": false
+    },
+    "A0A450YJU1_9GAMM": {
+        "ec_number": "2.7.7.56",
+        "is_top_homolog": false
+    },
+    "A0A1Y6BQM3_9ALTE": {
+        "ec_number": "2.7.7.56",
         "is_top_homolog": false
     },
-    "GCA_958477305.1_02093": {
+    "UPI001E5A64E9": {
         "ec_number": null,
         "is_top_homolog": false
     }

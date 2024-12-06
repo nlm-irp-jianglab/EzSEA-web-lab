@@ -1,478 +1,886 @@
 [
     {
-        "node": "N136",
+        "node": "Node290",
         "differing_residues": [
-            94,
-            148,
-            150,
-            151,
-            182,
-            183,
-            186,
-            201,
-            202,
-            208,
-            221,
-            224,
-            265,
-            267,
-            284,
-            285,
-            294,
-            296,
-            301,
-            309,
-            326
+            12,
+            74,
+            149,
+            176,
+            202
         ],
-        "score": 203.12376136381033
+        "score": 33906.10867620818
     },
     {
-        "node": "N25",
+        "node": "Node20",
         "differing_residues": [
-            141,
-            304
+            56,
+            205
         ],
-        "score": 155.66432751487218
+        "score": 446.91975341415207
     },
     {
-        "node": "N20",
+        "node": "Node7",
         "differing_residues": [
-            147,
-            295
+            124
         ],
-        "score": 141.43122518759657
+        "score": 242.53520951075438
     },
     {
-        "node": "N37",
+        "node": "Node19",
+        "differing_residues": [
+            127
+        ],
+        "score": 207.07152353435566
+    },
+    {
+        "node": "Node92",
         "differing_residues": [
             9,
-            10,
-            12,
-            15,
-            16,
-            17,
-            19,
-            20,
-            21,
-            22,
-            23,
-            24,
-            25,
-            28,
-            29,
-            32,
-            33,
-            34,
-            37,
-            38,
-            39,
-            40,
-            42,
-            43,
-            46,
-            47,
-            49,
-            52,
-            53,
-            58,
-            60,
-            61,
-            62,
-            63,
-            64,
-            65,
-            66,
-            67,
-            68,
-            71,
-            76,
-            78,
-            79,
-            80,
-            83,
-            84
-        ],
-        "score": 128.68771073437716
-    },
-    {
-        "node": "N138",
-        "differing_residues": [
+            11,
             86,
-            114,
-            115,
-            194,
-            198,
-            213,
-            272,
-            274,
-            314,
-            320,
-            345,
-            348,
-            351,
-            355
-        ],
-        "score": 108.21067933156881
-    },
-    {
-        "node": "N114",
-        "differing_residues": [
-            179,
-            191,
-            193,
-            231,
-            284,
-            357
-        ],
-        "score": 89.50234941186389
-    },
-    {
-        "node": "N163",
-        "differing_residues": [
-            87,
-            104,
-            107,
-            116,
-            160,
-            190,
-            203,
-            250,
-            252,
-            281,
-            312,
-            313,
-            358
-        ],
-        "score": 89.11642103892513
-    },
-    {
-        "node": "N19",
-        "differing_residues": [
-            0
-        ],
-        "score": 82.95025568818517
-    },
-    {
-        "node": "N101",
-        "differing_residues": [
-            30,
-            31,
-            36,
-            48,
-            129,
-            164,
-            171,
-            193,
-            290,
-            303,
-            307,
-            354
-        ],
-        "score": 56.222232403652555
-    },
-    {
-        "node": "N30",
-        "differing_residues": [
-            145,
-            259,
-            262,
-            273,
-            296
-        ],
-        "score": 52.9476187737487
-    },
-    {
-        "node": "N162",
-        "differing_residues": [
-            105,
-            202,
-            248,
-            259,
-            348,
-            354,
-            359
-        ],
-        "score": 51.02640072661239
-    },
-    {
-        "node": "N161",
-        "differing_residues": [
-            95,
-            108,
-            273,
-            285,
-            287,
-            309
-        ],
-        "score": 47.2379081462878
-    },
-    {
-        "node": "N111",
-        "differing_residues": [
             117,
-            353
+            121,
+            122,
+            129,
+            149,
+            156,
+            174,
+            184,
+            211,
+            214,
+            228
         ],
-        "score": 44.21025642132837
+        "score": 109.16206776118116
     },
     {
-        "node": "N50",
+        "node": "Node34",
         "differing_residues": [
-            131,
-            284,
-            320,
-            347
+            37,
+            46,
+            53,
+            67,
+            71,
+            119,
+            129,
+            144,
+            201,
+            202,
+            212,
+            214
         ],
-        "score": 37.81221653248952
+        "score": 100.70510140268566
     },
     {
-        "node": "N56",
+        "node": "Node238",
         "differing_residues": [
-            126,
-            206,
-            221,
-            228,
-            270,
-            305,
-            313
+            0,
+            1,
+            157,
+            163,
+            171,
+            210,
+            237
         ],
-        "score": 36.36072655332882
+        "score": 82.87220583854682
     },
     {
-        "node": "N193",
+        "node": "Node401",
+        "differing_residues": [
+            34,
+            185,
+            194,
+            196,
+            200,
+            212,
+            214,
+            259
+        ],
+        "score": 69.51996303081393
+    },
+    {
+        "node": "Node87",
+        "differing_residues": [
+            7,
+            99,
+            179,
+            210
+        ],
+        "score": 67.10522144396856
+    },
+    {
+        "node": "Node400",
+        "differing_residues": [
+            15,
+            35,
+            110,
+            167,
+            177,
+            215,
+            235
+        ],
+        "score": 62.550901320207586
+    },
+    {
+        "node": "Node151",
+        "differing_residues": [
+            148,
+            177,
+            179,
+            247
+        ],
+        "score": 60.44049576803353
+    },
+    {
+        "node": "Node91",
+        "differing_residues": [
+            12,
+            58,
+            116,
+            127,
+            176,
+            226
+        ],
+        "score": 58.48387427295903
+    },
+    {
+        "node": "Node180",
+        "differing_residues": [
+            8,
+            12,
+            179
+        ],
+        "score": 58.178116204370234
+    },
+    {
+        "node": "Node27",
+        "differing_residues": [
+            0,
+            159
+        ],
+        "score": 56.798670176232385
+    },
+    {
+        "node": "Node233",
+        "differing_residues": [
+            67
+        ],
+        "score": 53.817707651887076
+    },
+    {
+        "node": "Node182",
+        "differing_residues": [
+            60,
+            69,
+            163
+        ],
+        "score": 50.96077147622934
+    },
+    {
+        "node": "Node239",
         "differing_residues": [
             2,
             3,
-            85,
+            7,
+            10,
+            11,
+            14,
+            16,
+            165,
+            179
+        ],
+        "score": 50.211973691312295
+    },
+    {
+        "node": "Node419",
+        "differing_residues": [
+            6,
+            26,
+            87
+        ],
+        "score": 49.50468533336454
+    },
+    {
+        "node": "Node279",
+        "differing_residues": [
+            229,
+            232
+        ],
+        "score": 48.27527560519613
+    },
+    {
+        "node": "Node237",
+        "differing_residues": [
+            5,
+            6,
+            159,
+            202,
+            257
+        ],
+        "score": 46.01891849678289
+    },
+    {
+        "node": "Node422",
+        "differing_residues": [
+            66,
+            110,
+            194,
+            258
+        ],
+        "score": 42.97924937715736
+    },
+    {
+        "node": "Node152",
+        "differing_residues": [
+            156,
+            160,
+            233
+        ],
+        "score": 42.4915168027973
+    },
+    {
+        "node": "Node397",
+        "differing_residues": [
+            1,
+            11,
+            86
+        ],
+        "score": 41.54999950258273
+    },
+    {
+        "node": "Node423",
+        "differing_residues": [
+            12,
+            13,
+            49,
+            79,
+            247
+        ],
+        "score": 35.70983418844506
+    },
+    {
+        "node": "Node356",
+        "differing_residues": [
+            160,
+            176,
+            255,
+            256
+        ],
+        "score": 33.333588314787285
+    },
+    {
+        "node": "Node30",
+        "differing_residues": [
+            228
+        ],
+        "score": 32.30314260345071
+    },
+    {
+        "node": "Node324",
+        "differing_residues": [
+            22,
+            245,
+            252
+        ],
+        "score": 30.841579916218354
+    },
+    {
+        "node": "Node450",
+        "differing_residues": [
+            24,
+            53,
+            180,
+            246
+        ],
+        "score": 27.894775541879454
+    },
+    {
+        "node": "Node86",
+        "differing_residues": [
+            201
+        ],
+        "score": 26.34461277523942
+    },
+    {
+        "node": "Node153",
+        "differing_residues": [
+            167,
+            171
+        ],
+        "score": 25.524906955856075
+    },
+    {
+        "node": "Node236",
+        "differing_residues": [
+            8,
+            12,
+            229
+        ],
+        "score": 25.046132896923943
+    },
+    {
+        "node": "Node85",
+        "differing_residues": [
+            103
+        ],
+        "score": 24.524896584127372
+    },
+    {
+        "node": "Node35",
+        "differing_residues": [
+            29,
+            116,
+            176
+        ],
+        "score": 24.260536427962897
+    },
+    {
+        "node": "Node421",
+        "differing_residues": [
+            8,
+            14,
+            99
+        ],
+        "score": 21.782908899296668
+    },
+    {
+        "node": "Node156",
+        "differing_residues": [
+            24,
+            159
+        ],
+        "score": 20.876437019496876
+    },
+    {
+        "node": "Node350",
+        "differing_residues": [
+            103
+        ],
+        "score": 19.93394833632384
+    },
+    {
+        "node": "Node424",
+        "differing_residues": [
+            53,
+            55
+        ],
+        "score": 18.92900654471262
+    },
+    {
+        "node": "Node280",
+        "differing_residues": [
+            11,
             153
         ],
-        "score": 33.4810848
+        "score": 18.545755617788075
     },
     {
-        "node": "N49",
+        "node": "Node33",
         "differing_residues": [
-            247,
-            286
+            179
         ],
-        "score": 29.561097820247568
+        "score": 16.811620681072228
     },
     {
-        "node": "N33",
+        "node": "Node21",
         "differing_residues": [
-            187,
-            199,
-            272
+            0
         ],
-        "score": 27.305884520734118
+        "score": 16.614171642413854
     },
     {
-        "node": "N134",
+        "node": "Node353",
+        "differing_residues": [
+            15,
+            161,
+            216,
+            258
+        ],
+        "score": 16.339266026059434
+    },
+    {
+        "node": "Node218",
+        "differing_residues": [
+            35,
+            159
+        ],
+        "score": 15.134510028383179
+    },
+    {
+        "node": "Node183",
+        "differing_residues": [
+            227
+        ],
+        "score": 14.765833462577659
+    },
+    {
+        "node": "Node89",
+        "differing_residues": [
+            90
+        ],
+        "score": 14.71801442846789
+    },
+    {
+        "node": "Node155",
+        "differing_residues": [
+            208
+        ],
+        "score": 14.683362435665082
+    },
+    {
+        "node": "Node388",
+        "differing_residues": [
+            1,
+            128,
+            225
+        ],
+        "score": 14.081836548506551
+    },
+    {
+        "node": "Node48",
+        "differing_residues": [
+            35,
+            148
+        ],
+        "score": 14.018449354021502
+    },
+    {
+        "node": "Node243",
+        "differing_residues": [
+            66
+        ],
+        "score": 13.937139660525354
+    },
+    {
+        "node": "Node181",
+        "differing_residues": [
+            11
+        ],
+        "score": 13.733338279222236
+    },
+    {
+        "node": "Node90",
+        "differing_residues": [
+            152
+        ],
+        "score": 13.224123140569583
+    },
+    {
+        "node": "Node341",
+        "differing_residues": [
+            61,
+            99
+        ],
+        "score": 13.083339661032024
+    },
+    {
+        "node": "Node93",
+        "differing_residues": [
+            29,
+            47
+        ],
+        "score": 12.291644991948793
+    },
+    {
+        "node": "Node210",
+        "differing_residues": [
+            225
+        ],
+        "score": 12.130081968790726
+    },
+    {
+        "node": "Node242",
+        "differing_residues": [
+            234
+        ],
+        "score": 12.113712007482967
+    },
+    {
+        "node": "Node154",
+        "differing_residues": [
+            144
+        ],
+        "score": 10.52710616326884
+    },
+    {
+        "node": "Node325",
+        "differing_residues": [
+            24
+        ],
+        "score": 10.415086817018558
+    },
+    {
+        "node": "Node378",
+        "differing_residues": [
+            23,
+            258
+        ],
+        "score": 10.011067526360888
+    },
+    {
+        "node": "Node402",
+        "differing_residues": [
+            89
+        ],
+        "score": 9.911278153346395
+    },
+    {
+        "node": "Node157",
+        "differing_residues": [
+            37
+        ],
+        "score": 9.758158787827657
+    },
+    {
+        "node": "Node425",
+        "differing_residues": [
+            246
+        ],
+        "score": 9.67485511138874
+    },
+    {
+        "node": "Node403",
+        "differing_residues": [
+            249
+        ],
+        "score": 9.55295898325804
+    },
+    {
+        "node": "Node427",
+        "differing_residues": [
+            45
+        ],
+        "score": 9.167678690501392
+    },
+    {
+        "node": "Node426",
         "differing_residues": [
             190
         ],
-        "score": 23.17048325126684
+        "score": 9.035904811494365
     },
     {
-        "node": "N77",
+        "node": "Node115",
         "differing_residues": [
-            220
+            126
         ],
-        "score": 22.255019675561513
+        "score": 8.955203898578636
     },
     {
-        "node": "N139",
+        "node": "Node247",
         "differing_residues": [
-            104,
-            191,
-            260
+            177
         ],
-        "score": 20.835896515898455
+        "score": 8.638399207158434
     },
     {
-        "node": "N32",
+        "node": "Node449",
         "differing_residues": [
-            98,
-            311
+            177
         ],
-        "score": 19.551436250106065
+        "score": 8.089131767130997
     },
     {
-        "node": "N137",
+        "node": "Node291",
         "differing_residues": [
-            166,
-            228
+            14,
+            210
         ],
-        "score": 19.30222603238257
+        "score": 5.951865745319773
     },
     {
-        "node": "N85",
+        "node": "Node420",
         "differing_residues": [
-            305,
-            372
+            2,
+            3,
+            5,
+            10
         ],
-        "score": 19.029143488135357
+        "score": 5.197107031783822
     },
     {
-        "node": "N38",
+        "node": "Node25",
         "differing_residues": [
-            99,
-            193
+            4,
+            5
         ],
-        "score": 16.82887530454566
+        "score": 4.079673634195579
     },
     {
-        "node": "N31",
+        "node": "Node281",
         "differing_residues": [
-            366
+            10
         ],
-        "score": 15.931607612930199
+        "score": 3.495359071703168
     },
     {
-        "node": "N194",
+        "node": "Node240",
         "differing_residues": [
-            105,
-            128
+            13
         ],
-        "score": 13.523369692314542
+        "score": 1.5887514787677068
     },
     {
-        "node": "N183",
-        "differing_residues": [
-            106
-        ],
-        "score": 9.132728749893277
-    },
-    {
-        "node": "N34",
+        "node": "Node32",
         "differing_residues": [],
         "score": 0
     },
     {
-        "node": "N51",
+        "node": "Node58",
         "differing_residues": [],
         "score": 0
     },
     {
-        "node": "N29",
+        "node": "Node31",
         "differing_residues": [],
         "score": 0
     },
     {
-        "node": "N28",
+        "node": "Node71",
         "differing_residues": [],
         "score": 0
     },
     {
-        "node": "N81",
+        "node": "Node70",
         "differing_residues": [],
         "score": 0
     },
     {
-        "node": "N78",
+        "node": "Node69",
         "differing_residues": [],
         "score": 0
     },
     {
-        "node": "N113",
+        "node": "Node94",
         "differing_residues": [],
         "score": 0
     },
     {
-        "node": "N112",
+        "node": "Node116",
         "differing_residues": [],
         "score": 0
     },
     {
-        "node": "N100",
+        "node": "Node88",
         "differing_residues": [],
         "score": 0
     },
     {
-        "node": "N99",
+        "node": "Node84",
         "differing_residues": [],
         "score": 0
     },
     {
-        "node": "N98",
+        "node": "Node29",
         "differing_residues": [],
         "score": 0
     },
     {
-        "node": "N97",
+        "node": "Node28",
         "differing_residues": [],
         "score": 0
     },
     {
-        "node": "N76",
+        "node": "Node26",
         "differing_residues": [],
         "score": 0
     },
     {
-        "node": "N75",
+        "node": "Node24",
         "differing_residues": [],
         "score": 0
     },
     {
-        "node": "N27",
+        "node": "Node158",
         "differing_residues": [],
         "score": 0
     },
     {
-        "node": "N135",
+        "node": "Node23",
         "differing_residues": [],
         "score": 0
     },
     {
-        "node": "N26",
+        "node": "Node187",
         "differing_residues": [],
         "score": 0
     },
     {
-        "node": "N18",
+        "node": "Node186",
         "differing_residues": [],
         "score": 0
     },
     {
-        "node": "N17",
+        "node": "Node185",
         "differing_residues": [],
         "score": 0
     },
     {
-        "node": "N16",
+        "node": "Node184",
         "differing_residues": [],
         "score": 0
     },
     {
-        "node": "N7",
+        "node": "Node211",
         "differing_residues": [],
         "score": 0
     },
     {
-        "node": "N6",
+        "node": "Node248",
         "differing_residues": [],
         "score": 0
     },
     {
-        "node": "N5",
+        "node": "Node246",
         "differing_residues": [],
         "score": 0
     },
     {
-        "node": "N4",
+        "node": "Node244",
         "differing_residues": [],
         "score": 0
     },
     {
-        "node": "N3",
+        "node": "Node241",
         "differing_residues": [],
         "score": 0
     },
     {
-        "node": "N2",
+        "node": "Node235",
         "differing_residues": [],
         "score": 0
     },
     {
-        "node": "N1",
+        "node": "Node289",
+        "differing_residues": [],
+        "score": 0
+    },
+    {
+        "node": "Node308",
+        "differing_residues": [],
+        "score": 0
+    },
+    {
+        "node": "Node234",
+        "differing_residues": [],
+        "score": 0
+    },
+    {
+        "node": "Node323",
+        "differing_residues": [],
+        "score": 0
+    },
+    {
+        "node": "Node352",
+        "differing_residues": [],
+        "score": 0
+    },
+    {
+        "node": "Node351",
+        "differing_residues": [],
+        "score": 0
+    },
+    {
+        "node": "Node232",
+        "differing_residues": [],
+        "score": 0
+    },
+    {
+        "node": "Node179",
+        "differing_residues": [],
+        "score": 0
+    },
+    {
+        "node": "Node22",
+        "differing_residues": [],
+        "score": 0
+    },
+    {
+        "node": "Node387",
+        "differing_residues": [],
+        "score": 0
+    },
+    {
+        "node": "Node409",
+        "differing_residues": [],
+        "score": 0
+    },
+    {
+        "node": "Node408",
+        "differing_residues": [],
+        "score": 0
+    },
+    {
+        "node": "Node399",
+        "differing_residues": [],
+        "score": 0
+    },
+    {
+        "node": "Node398",
+        "differing_residues": [],
+        "score": 0
+    },
+    {
+        "node": "Node18",
+        "differing_residues": [],
+        "score": 0
+    },
+    {
+        "node": "Node17",
+        "differing_residues": [],
+        "score": 0
+    },
+    {
+        "node": "Node16",
+        "differing_residues": [],
+        "score": 0
+    },
+    {
+        "node": "Node15",
+        "differing_residues": [],
+        "score": 0
+    },
+    {
+        "node": "Node14",
+        "differing_residues": [],
+        "score": 0
+    },
+    {
+        "node": "Node13",
+        "differing_residues": [],
+        "score": 0
+    },
+    {
+        "node": "Node12",
+        "differing_residues": [],
+        "score": 0
+    },
+    {
+        "node": "Node11",
+        "differing_residues": [],
+        "score": 0
+    },
+    {
+        "node": "Node10",
+        "differing_residues": [],
+        "score": 0
+    },
+    {
+        "node": "Node9",
+        "differing_residues": [],
+        "score": 0
+    },
+    {
+        "node": "Node8",
+        "differing_residues": [],
+        "score": 0
+    },
+    {
+        "node": "Node5",
+        "differing_residues": [],
+        "score": 0
+    },
+    {
+        "node": "Node2",
         "differing_residues": [],
         "score": 0
     }
