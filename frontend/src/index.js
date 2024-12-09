@@ -3,18 +3,18 @@ import { createRoot } from "react-dom/client";
 import "./styles.css";
 
 import About from "./pages/about";
-import Tol from "./pages/tol";
+import App from "./pages/tolApp";
 import Playground from "./pages/playground";
 import NotFoundPage from "./pages/notfoundpage";
 import Submit from "./pages/submit";
 import JobQueued from "./pages/jobqueued";
-import Results from "./pages/results";
 import Status from "./pages/status";
 import {
     BrowserRouter as Router,
     Routes,
     Route,
 } from "react-router-dom";
+import ResultsApp from "./pages/resultsApp";
 
 const root = createRoot(document.getElementById("root"));
 root.render(
@@ -39,7 +39,7 @@ root.render(
                     />
                     <Route
                         path="/results/:jobId"
-                        element={<Results />}
+                        element={<ResultsApp />}
                     />
                     <Route
                         path="/status/:jobId"
@@ -51,7 +51,7 @@ root.render(
                     />
                     <Route
                         path="/tol"
-                        element={<Tol />}
+                        element={<App />}
                     />
                     <Route
                         exact path="/playground"

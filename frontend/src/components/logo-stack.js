@@ -1,10 +1,9 @@
-import React, { useState, useRef, useEffect, useImperativeHandle, useCallback } from "react";
+import React, { useState, useRef, useEffect, useImperativeHandle, useContext } from "react";
 import Logo from './logo/logo.jsx';
 import { EasyScroller } from 'easyscroller';
 import { ProteinAlphabet } from "./logo/proteinlogo.jsx";
 import "./logojs.css";
-import { Slider } from '@mui/material';
-import { E } from "./glyphs/E.jsx";
+import { tolContext } from '../components/tolContext';
 
 const LogoStack = React.forwardRef(
     /*
@@ -20,7 +19,7 @@ const LogoStack = React.forwardRef(
         const backScrollers = useRef([]);
         const frontScrollers = useRef([]);
         const [renderLogos, setRenderLogos] = useState(false);
-        const [scrollPosition, setScrollPosition] = useState(0);
+        const { scrollPosition, setScrollPosition } = useContext(tolContext);
         const [seqLength, setSeqLength] = useState(0);
 
         const fetchFastaFiles = async (data) => {
@@ -75,12 +74,6 @@ const LogoStack = React.forwardRef(
             backScrollers.current.forEach((scroller) => {
                 scroller.scroller.__publish(index * rectSize, 1, 1, true);
             });
-        };
-
-        const handleSlider = (e, value) => {
-            console.log(e)
-            setScrollPosition(value);
-            scrollToIndex(value - 1);
         };
 
         // Handling Sync Scrolling
@@ -173,7 +166,7 @@ const LogoStack = React.forwardRef(
                         element.style.transform = `translate(${translationValue}em, 10px)`;
                     });
 
-                    setScrollPosition(Math.round(left / 21.5));
+                    setScrollPosition(Math.floor(left / 21.5));
                 };
             });
 
@@ -236,7 +229,7 @@ const LogoStack = React.forwardRef(
         };
 
         useImperativeHandle(ref, () => ({
-            scrollToIndex: (index) => {
+            scrollToHighlightIndex: (index) => {
                 var firstFa = fastaContent[Object.keys(fastaContent)[0]];
                 // Remove first line of fasta string
                 firstFa = firstFa.substring(firstFa.indexOf('\n') + 1);
@@ -278,6 +271,7 @@ const LogoStack = React.forwardRef(
                     scroller.scroller.__publish(index * rectSize - centerOffset, 1, 1, true);
                 });
             },
+            scrollToIndex,
             appendLogo: (key, path) => {
                 // Fetch the fasta file and append to the list
                 fetchFastaFiles({ [key]: path })
@@ -291,20 +285,6 @@ const LogoStack = React.forwardRef(
 
         return (
             <div style={{ overflowX: 'hidden'}}>
-                <div style={{overflowY: "show", textAlign: "center"}}>
-                    <Slider
-                        size="small"
-                        defaultValue={1}
-                        aria-label="default"
-                        valueLabelDisplay="auto"
-                        labelPlacement="bottom"
-                        min={1}
-                        max={seqLength - 1}
-                        value={scrollPosition}
-                        onChange={handleSlider}
-                        style={{ width: '70%'}}
-                    />
-                </div>
                 {renderLogos ? (
                     Object.keys(fastaContent).map((key, index) => {
                         return (

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useEffect, useRef, useState, useContext } from 'react';
 import * as pt from 'phylotree';
 import { isLeafNode } from 'phylotree/src/nodes';
 import { addCustomMenu } from 'phylotree/src/render/menus';
@@ -18,6 +18,9 @@ import ButtonGroup from '@mui/material/ButtonGroup';
 import FilterCenterFocusIcon from '@mui/icons-material/FilterCenterFocus';
 import LabelIcon from '@mui/icons-material/Label';
 import Tooltip from '@mui/material/Tooltip';
+import RestoreIcon from '@mui/icons-material/Restore';
+import { Slider } from '@mui/material';
+import { tolContext } from '../components/tolContext';
 
 const logoFiles = {};
 
@@ -35,8 +38,9 @@ const Tol = () => {
     const [logoContent, setLogoContent] = useState({});
     const [colorArr, setColorArr] = useState(null);
 
-    // Toggle between radial and linear layout
-    const [isRadial, setIsRadial] = useState(true);
+    // For scoller
+    const { scrollPosition, setScrollPosition } = useContext(tolContext);
+    const [seqLength, setSeqLength] = useState(0);
 
     // For live updates linking sequence logo and structure viewer
     const [selectedResidue, setSelectedResidue] = useState(null);
@@ -48,6 +52,7 @@ const Tol = () => {
     const [isRightCollapsed, setIsRightCollapsed] = useState(false);
     const [sidebarExpanded, setSidebarExpanded] = useState(false);
     const [notification, setNotification] = useState('');
+    const [refresh, setRefresh] = useState(false);
 
     // References for rendering
     const treeRef = useRef(null);
@@ -83,7 +88,10 @@ const Tol = () => {
 
         fetchDefaultTree();
 
-        readFastaToDict(`${process.env.PUBLIC_URL}/example/asr.fa`).then(data => { setFaData(data) });
+        readFastaToDict(`${process.env.PUBLIC_URL}/example/asr.fa`).then(data => {
+            setFaData(data);
+            setSeqLength(data[Object.keys(data)[0]].length);
+        });
 
 
         fetch(`${process.env.PUBLIC_URL}/example/nodes.json`)
@@ -220,10 +228,10 @@ const Tol = () => {
                 'zoom': true,
                 'align-tips': true,
                 'internal-names': true,
-                width: 2000,
+                width: 8000,
                 height: 4000,
                 'top-bottom-spacing': 'fixed-step',
-                'left-right-spacing': 'fit-to-size',
+                'left-right-spacing': 'fixed-step',
                 'brush': false,
                 'draw-size-bubbles': false, // Must be false so that nodes are clickable?
                 'bubble-styler': d => { return 5 },
@@ -242,7 +250,7 @@ const Tol = () => {
             // Start with pan to input query
             findAndZoom("PA14_rph");
         }
-    }, [newickData, faData]);
+    }, [newickData, faData, refresh]);
 
     const removeNodeFromLogo = (node, clade = false) => {
         // Remove node from logoContent
@@ -390,12 +398,17 @@ const Tol = () => {
     }
 
     const handleColumnHover = (index) => {
-        logoStackRef.current.scrollToIndex(index);
+        logoStackRef.current.scrollToHighlightIndex(index);
     };
 
     const handleScrollLogosTo = (index) => {
-        logoStackRef.current.scrollToIndex(structLogoMapArr[index]);
+        logoStackRef.current.scrollToHighlightIndex(structLogoMapArr[index]);
     }
+
+    const handleSlider = (e, value) => {
+        setScrollPosition(value);
+        logoStackRef.current.scrollToIndex(value);
+    };
 
     const handleNodeRemove = (index) => {
         // Remove node from logoContent
@@ -821,7 +834,9 @@ const Tol = () => {
                             <Tooltip title="Toggle leaf labels">
                                 <Button onClick={() => toggleLeafLabels()}><LabelIcon /></Button>
                             </Tooltip>
-                            <Button>Three</Button>
+                            <Tooltip title="Reset tree">
+                                <Button onClick={() => setRefresh(prev => !prev)}><RestoreIcon /></Button>
+                            </Tooltip>
                         </ButtonGroup>
                         <div
                             id="tree_container"
@@ -862,39 +877,67 @@ const Tol = () => {
                         <div
                             className="right-div"
                             style={{
+                                display: 'flex',
                                 width: isRightCollapsed ? '2%' : (isLeftCollapsed ? '100%' : '50%'),
                                 display: 'flex', // Use flexbox to control layout
                                 flexDirection: isLeftCollapsed ? 'row' : 'column', // Side by side if left is collapsed
                             }}
                         >
-                            {isLeftCollapsed ? (
-                                <div className="logodiv2" style={{ width: '50%' }}>
-                                    <div className="logo-btnbar" style={{ textAlign: "center", height: "32px", justifyContent: "space-between", display: "flex", flexDirection: "row", margin: "2px 20px" }}>
-                                        <button className="download-stack-btn" onClick={downloadCombinedSVG} style={{ borderRadius: "3px", backgroundColor: "#def2b3", border: "none", cursor: "pointer" }}>
-                                            <svg width="25px" height="25px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" version="1.1" fill="none" stroke="#000000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5">
-                                                <title>Download Stack</title>
-                                                <path d="m3.25 7.25-1.5.75 6.25 3.25 6.25-3.25-1.5-.75m-11 3.75 6.25 3.25 6.25-3.25" />
-                                                <path d="m8 8.25v-6.5m-2.25 4.5 2.25 2 2.25-2" />
-                                            </svg>
-                                        </button>
-                                        <input
-                                            className="scrollInput zoomInput"
-                                            ref={scrollInputRef}
-                                            placeholder="Scroll to position"
-                                            onKeyDown={(e) => {
-                                                if (e.key === 'Enter') {
-                                                    try {
-                                                        logoStackRef.current.scrollToIndex(scrollInputRef.current.value);
-                                                    } catch (e) {
-                                                        setNotification('Position not found');
-                                                        setTimeout(() => {
-                                                            setNotification('');
-                                                        }, 2000);
-                                                    }
+                            <div className="expandedRight" style={{ width: isLeftCollapsed ? '50%' : '100%' }}>
+                                <div style={{ display: "flex", overflowY: "show", alignItems: "center", justifyContent: "space-between" }}>
+                                    <Slider
+                                        size="small"
+                                        aria-label="default"
+                                        valueLabelDisplay="auto"
+                                        labelPlacement="bottom"
+                                        min={1}
+                                        max={seqLength - 1}
+                                        value={scrollPosition}
+                                        onChange={handleSlider}
+                                        track={false}
+                                        style={{ width: '100%', margin: "0px 2em" }}
+                                        marks={[{ value: 1, label: '1' }, { value: seqLength - 1, label: `${seqLength}` }]}
+                                    />
+                                    <input
+                                        className="scrollInput zoomInput"
+                                        ref={scrollInputRef}
+                                        placeholder={scrollPosition}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter') {
+                                                try {
+                                                    logoStackRef.current.scrollToHighlightIndex(scrollInputRef.current.value);
+                                                } catch (e) {
+                                                    setNotification('Position not found');
+                                                    setTimeout(() => {
+                                                        setNotification('');
+                                                    }, 2000);
                                                 }
-                                            }}
-                                        />
-                                    </div>
+
+                                                scrollInputRef.current.value = '';
+                                            }
+                                        }}
+                                        style={{ width: "50px" }}
+                                    />
+                                    <button className="download-stack-btn" onClick={downloadCombinedSVG} style={{ borderRadius: "3px", backgroundColor: "#def2b3", border: "none", cursor: "pointer" }}>
+                                        <svg width="25px" height="25px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" version="1.1" fill="none" stroke="#000000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5">
+                                            <title>Download Stack</title>
+                                            <path d="m3.25 7.25-1.5.75 6.25 3.25 6.25-3.25-1.5-.75m-11 3.75 6.25 3.25 6.25-3.25" />
+                                            <path d="m8 8.25v-6.5m-2.25 4.5 2.25 2 2.25-2" />
+                                        </svg>
+                                    </button>
+                                </div>
+                                <div className="logodiv" style={{ width: '100%', height: Object.keys(logoContent).length > 2 ? '570px' : (Object.keys(logoContent).length > 1 ? '380px' : '190px') }}>
+                                    <button
+                                        className="logo-close-btn"
+                                        onClick={() => {
+                                            clearRightPanel();
+                                        }}
+                                    >
+                                        <svg fill="#000000" width="25px" height="25px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+                                            <title>Clear All</title>
+                                            <path d="M16 29c-7.18 0-13-5.82-13-13s5.82-13 13-13 13 5.82 13 13-5.82 13-13 13zM21.961 12.209c0.244-0.244 0.244-0.641 0-0.885l-1.328-1.327c-0.244-0.244-0.641-0.244-0.885 0l-3.761 3.761-3.761-3.761c-0.244-0.244-0.641-0.244-0.885 0l-1.328 1.327c-0.244 0.244-0.244 0.641 0 0.885l3.762 3.762-3.762 3.76c-0.244 0.244-0.244 0.641 0 0.885l1.328 1.328c0.244 0.244 0.641 0.244 0.885 0l3.761-3.762 3.761 3.762c0.244 0.244 0.641 0.244 0.885 0l1.328-1.328c0.244-0.244 0.244-0.641 0-0.885l-3.762-3.76 3.762-3.762z"></path>
+                                        </svg>
+                                    </button>
                                     <LogoStack
                                         data={logoContent}
                                         onColumnClick={handleColumnClick}
@@ -906,89 +949,16 @@ const Tol = () => {
                                         ref={logoStackRef}
                                     />
                                 </div>
-                            ) : (
-                                <div className="expandedRight">
-                                    <div className="logodiv" style={{ width: '100%', height: Object.keys(logoContent).length > 2 ? '570px' : (Object.keys(logoContent).length > 1 ? '380px' : '190px') }}>
-                                        <button
-                                            className="logo-close-btn"
-                                            onClick={() => {
-                                                clearRightPanel();
-                                            }}
-                                        >
-                                            <svg fill="#000000" width="25px" height="25px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-                                                <title>Clear All</title>
-                                                <path d="M16 29c-7.18 0-13-5.82-13-13s5.82-13 13-13 13 5.82 13 13-5.82 13-13 13zM21.961 12.209c0.244-0.244 0.244-0.641 0-0.885l-1.328-1.327c-0.244-0.244-0.641-0.244-0.885 0l-3.761 3.761-3.761-3.761c-0.244-0.244-0.641-0.244-0.885 0l-1.328 1.327c-0.244 0.244-0.244 0.641 0 0.885l3.762 3.762-3.762 3.76c-0.244 0.244-0.244 0.641 0 0.885l1.328 1.328c0.244 0.244 0.641 0.244 0.885 0l3.761-3.762 3.761 3.762c0.244 0.244 0.641 0.244 0.885 0l1.328-1.328c0.244-0.244 0.244-0.641 0-0.885l-3.762-3.76 3.762-3.762z"></path>
-                                            </svg>
-                                        </button>
-                                        <LogoStack
-                                            data={logoContent}
-                                            onColumnClick={handleColumnClick}
-                                            onColumnHover={handleColumnHover}
-                                            importantResiduesList={nodeData}
-                                            removeNodeHandle={handleNodeRemove}
-                                            applyEntropyStructColor={applyEntropyStructColor}
-                                            applyImportantStructColor={applyImportantStructColor}
-                                            ref={logoStackRef}
-                                        />
-                                    </div>
-                                    <div
-                                        style={{
-                                            width: '100%',
-                                            height: '1px',
-                                            backgroundColor: '#ccc',
-                                            margin: '3px 0px'
-                                        }}
-                                    ></div>
-                                </div>
-                            )}
-
+                            </div>
+                            <div
+                                style={{
+                                    width: isLeftCollapsed ? '1px' : '100%',
+                                    height: isLeftCollapsed ? '100%' : '1px',
+                                    backgroundColor: '#ccc',
+                                    margin: '3px 3px'
+                                }}
+                            ></div>
                             <div style={{ display: "flex", height: "100%", flexGrow: "1", flexDirection: isLeftCollapsed ? "column" : "row" }}>
-                                <div style={{ display: "flex", flexDirection: isLeftCollapsed ? "row" : "column", justifyContent: "space-between", alignItems: "center" }}>
-                                    {isLeftCollapsed ? (
-                                        <svg width="100%" height="20" viewBox="0 0 200 20" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-                                            <title>Entropy Scale</title>
-                                            <rect width="20" height="20" fill="#0000ff" x="0" />
-                                            <rect width="20" height="20" fill="#0056a9" x="20" />
-                                            <rect width="20" height="20" fill="#00ac53" x="40" />
-                                            <rect width="20" height="20" fill="#02ff00" x="60" />
-                                            <rect width="20" height="20" fill="#58ff00" x="80" />
-                                            <rect width="20" height="20" fill="#aeff00" x="100" />
-                                            <rect width="20" height="20" fill="#fffa00" x="120" />
-                                            <rect width="20" height="20" fill="#ffa700" x="140" />
-                                            <rect width="20" height="20" fill="#ff5400" x="160" />
-                                            <rect width="20" height="20" fill="#ff0000" x="180" />
-                                            <line x1="0" y1="10" x2="190" y2="10" stroke="black" stroke-width="2" marker-end="url(#arrowhead)" />
-
-                                            <defs>
-                                                <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="5" refY="3.5" orient="auto">
-                                                    <polygon points="0 0, 10 3.5, 0 7" fill="black" />
-                                                </marker>
-                                            </defs>
-                                        </svg>
-                                    ) : (
-                                        <svg width="20" height="100%" preserveAspectRatio='none' viewBox="0 0 20 200" xmlns="http://www.w3.org/2000/svg">
-                                            <title>Entropy Scale</title>
-                                            <rect width="20" height="20" fill="#0000ff" y="180" />
-                                            <rect width="20" height="20" fill="#0056a9" y="160" />
-                                            <rect width="20" height="20" fill="#00ac53" y="140" />
-                                            <rect width="20" height="20" fill="#02ff00" y="120" />
-                                            <rect width="20" height="20" fill="#58ff00" y="100" />
-                                            <rect width="20" height="20" fill="#aeff00" y="80" />
-                                            <rect width="20" height="20" fill="#fffa00" y="60" />
-                                            <rect width="20" height="20" fill="#ffa700" y="40" />
-                                            <rect width="20" height="20" fill="#ff5400" y="20" />
-                                            <rect width="20" height="20" fill="#ff0000" y="0" />
-                                            <line x1="10" y1="200" x2="10" y2="10" stroke="black" stroke-width="2" marker-end="url(#arrowhead)" />
-
-                                            <defs>
-                                                <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="5" refY="3.5" orient="auto">
-                                                    <polygon points="0 0, 10 3.5, 0 7" fill="black" />
-                                                </marker>
-                                            </defs>
-                                        </svg>
-                                    )}
-
-                                </div>
 
                                 <div className="pvdiv" ref={pvdiv} style={{ height: '100%', flexGrow: "1" }}>
                                     <MolstarViewer
@@ -996,7 +966,7 @@ const Tol = () => {
                                         selectedResidue={selectedResidue}
                                         colorFile={colorArr}
                                         hoveredResidue={hoveredResidue}
-                                        scrollLogosTo={(index) => logoStackRef.current.scrollToIndex(index)}
+                                        scrollLogosTo={(index) => logoStackRef.current.scrollToHighlightIndex(index)}
                                     />
                                 </div>
                             </div>
