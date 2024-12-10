@@ -162,11 +162,10 @@ const Results = () => {
                         ZstdInit().then(({ ZstdSimple, ZstdStream }) => {
                             console.log(data.asr);
 
-                            // Convert Buffer to ArrayBuffer
-                            const arrayBuffer = new Uint8Array(data.asr).buffer;
-                            console.log(arrayBuffer);
+                            const intArray = new Uint8Array(data.asr);
+                            console.log(intArray);
 
-                            const decompressedStreamData = ZstdStream.decompress(new Uint8Array(arrayBuffer));
+                            const decompressedStreamData = ZstdStream.decompress(intArray);
                             console.log(decompressedStreamData);
 
                             const asrDict = JSON.parse(uint8ArrayToString(decompressedStreamData));
