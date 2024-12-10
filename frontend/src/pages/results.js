@@ -155,6 +155,15 @@ const Results = () => {
                         return decoder.decode(uint8Array);
                     };
 
+                    function toArrayBuffer(buffer) {
+                        const arrayBuffer = new ArrayBuffer(buffer.length);
+                        const view = new Uint8Array(arrayBuffer);
+                        for (let i = 0; i < buffer.length; ++i) {
+                          view[i] = buffer[i];
+                        }
+                        return arrayBuffer;
+                      }
+
                     if (data.asrError) {
                         setErrorPopupVisible(true);
                         console.error("Error fetching asr probability data:", data.asrError);
@@ -162,8 +171,10 @@ const Results = () => {
                         ZstdInit().then(({ ZstdSimple, ZstdStream }) => {
                             console.log("Original data.asr:", data.asr);
 
+                            const arrayBuffer = toArrayBuffer(data.asr);
+
                             // Convert ArrayBuffer to Uint8Array
-                            const intArray = new Uint8Array(data.asr.buffer);
+                            const intArray = new Uint8Array(arrayBuffer);
                             console.log("Uint8Array from ArrayBuffer:", intArray);
 
                             const decompressedStreamData = ZstdStream.decompress(intArray);
