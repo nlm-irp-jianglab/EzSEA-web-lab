@@ -162,12 +162,8 @@ const Results = () => {
                         ZstdInit().then(({ ZstdSimple, ZstdStream }) => {
                             console.log("Original data.asr:", data.asr);
 
-                            // Convert data.asr to ArrayBuffer
-                            const arrayBuffer = data.asr.slice(data.asr.byteOffset, data.asr.byteOffset + data.asr.byteLength);
-                            console.log("ArrayBuffer from data.asr:", arrayBuffer);
-
                             // Convert ArrayBuffer to Uint8Array
-                            const intArray = new Uint8Array(arrayBuffer);
+                            const intArray = new Uint8Array(data.asr);
                             console.log("Uint8Array from ArrayBuffer:", intArray);
 
                             const decompressedStreamData = ZstdStream.decompress(intArray);
