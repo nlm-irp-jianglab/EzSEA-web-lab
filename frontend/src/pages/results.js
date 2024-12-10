@@ -150,28 +150,24 @@ const Results = () => {
                         return decoder.decode(uint8Array);
                     };
 
-                    function stringToArrayBuffer(str) {
-                        const encoder = new TextEncoder(); // Default is UTF-8
-                        const encodedString = encoder.encode(str);
-                        const buffer = encodedString.buffer;
-
-                        return buffer;
-                    }
-
                     if (data.asrError) {
                         setErrorPopupVisible(true);
                         console.error("Error fetching asr probability data:", data.asrError);
                     } else {
                         ZstdInit().then(({ ZstdSimple, ZstdStream }) => {
-                            const buffer = stringToArrayBuffer(data.asr);
-                            console.log(buffer);
-                            const intArray = new Uint8Array(buffer);
+                            const stringToUint8Array = (str) => {
+                                const encoder = new TextEncoder(); // Default is UTF-8
+                                return encoder.encode(str);
+                            };
+                    
+                            const intArray = stringToUint8Array(data.asr);
                             console.log(intArray);
+                    
                             const decompressedStreamData = ZstdStream.decompress(intArray);
                             console.log(decompressedStreamData);
-                            const asrDict = JSON.parse(uint8ArrayToString(decompressedStreamData))
+                    
+                            const asrDict = JSON.parse(uint8ArrayToString(decompressedStreamData));
                             setAsrData(asrDict);
-
                         });
                     }
 
