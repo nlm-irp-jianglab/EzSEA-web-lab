@@ -150,13 +150,20 @@ const Results = () => {
                         return decoder.decode(uint8Array);
                     };
 
+                    function stringToArrayBuffer(str) {
+                        const encoder = new TextEncoder(); // Default is UTF-8
+                        const encodedString = encoder.encode(str);
+                        const buffer = encodedString.buffer;
+
+                        return buffer;
+                    }
+
                     if (data.asrError) {
                         setErrorPopupVisible(true);
                         console.error("Error fetching asr probability data:", data.asrError);
                     } else {
                         ZstdInit().then(({ ZstdSimple, ZstdStream }) => {
-                            console.log(typeof(data.asr));
-                            const decompressedStreamData = ZstdStream.decompress(new Uint8Array(data.asr));
+                            const decompressedStreamData = ZstdStream.decompress(new Uint8Array(stringToArrayBuffer(data.asr)));
                             console.log(decompressedStreamData);
                             const asrDict = JSON.parse(uint8ArrayToString(decompressedStreamData))
                             setAsrData(asrDict);
@@ -1018,7 +1025,7 @@ const Results = () => {
                                         }}
                                     />}
                                 onChange={(event, value) => findAndZoom(value)}
-                        />}
+                            />}
                         {notification && (
                             <div className="notification">
                                 {notification}
@@ -1031,9 +1038,9 @@ const Results = () => {
                     <div className="nodes-dropdown-content dropdown-content transition-element">
                         {Object.keys(topNodes).map(key => (
                             <button key={key} onClick={() => setImportantView(key)} style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start' }}>
-                            <span style={{ fontWeight: 'bold', minWidth: '60px' }}>{key}</span>
-                            <span>Score: {topNodes[key]['score'].toFixed(2)}</span>
-                        </button>
+                                <span style={{ fontWeight: 'bold', minWidth: '60px' }}>{key}</span>
+                                <span>Score: {topNodes[key]['score'].toFixed(2)}</span>
+                            </button>
                         ))}
                     </div>
                     <div className="sidebar-item downloads-label">
