@@ -145,6 +145,11 @@ const Results = () => {
                         setEcData(ecDict);
                     }
 
+                    const uint8ArrayToString = (uint8Array) => {
+                        const decoder = new TextDecoder('utf-8');
+                        return decoder.decode(uint8Array);
+                    };
+
                     if (data.asrError) {
                         setErrorPopupVisible(true);
                         console.error("Error fetching asr probability data:", data.asrError);
