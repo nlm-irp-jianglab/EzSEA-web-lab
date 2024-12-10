@@ -170,12 +170,12 @@ const Results = () => {
                     } else {
                         ZstdInit().then(({ ZstdSimple, ZstdStream }) => {
                             console.log("Original data.asr:", data.asr);
-                            console.log("Original data.asr.buffer:", data.asr.buffer);
+                            console.log("Original data.asr.buffer:", data.asr.data);
 
-                            const arrayBuffer = toArrayBuffer(data.asr);
+                            const arrayBuffer = toArrayBuffer(data.asr.data);
                             console.log("Array buffer:", arrayBuffer);
 
-                            const decompressedStreamData = ZstdStream.decompress(arrayBuffer);
+                            const decompressedStreamData = ZstdStream.decompress(data.asr.data);
                             console.log("Decompressed stream data:", decompressedStreamData);
 
                             const asrDict = JSON.parse(uint8ArrayToString(decompressedStreamData));
