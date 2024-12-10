@@ -145,6 +145,11 @@ const Results = () => {
                         setEcData(ecDict);
                     }
 
+                    const stringToUint8Array = (str) => {
+                        const encoder = new TextEncoder(); // Default is UTF-8
+                        return encoder.encode(str);
+                    };
+
                     const uint8ArrayToString = (uint8Array) => {
                         const decoder = new TextDecoder('utf-8');
                         return decoder.decode(uint8Array);
@@ -158,7 +163,7 @@ const Results = () => {
                             const intArray = new Uint8Array(data.asr);
                             console.log(intArray);
                     
-                            const decompressedStreamData = ZstdSimple.decompress(intArray);
+                            const decompressedStreamData = ZstdSimple.decompress(data.asr);
                             console.log(decompressedStreamData);
                     
                             const asrDict = JSON.parse(uint8ArrayToString(decompressedStreamData));
