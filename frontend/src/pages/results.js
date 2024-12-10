@@ -163,7 +163,7 @@ const Results = () => {
                             console.log("Original data.asr:", data.asr);
 
                             // Convert ArrayBuffer to Uint8Array
-                            const intArray = new Uint8Array(data.asr);
+                            const intArray = new Uint8Array(data.asr.buffer);
                             console.log("Uint8Array from ArrayBuffer:", intArray);
 
                             const decompressedStreamData = ZstdStream.decompress(intArray);
