@@ -175,7 +175,7 @@ const Results = () => {
                             const arrayBuffer = toArrayBuffer(data.asr.data);
                             console.log("Array buffer:", arrayBuffer);
 
-                            const decompressedStreamData = ZstdStream.decompress(data.asr.data);
+                            const decompressedStreamData = ZstdStream.decompress(arrayBuffer);
                             console.log("Decompressed stream data:", decompressedStreamData);
 
                             const asrDict = JSON.parse(uint8ArrayToString(decompressedStreamData));
