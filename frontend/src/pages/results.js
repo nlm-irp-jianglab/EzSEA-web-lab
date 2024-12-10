@@ -155,17 +155,23 @@ const Results = () => {
                         console.error("Error fetching asr probability data:", data.asrError);
                     } else {
                         ZstdInit().then(({ ZstdSimple, ZstdStream }) => {
-                            const stringToUint8Array = (str) => {
-                                const encoder = new TextEncoder(); // Default is UTF-8
-                                return encoder.encode(str);
+                            // Convert base64 string to Uint8Array
+                            const base64ToUint8Array = (base64) => {
+                                const binaryString = atob(base64);
+                                const len = binaryString.length;
+                                const bytes = new Uint8Array(len);
+                                for (let i = 0; i < len; i++) {
+                                    bytes[i] = binaryString.charCodeAt(i);
+                                }
+                                return bytes;
                             };
-                    
-                            const intArray = stringToUint8Array(data.asr);
+
+                            const intArray = base64ToUint8Array(data.asr);
                             console.log(intArray);
-                    
+
                             const decompressedStreamData = ZstdStream.decompress(intArray);
                             console.log(decompressedStreamData);
-                    
+
                             const asrDict = JSON.parse(uint8ArrayToString(decompressedStreamData));
                             setAsrData(asrDict);
                         });
