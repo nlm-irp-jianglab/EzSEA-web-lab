@@ -160,15 +160,22 @@ const Results = () => {
                         console.error("Error fetching asr probability data:", data.asrError);
                     } else {
                         ZstdInit().then(({ ZstdSimple, ZstdStream }) => {
-                            console.log(data.asr);
+                            console.log("Original data.asr:", data.asr);
 
-                            const intArray = new Uint8Array(data.asr.buffer, data.asr.byteOffset, data.asr.byteLength);
-                            console.log(intArray);
+                            // Convert data.asr to ArrayBuffer
+                            const arrayBuffer = data.asr.slice(data.asr.byteOffset, data.asr.byteOffset + data.asr.byteLength);
+                            console.log("ArrayBuffer from data.asr:", arrayBuffer);
 
-                            const decompressedStreamData = ZstdStream.decompress(data.asr);
-                            console.log(decompressedStreamData);
+                            // Convert ArrayBuffer to Uint8Array
+                            const intArray = new Uint8Array(arrayBuffer);
+                            console.log("Uint8Array from ArrayBuffer:", intArray);
+
+                            const decompressedStreamData = ZstdStream.decompress(intArray);
+                            console.log("Decompressed stream data:", decompressedStreamData);
 
                             const asrDict = JSON.parse(uint8ArrayToString(decompressedStreamData));
+                            console.log("Parsed ASR dictionary:", asrDict);
+
                             setAsrData(asrDict);
                         });
                     }
