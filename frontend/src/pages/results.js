@@ -170,6 +170,7 @@ const Results = () => {
                     } else {
                         ZstdInit().then(({ ZstdSimple, ZstdStream }) => {
                             console.log("Original data.asr:", data.asr);
+                            console.log("Original data.asr.buffer:", data.asr.buffer);
 
                             const arrayBuffer = toArrayBuffer(data.asr);
                             console.log("Array buffer:", arrayBuffer);
