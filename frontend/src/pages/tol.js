@@ -117,6 +117,8 @@ const Tol = () => {
             fetch(`${process.env.PUBLIC_URL}/example/seq.state.zst`).then(response => response.arrayBuffer().then(compressedData => {
                 // Decompress the compressed simple data
                 const decompressedStreamData = ZstdStream.decompress(new Uint8Array(compressedData));
+                
+                console.log(typeof decompressedStreamData);
                 const asrDict = JSON.parse(uint8ArrayToString(decompressedStreamData))
                 setAsrData(asrDict);
             }));
