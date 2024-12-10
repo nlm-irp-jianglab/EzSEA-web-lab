@@ -163,14 +163,10 @@ const Results = () => {
                             console.log(data.asr);
 
                             // Convert Buffer to ArrayBuffer
-                            const arrayBuffer = data.asr.buffer.slice(
-                                data.asr.byteOffset,
-                                data.asr.byteOffset + data.asr.byteLength
-                            );
-                            const intArray = new Uint8Array(arrayBuffer);
-                            console.log(intArray);
+                            const arrayBuffer = new Uint8Array(data.asr).buffer;
+                            console.log(arrayBuffer);
 
-                            const decompressedStreamData = ZstdStream.decompress(intArray);
+                            const decompressedStreamData = ZstdStream.decompress(new Uint8Array(arrayBuffer));
                             console.log(decompressedStreamData);
 
                             const asrDict = JSON.parse(uint8ArrayToString(decompressedStreamData));
