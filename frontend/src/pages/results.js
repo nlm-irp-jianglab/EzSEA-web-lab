@@ -156,6 +156,7 @@ const Results = () => {
                     } else {
                         ZstdInit().then(({ ZstdSimple, ZstdStream }) => {
                             const decompressedStreamData = ZstdStream.decompress(new Uint8Array(data.asr));
+                            console.log(decompressedStreamData);
                             const asrDict = JSON.parse(uint8ArrayToString(decompressedStreamData))
                             setAsrData(asrDict);
 
