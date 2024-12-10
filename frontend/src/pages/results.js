@@ -162,7 +162,7 @@ const Results = () => {
                         ZstdInit().then(({ ZstdSimple, ZstdStream }) => {
                             console.log(data.asr);
 
-                            const intArray = new Uint8Array(data.asr);
+                            const intArray = new Uint8Array(data.asr.buffer, data.asr.byteOffset, data.asr.byteLength);
                             console.log(intArray);
 
                             const decompressedStreamData = ZstdStream.decompress(intArray);
