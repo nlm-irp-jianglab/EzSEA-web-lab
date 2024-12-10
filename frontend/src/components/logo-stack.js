@@ -19,8 +19,7 @@ const LogoStack = React.forwardRef(
         const backScrollers = useRef([]);
         const frontScrollers = useRef([]);
         const [renderLogos, setRenderLogos] = useState(false);
-        const { scrollPosition, setScrollPosition } = useContext(tolContext);
-        const [seqLength, setSeqLength] = useState(0);
+        const { scrollPosition, setScrollPosition, seqLength, setSeqLength } = useContext(tolContext);
 
         const fetchFastaFiles = async (data) => {
             let fastaData = {};
@@ -55,17 +54,12 @@ const LogoStack = React.forwardRef(
             // Clear logoRefs
             logoRefs.current = []; // TODO test for bugs on this
 
+            console.log(data);
             setFastaContent(data);
         }, [data]);
 
         useEffect(() => {
             setRenderLogos(true);
-
-            if (Object.keys(fastaContent).length > 0) {
-                var firstFa = fastaContent[Object.keys(fastaContent)[0]];
-                firstFa = firstFa.substring(firstFa.indexOf('\n') + 1);
-                setSeqLength(firstFa.length);
-            }
         }, [fastaContent]);
 
         const scrollToIndex = (index) => {
@@ -162,7 +156,7 @@ const LogoStack = React.forwardRef(
 
                     const elements = document.getElementsByClassName('yaxis');
                     Array.from(elements).forEach((element) => {
-                        const translationValue = left / 4.6332; // Offset the scrolling
+                        const translationValue = left / 4.7603; // Offset the scrolling
                         element.style.transform = `translate(${translationValue}em, 10px)`;
                     });
 
@@ -230,11 +224,7 @@ const LogoStack = React.forwardRef(
 
         useImperativeHandle(ref, () => ({
             scrollToHighlightIndex: (index) => {
-                var firstFa = fastaContent[Object.keys(fastaContent)[0]];
-                // Remove first line of fasta string
-                firstFa = firstFa.substring(firstFa.indexOf('\n') + 1);
-
-                var rectSize = firstFa.length > 999 ? 20 : 21.5;
+                var rectSize = seqLength > 999 ? 20 : 21.5;
                 var centerOffset = 0;
 
                 // Pulse the residue number we scrolled to
@@ -303,7 +293,7 @@ const LogoStack = React.forwardRef(
                                         <b>{key}</b>
                                     </p>
                                     <span style={{ paddingRight: "30px" }}>
-                                        {fastaContent[key].substring(1).indexOf(">") > 0 && (
+                                        {key.indexOf("ASR") > 0 && (
                                             <button
                                                 className={`logo-color-btn logo-btn ${activeButton === `entropy-${index}` ? "active" : ""
                                                     }`}
@@ -316,7 +306,7 @@ const LogoStack = React.forwardRef(
                                                 }}
                                                 onClick={() => {
                                                     setActiveButton(`entropy-${index}`);
-                                                    applyEntropyStructColor(key.replace("Clade of ", ""));
+                                                    applyEntropyStructColor(key.replace("Information logo of Clade ", ""));
                                                 }}
                                             >
                                                 <svg
@@ -331,8 +321,8 @@ const LogoStack = React.forwardRef(
                                                 </svg>
                                             </button>
                                         )}
-                                        {importantResiduesList[key.replace("ASR of ", "")] &&
-                                            importantResiduesList[key.replace("ASR of ", "")].differing_residues.length > 0 && (
+                                        {importantResiduesList[key.replace("ASR Probability Logo for ", "")] &&
+                                            importantResiduesList[key.replace("ASR Probability Logo for ", "")].differing_residues.length > 0 && (
                                                 <button
                                                     className={`logo-color-btn logo-btn ${activeButton === `important-${index}` ? "active" : ""
                                                         }`}
@@ -347,7 +337,7 @@ const LogoStack = React.forwardRef(
                                                     onClick={() => {
                                                         setActiveButton(`important-${index}`);
                                                         applyImportantStructColor(
-                                                            importantResiduesList[key.replace("ASR of ", "")].differing_residues,
+                                                            importantResiduesList[key.replace("ASR Probability Logo for ", "")].differing_residues,
                                                             fastaContent[key]
                                                         );
                                                     }}
@@ -419,17 +409,34 @@ const LogoStack = React.forwardRef(
                                     }}
                                     ref={(el) => addLogoRef(el)}
                                 >
+                                {key.indexOf("ASR") > -1 ? (
+                                    <Logo
+                                        ppm={fastaContent[key]}
+                                        alphabet={ProteinAlphabet}
+                                        onSymbolClick={onColumnClick}
+                                        importantResidues={
+                                            importantResiduesList[key.replace("ASR Probability Logo for ", "")] || {
+                                                differing_residues: [], // Default to empty list if no important residues are provided
+                                            }
+                                        }
+                                        height={150}
+                                        mode="FREQUENCY"
+                                    />
+                                ) : (
                                     <Logo
                                         fasta={fastaContent[key]}
                                         alphabet={ProteinAlphabet}
                                         onSymbolClick={onColumnClick}
                                         importantResidues={
-                                            importantResiduesList[key.replace("ASR of ", "")] || {
+                                            importantResiduesList[key.replace("Information logo of Clade ", "")] || {
                                                 differing_residues: [], // Default to empty list if no important residues are provided
                                             }
                                         }
                                         mode="INFORMATION_CONTENT"
+                                        height={150}
                                     />
+                                )}
+
                                 </div>
                             </div>
                         );

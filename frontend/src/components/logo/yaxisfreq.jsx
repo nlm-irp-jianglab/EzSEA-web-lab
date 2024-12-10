@@ -26,7 +26,7 @@ const YAxisFrequency = ({ ticks, transform, height, width }) => {
 	      </g>
 	  ))}
 	  <g transform="rotate(-90)">
-	    <text y="15" x={-height / 2} textAnchor="middle" fontSize="18">frequency</text>
+	    <text y="15" x={-height / 2} textAnchor="middle" fontSize="22">Probability</text>
 	  </g>
 	</g>
     );

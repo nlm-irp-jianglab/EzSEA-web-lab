@@ -8,7 +8,7 @@ import "../components/phylotree.css";
 import "../components/tol.css";
 import MolstarViewer from "../components/molstar";
 import LogoStack from '../components/logo-stack';
-import { readFastaToDict, parseNodeData, calcEntropyFromMSA, mapEntropyToColors, jsonToFasta } from '../components/utils';
+import { readFastaToDict, parseNodeData, calcEntropyFromMSA, mapEntropyToColors, jsonToFasta, parseAsrData } from '../components/utils';
 import { useParams } from 'react-router-dom';
 import * as d3 from 'd3';
 import ErrorPopup from '../components/errorpopup';
@@ -21,6 +21,9 @@ import Tooltip from '@mui/material/Tooltip';
 import RestoreIcon from '@mui/icons-material/Restore';
 import { Slider } from '@mui/material';
 import { tolContext } from '../components/tolContext';
+import { ZstdInit, ZstdDec } from '@oneidentity/zstd-js/decompress';
+import Autocomplete from '@mui/material/Autocomplete';
+import TextField from '@mui/material/TextField';
 
 const logoFiles = {};
 
@@ -33,14 +36,14 @@ const Tol = () => {
     const [nodeData, setnodeData] = useState(null);
     const [topNodes, setTopNodes] = useState({}); // Top 10 nodes for the tree
     const [leafData, setLeafData] = useState({});
+    const [asrData, setAsrData] = useState(null);
 
     // State to store the logo content (formatted for logoJS) and color file
     const [logoContent, setLogoContent] = useState({});
     const [colorArr, setColorArr] = useState(null);
 
     // For scoller
-    const { scrollPosition, setScrollPosition } = useContext(tolContext);
-    const [seqLength, setSeqLength] = useState(0);
+    const { scrollPosition, setScrollPosition, seqLength, setSeqLength } = useContext(tolContext);
 
     // For live updates linking sequence logo and structure viewer
     const [selectedResidue, setSelectedResidue] = useState(null);
@@ -91,6 +94,7 @@ const Tol = () => {
         readFastaToDict(`${process.env.PUBLIC_URL}/example/asr.fa`).then(data => {
             setFaData(data);
             setSeqLength(data[Object.keys(data)[0]].length);
+            console.log(data[Object.keys(data)[0]].length);
         });
 
 
@@ -103,6 +107,22 @@ const Tol = () => {
 
         readFastaToDict(`${process.env.PUBLIC_URL}/example/seq_trimmed.afa`).then(data => { setLeafData(data) });
 
+        const uint8ArrayToString = (uint8Array) => {
+            const decoder = new TextDecoder('utf-8');
+            return decoder.decode(uint8Array);
+        };
+
+        ZstdInit().then(({ ZstdSimple, ZstdStream }) => {
+            // Load the compressed data
+            fetch(`${process.env.PUBLIC_URL}/example/seq.state.zst`).then(response => response.arrayBuffer().then(compressedData => {
+                // Decompress the compressed simple data
+                const decompressedStreamData = ZstdStream.decompress(new Uint8Array(compressedData));
+                const asrDict = JSON.parse(uint8ArrayToString(decompressedStreamData))
+                setAsrData(asrDict);
+            }));
+
+        });
+
         // fetch(`${process.env.PUBLIC_URL}/example/seq.pdb`)
         //     .then(response => response.text())
         //     .then((text) => {
@@ -112,7 +132,7 @@ const Tol = () => {
 
     // Deals with tree rendering
     useEffect(() => {
-        if (treeRef.current && newickData && nodeData) {
+        if (treeRef.current && newickData && nodeData && asrData) {
             treeRef.current.innerHTML = '';
 
             const tree = new pt.phylotree(newickData);
@@ -250,7 +270,7 @@ const Tol = () => {
             // Start with pan to input query
             findAndZoom("PA14_rph");
         }
-    }, [newickData, faData, refresh]);
+    }, [newickData, faData, asrData, refresh]);
 
     const removeNodeFromLogo = (node, clade = false) => {
         // Remove node from logoContent
@@ -261,10 +281,10 @@ const Tol = () => {
             if (node.data.name in updatedLogoContent) {
                 if (clade) {
                     node['compare-descendants'] = false;
-                    delete updatedLogoContent["Clade of " + node.data.name];  // Remove the node
+                    delete updatedLogoContent["Information logo of Clade " + node.data.name];  // Remove the node
                 } else {
                     node['compare-node'] = false;
-                    delete updatedLogoContent["ASR of " + node.data.name];  // Remove the node
+                    delete updatedLogoContent["ASR Probability Logo for " + node.data.name];  // Remove the node
                 }
                 setNodeColor(node.data.name, null);
             }
@@ -279,7 +299,7 @@ const Tol = () => {
             const updatedLogoContent = { ...prevLogoContent };
             // Add or do nothing if node is already in logoContent
             node['compare-node'] = true;
-            updatedLogoContent["ASR of " + node.data.name] = `>${node.data.name}\n${faData[node.data.name]}`;
+            updatedLogoContent["ASR Probability Logo for " + node.data.name] = asrData[`${node.data.name}`];
             setNodeColor(node.data.name, "red");
 
             return updatedLogoContent;  // Return the new state
@@ -305,7 +325,7 @@ const Tol = () => {
             // Calculates entropies, maps to colors and sets the colorArr state
             //calcEntropyFromMSA(desc_fa).then((entropy) => mapEntropyToColors(entropy)).then((colors) => { setColorArr(colors) });
 
-            updatedLogoContent["Clade of " + node.data.name] = desc_fa;
+            updatedLogoContent["Information logo of Clade " + node.data.name] = desc_fa;
             setNodeColor(node.data.name, "yellow");
 
             return updatedLogoContent;  // Return the new state
@@ -406,7 +426,7 @@ const Tol = () => {
     }
 
     const handleSlider = (e, value) => {
-        setScrollPosition(value);
+        setScrollPosition(value + 1);
         logoStackRef.current.scrollToIndex(value);
     };
 
@@ -776,27 +796,45 @@ const Tol = () => {
     }
 
     return (
-        <div style={{ height: '100%', display: 'flex', flexDirection: 'column', maxWidth: '100vw' }}>
+        <div style={{ height: '100%', display: 'flex', flexDirection: 'column', maxWidth: '100vw', flexGrow: '1' }}>
             <Navbar pageId={"Results: ru5hnx3m2np8010"} />
             {isErrorPopupVisible && (
                 <ErrorPopup errorMessage="An error occurred!" onClose={closeErrorPopup} />
             )}
             <div style={{ display: 'flex', flexGrow: '1' }}>
                 <div className="sidebar" style={{
-                    width: (sidebarExpanded ? "250px" : "50px")
+                    width: (sidebarExpanded ? "220px" : "50px"),
+                    flexGrow: '0',
                 }}>
                     <div className="sidebar-item nodes-label">
                         {zoomToElem()}
-                        {sidebarExpanded && <input
-                            className="zoomInput"
-                            ref={zoomInputRef}
-                            placeholder="Find Node"
-                            onKeyDown={(e) => {
-                                if (e.key === 'Enter') {
-                                    findAndZoom(zoomInputRef.current.value);
-                                }
-                            }}
-                        />}
+                        {sidebarExpanded &&
+                            <Autocomplete
+                                className="zoomInput"
+                                id="search"
+                                clearOnBlur
+                                selectOnFocus
+                                freeSolo
+                                size="small"
+                                options={Object.keys(faData).concat(Object.keys(leafData))}
+                                getOptionLabel={(option) => option}
+                                style={{ width: 150 }}
+                                renderInput={(params) =>
+                                    <TextField {...params}
+                                        label="Search for node"
+                                        variant="filled"
+                                        style={{
+                                            backgroundColor: 'white',
+                                            borderTopLeftRadius: '5px',
+                                            borderTopRightRadius: '5px',
+                                            fontSize: '8px',
+                                        }}
+                                        slotProps={{
+                                            inputLabel: { style: { fontSize: '14px' } },
+                                        }}
+                                    />}
+                                onChange={(event, value) => findAndZoom(value)}
+                            />}
                         {notification && (
                             <div className="notification">
                                 {notification}
@@ -808,8 +846,9 @@ const Tol = () => {
                     </div>
                     <div className="nodes-dropdown-content dropdown-content transition-element">
                         {Object.keys(topNodes).map(key => (
-                            <button key={key} onClick={() => setImportantView(key)}>
-                                <span style={{ fontWeight: "bold" }}>{key}</span> Score: {topNodes[key]['score'].toFixed(2)}
+                            <button key={key} onClick={() => setImportantView(key)} style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start' }}>
+                                <span style={{ fontWeight: 'bold', minWidth: '60px' }}>{key}</span>
+                                <span>Score: {topNodes[key]['score'].toFixed(2)}</span>
                             </button>
                         ))}
                     </div>
@@ -890,7 +929,7 @@ const Tol = () => {
                                         aria-label="default"
                                         valueLabelDisplay="auto"
                                         labelPlacement="bottom"
-                                        min={1}
+                                        min={0}
                                         max={seqLength - 1}
                                         value={scrollPosition}
                                         onChange={handleSlider}
@@ -901,7 +940,7 @@ const Tol = () => {
                                     <input
                                         className="scrollInput zoomInput"
                                         ref={scrollInputRef}
-                                        placeholder={scrollPosition}
+                                        placeholder={scrollPosition + 1}
                                         onKeyDown={(e) => {
                                             if (e.key === 'Enter') {
                                                 try {

@@ -82,7 +82,6 @@ const Logo = React.forwardRef(
             const r = (noFastaNames ? parseSequences : parseFASTA)(alphabet, fasta.toUpperCase());
             pfm = r.pfm;
             count = r.count || 1;
-            if (count === 1) mode = FREQUENCY; // EDIT HERE: Give fa seq of node, cannot use information content since count is 1. Switch to frequency mode for better readability
         }
         const sums = relativePseudocount && pfm && pfm.map && pfm.map(x => x.reduce((t, v, i) => i === undefined ? t : v + t, 0.0)).map(x => x === 0 ? 0 : (alphabet.length - 1) / (2 * Math.log(2) * x));
         if (!ppm && pfm && pfm.map)

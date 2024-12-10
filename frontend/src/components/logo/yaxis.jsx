@@ -27,8 +27,8 @@ const YAxis = ({ bits, transform, height, width, zeroPoint }) => {
 	      </g>
 	  ))}
 	  <g transform="rotate(-90)">
-	    <text y="20" x={-height / 2} textAnchor="middle" fontSize="18">
-              bits
+	    <text y="20" x={-height / 2} textAnchor="middle" fontSize="22">
+              Information
             </text>
 	  </g>
 	</g>

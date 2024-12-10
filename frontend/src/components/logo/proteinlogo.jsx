@@ -12,7 +12,6 @@ import Logo from './logo';
  */
 export const ProteinAlphabet = [
     { component: A, regex: "A", color: 'black' },
-    { component: B, regex: "B", color: '#bb8800' },
     { component: C, regex: "C", color: '#008811' },
     { component: D, regex: "D", color: '#ff0000' },
     { component: E, regex: "E", color: '#ff0022' },
@@ -32,7 +31,6 @@ export const ProteinAlphabet = [
     { component: V, regex: "V", color: '#222200' },
     { component: W, regex: "W", color: '#080808' },
     { component: Y, regex: "Y", color: '#00a800' },
-    { component: Z, regex: "Z", color: '#aaaa00' },
 ]; 
 
 /**

@@ -21,6 +21,9 @@ import Tooltip from '@mui/material/Tooltip';
 import RestoreIcon from '@mui/icons-material/Restore';
 import { Slider } from '@mui/material';
 import { tolContext } from '../components/tolContext';
+import { ZstdInit, ZstdDec } from '@oneidentity/zstd-js/decompress';
+import Autocomplete from '@mui/material/Autocomplete';
+import TextField from '@mui/material/TextField';
 
 const Results = () => {
     const { jobId } = useParams();
@@ -36,14 +39,14 @@ const Results = () => {
     const [structLogoMapArr, setStructLogoMapArr] = useState([]);
     const [ecData, setEcData] = useState(null); // EC codes 
     const [topNodes, setTopNodes] = useState({}); // Top 10 nodes for the tree
+    const [asrData, setAsrData] = useState(null);
 
     // State to store the logo content (formatted for logoJS) and color file
     const [logoContent, setLogoContent] = useState({}); // Dict of Node: sequences used for rendering seqlogo
     const [colorArr, setColorArr] = useState(null);
 
     // For scoller
-    const { scrollPosition, setScrollPosition } = useContext(tolContext);
-    const [seqLength, setSeqLength] = useState(0);
+    const { scrollPosition, setScrollPosition, seqLength, setSeqLength } = useContext(tolContext);
 
     // For live updates linking sequence logo and structure viewer
     const [selectedResidue, setSelectedResidue] = useState(null);
@@ -142,6 +145,18 @@ const Results = () => {
                         setEcData(ecDict);
                     }
 
+                    if (data.asrError) {
+                        setErrorPopupVisible(true);
+                        console.error("Error fetching asr probability data:", data.asrError);
+                    } else {
+                        ZstdInit().then(({ ZstdSimple, ZstdStream }) => {
+                            const decompressedStreamData = ZstdStream.decompress(new Uint8Array(data.asr.arrayBuffer()));
+                            const asrDict = JSON.parse(uint8ArrayToString(decompressedStreamData))
+                            setAsrData(asrDict);
+
+                        });
+                    }
+
                 });
         } catch (error) {
             setErrorPopupVisible(true);
@@ -151,7 +166,7 @@ const Results = () => {
 
     // Deals with tree rendering
     useEffect(() => {
-        if (treeRef.current && newickData && nodeData) {
+        if (treeRef.current && newickData && nodeData && asrData) {
             treeRef.current.innerHTML = '';
 
             const inputHeader = inputData.split("\n")[0].substring(1);
@@ -314,13 +329,13 @@ const Results = () => {
             // Start with pan to input query
             findAndZoom(inputHeader);
         }
-    }, [newickData, faData, refresh]);
+    }, [newickData, faData, asrData, refresh]);
 
     /* 
         Remove a node from the comparison
         node: a node object 
     */
-    const removeNodeFromLogo = (node) => {
+    const removeNodeFromLogo = (node, clade = false) => {
         setLogoContent(prevLogoContent => {
             const updatedLogoContent = { ...prevLogoContent };
 
@@ -328,10 +343,10 @@ const Results = () => {
             if (node.data.name in updatedLogoContent) {
                 if (clade) {
                     node['compare-descendants'] = false;
-                    delete updatedLogoContent["Clade of " + node.data.name];  // Remove the node
+                    delete updatedLogoContent["Information logo of Clade " + node.data.name];  // Remove the node
                 } else {
                     node['compare-node'] = false;
-                    delete updatedLogoContent["ASR of " + node.data.name];  // Remove the node
+                    delete updatedLogoContent["ASR Probability Logo for " + node.data.name];  // Remove the node
                 }
                 setNodeColor(node.data.name, null);
             }
@@ -349,7 +364,7 @@ const Results = () => {
             const updatedLogoContent = { ...prevLogoContent };
             // Add or do nothing if node is already in logoContent
             node['compare-node'] = true;
-            updatedLogoContent["ASR of " + node.data.name] = `>${node.data.name}\n${faData[node.data.name]}`;
+            updatedLogoContent["ASR Probability Logo for " + node.data.name] = asrData[`${node.data.name}`];
             setNodeColor(node.data.name, "red");
 
             return updatedLogoContent;  // Return the new state
@@ -379,7 +394,7 @@ const Results = () => {
             // Calculates entropies, maps to colors and sets the colorArr state
             //calcEntropyFromMSA(desc_fa).then((entropy) => mapEntropyToColors(entropy)).then((colors) => { setColorArr(colors) });
 
-            updatedLogoContent["Clade of " + node.data.name] = desc_fa;
+            updatedLogoContent["Information logo of Clade " + node.data.name] = desc_fa;
             setNodeColor(node.data.name, "yellow");
 
             return updatedLogoContent;  // Return the new state
@@ -510,7 +525,7 @@ const Results = () => {
     */
 
     const handleScrollLogosTo = (index) => {
-        logoStackRef.current.scrollToIndex(structLogoMapArr[index]);
+        logoStackRef.current.scrollToHighlightIndex(structLogoMapArr[index]);
     }
 
     /*
@@ -958,26 +973,44 @@ const Results = () => {
     }
 
     return (
-        <div style={{ height: '100%', display: 'flex', flexDirection: 'column', maxWidth: '100vw' }}>
+        <div style={{ height: '100%', display: 'flex', flexDirection: 'column', maxWidth: '100vw', flexGrow: '1' }}>
             <Navbar pageId={`Results: ${jobId}`} />
             {isErrorPopupVisible && (
                 <ErrorPopup errorMessage="Results not available" onClose={() => setErrorPopupVisible(false)} />
             )}
             <div style={{ display: 'flex', flexGrow: '1' }}>
                 <div className="sidebar" style={{
-                    width: (sidebarExpanded ? "250px" : "50px")
+                    width: (sidebarExpanded ? "220px" : "50px"),
+                    flexGrow: '0',
                 }}>
                     <div className="sidebar-item nodes-label">
                         {zoomToElem()}
-                        {sidebarExpanded && <input
-                            className="zoomInput"
-                            ref={zoomInputRef}
-                            placeholder="Find Node"
-                            onKeyDown={(e) => {
-                                if (e.key === 'Enter') {
-                                    findAndZoom(zoomInputRef.current.value);
-                                }
-                            }}
+                        {sidebarExpanded &&
+                            <Autocomplete
+                                className="zoomInput"
+                                id="search"
+                                clearOnBlur
+                                selectOnFocus
+                                freeSolo
+                                size="small"
+                                options={Object.keys(faData).concat(Object.keys(leafData))}
+                                getOptionLabel={(option) => option}
+                                style={{ width: 150 }}
+                                renderInput={(params) =>
+                                    <TextField {...params}
+                                        label="Search for node"
+                                        variant="filled"
+                                        style={{
+                                            backgroundColor: 'white',
+                                            borderTopLeftRadius: '5px',
+                                            borderTopRightRadius: '5px',
+                                            fontSize: '8px',
+                                        }}
+                                        slotProps={{
+                                            inputLabel: { style: { fontSize: '14px' } },
+                                        }}
+                                    />}
+                                onChange={(event, value) => findAndZoom(value)}
                         />}
                         {notification && (
                             <div className="notification">
@@ -990,9 +1023,10 @@ const Results = () => {
                     </div>
                     <div className="nodes-dropdown-content dropdown-content transition-element">
                         {Object.keys(topNodes).map(key => (
-                            <button key={key} onClick={() => setImportantView(key)}>
-                                <span style={{ fontWeight: "bold" }}>{key}</span> Score: {topNodes[key]['score'].toFixed(2)}
-                            </button>
+                            <button key={key} onClick={() => setImportantView(key)} style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start' }}>
+                            <span style={{ fontWeight: 'bold', minWidth: '60px' }}>{key}</span>
+                            <span>Score: {topNodes[key]['score'].toFixed(2)}</span>
+                        </button>
                         ))}
                     </div>
                     <div className="sidebar-item downloads-label">
@@ -1073,7 +1107,7 @@ const Results = () => {
                                         aria-label="default"
                                         valueLabelDisplay="auto"
                                         labelPlacement="bottom"
-                                        min={1}
+                                        min={0}
                                         max={seqLength - 1}
                                         value={scrollPosition}
                                         onChange={handleSlider}
@@ -1084,7 +1118,7 @@ const Results = () => {
                                     <input
                                         className="scrollInput zoomInput"
                                         ref={scrollInputRef}
-                                        placeholder={scrollPosition}
+                                        placeholder={scrollPosition + 1}
                                         onKeyDown={(e) => {
                                             if (e.key === 'Enter') {
                                                 try {

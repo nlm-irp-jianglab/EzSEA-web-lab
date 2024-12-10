@@ -160,15 +160,8 @@
 }
 
 .zoomInput {
-    width: 100%;
-    padding: 8px;
-    border: none;
-    outline: none;
-    background-color: #f0f0f0;
-    color: #666;
-    font-size: 14px;
     border-radius: 4px;
-    margin-right: 10px;
+    margin: 10px 10px;
 }
 
 .zoomInput::placeholder {

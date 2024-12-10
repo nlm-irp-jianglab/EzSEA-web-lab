@@ -48,7 +48,7 @@ export const fastaToDict = async (fastaContent) => {
     const fastaDict = {};
     const lines = fastaContent.split('\n');
     let currentHeader = null;
-    
+
     lines.forEach(line => {
         // Check if the line is a header (starts with `>`)
         if (line.startsWith('>')) {
@@ -59,7 +59,7 @@ export const fastaToDict = async (fastaContent) => {
             fastaDict[currentHeader] += line.trim(); // Remove any spaces or newlines
         }
     });
-    
+
     return fastaDict;
 };
 
@@ -92,7 +92,7 @@ export const addRingAnnotation = async (element, annotation) => { // attach rect
         .attr("transform", `translate(${shift}, 0)`);
 }
 
-export const parseNodeData = async (nodeData) => {    
+export const parseNodeData = async (nodeData) => {
     const parsedData = {};
     nodeData.forEach(item => {
         parsedData[item.node] = {
