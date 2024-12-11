@@ -4,6 +4,9 @@ import { EasyScroller } from 'easyscroller';
 import { ProteinAlphabet } from "./logo/proteinlogo.jsx";
 import "./logojs.css";
 import { tolContext } from '../components/tolContext';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
+import { DndLogo } from './dndLogo.js';
 
 const LogoStack = React.forwardRef(
     /*
@@ -12,13 +15,13 @@ const LogoStack = React.forwardRef(
         onColumnHover (optional): A function to handle hover events on the logo
     */
     ({ data, onColumnClick, onColumnHover, importantResiduesList, removeNodeHandle, applyEntropyStructColor, applyImportantStructColor }, ref) => {
-        const [activeButton, setActiveButton] = useState(null); // State to track the active button
         const [fastaContent, setFastaContent] = useState({});
         const [refsUpdated, setRefsUpdated] = useState(0);
         const logoRefs = useRef([]);
         const backScrollers = useRef([]);
         const frontScrollers = useRef([]);
         const [renderLogos, setRenderLogos] = useState(false);
+        const [activeButton, setActiveButton] = useState(null);
         const { scrollPosition, setScrollPosition, seqLength, setSeqLength } = useContext(tolContext);
 
         const fetchFastaFiles = async (data) => {
@@ -44,6 +47,7 @@ const LogoStack = React.forwardRef(
                 logoRefs.current.push(ref);
                 setRefsUpdated((prev) => prev + 1);
             }
+            console.log(logoRefs.current);
         };
 
         useEffect(() => {
@@ -54,7 +58,6 @@ const LogoStack = React.forwardRef(
             // Clear logoRefs
             logoRefs.current = []; // TODO test for bugs on this
 
-            console.log(data);
             setFastaContent(data);
         }, [data]);
 
@@ -70,39 +73,7 @@ const LogoStack = React.forwardRef(
             });
         };
 
-        // Handling Sync Scrolling
-        // const handleWheel = useCallback((event) => {
-        //     event.preventDefault();
-        //     const currScroller = backScrollers.current[0].scroller;
-        //     const viewWidth = logoRefs.current[0].parentNode.clientWidth; // This sucks. Have a useRef for the container. May need to pass in.
-        //     const logoWidth = logoRefs.current[0].clientWidth;
-
-        //     if (event.deltaY < 0) {
-        //         if (currScroller.__scrollLeft - 90 < 0) {
-        //             currScroller.__publish(0, 1, 1, true);
-        //         } else {
-        //             currScroller.__publish(currScroller.__scrollLeft - 90, 1, 1, true);
-        //         }
-        //     } else {
-        //         if (currScroller.__scrollLeft + 90 > logoWidth - viewWidth) {
-        //             currScroller.__publish(logoWidth - viewWidth, 1, 1, true);
-        //         } else {
-        //             currScroller.__publish(currScroller.__scrollLeft + 90, 1, 1, true);
-        //         }
-        //     }
-        //     // Last update to last (final logo) backScroller does not update it's own frontScroller (so no cyclical updates)
-        //     // Manually updating frontScroller of final logo
-        //     frontScrollers.current[0].scroller.__publish(currScroller.__scrollLeft, 1, 1, true);
-        //     // TODO: Debug
-
-        // }, []);
-
         useEffect(() => {
-            // Cleanup previous listeners and scrollers before initializing new ones
-            // logoRefs.current.forEach((ref) => {
-            //     ref.removeEventListener('wheel', handleWheel); // Cleanup event listeners
-            // });
-
             backScrollers.current.forEach((scroller) => {
                 scroller.destroy(); // Destroy back scrollers
             });
@@ -134,9 +105,6 @@ const LogoStack = React.forwardRef(
 
                 backScrollers.current.push(backScroller);
                 frontScrollers.current.push(frontScroller);
-
-                // Add the wheel event listener
-                // ref.addEventListener('wheel', handleWheel);
             });
 
             // Connect back and front layers of scrollers
@@ -166,10 +134,6 @@ const LogoStack = React.forwardRef(
 
             // Cleanup function to remove listeners and destroy scrollers
             return () => {
-                // logoRefs.current.forEach((ref) => {
-                //     ref.removeEventListener('wheel', handleWheel);
-                // });
-
                 backScrollers.current.forEach((scroller) => {
                     scroller.destroy();
                 });
@@ -274,173 +238,178 @@ const LogoStack = React.forwardRef(
         }));
 
         return (
-            <div style={{ overflowX: 'hidden'}}>
+            <div style={{ overflowX: 'hidden' }}>
                 {renderLogos ? (
-                    Object.keys(fastaContent).map((key, index) => {
-                        return (
-                            <div className={"logo_" + index} key={key}>
-                                <div
-                                    style={{
-                                        display: "flex",
-                                        flexDirection: "row",
-                                        alignItems: "center",
-                                        height: "30px",
-                                        margin: "3px",
-                                        justifyContent: "space-between",
-                                    }}
-                                >
-                                    <p style={{ paddingLeft: "30px" }}>
-                                        <b>{key}</b>
-                                    </p>
-                                    <span style={{ paddingRight: "30px" }}>
-                                        {key.indexOf("ASR") > 0 && (
-                                            <button
-                                                className={`logo-color-btn logo-btn ${activeButton === `entropy-${index}` ? "active" : ""
-                                                    }`}
-                                                style={{
-                                                    ...styles.colorBtn,
-                                                    backgroundColor: activeButton === `entropy-${index}` ? "#639fc7" : "#95bee8", // Depressed style
-                                                    boxShadow: activeButton === `entropy-${index}` ? "inset 0px 4px 6px rgba(0, 0, 0, 0.4)" : "none", // Inset shadow
-                                                    transform: activeButton === `entropy-${index}` ? "translateY(2px)" : "none", // Lowered position
-                                                    border: activeButton === `entropy-${index}` ? "2px solid #4a7fa5" : "1px solid #95bee8", // Emphasized border
-                                                }}
-                                                onClick={() => {
-                                                    setActiveButton(`entropy-${index}`);
-                                                    applyEntropyStructColor(key.replace("Information logo of Clade ", ""));
-                                                }}
-                                            >
-                                                <svg
-                                                    fill="#000000"
-                                                    width="23px"
-                                                    height="25px"
-                                                    viewBox="0 0 1920 1920"
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                >
-                                                    <title>Color Entropy</title>
-                                                    <path d="M392.26 1042.5c137.747-57.67 292.85-15.269 425.873 116.217l4.394 4.833c116.656 146.425 149.5 279.119 97.873 394.237-128.85 287.138-740.692 328.77-810.005 332.504L0 1896.442l61.953-91.83c.989-1.539 105.013-158.728 105.013-427.192 0-141.811 92.6-279.558 225.294-334.92ZM1728.701 23.052c54.923-1.099 99.96 15.268 135.111 49.43 40.643 40.644 58.109 87.877 56.021 140.603C1908.85 474.52 1423.33 953.447 1053.15 1280.79c-24.276-64.81-63.711-136.21-125.335-213.102l-8.787-9.886c-80.078-80.187-169.163-135.11-262.423-161.473C955.276 558.002 1460.677 33.927 1728.701 23.052Z" />
-                                                </svg>
-                                            </button>
-                                        )}
-                                        {importantResiduesList[key.replace("ASR Probability Logo for ", "")] &&
-                                            importantResiduesList[key.replace("ASR Probability Logo for ", "")].differing_residues.length > 0 && (
+                    <DndProvider backend={HTML5Backend}>
+                        {/* {Object.keys(fastaContent).map((key, index) => {
+                            return (
+                                <div className={"logo_" + index} key={key}>
+                                    <div
+                                        style={{
+                                            display: "flex",
+                                            flexDirection: "row",
+                                            alignItems: "center",
+                                            height: "30px",
+                                            margin: "3px",
+                                            justifyContent: "space-between",
+                                        }}
+                                    >
+                                        <p style={{ paddingLeft: "30px" }}>
+                                            <b>{key}</b>
+                                        </p>
+                                        <span style={{ paddingRight: "30px" }}>
+                                            {key.indexOf("ASR") > 0 && (
                                                 <button
-                                                    className={`logo-color-btn logo-btn ${activeButton === `important-${index}` ? "active" : ""
+                                                    className={`logo-color-btn logo-btn ${activeButton === `entropy-${index}` ? "active" : ""
                                                         }`}
                                                     style={{
                                                         ...styles.colorBtn,
-                                                        backgroundColor:
-                                                            activeButton === `important-${index}` ? "#639fc7" : "#95bee8",
-                                                        boxShadow: activeButton === `important-${index}` ? "inset 0px 4px 6px rgba(0, 0, 0, 0.2)" : "none", // Inset shadow
-                                                        transform: activeButton === `important-${index}` ? "translateY(2px)" : "none", // Lowered position
-                                                        border: activeButton === `important-${index}` ? "2px solid #4a7fa5" : "1px solid #95bee8", // Emphasized border
+                                                        backgroundColor: activeButton === `entropy-${index}` ? "#639fc7" : "#95bee8", // Depressed style
+                                                        boxShadow: activeButton === `entropy-${index}` ? "inset 0px 4px 6px rgba(0, 0, 0, 0.4)" : "none", // Inset shadow
+                                                        transform: activeButton === `entropy-${index}` ? "translateY(2px)" : "none", // Lowered position
+                                                        border: activeButton === `entropy-${index}` ? "2px solid #4a7fa5" : "1px solid #95bee8", // Emphasized border
                                                     }}
                                                     onClick={() => {
-                                                        setActiveButton(`important-${index}`);
-                                                        applyImportantStructColor(
-                                                            importantResiduesList[key.replace("ASR Probability Logo for ", "")].differing_residues,
-                                                            fastaContent[key]
-                                                        );
+                                                        setActiveButton(`entropy-${index}`);
+                                                        applyEntropyStructColor(key.replace("Information logo of Clade ", ""));
                                                     }}
                                                 >
                                                     <svg
-                                                        width="22px"
+                                                        fill="#000000"
+                                                        width="23px"
                                                         height="25px"
-                                                        viewBox="0 0 24 24"
+                                                        viewBox="0 0 1920 1920"
                                                         xmlns="http://www.w3.org/2000/svg"
                                                     >
-                                                        <title>Color Important Residues</title>
-                                                        <path d="M6.5 4l5.5 6 5.5-6zm2.273 1h6.454L12 8.52zM23 20v-8H1v8zM2 19v-6h20v6z" />
-                                                        <path opacity=".5" d="M8 13h8v6H8z" />
-                                                        <path opacity=".25" d="M8 19H2v-6h6z" />
-                                                        <path opacity=".75" d="M22 19h-6v-6h6z" />
-                                                        <path fill="none" d="M0 0h24v24H0z" />
+                                                        <title>Color Entropy</title>
+                                                        <path d="M392.26 1042.5c137.747-57.67 292.85-15.269 425.873 116.217l4.394 4.833c116.656 146.425 149.5 279.119 97.873 394.237-128.85 287.138-740.692 328.77-810.005 332.504L0 1896.442l61.953-91.83c.989-1.539 105.013-158.728 105.013-427.192 0-141.811 92.6-279.558 225.294-334.92ZM1728.701 23.052c54.923-1.099 99.96 15.268 135.111 49.43 40.643 40.644 58.109 87.877 56.021 140.603C1908.85 474.52 1423.33 953.447 1053.15 1280.79c-24.276-64.81-63.711-136.21-125.335-213.102l-8.787-9.886c-80.078-80.187-169.163-135.11-262.423-161.473C955.276 558.002 1460.677 33.927 1728.701 23.052Z" />
                                                     </svg>
                                                 </button>
                                             )}
-                                        <button
-                                            className="logo-download-btn logo-btn"
-                                            style={styles.downloadBtn}
-                                            onClick={() => downloadLogoSVG(index, "seqlogo_" + key + ".svg")}
-                                        >
-                                            <svg
-                                                width="25px"
-                                                height="25px"
-                                                viewBox="0 0 24 24"
-                                                fill="none"
-                                                xmlns="http://www.w3.org/2000/svg"
+                                            {importantResiduesList[key.replace("ASR Probability Logo for ", "")] &&
+                                                importantResiduesList[key.replace("ASR Probability Logo for ", "")].differing_residues.length > 0 && (
+                                                    <button
+                                                        className={`logo-color-btn logo-btn ${activeButton === `important-${index}` ? "active" : ""
+                                                            }`}
+                                                        style={{
+                                                            ...styles.colorBtn,
+                                                            backgroundColor:
+                                                                activeButton === `important-${index}` ? "#639fc7" : "#95bee8",
+                                                            boxShadow: activeButton === `important-${index}` ? "inset 0px 4px 6px rgba(0, 0, 0, 0.2)" : "none", // Inset shadow
+                                                            transform: activeButton === `important-${index}` ? "translateY(2px)" : "none", // Lowered position
+                                                            border: activeButton === `important-${index}` ? "2px solid #4a7fa5" : "1px solid #95bee8", // Emphasized border
+                                                        }}
+                                                        onClick={() => {
+                                                            setActiveButton(`important-${index}`);
+                                                            applyImportantStructColor(
+                                                                importantResiduesList[key.replace("ASR Probability Logo for ", "")].differing_residues,
+                                                                fastaContent[key]
+                                                            );
+                                                        }}
+                                                    >
+                                                        <svg
+                                                            width="22px"
+                                                            height="25px"
+                                                            viewBox="0 0 24 24"
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                        >
+                                                            <title>Color Important Residues</title>
+                                                            <path d="M6.5 4l5.5 6 5.5-6zm2.273 1h6.454L12 8.52zM23 20v-8H1v8zM2 19v-6h20v6z" />
+                                                            <path opacity=".5" d="M8 13h8v6H8z" />
+                                                            <path opacity=".25" d="M8 19H2v-6h6z" />
+                                                            <path opacity=".75" d="M22 19h-6v-6h6z" />
+                                                            <path fill="none" d="M0 0h24v24H0z" />
+                                                        </svg>
+                                                    </button>
+                                                )}
+                                            <button
+                                                className="logo-download-btn logo-btn"
+                                                style={styles.downloadBtn}
+                                                onClick={() => downloadLogoSVG(index, "seqlogo_" + key + ".svg")}
                                             >
-                                                <title>Download Individual</title>
-                                                <path
-                                                    fillRule="evenodd"
-                                                    clipRule="evenodd"
-                                                    d="M2 12C2 7.28595 2 4.92893 3.46447 3.46447C4.92893 2 7.28595 2 12 2C16.714 2 19.0711 2 20.5355 3.46447C22 4.92893 22 7.28595 22 12C22 16.714 22 19.0711 20.5355 20.5355C19.0711 22 16.714 22 12 22C7.28595 22 4.92893 22 3.46447 20.5355C2 19.0711 2 16.714 2 12ZM12 6.25C12.4142 6.25 12.75 6.58579 12.75 7V12.1893L14.4697 10.4697C14.7626 10.1768 15.2374 10.1768 15.5303 10.4697C15.8232 10.7626 15.8232 11.2374 15.5303 11.5303L12.5303 14.5303C12.3897 14.671 12.1989 14.75 12 14.75C11.8011 14.75 11.6103 14.671 11.4697 14.5303L8.46967 11.5303C8.17678 11.2374 8.17678 10.7626 8.46967 10.4697C8.76256 10.1768 9.23744 10.1768 9.53033 10.4697L11.25 12.1893V7C11.25 6.58579 11.5858 6.25 12 6.25ZM8 16.25C7.58579 16.25 7.25 16.5858 7.25 17C7.25 17.4142 7.58579 17.75 8 17.75H16C16.4142 17.75 16.75 17.4142 16.75 17C16.75 16.5858 16.4142 16.25 16 16.25H8Z"
-                                                    fill="#1C274C"
-                                                />
-                                            </svg>
-                                        </button>
-                                        <button
-                                            className="logo-remove-btn logo-btn"
-                                            style={styles.removeBtn}
-                                            onClick={() => removeLogo(index)}
-                                        >
-                                            <svg
-                                                width="25px"
-                                                height="25px"
-                                                viewBox="0 0 1024 1024"
-                                                xmlns="http://www.w3.org/2000/svg"
+                                                <svg
+                                                    width="25px"
+                                                    height="25px"
+                                                    viewBox="0 0 24 24"
+                                                    fill="none"
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                >
+                                                    <title>Download Individual</title>
+                                                    <path
+                                                        fillRule="evenodd"
+                                                        clipRule="evenodd"
+                                                        d="M2 12C2 7.28595 2 4.92893 3.46447 3.46447C4.92893 2 7.28595 2 12 2C16.714 2 19.0711 2 20.5355 3.46447C22 4.92893 22 7.28595 22 12C22 16.714 22 19.0711 20.5355 20.5355C19.0711 22 16.714 22 12 22C7.28595 22 4.92893 22 3.46447 20.5355C2 19.0711 2 16.714 2 12ZM12 6.25C12.4142 6.25 12.75 6.58579 12.75 7V12.1893L14.4697 10.4697C14.7626 10.1768 15.2374 10.1768 15.5303 10.4697C15.8232 10.7626 15.8232 11.2374 15.5303 11.5303L12.5303 14.5303C12.3897 14.671 12.1989 14.75 12 14.75C11.8011 14.75 11.6103 14.671 11.4697 14.5303L8.46967 11.5303C8.17678 11.2374 8.17678 10.7626 8.46967 10.4697C8.76256 10.1768 9.23744 10.1768 9.53033 10.4697L11.25 12.1893V7C11.25 6.58579 11.5858 6.25 12 6.25ZM8 16.25C7.58579 16.25 7.25 16.5858 7.25 17C7.25 17.4142 7.58579 17.75 8 17.75H16C16.4142 17.75 16.75 17.4142 16.75 17C16.75 16.5858 16.4142 16.25 16 16.25H8Z"
+                                                        fill="#1C274C"
+                                                    />
+                                                </svg>
+                                            </button>
+                                            <button
+                                                className="logo-remove-btn logo-btn"
+                                                style={styles.removeBtn}
+                                                onClick={() => removeLogo(index)}
                                             >
-                                                <title>Remove from Comparison</title>
-                                                <path
-                                                    fill="#000000"
-                                                    d="M512 64a448 448 0 1 1 0 896 448 448 0 0 1 0-896zM288 512a38.4 38.4 0 0 0 38.4 38.4h371.2a38.4 38.4 0 0 0 0-76.8H326.4A38.4 38.4 0 0 0 288 512z"
-                                                />
-                                            </svg>
-                                        </button>
-                                    </span>
-                                </div>
-                                <div
-                                    id="logo-stack"
-                                    className="logo_render"
-                                    style={{
-                                        display: "flex",
-                                        height: "150px",
-                                        width: "max-content",
-                                        overflowX: "hidden",
-                                    }}
-                                    ref={(el) => addLogoRef(el)}
-                                >
-                                {key.indexOf("ASR") > -1 ? (
-                                    <Logo
-                                        ppm={fastaContent[key]}
-                                        alphabet={ProteinAlphabet}
-                                        onSymbolClick={onColumnClick}
-                                        importantResidues={
-                                            importantResiduesList[key.replace("ASR Probability Logo for ", "")] || {
-                                                differing_residues: [], // Default to empty list if no important residues are provided
-                                            }
-                                        }
-                                        height={150}
-                                        mode="FREQUENCY"
-                                    />
-                                ) : (
-                                    <Logo
-                                        fasta={fastaContent[key]}
-                                        alphabet={ProteinAlphabet}
-                                        onSymbolClick={onColumnClick}
-                                        importantResidues={
-                                            importantResiduesList[key.replace("Information logo of Clade ", "")] || {
-                                                differing_residues: [], // Default to empty list if no important residues are provided
-                                            }
-                                        }
-                                        mode="INFORMATION_CONTENT"
-                                        height={150}
-                                    />
-                                )}
+                                                <svg
+                                                    width="25px"
+                                                    height="25px"
+                                                    viewBox="0 0 1024 1024"
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                >
+                                                    <title>Remove from Comparison</title>
+                                                    <path
+                                                        fill="#000000"
+                                                        d="M512 64a448 448 0 1 1 0 896 448 448 0 0 1 0-896zM288 512a38.4 38.4 0 0 0 38.4 38.4h371.2a38.4 38.4 0 0 0 0-76.8H326.4A38.4 38.4 0 0 0 288 512z"
+                                                    />
+                                                </svg>
+                                            </button>
+                                        </span>
+                                    </div> // end btnbar
+                                    <div
+                                        id="logo-stack"
+                                        className="logo_render"
+                                        style={{
+                                            display: "flex",
+                                            height: "150px",
+                                            width: "max-content",
+                                            overflowX: "hidden",
+                                        }}
+                                        ref={(el) => addLogoRef(el)}
+                                    >
+                                        {key.indexOf("ASR") > -1 ? (
+                                            <Logo
+                                                ppm={fastaContent[key]}
+                                                alphabet={ProteinAlphabet}
+                                                onSymbolClick={onColumnClick}
+                                                importantResidues={
+                                                    importantResiduesList[key.replace("ASR Probability Logo for ", "")] || {
+                                                        differing_residues: [], // Default to empty list if no important residues are provided
+                                                    }
+                                                }
+                                                height={150}
+                                                mode="FREQUENCY"
+                                            />
+                                        ) : (
+                                            <Logo
+                                                fasta={fastaContent[key]}
+                                                alphabet={ProteinAlphabet}
+                                                onSymbolClick={onColumnClick}
+                                                importantResidues={
+                                                    importantResiduesList[key.replace("Information logo of Clade ", "")] || {
+                                                        differing_residues: [], // Default to empty list if no important residues are provided
+                                                    }
+                                                }
+                                                mode="INFORMATION_CONTENT"
+                                                height={150}
+                                            />
+                                        )}
 
+                                    </div>
                                 </div>
-                            </div>
-                        );
-                    })
+                            );
+                        })} */}
+                        <DndLogo fastaContent={fastaContent} applyEntropyStructColor={applyEntropyStructColor}
+                            onSymbolClick={onColumnClick} importantResiduesList={importantResiduesList} 
+                            applyImportantStructColor={applyImportantStructColor} removeLogo={removeLogo} addLogoRef={addLogoRef} />
+                    </DndProvider>
                 ) : (
                     <p>Loading...</p>
                 )}

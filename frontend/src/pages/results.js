@@ -1136,8 +1136,7 @@ const Results = () => {
                                     <Slider
                                         size="small"
                                         aria-label="default"
-                                        valueLabelDisplay="auto"
-                                        labelPlacement="bottom"
+                                        valueLabelDisplay="off"
                                         min={0}
                                         max={seqLength - 1}
                                         value={scrollPosition}

@@ -19,21 +19,22 @@
     "@mui/icons-material": "^6.1.10",
     "@mui/material": "^6.1.10",
     "@oneidentity/zstd-js": "^1.0.3",
-    "axios": "^1.7.2",
-    "bio-pv": "^1.8.1",
     "d3": "^7.9.0",
+    "easyscroller": "^1.0.1",
+    "immutability-helper": "^3.1.1",
     "jszip": "^3.10.1",
     "molstar": "^4.5.0",
     "patch-package": "^8.0.0",
     "phylotree": "^2.0.1",
     "react": "^18.3.1",
+    "react-dnd": "^16.0.1",
+    "react-dnd-html5-backend": "^16.0.1",
     "react-dom": "^18.3.1",
     "react-rnd": "^10.4.12",
     "react-router-dom": "^6.25.1",
     "react-scripts": "^5.0.1",
     "resizable-pip": "^0.1.1",
-    "sass": "^1.77.8",
-    "skylign": "^1.0.4"
+    "sass": "^1.77.8"
   },
   "browserslist": {
     "production": [

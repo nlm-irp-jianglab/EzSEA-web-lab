@@ -23,6 +23,7 @@ const Home = () => {
     const [database, setDatabase] = useState("uniref90");
     const [lenWeight, setLenWeight] = useState(50);
     const [conWeight, setConWeight] = useState(.5);
+    const [conThreshold, setConThreshold] = useState(.85);
     const [submenu, setSubmenu] = useState(0);
 
     let navigate = useNavigate();
@@ -261,7 +262,7 @@ const Home = () => {
     const phylogenyMenu = () => {
         return (
             <div>
-                <p>Alignment Program:</p>
+                <p>Alignment Program</p>
                 <span>
                     <button className="bp3-button bp3-minimal" onClick={() => setAlignmentProgram('famsa')} style={{ backgroundColor: alignmentProgram === 'famsa' ? '#007bff' : '#eee', color: alignmentProgram === 'famsa' ? 'white' : 'black' }} >
                         FAMSA
@@ -276,7 +277,7 @@ const Home = () => {
                         Clustal Omega
                     </button>
                 </span>
-                <p>Phylogenetic Tree Program:</p>
+                <p>Phylogenetic Tree Program</p>
                 <span>
                     <button className="bp3-button bp3-minimal" onClick={() => setPhylogeneticProgram('veryfasttree')} style={{ backgroundColor: phylogeneticProgram === 'veryfasttree' ? '#007bff' : '#eee', color: phylogeneticProgram === 'veryfasttree' ? 'white' : 'black' }} >
                         VeryFastTree
@@ -291,7 +292,7 @@ const Home = () => {
                         RAxML
                     </button>
                 </span>
-                <p>Ancestral State Inference Program:</p>
+                <p>Ancestral State Inference Program</p>
                 <span>
                     <button className="bp3-button bp3-minimal" onClick={() => setAncestralProgram('iqtree')} style={{ backgroundColor: ancestralProgram === 'iqtree' ? '#007bff' : '#eee', color: ancestralProgram === 'iqtree' ? 'white' : 'black' }} >
                         IQ-TREE
@@ -371,7 +372,7 @@ const Home = () => {
                         marks={[{ value: 0, label: '0' }, { value: 25, label: '25' }, { value: 50, label: '50' }, { value: 75, label: '75' }, { value: 100, label: '100' }]}
                     />
                 </span>
-                <p>Weight of conserved residues in delination step (0.0-1.0):</p>
+                <p>Weight of conserved residues in delination step</p>
                 <span>
                     <Slider
                         size="medium"
@@ -383,6 +384,22 @@ const Home = () => {
                         step={.01}
                         value={conWeight}
                         onChange={(e, value) => setConWeight(value)}
+                        style={{ width: '70%', marginTop: '1.5em' }}
+                        marks={[{ value: 0, label: '0' }, { value: 1, label: '1.0' }]}
+                    />
+                </span>
+                <p>Conservation threshold</p>
+                <span>
+                    <Slider
+                        size="medium"
+                        defaultValue={.50}
+                        aria-label="default"
+                        valueLabelDisplay="on"
+                        min={0}
+                        max={1}
+                        step={.01}
+                        value={conThreshold}
+                        onChange={(e, value) => setConThreshold(value)}
                         style={{ width: '70%', marginTop: '1.5em' }}
                         marks={[{ value: 0, label: '0' }, { value: 1, label: '1.0' }]}
                     />
