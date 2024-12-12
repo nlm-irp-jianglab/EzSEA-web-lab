@@ -309,6 +309,10 @@
     z-index: 1;
 }
 
+.MuiOutlinedInput-root {
+    height: 30px;
+}
+
 @keyframes fadeOut {
     0% {
         opacity: 1;

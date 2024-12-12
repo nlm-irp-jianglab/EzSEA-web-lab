@@ -5,9 +5,33 @@ import {
     Q, R, S, T, V, W, X, Y, Z
 } from '../glyphs';
 
-export const UniqueColors = [
+// Default LogoJS scheme. Acidic amino acids are red shades, basic amino acids
+// are blue shades, non-polar amino acids are black shades
+export const Acidity = [
+    { component: A, regex: "A", color: 'black' },
+    { component: C, regex: "C", color: '#008811' },
+    { component: D, regex: "D", color: '#ff0000' },
+    { component: E, regex: "E", color: '#ff0022' },
+    { component: F, regex: "F", color: '#333333' },
+    { component: G, regex: "G", color: '#007700' },
+    { component: H, regex: "H", color: '#220099' },
+    { component: I, regex: "I", color: '#111111' },
+    { component: K, regex: "K", color: '#0000aa' },
+    { component: L, regex: "L", color: '#002222' },
+    { component: M, regex: "M", color: '#220022' },
+    { component: N, regex: "N", color: '#009911' },
+    { component: P, regex: "P", color: '#080808' },
+    { component: Q, regex: "Q", color: '#00aa00' },
+    { component: R, regex: "R", color: '#0022aa' },
+    { component: S, regex: "S", color: '#008f00' },
+    { component: T, regex: "T", color: '#006600' },
+    { component: V, regex: "V", color: '#222200' },
+    { component: W, regex: "W", color: '#080808' },
+    { component: Y, regex: "Y", color: '#00a800' },
+]; 
+
+export const Unique = [
     { component: A, regex: "A", color: '#F0C987' },
-    { component: B, regex: "B", color: '#FFD700' },
     { component: C, regex: "C", color: '#E6E600' },
     { component: D, regex: "D", color: '#E60A0A' },
     { component: E, regex: "E", color: '#E60A0A' },
@@ -27,35 +51,282 @@ export const UniqueColors = [
     { component: V, regex: "V", color: '#0F820F' },
     { component: W, regex: "W", color: '#B45AB4' },
     { component: Y, regex: "Y", color: '#3232AA' },
-    { component: Z, regex: "Z", color: '#FF1493' }
 ];
 
-export const ShapelyColors = [
-    { component: A, regex: "A", color: '#C8C8C8' }, // Alanine (dark grey)
-    { component: B, regex: "B", color: '#FF1493' }, // Placeholder, Pyrrolysine?
-    { component: C, regex: "C", color: '#E6E600' }, // Cysteine (yellow)
-    { component: D, regex: "D", color: '#E60A0A' }, // Aspartic acid (bright red)
-    { component: E, regex: "E", color: '#E60A0A' }, // Glutamic acid (bright red)
-    { component: F, regex: "F", color: '#3232AA' }, // Phenylalanine (mid blue)
-    { component: G, regex: "G", color: '#EBEBEB' }, // Glycine (light grey)
-    { component: H, regex: "H", color: '#8282D2' }, // Histidine (pale blue)
-    { component: I, regex: "I", color: '#0F820F' }, // Isoleucine (green)
-    { component: K, regex: "K", color: '#145AFF' }, // Lysine (blue)
-    { component: L, regex: "L", color: '#0F820F' }, // Leucine (green)
-    { component: M, regex: "M", color: '#E6E600' }, // Methionine (yellow)
-    { component: N, regex: "N", color: '#00DCDC' }, // Asparagine (cyan)
-    { component: P, regex: "P", color: '#DC9682' }, // Proline (flesh)
-    { component: Q, regex: "Q", color: '#00DCDC' }, // Glutamine (cyan)
-    { component: R, regex: "R", color: '#145AFF' }, // Arginine (blue)
-    { component: S, regex: "S", color: '#FA9600' }, // Serine (orange)
-    { component: T, regex: "T", color: '#FA9600' }, // Threonine (orange)
-    { component: V, regex: "V", color: '#0F820F' }, // Valine (green)
-    { component: W, regex: "W", color: '#B45AB4' }, // Tryptophan (pink)
-    { component: Y, regex: "Y", color: '#3232AA' }, // Tyrosine (mid blue)
-    { component: Z, regex: "Z", color: '#FF1493' }  // Placeholder, Pyrrolysine?
+export const Shapely = [
+    { component: A, regex: "A", color: '#C8C8C8' }, 
+    { component: C, regex: "C", color: '#E6E600' }, 
+    { component: D, regex: "D", color: '#E60A0A' }, 
+    { component: E, regex: "E", color: '#E60A0A' }, 
+    { component: F, regex: "F", color: '#3232AA' }, 
+    { component: G, regex: "G", color: '#EBEBEB' }, 
+    { component: H, regex: "H", color: '#8282D2' }, 
+    { component: I, regex: "I", color: '#0F820F' }, 
+    { component: K, regex: "K", color: '#145AFF' }, 
+    { component: L, regex: "L", color: '#0F820F' }, 
+    { component: M, regex: "M", color: '#E6E600' }, 
+    { component: N, regex: "N", color: '#00DCDC' }, 
+    { component: P, regex: "P", color: '#DC9682' }, 
+    { component: Q, regex: "Q", color: '#00DCDC' }, 
+    { component: R, regex: "R", color: '#145AFF' }, 
+    { component: S, regex: "S", color: '#FA9600' }, 
+    { component: T, regex: "T", color: '#FA9600' }, 
+    { component: V, regex: "V", color: '#0F820F' }, 
+    { component: W, regex: "W", color: '#B45AB4' }, 
+    { component: Y, regex: "Y", color: '#3232AA' }, 
 ];
 
-export const HydrophobicityColors = [
-    //Need to fill
+export const Clustal = [
+    { component: A, regex: "A", color: 'orange' },
+    { component: C, regex: "C", color: 'green' },
+    { component: D, regex: "D", color: 'red' },
+    { component: E, regex: "E", color: 'red' },
+    { component: F, regex: "F", color: 'blue' },
+    { component: G, regex: "G", color: 'orange' },
+    { component: H, regex: "H", color: 'red' },
+    { component: I, regex: "I", color: 'green' },
+    { component: K, regex: "K", color: 'red' },
+    { component: L, regex: "L", color: 'green' },
+    { component: M, regex: "M", color: 'green' },
+    { component: N, regex: "N", color: '#fff' },
+    { component: P, regex: "P", color: 'orange' },
+    { component: Q, regex: "Q", color: '#fff' },
+    { component: R, regex: "R", color: 'red' },
+    { component: S, regex: "S", color: 'orange' },
+    { component: T, regex: "T", color: 'orange' },
+    { component: V, regex: "V", color: 'green' },
+    { component: W, regex: "W", color: 'blue' },
+    { component: Y, regex: "Y", color: 'blue' },
 ];
 
+export const Clustal2 = [
+    { component: A, regex: "A", color: '#80a0f0' },
+    { component: C, regex: "C", color: '#f08080' },
+    { component: D, regex: "D", color: '#c048c0' },
+    { component: E, regex: "E", color: '#c048c0' },
+    { component: F, regex: "F", color: '#80a0f0' },
+    { component: G, regex: "G", color: '#f09048' },
+    { component: H, regex: "H", color: '#15a4a4' },
+    { component: I, regex: "I", color: '#80a0f0' },
+    { component: K, regex: "K", color: '#f01505' },
+    { component: L, regex: "L", color: '#80a0f0' },
+    { component: M, regex: "M", color: '#80a0f0' },
+    { component: N, regex: "N", color: '#00ff00' },
+    { component: P, regex: "P", color: '#ffff00' },
+    { component: Q, regex: "Q", color: '#00ff00' },
+    { component: R, regex: "R", color: '#f01505' },
+    { component: S, regex: "S", color: '#00ff00' },
+    { component: T, regex: "T", color: '#00ff00' },
+    { component: V, regex: "V", color: '#80a0f0' },
+    { component: W, regex: "W", color: '#80a0f0' },
+    { component: Y, regex: "Y", color: '#15a4a4' },
+];
+
+export const Hydrophobicity = [
+    { component: A, regex: "A", color: '#ad0052' },
+    { component: C, regex: "C", color: '#c2003d' },
+    { component: D, regex: "D", color: '#0c00f3' },
+    { component: E, regex: "E", color: '#0c00f3' },
+    { component: F, regex: "F", color: '#cb0034' },
+    { component: G, regex: "G", color: '#6a0095' },
+    { component: H, regex: "H", color: '#1500ea' },
+    { component: I, regex: "I", color: '#ff0000' },
+    { component: K, regex: "K", color: '#0000ff' },
+    { component: L, regex: "L", color: '#ea0015' },
+    { component: M, regex: "M", color: '#b0004f' },
+    { component: N, regex: "N", color: '#0c00f3' },
+    { component: P, regex: "P", color: '#4600b9' },
+    { component: Q, regex: "Q", color: '#0c00f3' },
+    { component: R, regex: "R", color: '#0000ff' },
+    { component: S, regex: "S", color: '#5e00a1' },
+    { component: T, regex: "T", color: '#61009e' },
+    { component: V, regex: "V", color: '#f60009' },
+    { component: W, regex: "W", color: '#5b00a4' },
+    { component: Y, regex: "Y", color: '#4f00b0' },
+];
+
+export const Cinema = [
+    { component: A, regex: "A", color: '#BBBBBB' },
+    { component: C, regex: "C", color: 'yellow' },
+    { component: D, regex: "D", color: 'red' },
+    { component: E, regex: "E", color: 'red' },
+    { component: F, regex: "F", color: 'magenta' },
+    { component: G, regex: "G", color: 'brown' },
+    { component: H, regex: "H", color: '#00FFFF' },
+    { component: I, regex: "I", color: '#BBBBBB' },
+    { component: K, regex: "K", color: '#00FFFF' },
+    { component: L, regex: "L", color: '#BBBBBB' },
+    { component: M, regex: "M", color: '#BBBBBB' },
+    { component: N, regex: "N", color: 'green' },
+    { component: P, regex: "P", color: 'brown' },
+    { component: Q, regex: "Q", color: 'green' },
+    { component: R, regex: "R", color: '#00FFFF' },
+    { component: S, regex: "S", color: 'green' },
+    { component: T, regex: "T", color: 'green' },
+    { component: V, regex: "V", color: '#BBBBBB' },
+    { component: W, regex: "W", color: 'magenta' },
+    { component: Y, regex: "Y", color: 'magenta' },
+];
+
+export const Helix = [
+    { component: A, regex: "A", color: '#e718e7' },
+    { component: C, regex: "C", color: '#23dc23' },
+    { component: D, regex: "D", color: '#778877' },
+    { component: E, regex: "E", color: '#ff00ff' },
+    { component: F, regex: "F", color: '#986798' },
+    { component: G, regex: "G", color: '#00ff00' },
+    { component: H, regex: "H", color: '#758a75' },
+    { component: I, regex: "I", color: '#8a758a' },
+    { component: K, regex: "K", color: '#a05fa0' },
+    { component: L, regex: "L", color: '#ae51ae' },
+    { component: M, regex: "M", color: '#ef10ef' },
+    { component: N, regex: "N", color: '#1be41b' },
+    { component: P, regex: "P", color: '#00ff00' },
+    { component: Q, regex: "Q", color: '#926d92' },
+    { component: R, regex: "R", color: '#6f906f' },
+    { component: S, regex: "S", color: '#36c936' },
+    { component: T, regex: "T", color: '#47b847' },
+    { component: V, regex: "V", color: '#857a85' },
+    { component: W, regex: "W", color: '#8a758a' },
+    { component: Y, regex: "Y", color: '#21de21' },
+];
+
+export const Lesk = [
+    { component: A, regex: "A", color: 'orange' },
+    { component: C, regex: "C", color: 'green' },
+    { component: D, regex: "D", color: 'red' },
+    { component: E, regex: "E", color: 'red' },
+    { component: F, regex: "F", color: 'green' },
+    { component: G, regex: "G", color: 'orange' },
+    { component: H, regex: "H", color: 'magenta' },
+    { component: I, regex: "I", color: 'green' },
+    { component: K, regex: "K", color: 'red' },
+    { component: L, regex: "L", color: 'green' },
+    { component: M, regex: "M", color: 'green' },
+    { component: N, regex: "N", color: 'magenta' },
+    { component: P, regex: "P", color: 'green' },
+    { component: Q, regex: "Q", color: 'magenta' },
+    { component: R, regex: "R", color: 'red' },
+    { component: S, regex: "S", color: 'orange' },
+    { component: T, regex: "T", color: 'orange' },
+    { component: V, regex: "V", color: 'green' },
+    { component: W, regex: "W", color: 'green' },
+    { component: Y, regex: "Y", color: 'green' },
+];
+
+export const Mae = [
+    { component: A, regex: "A", color: '#77dd88' },
+    { component: C, regex: "C", color: '#99ee66' },
+    { component: D, regex: "D", color: '#55bb33' },
+    { component: E, regex: "E", color: '#55bb33' },
+    { component: F, regex: "F", color: '#9999ff' },
+    { component: G, regex: "G", color: '#77dd88' },
+    { component: H, regex: "H", color: '#5555ff' },
+    { component: I, regex: "I", color: '#66bbff' },
+    { component: K, regex: "K", color: '#ffcc77' },
+    { component: L, regex: "L", color: '#66bbff' },
+    { component: M, regex: "M", color: '#66bbff' },
+    { component: N, regex: "N", color: '#55bb33' },
+    { component: P, regex: "P", color: '#eeaaaa' },
+    { component: Q, regex: "Q", color: '#55bb33' },
+    { component: R, regex: "R", color: '#ffcc77' },
+    { component: S, regex: "S", color: '#ff4455' },
+    { component: T, regex: "T", color: '#ff4455' },
+    { component: V, regex: "V", color: '#66bbff' },
+    { component: W, regex: "W", color: '#9999ff' },
+    { component: Y, regex: "Y", color: '#9999ff' },
+];
+
+export const Strand = [
+    { component: A, regex: "A", color: '#5858a7' },
+    { component: C, regex: "C", color: '#9d9d62' },
+    { component: D, regex: "D", color: '#2121de' },
+    { component: E, regex: "E", color: '#0000ff' },
+    { component: F, regex: "F", color: '#c2c23d' },
+    { component: G, regex: "G", color: '#4949b6' },
+    { component: H, regex: "H", color: '#60609f' },
+    { component: I, regex: "I", color: '#ecec13' },
+    { component: K, regex: "K", color: '#4747b8' },
+    { component: L, regex: "L", color: '#b2b24d' },
+    { component: M, regex: "M", color: '#82827d' },
+    { component: N, regex: "N", color: '#64649b' },
+    { component: P, regex: "P", color: '#2323dc' },
+    { component: Q, regex: "Q", color: '#8c8c73' },
+    { component: R, regex: "R", color: '#6b6b94' },
+    { component: S, regex: "S", color: '#4949b6' },
+    { component: T, regex: "T", color: '#9d9d62' },
+    { component: V, regex: "V", color: '#ffff00' },
+    { component: W, regex: "W", color: '#c0c03f' },
+    { component: Y, regex: "Y", color: '#d3d32c' },
+];
+
+export const Taylor = [
+    { component: A, regex: "A", color: '#ccff00' },
+    { component: C, regex: "C", color: '#ffff00' },
+    { component: D, regex: "D", color: '#ff0000' },
+    { component: E, regex: "E", color: '#ff0066' },
+    { component: F, regex: "F", color: '#00ff66' },
+    { component: G, regex: "G", color: '#ff9900' },
+    { component: H, regex: "H", color: '#0066ff' },
+    { component: I, regex: "I", color: '#66ff00' },
+    { component: K, regex: "K", color: '#6600ff' },
+    { component: L, regex: "L", color: '#33ff00' },
+    { component: M, regex: "M", color: '#00ff00' },
+    { component: N, regex: "N", color: '#cc00ff' },
+    { component: P, regex: "P", color: '#ffcc00' },
+    { component: Q, regex: "Q", color: '#ff00cc' },
+    { component: R, regex: "R", color: '#0000ff' },
+    { component: S, regex: "S", color: '#ff3300' },
+    { component: T, regex: "T", color: '#ff6600' },
+    { component: V, regex: "V", color: '#99ff00' },
+    { component: W, regex: "W", color: '#00ccff' },
+    { component: Y, regex: "Y", color: '#00ffcc' },
+];
+
+export const Turn = [
+    { component: A, regex: "A", color: '#2cd3d3' },
+    { component: C, regex: "C", color: '#a85757' },
+    { component: D, regex: "D", color: '#e81717' },
+    { component: E, regex: "E", color: '#778888' },
+    { component: F, regex: "F", color: '#1ee1e1' },
+    { component: G, regex: "G", color: '#ff0000' },
+    { component: H, regex: "H", color: '#708f8f' },
+    { component: I, regex: "I", color: '#00ffff' },
+    { component: K, regex: "K", color: '#7e8181' },
+    { component: L, regex: "L", color: '#1ce3e3' },
+    { component: M, regex: "M", color: '#1ee1e1' },
+    { component: N, regex: "N", color: '#ff0000' },
+    { component: P, regex: "P", color: '#f60909' },
+    { component: Q, regex: "Q", color: '#3fc0c0' },
+    { component: R, regex: "R", color: '#708f8f' },
+    { component: S, regex: "S", color: '#e11e1e' },
+    { component: T, regex: "T", color: '#738c8c' },
+    { component: V, regex: "V", color: '#07f8f8' },
+    { component: W, regex: "W", color: '#738c8c' },
+    { component: Y, regex: "Y", color: '#9d6262' },
+];
+
+export const Zappo = [
+    { component: A, regex: "A", color: '#ffafaf' },
+    { component: C, regex: "C", color: '#ffff00' },
+    { component: D, regex: "D", color: '#ff0000' },
+    { component: E, regex: "E", color: '#ff0000' },
+    { component: F, regex: "F", color: '#ffc800' },
+    { component: G, regex: "G", color: '#ff00ff' },
+    { component: H, regex: "H", color: '#6464ff' },
+    { component: I, regex: "I", color: '#ffafaf' },
+    { component: K, regex: "K", color: '#6464ff' },
+    { component: L, regex: "L", color: '#ffafaf' },
+    { component: M, regex: "M", color: '#ffafaf' },
+    { component: N, regex: "N", color: '#00ff00' },
+    { component: P, regex: "P", color: '#ff00ff' },
+    { component: Q, regex: "Q", color: '#00ff00' },
+    { component: R, regex: "R", color: '#6464ff' },
+    { component: S, regex: "S", color: '#00ff00' },
+    { component: T, regex: "T", color: '#00ff00' },
+    { component: V, regex: "V", color: '#ffafaf' },
+    { component: W, regex: "W", color: '#ffc800' },
+    { component: Y, regex: "Y", color: '#ffc800' },
+];
+
+export const allColors = [Acidity, Unique, Shapely, Clustal, Clustal2, Hydrophobicity, Cinema, Helix, Lesk, Mae, Strand, Taylor, Turn, Zappo];

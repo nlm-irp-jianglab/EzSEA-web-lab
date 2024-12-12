@@ -2,7 +2,7 @@ import { useRef, useCallback, useEffect, useState, useContext } from 'react'
 import Logo from './logo/logo.jsx';
 import { useDrag, useDrop } from 'react-dnd'
 import { ItemTypes } from './itemTypes.js'
-import { ProteinAlphabet } from "./logo/proteinlogo.jsx";
+import { allColors } from './logo/alphabets_protein.jsx';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import { tolContext } from './tolContext';
 
@@ -25,7 +25,7 @@ export const LogoCard = ({ id, index, header, moveCard, ppm = null, fasta = null
     removeLogo, onColumnClick, importantResiduesList, addLogoRef }) => {
     const dragRef = useRef(null);
     const [activeButton, setActiveButton] = useState(null);
-    const { logoContent, setLogoContent } = useContext(tolContext);
+    const { logoContent, setLogoContent, logoAlphabet, setLogoAlphabet } = useContext(tolContext);
 
     const [{ handlerId }, drop] = useDrop({
         accept: ItemTypes.CARD,
@@ -225,7 +225,7 @@ export const LogoCard = ({ id, index, header, moveCard, ppm = null, fasta = null
                     <Logo
                         {...(ppm ? { ppm } : { fasta })}
                         header={header}
-                        alphabet={ProteinAlphabet}
+                        alphabet={allColors[logoAlphabet]}
                         onSymbolClick={onColumnClick}
                         importantResidues={
                             importantResiduesList[header.replace(ppm ? "ASR Probability Logo for " : "Information Logo of Clade ", "")] || {

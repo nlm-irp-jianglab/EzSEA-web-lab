@@ -24,6 +24,10 @@ import { tolContext } from '../components/tolContext';
 import { ZstdInit, ZstdDec } from '@oneidentity/zstd-js/decompress';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
 
 const logoFiles = {};
 
@@ -42,7 +46,8 @@ const Tol = () => {
     const [colorArr, setColorArr] = useState(null);
 
     // Context states
-    const { scrollPosition, setScrollPosition, seqLength, setSeqLength, logoContent, setLogoContent } = useContext(tolContext);
+    const { scrollPosition, setScrollPosition, seqLength, setSeqLength,
+        logoContent, setLogoContent, logoAlphabet, setLogoAlphabet } = useContext(tolContext);
 
     // For live updates linking sequence logo and structure viewer
     const [selectedResidue, setSelectedResidue] = useState(null);
@@ -922,18 +927,6 @@ const Tol = () => {
                         >
                             <div className="expandedRight" style={{ width: isLeftCollapsed ? '50%' : '100%' }}>
                                 <div style={{ display: "flex", overflowY: "show", alignItems: "center", justifyContent: "space-between" }}>
-                                    <Slider
-                                        size="small"
-                                        aria-label="default"
-                                        valueLabelDisplay="off"
-                                        min={0}
-                                        max={seqLength - 1}
-                                        value={scrollPosition}
-                                        onChange={handleSlider}
-                                        track={false}
-                                        style={{ width: '100%', margin: "0px 2em" }}
-                                        marks={[{ value: 1, label: '1' }, { value: seqLength - 1, label: `${seqLength}` }]}
-                                    />
                                     <input
                                         className="scrollInput zoomInput"
                                         ref={scrollInputRef}
@@ -952,8 +945,21 @@ const Tol = () => {
                                                 scrollInputRef.current.value = '';
                                             }
                                         }}
-                                        style={{ width: "50px" }}
+                                        style={{ width: "40px" }}
                                     />
+                                    <Slider
+                                        size="small"
+                                        aria-label="default"
+                                        valueLabelDisplay="off"
+                                        min={0}
+                                        max={seqLength - 1}
+                                        value={scrollPosition}
+                                        onChange={handleSlider}
+                                        track={false}
+                                        style={{ width: '100%', margin: "0px 2em" }}
+                                        marks={[{ value: 1, label: '1' }, { value: seqLength - 1, label: `${seqLength}` }]}
+                                    />
+
                                     <button className="download-stack-btn" onClick={downloadCombinedSVG} style={{ borderRadius: "3px", backgroundColor: "#def2b3", border: "none", cursor: "pointer" }}>
                                         <svg width="25px" height="25px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" version="1.1" fill="none" stroke="#000000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5">
                                             <title>Download Stack</title>
@@ -961,6 +967,35 @@ const Tol = () => {
                                             <path d="m8 8.25v-6.5m-2.25 4.5 2.25 2 2.25-2" />
                                         </svg>
                                     </button>
+
+                                    <div style={{ width: "400px" }}>
+                                        <FormControl fullWidth size="small" >
+                                            <InputLabel>Color Scheme</InputLabel>
+                                            <Select
+                                                size='small'
+                                                labelId="demo-simple-select-label"
+                                                id="demo-simple-select"
+                                                value={logoAlphabet}
+                                                label="Color Scheme"
+                                                onChange={(e) => { setLogoAlphabet(e.target.value) }}
+                                            >
+                                                <MenuItem value={0}>Acidity</MenuItem>
+                                                <MenuItem value={1}>Unique</MenuItem>
+                                                <MenuItem value={2}>Shapely</MenuItem>
+                                                <MenuItem value={3}>Clustal</MenuItem>
+                                                <MenuItem value={4}>Clustal2</MenuItem>
+                                                <MenuItem value={5}>Hydrophobicity</MenuItem>
+                                                <MenuItem value={6}>Cinema</MenuItem>
+                                                <MenuItem value={7}>Helix</MenuItem>
+                                                <MenuItem value={8}>Lesk</MenuItem>
+                                                <MenuItem value={9}>Mae</MenuItem>
+                                                <MenuItem value={10}>Strand</MenuItem>
+                                                <MenuItem value={11}>Taylor</MenuItem>
+                                                <MenuItem value={12}>Turn</MenuItem>
+                                                <MenuItem value={13}>Zappo</MenuItem>
+                                            </Select>
+                                        </FormControl>
+                                    </div>
                                 </div>
                                 <div className="logodiv" style={{ width: '100%', height: Object.keys(logoContent).length > 2 ? '570px' : (Object.keys(logoContent).length > 1 ? '380px' : '190px') }}>
                                     <button

@@ -7,8 +7,7 @@ import Logo from './logo';
 /**
  * Represents the protein alphabet, with 22 amino acids plus B and Z
  * for N/D and Q/E. Acidic amino acids are red shades, basic amino acids
- * are blue shades, non-polar amino acids are black shades, and B and Z
- * are gold shades.
+ * are blue shades, non-polar amino acids are black shades
  */
 export const ProteinAlphabet = [
     { component: A, regex: "A", color: 'black' },
