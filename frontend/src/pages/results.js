@@ -42,11 +42,10 @@ const Results = () => {
     const [asrData, setAsrData] = useState(null);
 
     // State to store the logo content (formatted for logoJS) and color file
-    const [logoContent, setLogoContent] = useState({}); // Dict of Node: sequences used for rendering seqlogo
     const [colorArr, setColorArr] = useState(null);
 
-    // For scoller
-    const { scrollPosition, setScrollPosition, seqLength, setSeqLength } = useContext(tolContext);
+    // Context states
+    const { scrollPosition, setScrollPosition, seqLength, setSeqLength, logoContent, setLogoContent } = useContext(tolContext);
 
     // For live updates linking sequence logo and structure viewer
     const [selectedResidue, setSelectedResidue] = useState(null);
@@ -490,8 +489,8 @@ const Results = () => {
         residueList: a list of residue indices
         nodeFasta: the fasta sequence of the node - used to determine the length of the color array
     */
-    const applyImportantStructColor = (residueList, nodeFasta) => {
-        var fa = nodeFasta.split('\n').slice(1).join('\n');
+    const applyImportantStructColor = (nodeId, residueList) => {
+        var fa = faData[nodeId];
         var importantColors = Array(fa.length).fill(0x00FF00);
 
         for (var res of residueList) {
@@ -547,7 +546,7 @@ const Results = () => {
     */
 
     const handleSlider = (e, value) => {
-        setScrollPosition(value);
+        setScrollPosition(value + 1);
         logoStackRef.current.scrollToIndex(value);
     };
 
@@ -555,18 +554,19 @@ const Results = () => {
         Removes a node from the logo stack, and thus the comparison
         index: the index of the node in the logo stack
     */
-    const handleNodeRemove = (index) => {
-        // Remove node from logoContent
+        const handleNodeRemove = (header) => {
+            // Remove node from logoContent
         const newLogoContent = { ...logoContent };
         const keys = Object.keys(newLogoContent);
-        delete newLogoContent[keys[index]];
+        delete newLogoContent[header];
         setLogoContent(newLogoContent);
 
         // Below syncs highlights on TOL with remove action in logo stack
         d3.selectAll('.internal-node')
             .each(function () {
                 var node = d3.select(this).data()[0];
-                if (node.data.name === keys[index].replace("Descendants of ", "")) {
+                if (node.data.name === header.replace("ASR Probability Logo for ", "") ||
+                    node.data.name === header.replace("Information Logo of Clade ", "")) {
                     node['compare-node'] = false;
                     node['compare-descendants'] = false;
                     const circles = d3.select(this).selectAll('circle');

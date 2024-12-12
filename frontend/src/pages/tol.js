@@ -41,7 +41,7 @@ const Tol = () => {
     // State to store the logo content (formatted for logoJS) and color file
     const [colorArr, setColorArr] = useState(null);
 
-    // For scoller
+    // Context states
     const { scrollPosition, setScrollPosition, seqLength, setSeqLength, logoContent, setLogoContent } = useContext(tolContext);
 
     // For live updates linking sequence logo and structure viewer
@@ -123,12 +123,6 @@ const Tol = () => {
             });
 
         });
-
-        // fetch(`${process.env.PUBLIC_URL}/example/seq.pdb`)
-        //     .then(response => response.text())
-        //     .then((text) => {
-        //         setStructData(text);
-        //     });
     }, []);
 
     // Deals with tree rendering
@@ -931,8 +925,7 @@ const Tol = () => {
                                     <Slider
                                         size="small"
                                         aria-label="default"
-                                        valueLabelDisplay="auto"
-                                        labelPlacement="bottom"
+                                        valueLabelDisplay="off"
                                         min={0}
                                         max={seqLength - 1}
                                         value={scrollPosition}
