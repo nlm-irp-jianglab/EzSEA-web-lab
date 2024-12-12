@@ -119,7 +119,7 @@ export const LogoCard = ({ id, index, header, moveCard, ppm = null, fasta = null
                                 }}
                                 onClick={() => {
                                     setActiveButton(`entropy-${index}`);
-                                    applyEntropyStructColor(header.replace("Information logo of Clade ", ""));
+                                    applyEntropyStructColor(header.replace("Information Logo of Clade ", ""));
                                 }}
                             >
                                 <svg
@@ -228,7 +228,7 @@ export const LogoCard = ({ id, index, header, moveCard, ppm = null, fasta = null
                         alphabet={ProteinAlphabet}
                         onSymbolClick={onColumnClick}
                         importantResidues={
-                            importantResiduesList[header.replace(ppm ? "ASR Probability Logo for " : "Information logo of Clade ", "")] || {
+                            importantResiduesList[header.replace(ppm ? "ASR Probability Logo for " : "Information Logo of Clade ", "")] || {
                                 differing_residues: [], // Default to empty list if no important residues are provided
                             }
                         }

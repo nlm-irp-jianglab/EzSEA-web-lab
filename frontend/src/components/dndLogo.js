@@ -16,7 +16,6 @@ export const DndLogo = ({ fastaContent, applyEntropyStructColor, applyImportantS
         const { logoContent, setLogoContent } = useContext(tolContext);
 
         useEffect(() => {
-            console.log("DndLogo Received: ", fastaContent)
             setCards(Object.keys(fastaContent).map((key, index) => {
                 return {
                     id: index,

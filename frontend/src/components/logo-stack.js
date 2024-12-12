@@ -19,6 +19,7 @@ const LogoStack = React.forwardRef(
         const logoRefs = useRef([]);
         const backScrollers = useRef([]);
         const frontScrollers = useRef([]);
+        const [logoRefsChanged, setLogoRefsChanged] = useState(false);
         const [renderLogos, setRenderLogos] = useState(false);
         const { scrollPosition, setScrollPosition, seqLength, setSeqLength, logoContent, setLogoContent } = useContext(tolContext);
 
@@ -43,6 +44,7 @@ const LogoStack = React.forwardRef(
         const addLogoRef = (ref) => {
             if (ref && !logoRefs.current.includes(ref)) {
                 logoRefs.current.push(ref);
+                setLogoRefsChanged(!logoRefsChanged);
             }
         };
 
@@ -59,7 +61,6 @@ const LogoStack = React.forwardRef(
 
         useEffect(() => {
             setRenderLogos(true);
-            console.log("Fasta content updated", fastaContent);
         }, [fastaContent]);
 
         const scrollToIndex = (index) => {
@@ -68,6 +69,11 @@ const LogoStack = React.forwardRef(
             backScrollers.current.forEach((scroller) => {
                 scroller.scroller.__publish(index * rectSize, 1, 1, true);
             });
+
+            // When one scoller is left, must manually update the front scroller
+            if (backScrollers.current.length === 1) {
+                frontScrollers.current[0].scroller.__publish(index * rectSize, 1, 1, true);
+            }
         };
 
         useEffect(() => {
@@ -141,7 +147,7 @@ const LogoStack = React.forwardRef(
                 backScrollers.current = [];
                 frontScrollers.current = [];
             };
-        }, [fastaContent]); // Add handleWheel as a dependency
+        }, [fastaContent, logoRefsChanged]); // Add handleWheel as a dependency
 
 
         // Function to download SVG
@@ -175,7 +181,10 @@ const LogoStack = React.forwardRef(
             // Remove the logo from the list
             const newFastaContent = { ...fastaContent };
             delete newFastaContent[logoHeader];
-            console.log(newFastaContent);
+
+            const newLogoRefs = [...logoRefs.current]; 
+            //newLogoRefs.splice(logoHeader, 1);
+            logoRefs.current = newLogoRefs;
 
             setFastaContent(newFastaContent);
 
