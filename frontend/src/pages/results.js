@@ -356,18 +356,14 @@ const Results = () => {
     const removeNodeFromLogo = (node, clade = false) => {
         setLogoContent(prevLogoContent => {
             const updatedLogoContent = { ...prevLogoContent };
-
-            // Add or remove node from logoContent
-            if (node.data.name in updatedLogoContent) {
-                if (clade) {
-                    node['compare-descendants'] = false;
-                    delete updatedLogoContent["Information Logo of Clade " + node.data.name];  // Remove the node
-                } else {
-                    node['compare-node'] = false;
-                    delete updatedLogoContent["ASR Probability Logo for " + node.data.name];  // Remove the node
-                }
-                setNodeColor(node.data.name, null);
+            if (clade) {
+                node['compare-descendants'] = false;
+                delete updatedLogoContent["Information Logo of Clade " + node.data.name];  // Remove the node
+            } else {
+                node['compare-node'] = false;
+                delete updatedLogoContent["ASR Probability Logo for " + node.data.name];  // Remove the node
             }
+            setNodeColor(node.data.name, null);
 
             return updatedLogoContent;  // Return the new state
         });

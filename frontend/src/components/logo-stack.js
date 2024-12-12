@@ -1,7 +1,5 @@
 import React, { useState, useRef, useEffect, useImperativeHandle, useContext } from "react";
-import Logo from './logo/logo.jsx';
 import { EasyScroller } from 'easyscroller';
-import { ProteinAlphabet } from "./logo/proteinlogo.jsx";
 import "./logojs.css";
 import { tolContext } from '../components/tolContext';
 import { DndProvider } from 'react-dnd';
