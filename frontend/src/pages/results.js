@@ -144,12 +144,7 @@ const Results = () => {
 
                         setEcData(ecDict);
                     }
-
-                    const stringToUint8Array = (str) => {
-                        const encoder = new TextEncoder(); // Default is UTF-8
-                        return encoder.encode(str);
-                    };
-
+                    
                     const uint8ArrayToString = (uint8Array) => {
                         const decoder = new TextDecoder('utf-8');
                         return decoder.decode(uint8Array);
@@ -169,20 +164,10 @@ const Results = () => {
                         console.error("Error fetching asr probability data:", data.asrError);
                     } else {
                         ZstdInit().then(({ ZstdSimple, ZstdStream }) => {
-                            console.log("Original data.asr:", data.asr);
-                            console.log("Original data.asr.buffer:", data.asr.data);
-
                             const arrayBuffer = toArrayBuffer(data.asr.data);
-                            console.log("Array buffer:", arrayBuffer);
-
                             const intArray = new Uint8Array(arrayBuffer);
-                            console.log("Int array:", intArray);
-
                             const decompressedStreamData = ZstdStream.decompress(intArray);
-                            console.log("Decompressed stream data:", decompressedStreamData);
-
                             const asrDict = JSON.parse(uint8ArrayToString(decompressedStreamData));
-                            console.log("Parsed ASR dictionary:", asrDict);
 
                             setAsrData(asrDict);
                         });
@@ -201,8 +186,6 @@ const Results = () => {
             treeRef.current.innerHTML = '';
 
             const inputHeader = inputData.split("\n")[0].substring(1);
-            // console.log("Input header:", inputHeader);
-            // console.log("Input Leaf Data: ", leafData[inputHeader]);
             setGapOffsetArr(calcGapOffsetArr(leafData[inputHeader])); // Setting precalculated offsets for coloring important residues
             setStructLogoMapArr(calcStructToLogoMap(leafData[inputHeader]));
             const tree = new pt.phylotree(newickData);
@@ -374,7 +357,7 @@ const Results = () => {
             if (node.data.name in updatedLogoContent) {
                 if (clade) {
                     node['compare-descendants'] = false;
-                    delete updatedLogoContent["Information logo of Clade " + node.data.name];  // Remove the node
+                    delete updatedLogoContent["Information Logo of Clade " + node.data.name];  // Remove the node
                 } else {
                     node['compare-node'] = false;
                     delete updatedLogoContent["ASR Probability Logo for " + node.data.name];  // Remove the node
@@ -425,7 +408,7 @@ const Results = () => {
             // Calculates entropies, maps to colors and sets the colorArr state
             //calcEntropyFromMSA(desc_fa).then((entropy) => mapEntropyToColors(entropy)).then((colors) => { setColorArr(colors) });
 
-            updatedLogoContent["Information logo of Clade " + node.data.name] = desc_fa;
+            updatedLogoContent["Information Logo of Clade " + node.data.name] = desc_fa;
             setNodeColor(node.data.name, "yellow");
 
             return updatedLogoContent;  // Return the new state

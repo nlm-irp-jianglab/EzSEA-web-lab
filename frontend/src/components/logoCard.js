@@ -1,10 +1,10 @@
-import { useRef, useCallback, useEffect, useState } from 'react'
+import { useRef, useCallback, useEffect, useState, useContext } from 'react'
 import Logo from './logo/logo.jsx';
 import { useDrag, useDrop } from 'react-dnd'
 import { ItemTypes } from './itemTypes.js'
 import { ProteinAlphabet } from "./logo/proteinlogo.jsx";
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
-import zIndex from '@mui/material/styles/zIndex.js';
+import { tolContext } from './tolContext';
 
 const style = {
     border: '1px dashed gray',
@@ -24,21 +24,9 @@ const handleStyle = {
 export const LogoCard = ({ id, index, header, moveCard, ppm = null, fasta = null, applyEntropyStructColor, applyImportantStructColor,
     removeLogo, onColumnClick, importantResiduesList, addLogoRef }) => {
     const dragRef = useRef(null);
-    const dropRef = useRef(null);
     const [activeButton, setActiveButton] = useState(null);
+    const { logoContent, setLogoContent } = useContext(tolContext);
 
-    // useEffect(() => {
-    //     if (scrollRef.current) {
-    //         const scroller = new EasyScroller(scrollRef.current, {
-    //             scrollingX: true,
-    //             scrollingY: false,
-    //             animating: false,
-    //             zooming: 0,
-    //             minZoom: 1,
-    //             maxZoom: 1,
-    //         });
-    //     }
-    // }, [scrollRef])
     const [{ handlerId }, drop] = useDrop({
         accept: ItemTypes.CARD,
         collect(monitor) {
@@ -206,7 +194,7 @@ export const LogoCard = ({ id, index, header, moveCard, ppm = null, fasta = null
                         <button
                             className="logo-remove-btn logo-btn"
                             style={styles.removeBtn}
-                            onClick={() => removeLogo(index)}
+                            onClick={() => removeLogo(header)}
                         >
                             <svg
                                 width="25px"

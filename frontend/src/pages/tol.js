@@ -39,11 +39,10 @@ const Tol = () => {
     const [asrData, setAsrData] = useState(null);
 
     // State to store the logo content (formatted for logoJS) and color file
-    const [logoContent, setLogoContent] = useState({});
     const [colorArr, setColorArr] = useState(null);
 
     // For scoller
-    const { scrollPosition, setScrollPosition, seqLength, setSeqLength } = useContext(tolContext);
+    const { scrollPosition, setScrollPosition, seqLength, setSeqLength, logoContent, setLogoContent } = useContext(tolContext);
 
     // For live updates linking sequence logo and structure viewer
     const [selectedResidue, setSelectedResidue] = useState(null);
@@ -283,7 +282,7 @@ const Tol = () => {
             if (node.data.name in updatedLogoContent) {
                 if (clade) {
                     node['compare-descendants'] = false;
-                    delete updatedLogoContent["Information logo of Clade " + node.data.name];  // Remove the node
+                    delete updatedLogoContent["Information Logo of Clade " + node.data.name];  // Remove the node
                 } else {
                     node['compare-node'] = false;
                     delete updatedLogoContent["ASR Probability Logo for " + node.data.name];  // Remove the node
@@ -327,7 +326,7 @@ const Tol = () => {
             // Calculates entropies, maps to colors and sets the colorArr state
             //calcEntropyFromMSA(desc_fa).then((entropy) => mapEntropyToColors(entropy)).then((colors) => { setColorArr(colors) });
 
-            updatedLogoContent["Information logo of Clade " + node.data.name] = desc_fa;
+            updatedLogoContent["Information Logo of Clade " + node.data.name] = desc_fa;
             setNodeColor(node.data.name, "yellow");
 
             return updatedLogoContent;  // Return the new state
@@ -432,18 +431,21 @@ const Tol = () => {
         logoStackRef.current.scrollToIndex(value);
     };
 
-    const handleNodeRemove = (index) => {
+    const handleNodeRemove = (header) => {
         // Remove node from logoContent
         const newLogoContent = { ...logoContent };
         const keys = Object.keys(newLogoContent);
-        delete newLogoContent[keys[index]];
+        delete newLogoContent[header];
+        console.log("Removing node:", header);
+        console.log(newLogoContent);
         setLogoContent(newLogoContent);
 
         // Below syncs highlights on TOL with remove action in logo stack
         d3.selectAll('.internal-node')
             .each(function () {
                 var node = d3.select(this).data()[0];
-                if (node.data.name === keys[index].replace("Descendants of ", "")) {
+                if (node.data.name === header.replace("ASR Probability Logo for ", "") ||
+                    node.data.name === header.replace("Information Logo of Clade ", "")) {
                     node['compare-node'] = false;
                     node['compare-descendants'] = false;
                     const circles = d3.select(this).selectAll('circle');
