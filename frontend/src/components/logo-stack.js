@@ -182,7 +182,7 @@ const LogoStack = React.forwardRef(
             const newFastaContent = { ...fastaContent };
             delete newFastaContent[logoHeader];
 
-            const newLogoRefs = [...logoRefs.current]; 
+            const newLogoRefs = [...logoRefs.current];
             //newLogoRefs.splice(logoHeader, 1);
             logoRefs.current = newLogoRefs;
 
@@ -231,6 +231,10 @@ const LogoStack = React.forwardRef(
                 backScrollers.current.forEach((scroller) => {
                     scroller.scroller.__publish(index * rectSize - centerOffset, 1, 1, true);
                 });
+                // When one scoller is left, must manually update the front scroller
+                if (backScrollers.current.length === 1) {
+                    frontScrollers.current[0].scroller.__publish(index * rectSize - centerOffset, 1, 1, true);
+                }
             },
             scrollToIndex,
             appendLogo: (key, path) => {
@@ -248,7 +252,7 @@ const LogoStack = React.forwardRef(
                 {renderLogos ? (
                     <DndProvider backend={HTML5Backend}>
                         <DndLogo fastaContent={fastaContent} applyEntropyStructColor={applyEntropyStructColor}
-                            onSymbolClick={onColumnClick} importantResiduesList={importantResiduesList} 
+                            onSymbolClick={onColumnClick} importantResiduesList={importantResiduesList}
                             applyImportantStructColor={applyImportantStructColor} removeLogo={removeLogo} addLogoRef={addLogoRef} />
                     </DndProvider>
                 ) : (
