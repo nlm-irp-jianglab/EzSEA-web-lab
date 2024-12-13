@@ -142,6 +142,65 @@ app.post("/submit", (req, res) => {
         }
     };
 
+    // const struct_command = {
+    //     "apiVersion": "batch/v1",
+    //     "kind": "Job",
+    //     "metadata": {
+    //         "name": data.job_id + "-struct"
+    //     },
+    //     "spec": {
+    //         "backoffLimit": 0,
+    //         "template": {
+    //             "metadata": {
+    //                 "labels": {
+    //                     "id": data.job_id,
+    //                     "type": "structure"
+    //                 }
+    //             },
+    //             "spec": {
+    //                 "containers": [{
+    //                     "name": "ezsea",
+    //                     "image": "us-central1-docker.pkg.dev/ncbi-research-cbb-jiang/ezsea/ezsea-image:latest",
+    //                     "args": [
+    //                         "ezsea", "structure",
+    //                         "-i", data.sequence,
+    //                         "--output", `/database/output/EzSEA_${data.job_id}`,
+    //                         "--fold", "colabfold",
+    //                         "--weights", "/database/database/weights"
+    //                     ],
+    //                     "resources": {
+    //                         "requests": {
+    //                             "nvidia.com/gpu": "1",
+    //                             "cpu": "4",
+    //                             "memory": "8Gi"
+    //                         },
+    //                         "limits": {
+    //                             "nvidia.com/gpu": "1",
+    //                             "cpu": "4",
+    //                             "memory": "16Gi"
+    //                         }
+    //                     },
+    //                     "volumeMounts": [{
+    //                         "mountPath": "/database",
+    //                         "name": "ezsea-database-volume"
+    //                     }]
+    //                 }],
+    //                 "restartPolicy": "Never",
+    //                 "nodeSelector": {
+    //                     "cloud.google.com/gke-accelerator": "nvidia-tesla-a100",
+    //                     "cloud.google.com/gke-accelerator-count": "1",
+    //                 },
+    //                 "volumes": [{
+    //                     "name": "ezsea-database-volume",
+    //                     "persistentVolumeClaim": {
+    //                         "claimName": "ezsea-filestore-pvc"
+    //                     }
+    //                 }]
+    //             }
+    //         }
+    //     }
+    // };
+
     const struct_command = {
         "apiVersion": "batch/v1",
         "kind": "Job",
@@ -157,15 +216,16 @@ app.post("/submit", (req, res) => {
                         "image": "biochunan/esmfold-image:latest",
                         "command": ["/bin/zsh", "-c"],
                         "args": [
-                            "echo", "${data.sequence}", 
-                            ">", "/database/output/EzSEA_${data.job_id}/esm.fasta",
-                            "&&", "./run-esm-fold.sh",
-                            "-i", "/database/output/EzSEA_${data.job_id}/esm.fasta",
-                            "--pdb", "/database/output/EzSEA_${data.job_id}/Visualization/",
+                            "echo", data.sequence, 
+                            ">", `/database/output/EzSEA_${data.job_id}/esm.fasta`, 
+                            "&&", "./run-esm-fold.sh", 
+                            "-i", `/database/output/EzSEA_${data.job_id}/esm.fasta`, 
+                            "--pdb", `/database/output/EzSEA_${data.job_id}/Visualization/`,
                         ],
                         "resources": {
                             "requests": {
                                 "nvidia.com/gpu": "1",
+                                "cpu": "4",
                                 "memory": "32Gi"
                             },
                             "limits": {
@@ -193,7 +253,7 @@ app.post("/submit", (req, res) => {
             }
         }
     };
-
+    
     // fs.writeFile('cpu-job-config.json', JSON.stringify(run_command, null, 2), (err) => {
     //     if (err) {
     //         console.error('Error writing Kubernetes job config to file', err);
@@ -299,7 +359,7 @@ app.get("/results/:id", async (req, res) => {
             return { ecError: "Error reading ec file." };
         });
 
-    const asrPromise = fs.promises.readFile(asrPath)
+    const asrPromise = fs.promises.readFile(asrPath, 'utf8')
         .then(data => ({ asr: data }))
         .catch(err => {
             logger.error("Error reading asr probability file: " + err);
