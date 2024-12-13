@@ -142,65 +142,6 @@ app.post("/submit", (req, res) => {
         }
     };
 
-    // const struct_command = {
-    //     "apiVersion": "batch/v1",
-    //     "kind": "Job",
-    //     "metadata": {
-    //         "name": data.job_id + "-struct"
-    //     },
-    //     "spec": {
-    //         "backoffLimit": 0,
-    //         "template": {
-    //             "metadata": {
-    //                 "labels": {
-    //                     "id": data.job_id,
-    //                     "type": "structure"
-    //                 }
-    //             },
-    //             "spec": {
-    //                 "containers": [{
-    //                     "name": "ezsea",
-    //                     "image": "us-central1-docker.pkg.dev/ncbi-research-cbb-jiang/ezsea/ezsea-image:latest",
-    //                     "args": [
-    //                         "ezsea", "structure",
-    //                         "-i", data.sequence,
-    //                         "--output", `/database/output/EzSEA_${data.job_id}`,
-    //                         "--fold", "colabfold",
-    //                         "--weights", "/database/database/weights"
-    //                     ],
-    //                     "resources": {
-    //                         "requests": {
-    //                             "nvidia.com/gpu": "1",
-    //                             "cpu": "4",
-    //                             "memory": "8Gi"
-    //                         },
-    //                         "limits": {
-    //                             "nvidia.com/gpu": "1",
-    //                             "cpu": "4",
-    //                             "memory": "16Gi"
-    //                         }
-    //                     },
-    //                     "volumeMounts": [{
-    //                         "mountPath": "/database",
-    //                         "name": "ezsea-database-volume"
-    //                     }]
-    //                 }],
-    //                 "restartPolicy": "Never",
-    //                 "nodeSelector": {
-    //                     "cloud.google.com/gke-accelerator": "nvidia-tesla-a100",
-    //                     "cloud.google.com/gke-accelerator-count": "1",
-    //                 },
-    //                 "volumes": [{
-    //                     "name": "ezsea-database-volume",
-    //                     "persistentVolumeClaim": {
-    //                         "claimName": "ezsea-filestore-pvc"
-    //                     }
-    //                 }]
-    //             }
-    //         }
-    //     }
-    // };
-
     const struct_command = {
         "apiVersion": "batch/v1",
         "kind": "Job",
@@ -311,7 +252,6 @@ app.get("/results/:id", async (req, res) => {
     var pdbFiles = fs.readdirSync(folderPath).filter(fn => fn.endsWith('.pdb')); // Returns an array of pdb files
 
     const structPath = path.join(folderPath, pdbFiles[0]);
-    logger.info("structPath: " + structPath);
     const inputPath = `/outputs/EzSEA_${id}/input.fasta`;
     const ecPath = path.join(folderPath, 'ec.json');
     const asrPath = path.join(folderPath, 'seq.state.zst');
