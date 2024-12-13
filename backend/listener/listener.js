@@ -308,10 +308,10 @@ app.get("/results/:id", async (req, res) => {
     const ancestralPath = path.join(folderPath, 'asr.fa');
     const nodesPath = path.join(folderPath, 'nodes.json');
 
-    var pdbfile = fs.readdirSync(folderPath).filter(fn => fn.endsWith('.pdb'));
-    logger.info("first pdb found: ", pdbfile);
+    var pdbFiles = fs.readdirSync(folderPath).filter(fn => fn.endsWith('.pdb')); // Returns an array of pdb files
 
-    const structPath = path.join(folderPath, 'seq.pdb');
+    const structPath = path.join(folderPath, pdbFiles[0]);
+    logger.info("structPath: " + structPath);
     const inputPath = `/outputs/EzSEA_${id}/input.fasta`;
     const ecPath = path.join(folderPath, 'ec.json');
     const asrPath = path.join(folderPath, 'seq.state.zst');
