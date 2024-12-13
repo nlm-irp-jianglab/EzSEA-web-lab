@@ -222,7 +222,7 @@ app.post("/submit", (req, res) => {
                         "image": "biochunan/esmfold-image:latest",
                         "command": ["/bin/zsh", "-c"],
                         "args": [
-                            "mkdir /database/output/EzSEA_" + data.job_id + "/ && echo " + data.sequence + " > /database/output/EzSEA_" + data.job_id 
+                            "mkdir /database/output/EzSEA_" + data.job_id + "/ && echo \"" + data.sequence + "\" > /database/output/EzSEA_" + data.job_id 
                             + "/esm.fasta && ./run-esm-fold.sh -i /database/output/EzSEA_" + data.job_id 
                             + "/esm.fasta --pdb /database/output/EzSEA_" + data.job_id + "/Visualization/"
                         ],
