@@ -214,14 +214,8 @@ app.post("/submit", (req, res) => {
                     "containers": [{
                         "name": "ezsea",
                         "image": "biochunan/esmfold-image:latest",
-                        "command": ["/bin/zsh", "-c"],
-                        "args": [
-                            "echo", data.sequence, 
-                            ">", `/database/output/EzSEA_${data.job_id}/esm.fasta`, 
-                            "&&", "./run-esm-fold.sh", 
-                            "-i", `/database/output/EzSEA_${data.job_id}/esm.fasta`, 
-                            "--pdb", `/database/output/EzSEA_${data.job_id}/Visualization/`,
-                        ],
+                        "command": ["/bin/zsh", "-c", "echo", data.sequence, ">", `/database/output/EzSEA_${data.job_id}/esm.fasta`, 
+                            "&&", "./run-esm-fold.sh", "-i", `/database/output/EzSEA_${data.job_id}/esm.fasta`, "--pdb", `/database/output/EzSEA_${data.job_id}/Visualization/`],
                         "resources": {
                             "requests": {
                                 "nvidia.com/gpu": "1",
