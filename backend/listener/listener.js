@@ -308,7 +308,7 @@ app.get("/results/:id", async (req, res) => {
             return { ecError: "Error reading ec file." };
         });
 
-    const asrPromise = fs.promises.readFile(asrPath, 'utf8')
+    const asrPromise = fs.promises.readFile(asrPath)
         .then(data => ({ asr: data }))
         .catch(err => {
             logger.error("Error reading asr probability file: " + err);
