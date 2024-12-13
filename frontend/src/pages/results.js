@@ -169,7 +169,9 @@ const Results = () => {
                     } else {
                         ZstdInit().then(({ ZstdSimple, ZstdStream }) => {
                             const arrayBuffer = toArrayBuffer(data.asr);
+                            console.log("Array buffer:", arrayBuffer);
                             const intArray = new Uint8Array(arrayBuffer);
+                            console.log("Int array:", intArray);
                             const decompressedStreamData = ZstdStream.decompress(intArray);
                             const asrDict = JSON.parse(uint8ArrayToString(decompressedStreamData));
 
