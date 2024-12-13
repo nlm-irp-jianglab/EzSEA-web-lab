@@ -205,7 +205,7 @@ app.post("/submit", (req, res) => {
         "apiVersion": "batch/v1",
         "kind": "Job",
         "metadata": {
-            "name": "ezsea-job-gpu"
+            "name": data.job_id + "-struct"
         },
         "spec": {
             "backoffLimit": 0,
@@ -222,7 +222,9 @@ app.post("/submit", (req, res) => {
                         "image": "biochunan/esmfold-image:latest",
                         "command": ["/bin/zsh", "-c"],
                         "args": [
-                            "echo " + data.sequence + " > /database/output/EzSEA_" + data.job_id + "/esm.fasta && ./run-esm-fold.sh -i /database/output/EzSEA_" + data.job_id + "/esm.fasta --pdb /database/output/EzSEA_" + data.job_id + "/Visualization/"
+                            "mkdir /database/output/EzSEA_" + data.job_id + "/ && echo " + data.sequence + " > /database/output/EzSEA_" + data.job_id 
+                            + "/esm.fasta && ./run-esm-fold.sh -i /database/output/EzSEA_" + data.job_id 
+                            + "/esm.fasta --pdb /database/output/EzSEA_" + data.job_id + "/Visualization/"
                         ],
                         "resources": {
                             "requests": {
