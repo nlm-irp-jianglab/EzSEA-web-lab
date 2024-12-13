@@ -229,6 +229,7 @@ app.post("/submit", (req, res) => {
                                 "memory": "32Gi"
                             },
                             "limits": {
+                                "nvidia.com/gpu": "1",
                                 "cpu": "4",
                                 "memory": "32Gi"
                             }
@@ -254,11 +255,11 @@ app.post("/submit", (req, res) => {
         }
     };
     
-    // fs.writeFile('cpu-job-config.json', JSON.stringify(run_command, null, 2), (err) => {
-    //     if (err) {
-    //         console.error('Error writing Kubernetes job config to file', err);
-    //     }
-    // });
+    fs.writeFile('cpu-job-config.json', JSON.stringify(run_command, null, 2), (err) => {
+        if (err) {
+            console.error('Error writing Kubernetes job config to file', err);
+        }
+    });
 
     fs.writeFile('gpu-job-config.json', JSON.stringify(struct_command, null, 2), (err) => {
         if (err) {
@@ -270,15 +271,15 @@ app.post("/submit", (req, res) => {
 
     // Forgoing k8sapi.createNamespacedPod, running into issues with proper formatting 
 
-    exec("kubectl apply -f ./cpu-job-config.json", (err, stdout, stderr) => {
-        if (err) {
-            error = "There was a problem initializing your job, please try again later";
-            console.error(err); // Pino doesn't give new lines
-        } else {
-            logger.info("EzSEA run job started:" + data.job_id);
-            monitorJob(data.job_id, "CPU", data.email);
-        }
-    });
+    // exec("kubectl apply -f ./cpu-job-config.json", (err, stdout, stderr) => {
+    //     if (err) {
+    //         error = "There was a problem initializing your job, please try again later";
+    //         console.error(err); // Pino doesn't give new lines
+    //     } else {
+    //         logger.info("EzSEA run job started:" + data.job_id);
+    //         monitorJob(data.job_id, "CPU", data.email);
+    //     }
+    // });
 
     exec("kubectl apply -f ./gpu-job-config.json", (err, stdout, stderr) => {
         if (err) {
