@@ -168,8 +168,7 @@ const Results = () => {
                         console.error("Error fetching asr probability data:", data.asrError);
                     } else {
                         ZstdInit().then(({ ZstdSimple, ZstdStream }) => {
-                            console.log(data.asr);
-                            const arrayBuffer = toArrayBuffer(data.asr.data);
+                            const arrayBuffer = toArrayBuffer(data.asr);
                             const intArray = new Uint8Array(arrayBuffer);
                             const decompressedStreamData = ZstdStream.decompress(intArray);
                             const asrDict = JSON.parse(uint8ArrayToString(decompressedStreamData));
