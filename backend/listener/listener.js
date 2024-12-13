@@ -146,52 +146,41 @@ app.post("/submit", (req, res) => {
         "apiVersion": "batch/v1",
         "kind": "Job",
         "metadata": {
-            "name": data.job_id + "-struct"
+            "name": "ezsea-job-gpu"
         },
         "spec": {
             "backoffLimit": 0,
             "template": {
-                "metadata": {
-                    "labels": {
-                        "id": data.job_id,
-                        "type": "structure"
-                    }
-                },
                 "spec": {
                     "containers": [{
                         "name": "ezsea",
-                        "image": "us-central1-docker.pkg.dev/ncbi-research-cbb-jiang/ezsea/ezsea-image:latest",
+                        "image": "biochunan/esmfold-image:latest",
+                        "command": ["/bin/zsh", "-c"],
                         "args": [
-                            "ezsea", "structure",
-                            "-i", data.sequence,
-                            "--output", `/database/output/EzSEA_${data.job_id}`,
-                            "--fold", "colabfold",
-                            "--weights", "/database/database/weights"
+                            `echo ${data.sequence} > /database/output/EzSEA_${data.job_id}/esm.fasta && ./run-esm-fold.sh -i /database/output/EzSEA_${data.job_id}/esm.fasta --pdb /database/output/EzSEA_${data.job_id}/Visualization/`
                         ],
                         "resources": {
                             "requests": {
                                 "nvidia.com/gpu": "1",
-                                "cpu": "4",
-                                "memory": "8Gi"
+                                "memory": "32Gi"
                             },
                             "limits": {
-                                "nvidia.com/gpu": "1",
                                 "cpu": "4",
-                                "memory": "16Gi"
+                                "memory": "32Gi"
                             }
                         },
                         "volumeMounts": [{
                             "mountPath": "/database",
-                            "name": "ezsea-database-volume"
+                            "name": "ezsea-databases-volume"
                         }]
                     }],
                     "restartPolicy": "Never",
                     "nodeSelector": {
                         "cloud.google.com/gke-accelerator": "nvidia-tesla-a100",
-                        "cloud.google.com/gke-accelerator-count": "1",
+                        "cloud.google.com/gke-accelerator-count": "1"
                     },
                     "volumes": [{
-                        "name": "ezsea-database-volume",
+                        "name": "ezsea-databases-volume",
                         "persistentVolumeClaim": {
                             "claimName": "ezsea-filestore-pvc"
                         }
@@ -201,11 +190,11 @@ app.post("/submit", (req, res) => {
         }
     };
 
-    fs.writeFile('cpu-job-config.json', JSON.stringify(run_command, null, 2), (err) => {
-        if (err) {
-            console.error('Error writing Kubernetes job config to file', err);
-        }
-    });
+    // fs.writeFile('cpu-job-config.json', JSON.stringify(run_command, null, 2), (err) => {
+    //     if (err) {
+    //         console.error('Error writing Kubernetes job config to file', err);
+    //     }
+    // });
 
     fs.writeFile('gpu-job-config.json', JSON.stringify(struct_command, null, 2), (err) => {
         if (err) {

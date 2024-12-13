@@ -558,7 +558,6 @@ const Results = () => {
     const handleNodeRemove = (header) => {
         // Remove node from logoContent
         const newLogoContent = { ...logoContent };
-        const keys = Object.keys(newLogoContent);
         delete newLogoContent[header];
         setLogoContent(newLogoContent);
 
