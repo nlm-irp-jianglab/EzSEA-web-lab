@@ -210,14 +210,17 @@ app.post("/submit", (req, res) => {
         "spec": {
             "backoffLimit": 0,
             "template": {
+                "metadata": {
+                    "labels": {
+                        "id": data.job_id,
+                        "type": "structure"
+                    }
+                },
                 "spec": {
                     "containers": [{
                         "name": "ezsea",
                         "image": "biochunan/esmfold-image:latest",
                         "command": ["/bin/zsh", "-c"],
-                        "args": [
-                            "echo " + data.sequence + " > /database/output/EzSEA_" + data.job_id + "/esm.fasta && ./run-esm-fold.sh -i /database/output/EzSEA_" + data.job_id + "/esm.fasta --pdb /database/output/EzSEA_" + data.job_id + "/Visualization/"
-                        ],
                         "resources": {
                             "requests": {
                                 "nvidia.com/gpu": "1",
@@ -250,7 +253,7 @@ app.post("/submit", (req, res) => {
             }
         }
     };
-    
+
     fs.writeFile('cpu-job-config.json', JSON.stringify(run_command, null, 2), (err) => {
         if (err) {
             console.error('Error writing Kubernetes job config to file', err);
@@ -376,7 +379,7 @@ app.get("/results/:id", async (req, res) => {
 
     // Send response with the files that were successfully read and any error messages
     if (response['treeError'] && response['leafError'] && response['ancestralError']
-        && response['nodesError'] && response['structError'] && response['inputError'] 
+        && response['nodesError'] && response['structError'] && response['inputError']
         && response['ecError'] && response['asrError']) {
         return res.status(500).json({ error: "Failed to read all files." });
     } else {
