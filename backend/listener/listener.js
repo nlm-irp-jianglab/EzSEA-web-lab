@@ -275,15 +275,15 @@ app.post("/submit", (req, res) => {
 
     // Forgoing k8sapi.createNamespacedPod, running into issues with proper formatting 
 
-    // exec("kubectl apply -f ./cpu-job-config.json", (err, stdout, stderr) => {
-    //     if (err) {
-    //         error = "There was a problem initializing your job, please try again later";
-    //         console.error(err); // Pino doesn't give new lines
-    //     } else {
-    //         logger.info("EzSEA run job started:" + data.job_id);
-    //         monitorJob(data.job_id, "CPU", data.email);
-    //     }
-    // });
+    exec("kubectl apply -f ./cpu-job-config.json", (err, stdout, stderr) => {
+        if (err) {
+            error = "There was a problem initializing your job, please try again later";
+            console.error(err); // Pino doesn't give new lines
+        } else {
+            logger.info("EzSEA run job started:" + data.job_id);
+            monitorJob(data.job_id, "CPU", data.email);
+        }
+    });
 
     exec("kubectl apply -f ./gpu-job-config.json", (err, stdout, stderr) => {
         if (err) {
@@ -308,8 +308,8 @@ app.get("/results/:id", async (req, res) => {
     const ancestralPath = path.join(folderPath, 'asr.fa');
     const nodesPath = path.join(folderPath, 'nodes.json');
 
-    var files = fs.readdirSync(folderPath).filter(fn => fn.endsWith('.pdb'));
-    logger.info("found pdbs: " + files);
+    var pdbfile = fs.readdirSync(folderPath).filter(fn => fn.endsWith('.pdb'));
+    logger.info("first pdb found: ", pdbfile[0]);
 
     const structPath = path.join(folderPath, 'seq.pdb');
     const inputPath = `/outputs/EzSEA_${id}/input.fasta`;
