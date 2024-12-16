@@ -26,6 +26,7 @@ export const LogoCard = ({ id, index, header, moveCard, ppm = null, fasta = null
     const dragRef = useRef(null);
     const [activeButton, setActiveButton] = useState(null);
     const { logoContent, setLogoContent, logoAlphabet, setLogoAlphabet } = useContext(tolContext);
+    const logoRef = useRef(null);
 
     const [{ handlerId }, drop] = useDrop({
         accept: ItemTypes.CARD,
@@ -86,31 +87,31 @@ export const LogoCard = ({ id, index, header, moveCard, ppm = null, fasta = null
     drag(drop(dragRef));
 
     // Function to download SVG
-    // const downloadLogoSVG = (logoIndex, fileName) => {
-    //     if (!logoRefs.current[logoIndex]) {
-    //         console.error('Logo not found');
-    //         return;
-    //     }
-    //     const svgElement = logoRefs.current[logoIndex].querySelector('svg');
-    //     const serializer = new XMLSerializer();
-    //     let source = serializer.serializeToString(svgElement);
-    //     const styleString = `
-    //         <style>
-    //             .glyphrect {
-    //                 fill-opacity: 0.0;
-    //             }
-    //         </style>`;
-    //     source = source.replace('</svg>', `${styleString}</svg>`);
-    //     const svgBlob = new Blob([source], { type: 'image/svg+xml;charset=utf-8' });
-    //     const svgUrl = URL.createObjectURL(svgBlob);
+    const downloadLogoSVG = (logoIndex, fileName) => {
+        if (!logoRef.current) {
+            console.error('Logo not found');
+            return;
+        }
+        const svgElement = logoRef.current.querySelector('svg');
+        const serializer = new XMLSerializer();
+        let source = serializer.serializeToString(svgElement);
+        const styleString = `
+            <style>
+                .glyphrect {
+                    fill-opacity: 0.0;
+                }
+            </style>`;
+        source = source.replace('</svg>', `${styleString}</svg>`);
+        const svgBlob = new Blob([source], { type: 'image/svg+xml;charset=utf-8' });
+        const svgUrl = URL.createObjectURL(svgBlob);
 
-    //     const downloadLink = document.createElement('a');
-    //     downloadLink.href = svgUrl;
-    //     downloadLink.download = fileName;
-    //     document.body.appendChild(downloadLink);
-    //     downloadLink.click();
-    //     document.body.removeChild(downloadLink);
-    // };
+        const downloadLink = document.createElement('a');
+        downloadLink.href = svgUrl;
+        downloadLink.download = fileName;
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+    };
 
     return (
         <div className="dnd-container" style={{ display: "flex" }}>
@@ -133,7 +134,7 @@ export const LogoCard = ({ id, index, header, moveCard, ppm = null, fasta = null
                         <b>{header}</b>
                     </p>
                     <span style={{ paddingRight: "30px" }}>
-                        {header.indexOf("ASR") > 0 && (
+                        {header.indexOf("Clade") > 0 && (
                             <button
                                 className={`logo-color-btn logo-btn ${activeButton === `entropy-${index}` ? "active" : ""
                                     }`}
@@ -177,8 +178,8 @@ export const LogoCard = ({ id, index, header, moveCard, ppm = null, fasta = null
                                     onClick={() => {
                                         setActiveButton(`important-${index}`);
                                         applyImportantStructColor(
-                                            importantResiduesList[header.replace("ASR Probability Logo for ", "")].differing_residues,
-                                            fastaContent[header]
+                                            header.replace("ASR Probability Logo for ", ""),
+                                            importantResiduesList[header.replace("ASR Probability Logo for ", "")].differing_residues
                                         );
                                     }}
                                 >
@@ -247,7 +248,7 @@ export const LogoCard = ({ id, index, header, moveCard, ppm = null, fasta = null
                         width: "max-content",
                         overflowX: "hidden",
                     }}
-                    ref={(el) => { addLogoRef(el) }}
+                    ref={(el) => { addLogoRef(el); logoRef.current = el; }}
                 >
                     <Logo
                         {...(ppm ? { ppm } : { fasta })}

@@ -248,8 +248,12 @@ app.get("/results/:id", async (req, res) => {
     const leafPath = path.join(folderPath, 'seq_trimmed.afa');
     const ancestralPath = path.join(folderPath, 'asr.fa');
     const nodesPath = path.join(folderPath, 'nodes.json');
-
-    var pdbFiles = fs.readdirSync(folderPath).filter(fn => fn.endsWith('.pdb')); // Returns an array of pdb files
+    try {
+        var pdbFiles = fs.readdirSync(folderPath).filter(fn => fn.endsWith('.pdb')); // Returns an array of pdb files
+    } catch (e) {
+        logger.error("Error reading pdb files: " + e);
+        return res.status(500).json({ structError: "Attempted to find pdb files. Does Visualization/ exist?" });
+    }
 
     const structPath = path.join(folderPath, pdbFiles[0]);
     const inputPath = `/outputs/EzSEA_${id}/input.fasta`;
