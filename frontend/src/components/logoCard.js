@@ -85,6 +85,33 @@ export const LogoCard = ({ id, index, header, moveCard, ppm = null, fasta = null
     const opacity = isDragging ? 0 : 1;
     drag(drop(dragRef));
 
+    // Function to download SVG
+    // const downloadLogoSVG = (logoIndex, fileName) => {
+    //     if (!logoRefs.current[logoIndex]) {
+    //         console.error('Logo not found');
+    //         return;
+    //     }
+    //     const svgElement = logoRefs.current[logoIndex].querySelector('svg');
+    //     const serializer = new XMLSerializer();
+    //     let source = serializer.serializeToString(svgElement);
+    //     const styleString = `
+    //         <style>
+    //             .glyphrect {
+    //                 fill-opacity: 0.0;
+    //             }
+    //         </style>`;
+    //     source = source.replace('</svg>', `${styleString}</svg>`);
+    //     const svgBlob = new Blob([source], { type: 'image/svg+xml;charset=utf-8' });
+    //     const svgUrl = URL.createObjectURL(svgBlob);
+
+    //     const downloadLink = document.createElement('a');
+    //     downloadLink.href = svgUrl;
+    //     downloadLink.download = fileName;
+    //     document.body.appendChild(downloadLink);
+    //     downloadLink.click();
+    //     document.body.removeChild(downloadLink);
+    // };
+
     return (
         <div className="dnd-container" style={{ display: "flex" }}>
             <div ref={dragRef}

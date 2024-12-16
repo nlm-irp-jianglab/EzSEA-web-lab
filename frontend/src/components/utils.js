@@ -178,7 +178,6 @@ export const jsonToFasta = (jsonObject) => {
 };
 
 export const calcGapOffsetArr = (faString) => {
-    console.log("UTILS: FASTRING: ", faString);
     var gapOffsetArr = new Array(faString.length);
     var gaps = 0;
 

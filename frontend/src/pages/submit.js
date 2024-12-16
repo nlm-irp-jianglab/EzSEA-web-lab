@@ -469,7 +469,7 @@ const Home = () => {
                                 <span className="bp3-button-text">{isSettingsVisible ? "Hide advanced settings" : "Show advanced settings"}</span>
                             </button>
                             <div className="bp3-collapse">
-                                <div className="bp3-collapse-body" style={{ transform: isSettingsVisible ? "translateY(0px)" : "translateY(-557px)", height: isSettingsVisible ? "400px" : "0" }}>
+                                <div className="bp3-collapse-body" style={{ transform: isSettingsVisible ? "translateY(0px)" : "translateY(-557px)", height: isSettingsVisible ? "fit-content" : "0" }}>
 
                                     <div className="bp3-card bp3-elevation-0">
                                         <div>
