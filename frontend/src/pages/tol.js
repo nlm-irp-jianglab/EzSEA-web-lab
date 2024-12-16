@@ -1015,6 +1015,7 @@ const Tol = () => {
                                         removeNodeHandle={handleNodeRemove}
                                         applyEntropyStructColor={applyEntropyStructColor}
                                         applyImportantStructColor={applyImportantStructColor}
+                                        findAndZoom={findAndZoom}
                                         ref={logoStackRef}
                                     />
                                 </div>

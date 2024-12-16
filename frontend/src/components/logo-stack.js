@@ -12,7 +12,7 @@ const LogoStack = React.forwardRef(
         onColumnClick (optional): A function to handle click events on the logo
         onColumnHover (optional): A function to handle hover events on the logo
     */
-    ({ data, onColumnClick, onColumnHover, importantResiduesList, removeNodeHandle, applyEntropyStructColor, applyImportantStructColor }, ref) => {
+    ({ data, onColumnClick, onColumnHover, importantResiduesList, removeNodeHandle, applyEntropyStructColor, applyImportantStructColor, findAndZoom }, ref) => {
         const [fastaContent, setFastaContent] = useState({});
         const logoRefs = useRef([]);
         const backScrollers = useRef([]);
@@ -251,7 +251,7 @@ const LogoStack = React.forwardRef(
                     <DndProvider backend={HTML5Backend}>
                         <DndLogo fastaContent={fastaContent} applyEntropyStructColor={applyEntropyStructColor}
                             onSymbolClick={onColumnClick} importantResiduesList={importantResiduesList}
-                            applyImportantStructColor={applyImportantStructColor} removeLogo={removeLogo} addLogoRef={addLogoRef} />
+                            applyImportantStructColor={applyImportantStructColor} removeLogo={removeLogo} findAndZoom={findAndZoom} addLogoRef={addLogoRef} />
                     </DndProvider>
                 ) : (
                     <p>Loading...</p>

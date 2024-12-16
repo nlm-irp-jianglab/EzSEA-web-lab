@@ -22,11 +22,18 @@ const handleStyle = {
     zIndex: 1,
 }
 export const LogoCard = ({ id, index, header, moveCard, ppm = null, fasta = null, applyEntropyStructColor, applyImportantStructColor,
-    removeLogo, onColumnClick, importantResiduesList, addLogoRef }) => {
+    removeLogo, onColumnClick, importantResiduesList, findAndZoom, addLogoRef }) => {
     const dragRef = useRef(null);
     const [activeButton, setActiveButton] = useState(null);
     const { logoContent, setLogoContent, logoAlphabet, setLogoAlphabet } = useContext(tolContext);
     const logoRef = useRef(null);
+    var nodeId = "";
+
+    if (header.includes("ASR")) {
+        nodeId = header.replace("ASR Probability Logo for ", "");
+    } else {
+        nodeId = header.replace("Information Logo of Clade ", "");
+    }
 
     const [{ handlerId }, drop] = useDrop({
         accept: ItemTypes.CARD,
@@ -131,10 +138,14 @@ export const LogoCard = ({ id, index, header, moveCard, ppm = null, fasta = null
                     }}
                 >
                     <p style={{ paddingLeft: "30px" }}>
-                        <b>{header}</b>
+                        <button style={{ background: "none", color: "inherit", border: "none", padding: "0", outline: "inherit", cursor: "pointer"}}
+                            onClick={() => {findAndZoom(nodeId)}}
+                        >
+                            <b>{header}</b>
+                        </button>
                     </p>
                     <span style={{ paddingRight: "30px" }}>
-                        {header.indexOf("Clade") > 0 && (
+                        {fasta && (
                             <button
                                 className={`logo-color-btn logo-btn ${activeButton === `entropy-${index}` ? "active" : ""
                                     }`}
@@ -147,7 +158,7 @@ export const LogoCard = ({ id, index, header, moveCard, ppm = null, fasta = null
                                 }}
                                 onClick={() => {
                                     setActiveButton(`entropy-${index}`);
-                                    applyEntropyStructColor(header.replace("Information Logo of Clade ", ""));
+                                    applyEntropyStructColor(nodeId);
                                 }}
                             >
                                 <svg
@@ -162,8 +173,8 @@ export const LogoCard = ({ id, index, header, moveCard, ppm = null, fasta = null
                                 </svg>
                             </button>
                         )}
-                        {importantResiduesList[header.replace("ASR Probability Logo for ", "")] &&
-                            importantResiduesList[header.replace("ASR Probability Logo for ", "")].differing_residues.length > 0 && (
+                        {importantResiduesList[nodeId] &&
+                            importantResiduesList[nodeId].differing_residues.length > 0 && (
                                 <button
                                     className={`logo-color-btn logo-btn ${activeButton === `important-${index}` ? "active" : ""
                                         }`}
@@ -178,8 +189,8 @@ export const LogoCard = ({ id, index, header, moveCard, ppm = null, fasta = null
                                     onClick={() => {
                                         setActiveButton(`important-${index}`);
                                         applyImportantStructColor(
-                                            header.replace("ASR Probability Logo for ", ""),
-                                            importantResiduesList[header.replace("ASR Probability Logo for ", "")].differing_residues
+                                            nodeId,
+                                            importantResiduesList[nodeId].differing_residues
                                         );
                                     }}
                                 >
@@ -256,7 +267,7 @@ export const LogoCard = ({ id, index, header, moveCard, ppm = null, fasta = null
                         alphabet={allColors[logoAlphabet]}
                         onSymbolClick={onColumnClick}
                         importantResidues={
-                            importantResiduesList[header.replace(ppm ? "ASR Probability Logo for " : "Information Logo of Clade ", "")] || {
+                            importantResiduesList[nodeId] || {
                                 differing_residues: [], // Default to empty list if no important residues are provided
                             }
                         }
