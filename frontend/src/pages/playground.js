@@ -2,15 +2,20 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 import Navbar from "../components/navbar";
 import "../components/playground.css";
 import Switch from '@mui/material/Switch';
-import { Slider } from '@mui/material';
+import { Slider, Tooltip } from '@mui/material';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
+import { Button } from '@mui/material';
+import { useNavigate } from "react-router-dom";
 
 const Tol = () => {
-    const [inputType, setInputType] = useState("PDB");
+    const [inputFile, setInputFile] = useState(null);
+    const [canSubmit, setCanSubmit] = useState(false);
+    const [submitStatus, setSubmitStatus] = useState(false); // Once button is clicked, submit status set to True, ensure no double submission
 
     const emailInput = useRef(null);
-    const fastaInput = useRef(null);
+    let navigate = useNavigate();
+
 
     const [numSeq, setNumSeq] = useState(500);
     const [phylogeneticProgram, setPhylogeneticProgram] = useState("veryfasttree");
@@ -22,8 +27,19 @@ const Tol = () => {
     const [conThreshold, setConThreshold] = useState(.85);
     const [submenu, setSubmenu] = useState(0);
 
-    const handleInputSwitch = (event) => {
-        setInputType(event.target.checked ? "PDB" : "FASTA");
+    const handleInputFile = (e) => {
+        const file = e.target.files[0];
+        setInputFile(file);
+    }
+
+    const downloadSampleFASTA = (e) => {
+        e.preventDefault();
+        console.log("Downloading sample FASTA file");
+    }
+
+    const downloadSamplePDB = (e) => {
+        e.preventDefault();
+        console.log("Downloading sample PDB file");
     }
 
     const phylogenyMenu = () => {
@@ -80,14 +96,14 @@ const Tol = () => {
             <div className="submenu">
                 <p>Database</p>
                 <span>
+                    <button className="bp3-button bp3-minimal" onClick={() => setDatabase('uniref100')} style={{ backgroundColor: database === 'uniref100' ? '#007bff' : '#eee', color: database === 'uniref100' ? 'white' : 'black' }} >
+                        uniref100
+                    </button>
                     <button className="bp3-button bp3-minimal" onClick={() => setDatabase('uniref90')} style={{ backgroundColor: database === 'uniref90' ? '#007bff' : '#eee', color: database === 'uniref90' ? 'white' : 'black' }} >
                         uniref90
                     </button>
                     <button className="bp3-button bp3-minimal" onClick={() => setDatabase('uniref50')} style={{ backgroundColor: database === 'uniref50' ? '#007bff' : '#eee', color: database === 'uniref50' ? 'white' : 'black' }} >
                         uniref50
-                    </button>
-                    <button className="bp3-button bp3-minimal" onClick={() => setDatabase('uniref100')} style={{ backgroundColor: database === 'uniref100' ? '#007bff' : '#eee', color: database === 'uniref100' ? 'white' : 'black' }} >
-                        uniref100
                     </button>
                 </span>
                 <p>Number of Sequences to Retrieve</p>
@@ -190,6 +206,85 @@ const Tol = () => {
         }
     }
 
+    const submitJob = () => {
+        setSubmitStatus(true); // Prevent double submission
+        const id = Math.random().toString(36).substring(2, 9) + Date.now().toString(36);
+
+        const json = {
+            "job_id": id,
+            "email": emailInput.current.value,
+            "input_file": inputFile,
+            "tree_program": phylogeneticProgram,
+            "asr_program": ancestralProgram,
+            "align_program": alignmentProgram,
+            "num_seq": numSeq,
+            "database": database,
+            "len_weight": lenWeight,
+            "con_weight": conWeight
+        }
+
+        console.log(json);
+
+        // Send JSON to backend
+        fetch('/api/submit', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(json),
+        })
+            .then(response => {
+                if (response.status !== 200) {
+                    return response.json().then(data => {
+                        console.log('Backend error:', data.error);
+                        navigate("/job-queued", {
+                            state: {
+                                error: data.error
+                            }
+                        });
+                    });
+                } else {
+                    response.json().then(data => {
+                        var currentdate = new Date();
+                        var datetime = "" + currentdate.getDate() + "/"
+                            + (currentdate.getMonth() + 1) + "/"
+                            + currentdate.getFullYear() + " @ "
+                            + currentdate.getHours() + ":"
+                            + currentdate.getMinutes() + ":"
+                            + currentdate.getSeconds();
+
+                        // Redirect to the results page
+                        navigate(`/job-queued/${id}`, {
+                            state: {
+                                jobId: id,
+                                email: emailInput.current.value,
+                                time: datetime,
+                                error: data.error || null
+                            }
+                        });
+                    });
+
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                navigate("/job-queued", {
+                    state: {
+                        error: "An error occurred while attempting to submit the job. Please try again later."
+                    }
+                });
+                return;
+            });
+    }
+
+    useEffect(() => {
+        if (inputFile) {
+            setCanSubmit(true);
+        } else {
+            setCanSubmit(false);
+        }
+    }, [inputFile]);
+
     return (
         <div style={{ flexGrow: 1 }}>
             <Navbar pageId={"WIP Submit"} />
@@ -213,46 +308,75 @@ const Tol = () => {
                 </div>
                 <br></br>
                 <div className="submit-header" style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <h2>Input Data ({inputType})</h2>
-                    <div>
-                        FASTA
-                        <Switch defaultChecked onChange={handleInputSwitch} />
-                        PDB
+                    <h2>Input Data</h2>
+                </div>
+                <div className='input-container'>
+                    <p>Please provide a FASTA or PDB file. </p>
+                    <div className="form-group">
+                        <div>
+                            <input
+                                accept=".pdb,.fasta,.fa"
+                                className="file-input"
+                                style={{ display: 'none' }}
+                                id="raised-button-file"
+                                type="file"
+                                onChange={handleInputFile}
+                            />
+                            <label htmlFor="raised-button-file">
+                                <Button variant="contained" component="span" className="upload-button">
+                                    Upload
+                                </Button>
+                            </label>
+                            {inputFile && <span style={{ marginLeft: '10px' }}>{inputFile.name}</span>}
+                            <p>Download example <a href="" onClick={downloadSampleFASTA}>FASTA file</a> or <a href="" onClick={downloadSamplePDB}>PDB file</a>.</p>
+                        </div>
+                        <div>
+                            <p>Send results to email (Optional):</p>
+                            <input className="email-input" type="email" ref={emailInput} />
+                        </div>
                     </div>
                 </div>
-                <br></br>
-                {inputType === "PDB" ? (
-                    <div className="inputs-pdb">
-                        <input type="file" accept=".pdb" />
-                    </div>
-                ) : (
-                    <div className="inputs-fasta">
-                        <textarea placeholder="Sequence in FASTA format" className="data-input" style={{ height: "150px", width: "80%", resize: "vertical", minHeight: "100px" }}></textarea>
-                    </div>
-                )}
                 <br></br>
                 <div className="submit-header" style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <h2>Job Options</h2>
-                    <div>
-                        <Switch />
-                        Show Advanced Options
+                </div>
+                <div className='input-container'>
+                    <Tabs value={submenu} onChange={(e, value) => setSubmenu(value)} aria-label="basic tabs example" style={{ justifyContent: "center" }}
+                        variant="scrollable"
+                    >
+                        <Tab label="Homolog" />
+                        <Tab label="Phylogeny" />
+                        <Tab label="Structure" />
+                        <Tab label="Delineation" />
+                    </Tabs>
+                    <div style={{ display: 'flex', justifyContent: 'center' }}>
+                        {submenuDiv()}
                     </div>
 
-                </div>
-                <Tabs value={submenu} onChange={(e, value) => setSubmenu(value)} aria-label="basic tabs example" style={{ justifyContent: "center" }}
-                    variant="scrollable"
-                >
-                    <Tab label="Homolog" />
-                    <Tab label="Phylogeny" />
-                    <Tab label="Structure" />
-                    <Tab label="Delineation" />
-                </Tabs>
-                <div style={{display: 'flex', justifyContent: 'center'}}>
-                {submenuDiv()}
+                    <br></br>
+                    <br></br>
+                    {!canSubmit ? (
+                        <Tooltip title="Provide FASTA or PDB file" placement="bottom">
+                            <span>
+                                <Button variant="contained" onClick={submitJob} disabled>
+                                    Submit
+                                </Button>
+                            </span>
+                        </Tooltip>
+                    ) : (
+                        <span>
+                            <Button variant="contained" onClick={submitJob}>
+                                Submit
+                            </Button>
+                        </span>
+                    )}
+                    <Button variant="outlined" onClick={() => console.log("Reset")} style={{ marginLeft: "1em" }}>
+                        Clear All
+                    </Button>
                 </div>
                 <br></br>
                 <div className="submit-header">
-                    <h2>Sample header</h2>
+                    <h2>Webserver Status: Online</h2>
                 </div>
                 <br></br>
                 <h4>News</h4>
@@ -265,8 +389,8 @@ const Tol = () => {
                 <p><b>12/16/2024</b> EzSEA sampletext!</p>
                 <br></br>
                 <div>
-                <hr></hr>
-                <p>Citation</p>
+                    <hr></hr>
+                    <p>Citation</p>
                 </div>
             </div>
 

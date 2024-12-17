@@ -6,7 +6,7 @@ export const TolProvider = ({ children }) => {
     const [scrollPosition, setScrollPosition] = useState('');
     const [seqLength, setSeqLength] = useState(0);
     const [logoContent, setLogoContent] = useState({});
-    const [logoAlphabet, setLogoAlphabet] = useState(0);
+    const [logoAlphabet, setLogoAlphabet] = useState(11);
 
     return (
         <tolContext.Provider value={{

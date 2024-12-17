@@ -28,6 +28,8 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
+import Menu from '@mui/material/Menu';
+
 
 const logoFiles = {};
 
@@ -35,11 +37,11 @@ const Tol = () => {
     const { jobId } = useParams();
     // State to store the tree data and node data
     const [faData, setFaData] = useState(null);
-    const [newickData, setNewickData] = useState(null);
-    const [structData, setStructData] = useState(null); // Structure data
-    const [nodeData, setnodeData] = useState(null);
-    const [topNodes, setTopNodes] = useState({}); // Top 10 nodes for the tree
     const [leafData, setLeafData] = useState({});
+    const [newickData, setNewickData] = useState(null);
+    const [nodeData, setnodeData] = useState(null);
+    const [structData, setStructData] = useState(null); // Structure data
+    const [topNodes, setTopNodes] = useState({}); // Top 10 nodes for the tree
     const [asrData, setAsrData] = useState(null);
 
     // State to store the logo content (formatted for logoJS) and color file
@@ -60,12 +62,13 @@ const Tol = () => {
     const [sidebarExpanded, setSidebarExpanded] = useState(false);
     const [notification, setNotification] = useState('');
     const [refresh, setRefresh] = useState(false);
+    const [labelMenuAnchor, setLabelMenuAnchor] = useState(null);
+    const labelMenuOpen = Boolean(labelMenuAnchor);
 
     // References for rendering
     const treeRef = useRef(null);
     const pvdiv = useRef(null);
     const logoStackRef = useRef(null);
-    const zoomInputRef = useRef(null);
     const scrollInputRef = useRef(null);
 
     // Storing tree reference itself
@@ -380,7 +383,6 @@ const Tol = () => {
                     for (var desc of descendants) {
                         desc_fa += `>${desc.data.name}\n${faData[desc.data.name]}\n`;
                     }
-                    // Calculates entropies, maps to colors and sets the colorArr state
                     calcEntropyFromMSA(desc_fa).then((entropy) => mapEntropyToColors(entropy)).then((colors) => { setColorArr(colors) });
                 }
             });
@@ -451,20 +453,6 @@ const Tol = () => {
                             return i === 0; // Target the first circle when there are two
                         }).remove();
                     }
-                }
-            });
-    }
-
-    const selectNode = (nodeId) => {
-        if (nodeId in logoContent) { // If already selected, do nothing
-            return;
-        }
-        d3.selectAll('.internal-node')
-            .each(function () {
-                var node = d3.select(this).data()[0];
-                if (node.data.name === nodeId) {
-                    node['compare-node'] = true;
-                    pushNodeToLogo(node);
                 }
             });
     }
@@ -605,6 +593,14 @@ const Tol = () => {
         console.log("Toggling right collapse");
         setIsRightCollapsed(!isRightCollapsed);
         isRightCollapsed ? setPipVisible(true) : setPipVisible(false);
+    };
+
+    const handleLabelMenuClick = (event) => {
+        setLabelMenuAnchor(event.currentTarget);
+    };
+
+    const handleLabelMenuClose = () => {
+        setLabelMenuAnchor(null);
     };
 
     const handleDownload = (filename, content) => {
@@ -868,13 +864,29 @@ const Tol = () => {
                 <div className="view">
                     <div className="tree-div" style={{ width: isLeftCollapsed ? '2%' : (pipVisible ? '50%' : '100%'), textAlign: "center" }}>
                         <ButtonGroup variant="contained" aria-label="Basic button group">
-                            <Tooltip title="Recenter on input">
+                            <Tooltip title="Recenter on input" placement="top">
                                 <Button onClick={() => findAndZoom("PA14_rph")}><FilterCenterFocusIcon /></Button>
                             </Tooltip>
-                            <Tooltip title="Toggle leaf labels">
-                                <Button onClick={() => toggleLeafLabels()}><LabelIcon /></Button>
+                            <Tooltip title="Label Toggles" placement="top">
+                                <Button
+                                    aria-controls={labelMenuOpen ? 'basic-menu' : undefined}
+                                    aria-haspopup="true"
+                                    aria-expanded={labelMenuOpen ? 'true' : undefined}
+                                    onClick={handleLabelMenuClick} 
+                                ><LabelIcon /></Button>
+                                <Menu
+                                    id="basic-menu"
+                                    anchorEl={labelMenuAnchor}
+                                    open={labelMenuOpen}
+                                    onClose={handleLabelMenuClose}
+                                    MenuListProps={{
+                                        'aria-labelledby': 'basic-button',
+                                    }}
+                                >
+                                    <MenuItem onClick={() => toggleLeafLabels()}>Toggle leaf labels</MenuItem>
+                                </Menu>
                             </Tooltip>
-                            <Tooltip title="Reset tree">
+                            <Tooltip title="Reset tree" placement="top">
                                 <Button onClick={() => setRefresh(prev => !prev)}><RestoreIcon /></Button>
                             </Tooltip>
                         </ButtonGroup>
@@ -995,7 +1007,7 @@ const Tol = () => {
                                         </FormControl>
                                     </div>
                                 </div>
-                                <div className="logodiv" style={{ width: '100%', height: Object.keys(logoContent).length > 2 ? '570px' : (Object.keys(logoContent).length > 1 ? '380px' : '190px') }}>
+                                <div className="logodiv" style={{ width: '100%', height: isLeftCollapsed ? '100%' : (Object.keys(logoContent).length > 2 ? '570px' : (Object.keys(logoContent).length > 1 ? '380px' : '190px')) }}>
                                     <button
                                         className="logo-close-btn"
                                         onClick={() => {

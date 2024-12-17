@@ -28,6 +28,7 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
+import Menu from '@mui/material/Menu';
 
 const Results = () => {
     const { jobId } = useParams();
@@ -63,12 +64,13 @@ const Results = () => {
     const [sidebarExpanded, setSidebarExpanded] = useState(false);
     const [notification, setNotification] = useState('');
     const [refresh, setRefresh] = useState(false);
+    const [labelMenuAnchor, setLabelMenuAnchor] = useState(null);
+    const labelMenuOpen = Boolean(labelMenuAnchor);
 
     // References for rendering
     const treeRef = useRef(null);
     const pvdiv = useRef(null);
     const logoStackRef = useRef(null);
-    const zoomInputRef = useRef(null);
     const scrollInputRef = useRef(null);
 
     // Storing tree reference itself
@@ -714,6 +716,17 @@ const Results = () => {
                 }
             });
     };
+    const toggleECLabels = () => {
+        d3.selectAll('.leaf-node-ec-label')
+            .each(function () {
+                const label = d3.select(this);
+                if (label.style("display") === "none") {
+                    label.style("display", "block");
+                } else {
+                    label.style("display", "none");
+                }
+            });
+    };
 
     /*
         Handle for collapsing the left panel
@@ -728,6 +741,14 @@ const Results = () => {
     const toggleRightCollapse = () => {
         setIsRightCollapsed(!isRightCollapsed);
         isRightCollapsed ? setPipVisible(true) : setPipVisible(false);
+    };
+
+    const handleLabelMenuClick = (event) => {
+        setLabelMenuAnchor(event.currentTarget);
+    };
+
+    const handleLabelMenuClose = () => {
+        setLabelMenuAnchor(null);
     };
 
     const handleDownload = (filename, content, fasta = false) => {
@@ -1059,13 +1080,30 @@ const Results = () => {
                 <div className="view">
                     <div className="tree-div" style={{ width: isLeftCollapsed ? '2%' : (pipVisible ? '50%' : '100%'), textAlign: "center" }}>
                         <ButtonGroup variant="contained" aria-label="Basic button group">
-                            <Tooltip title="Recenter on input">
+                            <Tooltip title="Recenter on input" placement="top">
                                 <Button onClick={() => findAndZoom("PA14_rph")}><FilterCenterFocusIcon /></Button>
                             </Tooltip>
-                            <Tooltip title="Toggle leaf labels">
-                                <Button onClick={() => toggleLeafLabels()}><LabelIcon /></Button>
+                            <Tooltip title="Label Toggles" placement="top">
+                                <Button
+                                    aria-controls={labelMenuOpen ? 'basic-menu' : undefined}
+                                    aria-haspopup="true"
+                                    aria-expanded={labelMenuOpen ? 'true' : undefined}
+                                    onClick={handleLabelMenuClick} 
+                                ><LabelIcon /></Button>
+                                <Menu
+                                    id="basic-menu"
+                                    anchorEl={labelMenuAnchor}
+                                    open={labelMenuOpen}
+                                    onClose={handleLabelMenuClose}
+                                    MenuListProps={{
+                                        'aria-labelledby': 'basic-button',
+                                    }}
+                                >
+                                    <MenuItem onClick={() => toggleLeafLabels()}>Toggle leaf labels</MenuItem>
+                                    <MenuItem onClick={() => toggleECLabels()}>Toggle leaf labels</MenuItem>
+                                </Menu>
                             </Tooltip>
-                            <Tooltip title="Reset tree">
+                            <Tooltip title="Reset tree" placement="top">
                                 <Button onClick={() => setRefresh(prev => !prev)}><RestoreIcon /></Button>
                             </Tooltip>
                         </ButtonGroup>
@@ -1186,7 +1224,7 @@ const Results = () => {
                                         </FormControl>
                                     </div>
                                 </div>
-                                <div className="logodiv" style={{ width: '100%', height: Object.keys(logoContent).length > 2 ? '570px' : (Object.keys(logoContent).length > 1 ? '380px' : '190px') }}>
+                                <div className="logodiv" style={{ width: '100%', height: isLeftCollapsed ? '100%' : (Object.keys(logoContent).length > 2 ? '570px' : (Object.keys(logoContent).length > 1 ? '380px' : '190px')) }}>
                                     <button
                                         className="logo-close-btn"
                                         onClick={() => {
