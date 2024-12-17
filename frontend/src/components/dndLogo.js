@@ -2,6 +2,7 @@ import update from 'immutability-helper'
 import { useCallback, useEffect, useState, useContext } from 'react'
 import { LogoCard } from './logoCard.js'
 import { tolContext } from './tolContext';
+import { LogoProvider } from './logoContext.js';
 
 const style = {
     display: "flex",
@@ -56,9 +57,9 @@ export const DndLogo = ({ fastaContent, applyEntropyStructColor, applyImportantS
         }, [cards])
 
         return (
-            <>
+            <LogoProvider>
                 <div style={style}>{cards.map((card, i) => renderCard(card, i))}</div>
-            </>
+            </LogoProvider>
         )
     }
 }

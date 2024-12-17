@@ -5,6 +5,7 @@ import { ItemTypes } from './itemTypes.js'
 import { allColors } from './logo/alphabets_protein.jsx';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import { tolContext } from './tolContext';
+import { logoContext } from './logoContext';
 
 const style = {
     border: '1px dashed gray',
@@ -24,7 +25,7 @@ const handleStyle = {
 export const LogoCard = ({ id, index, header, moveCard, ppm = null, fasta = null, applyEntropyStructColor, applyImportantStructColor,
     removeLogo, onColumnClick, importantResiduesList, findAndZoom, addLogoRef }) => {
     const dragRef = useRef(null);
-    const [activeButton, setActiveButton] = useState(null);
+    const { activeButton, setActiveButton } = useContext(logoContext);
     const { logoContent, setLogoContent, logoAlphabet, setLogoAlphabet } = useContext(tolContext);
     const logoRef = useRef(null);
     var nodeId = "";

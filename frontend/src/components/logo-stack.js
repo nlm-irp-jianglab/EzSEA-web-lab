@@ -186,8 +186,6 @@ const LogoStack = React.forwardRef(
 
             setFastaContent(newFastaContent);
 
-            console.log("Removing logo: ", logoHeader);
-
             removeNodeHandle(logoHeader); // Call the parent function to remove the node from list in Results.js
         };
 

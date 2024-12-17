@@ -101,7 +101,6 @@ const Tol = () => {
         readFastaToDict(`${process.env.PUBLIC_URL}/example/asr.fa`).then(data => {
             setFaData(data);
             setSeqLength(data[Object.keys(data)[0]].length);
-            console.log(data[Object.keys(data)[0]].length);
         });
 
 
@@ -283,7 +282,6 @@ const Tol = () => {
             if (clade) {
                 node['compare-descendants'] = false;
                 delete updatedLogoContent["Information Logo of Clade " + node.data.name];  // Remove the node
-                console.log("Removing clade:", node.data.name);
             } else {
                 node['compare-node'] = false;
                 delete updatedLogoContent["ASR Probability Logo for " + node.data.name];  // Remove the node
@@ -435,8 +433,6 @@ const Tol = () => {
         const newLogoContent = { ...logoContent };
         const keys = Object.keys(newLogoContent);
         delete newLogoContent[header];
-        console.log("Removing node:", header);
-        console.log(newLogoContent);
         setLogoContent(newLogoContent);
 
         // Below syncs highlights on TOL with remove action in logo stack
