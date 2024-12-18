@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import Navbar from "../components/navbar";
-import "../components/playground.css";
 import { Slider, Tooltip } from '@mui/material';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import { Button } from '@mui/material';
 import { useNavigate } from "react-router-dom";
+import "../components/submit.css";
 
 const Submit = () => {
     const [inputFile, setInputFile] = useState(null);

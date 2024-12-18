@@ -79,20 +79,37 @@ app.post("/submit", (req, res) => {
     // Retrieve JSON from the POST body 
     data = req.body;
     var error = null;
-    logger.info("Received Job: " + data.job_id);
+    var job_id = null;
+    var input_file = null;
+    var database = null;
+    var num_seq = null;
+    var tree_program = null;
+    var asr_program = null;
+    var align_program = null;
+    var len_weight = null;
+    var con_weight = null;
+    var email = null;
+
+    try {
+        ({ job_id, input_file, database, num_seq, tree_program, asr_program, align_program, len_weight, con_weight, email } = data);
+    } catch (err) {
+        logger.error("Error parsing JSON:", err);
+        return res.status(400).json({ error: "There was an error parsing your request. Please ensure all fields are filled out." });
+    }
+    logger.info("Received Job: " + job_id);
 
     const run_command = {
         "apiVersion": "batch/v1",
         "kind": "Job",
         "metadata": {
-            "name": data.job_id
+            "name": job_id
         },
         "spec": {
             "backoffLimit": 0,
             "template": {
                 "metadata": {
                     "labels": {
-                        "id": data.job_id,
+                        "id": job_id,
                         "type": "run"
                     }
                 },
@@ -103,17 +120,17 @@ app.post("/submit", (req, res) => {
                         "args": [
                             "ezsea", "run",
                             "-i", data.sequence,
-                            "--output", `/database/output/EzSEA_${data.job_id}`,
-                            "--db", `/database/database/${data.database}`,
-                            "-n", String(data.num_seq),
+                            "--output", `/database/output/EzSEA_${job_id}`,
+                            "--db", `/database/database/${database}`,
+                            "-n", String(num_seq),
                             "--fold", "none",
-                            "--treeprogram", data.tree_program,
-                            "--asrprogram", data.asr_program,
-                            "--alignprogram", data.align_program,
+                            "--treeprogram", tree_program,
+                            "--asrprogram", asr_program,
+                            "--alignprogram", align_program,
                             "--threads", "4",
                             "--ec_table", "/database/database/ec_dict.pkl",
-                            "--lenweight", String(data.len_weight),
-                            "--conweight", String(data.con_weight),
+                            "--lenweight", String(len_weight),
+                            "--conweight", String(con_weight),
                         ],
                         "resources": {
                             "requests": {
@@ -146,14 +163,14 @@ app.post("/submit", (req, res) => {
         "apiVersion": "batch/v1",
         "kind": "Job",
         "metadata": {
-            "name": data.job_id + "-struct"
+            "name": job_id + "-struct"
         },
         "spec": {
             "backoffLimit": 0,
             "template": {
                 "metadata": {
                     "labels": {
-                        "id": data.job_id,
+                        "id": job_id,
                         "type": "structure"
                     }
                 },
@@ -163,9 +180,9 @@ app.post("/submit", (req, res) => {
                         "image": "biochunan/esmfold-image:latest",
                         "command": ["/bin/zsh", "-c"],
                         "args": [
-                            "mkdir -p /database/output/EzSEA_" + data.job_id + "/ && echo \"" + data.sequence + "\" > /database/output/EzSEA_" + data.job_id 
-                            + "/esm.fasta && ./run-esm-fold.sh -i /database/output/EzSEA_" + data.job_id 
-                            + "/esm.fasta --pdb /database/output/EzSEA_" + data.job_id + "/Visualization/"
+                            "mkdir -p /database/output/EzSEA_" + job_id + "/ && echo \"" + data.sequence + "\" > /database/output/EzSEA_" + job_id 
+                            + "/esm.fasta && ./run-esm-fold.sh -i /database/output/EzSEA_" + job_id 
+                            + "/esm.fasta --pdb /database/output/EzSEA_" + job_id + "/Visualization/"
                         ],
                         "resources": {
                             "requests": {
@@ -212,7 +229,7 @@ app.post("/submit", (req, res) => {
         }
     });
 
-    logger.info("Queuing job: " + data.job_id);
+    logger.info("Queuing job: " + job_id);
 
     // Forgoing k8sapi.createNamespacedPod, running into issues with proper formatting 
 
@@ -221,8 +238,8 @@ app.post("/submit", (req, res) => {
             error = "There was a problem initializing your job, please try again later";
             console.error(err); // Pino doesn't give new lines
         } else {
-            logger.info("EzSEA run job started:" + data.job_id);
-            monitorJob(data.job_id, "CPU", data.email);
+            logger.info("EzSEA run job started:" + job_id);
+            monitorJob(job_id, "CPU", data.email);
         }
     });
 
@@ -231,8 +248,8 @@ app.post("/submit", (req, res) => {
             error = "There was a problem initializing your job, please try again later";
             console.error(err); // Pino doesn't give new lines
         } else {
-            logger.info("EzSEA structure job started:" + data.job_id);
-            //monitorJob(data.job_id + "-struct", "GPU");
+            logger.info("EzSEA structure job started:" + job_id);
+            //monitorJob(job_id + "-struct", "GPU");
         }
     });
 
