@@ -180,8 +180,8 @@ app.post("/submit", (req, res) => {
                         "image": "biochunan/esmfold-image:latest",
                         "command": ["/bin/zsh", "-c"],
                         "args": [
-                            "mkdir -p /database/output/EzSEA_" + job_id + "/ && echo \"" + data.sequence + "\" > /database/output/EzSEA_" + job_id 
-                            + "/esm.fasta && ./run-esm-fold.sh -i /database/output/EzSEA_" + job_id 
+                            "mkdir -p /database/output/EzSEA_" + job_id + "/ && echo \"" + data.sequence + "\" > /database/output/EzSEA_" + job_id
+                            + "/esm.fasta && ./run-esm-fold.sh -i /database/output/EzSEA_" + job_id
                             + "/esm.fasta --pdb /database/output/EzSEA_" + job_id + "/Visualization/"
                         ],
                         "resources": {
@@ -390,25 +390,28 @@ app.get("/status/:id", (req, res) => {
                     return res.status(200).json({ logs: logsArray, status: status }); // Possibly missing cases here
                 });
                 return;
+            } else { // Job is still running / being tracked by kubectl
+                const status = podsRes.body.items[0].status.phase.trim();
+                console.log(status);
+                if (status === "Pending") {
+                    return res.status(200).json({ logs: ["Allocating resources for job, this may take a few minutes."], status: status });
+                } else {
+                    fs.readFile(filePath, 'utf8', (err, data) => {
+                        if (err) {
+                            if (status === "Running") {
+                                return res.status(200).json({ logs: ['Generating logs...'], status: status })
+                            } else {
+                                logger.error("Error reading file:", err);
+                                return res.status(500).json({ error: "No log file was found for this job." });
+                            }
+                        }
+                        const logsArray = data.split('\n');
+                        return res.status(200).json({ logs: logsArray, status: status });
+                    });
+                }
             }
 
-            const status = podsRes.body.items[0].status.phase.trim();
-            if (status === "Pending") {
-                return res.status(200).json({ logs: ["Allocating resources for job, this may take a few minutes."], status: status });
-            } else {
-                fs.readFile(filePath, 'utf8', (err, data) => {
-                    if (err) {
-                        if (status === "Running") {
-                            return res.status(200).json({ logs: ['Generating logs...'], status: status })
-                        } else {
-                            logger.error("Error reading file:", err);
-                            return res.status(500).json({ error: "No log file was found for this job." });
-                        }
-                    }
-                    const logsArray = data.split('\n');
-                    return res.status(200).json({ logs: logsArray, status: status });
-                });
-            }
+
         });
     } catch (err) {
         logger.error("Error getting GKE logs:", err);
