@@ -6,6 +6,8 @@ import Tab from '@mui/material/Tab';
 import { Button } from '@mui/material';
 import { useNavigate } from "react-router-dom";
 import "../components/submit.css";
+import Snackbar, { SnackbarCloseReason } from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
 
 const Submit = () => {
     const [inputFile, setInputFile] = useState(null);
@@ -15,6 +17,7 @@ const Submit = () => {
     const emailInput = useRef(null);
     let navigate = useNavigate();
 
+    const [snackbarOpen, setSnackbarOpen] = React.useState(false);
 
     const [numSeq, setNumSeq] = useState(500);
     const [phylogeneticProgram, setPhylogeneticProgram] = useState("veryfasttree");
@@ -236,11 +239,7 @@ const Submit = () => {
                 if (response.status !== 200) {
                     return response.json().then(data => {
                         console.log('Backend error:', data.error);
-                        navigate("/job-queued", {
-                            state: {
-                                error: data.error
-                            }
-                        });
+                        setSnackbarOpen(true);
                     });
                 } else {
                     response.json().then(data => {
@@ -267,11 +266,7 @@ const Submit = () => {
             })
             .catch((error) => {
                 console.error('Error:', error);
-                navigate("/job-queued", {
-                    state: {
-                        error: "An error occurred while attempting to submit the job. Please try again later."
-                    }
-                });
+                setSnackbarOpen(true);
                 return;
             });
     }
@@ -284,9 +279,41 @@ const Submit = () => {
         }
     }, [inputFile]);
 
+    const handleSnackbarClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setSnackbarOpen(false);
+    };
+
+    const clearInputs = () => {
+        setInputFile(null);
+        emailInput.current.value = "";
+        setNumSeq(500);
+        setPhylogeneticProgram("veryfasttree");
+        setAncestralProgram("iqtree");
+        setAlignmentProgram("famsa");
+        setDatabase("uniref90");
+        setLenWeight(50);
+        setConWeight(.5);
+        setConThreshold(.85);
+        setSubmenu(0);
+        setSubmitStatus(false);
+    }
+
     return (
         <div style={{ flexGrow: 1 }}>
             <Navbar />
+            <Snackbar open={snackbarOpen} autoHideDuration={5000} onClose={handleSnackbarClose}>
+                <Alert
+                    onClose={handleSnackbarClose}
+                    severity="error"
+                    variant="filled"
+                    sx={{ width: '100%' }}
+                >
+                    An error occurred while attempting to submit the job. Please try again later.
+                </Alert>
+            </Snackbar>
             <div className="container">
                 <div className="jumbotron">
                     <span style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -369,7 +396,7 @@ const Submit = () => {
                             </Button>
                         </span>
                     )}
-                    <Button variant="outlined" onClick={() => console.log("Reset")} style={{ marginLeft: "1em" }}>
+                    <Button variant="outlined" onClick={() => clearInputs()} style={{ marginLeft: "1em" }}>
                         Clear All
                     </Button>
                 </div>

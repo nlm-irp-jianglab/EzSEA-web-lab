@@ -366,7 +366,7 @@ app.get("/status/:id", (req, res) => {
             if (podsRes.body.items.length < 1) { // Kubectl no longer tracking job or job not present
                 fs.readFile(filePath, 'utf8', (err, data) => {
                     if (err) {
-                        logger.error("Error reading file:", err);
+                        logger.error(`Error reading log file for job ${id}, does it exist?`);
                         return res.status(500).json({ error: "There was an error reading the log file. Please ensure your job ID is correct." });
                     }
                     const logsArray = data.split('\n').filter(line => line.trim() !== ''); // Remove empty lines
@@ -375,7 +375,6 @@ app.get("/status/:id", (req, res) => {
                     // Dynamically check for status based on the last line of logs
                     if (logsArray.length > 0) {
                         const lastLine = logsArray[logsArray.length - 1];
-
                         if (/Error|failed|Stopping/i.test(lastLine)) {
                             status = "Error"; // Check for error keywords
                         } else if (/completed|success|Done/i.test(lastLine)) {
@@ -391,11 +390,24 @@ app.get("/status/:id", (req, res) => {
                 });
                 return;
             } else { // Job is still running / being tracked by kubectl
-                const status = podsRes.body.items[0].status.phase.trim();
-                console.log(status);
+                const pod = podsRes.body.items[0];
+                const status = pod.status.phase.trim();
+
+                // Check container statuses for more detailed information
+                if (status === "Pending" && pod.status.containerStatuses) {
+                    const containerStatus = pod.status.containerStatuses[0];
+                    if (containerStatus.state.waiting && containerStatus.state.waiting.reason === "ContainerCreating") {
+                        status = "ContainersCreating";
+                    }
+                }
+
                 if (status === "Pending") {
-                    return res.status(200).json({ logs: ["Allocating resources for job, this may take a few minutes."], status: status });
-                } else {
+                    if (pod.status.containerStatuses) {
+                        return res.status(200).json({ logs: ["Resources allocated, building compute environment"], status: pod.status.containerStatuses });
+                    } else {
+                        return res.status(200).json({ logs: ["Allocating resources for job, this may take a few minutes."], status: status });
+                    }
+                } else { // status is Running, Succeeded, Failed, or Unknown
                     fs.readFile(filePath, 'utf8', (err, data) => {
                         if (err) {
                             if (status === "Running") {

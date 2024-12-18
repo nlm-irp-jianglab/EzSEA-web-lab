@@ -385,7 +385,8 @@ const Results = () => {
 
             return updatedLogoContent;  // Return the new state
         });
-
+        setPipVisible(true);
+        setIsRightCollapsed(false);
     };
 
     /* 
@@ -415,6 +416,8 @@ const Results = () => {
 
             return updatedLogoContent;  // Return the new state
         });
+        setPipVisible(true);
+        setIsRightCollapsed(false);
     };
 
     /* 
@@ -615,6 +618,8 @@ const Results = () => {
     */
     const findAndZoom = (query) => {
         const svg = d3.select("#tree_container").select("svg");
+        const centerOffsetX = treeRef.current.parentNode.clientWidth / 2;
+        const centerOffsetY = treeRef.current.parentNode.clientHeight / 2;
         const zoom = d3.zoom().on("zoom", (event) => {
             svg.select("g").attr("transform", event.transform);
         });
@@ -656,7 +661,7 @@ const Results = () => {
 
                     svg.transition()
                         .duration(750)
-                        .call(zoom.transform, d3.zoomIdentity.scale(1).translate(-targetY + 109, -targetX + 426)); // Adjust the scale and translation as needed
+                        .call(zoom.transform, d3.zoomIdentity.scale(1).translate(-targetY + centerOffsetX, -targetX + centerOffsetY)); // Adjust the scale and translation as needed
                 }
             });
 
@@ -1100,7 +1105,7 @@ const Results = () => {
                                     }}
                                 >
                                     <MenuItem onClick={() => toggleLeafLabels()}>Toggle leaf labels</MenuItem>
-                                    <MenuItem onClick={() => toggleECLabels()}>Toggle leaf labels</MenuItem>
+                                    <MenuItem onClick={() => toggleECLabels()}>Toggle EC labels</MenuItem>
                                 </Menu>
                             </Tooltip>
                             <Tooltip title="Reset tree" placement="top">

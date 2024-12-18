@@ -2,7 +2,6 @@ import React from 'react';
 import Navbar from '../components/navbar';
 import { useLocation } from 'react-router-dom';
 import '../components/jobqueued.css';
-import Loading from '../components/loading';
 import { useNavigate } from "react-router-dom";
 
 const JobQueued = () => {

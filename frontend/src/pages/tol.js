@@ -303,7 +303,8 @@ const Tol = () => {
 
             return updatedLogoContent;  // Return the new state
         });
-
+        setPipVisible(true);
+        setIsRightCollapsed(false);
     };
 
     const pushNodeToEntropyLogo = (node) => {
@@ -329,6 +330,8 @@ const Tol = () => {
 
             return updatedLogoContent;  // Return the new state
         });
+        setPipVisible(true);
+        setIsRightCollapsed(false);
     };
 
     const setNodeColor = (nodeId, color = null) => {
@@ -431,7 +434,6 @@ const Tol = () => {
     const handleNodeRemove = (header) => {
         // Remove node from logoContent
         const newLogoContent = { ...logoContent };
-        const keys = Object.keys(newLogoContent);
         delete newLogoContent[header];
         setLogoContent(newLogoContent);
 
@@ -479,6 +481,8 @@ const Tol = () => {
 
     const findAndZoom = (query) => {
         const svg = d3.select("#tree_container").select("svg");
+        const centerOffsetX = treeRef.current.parentNode.clientWidth / 2;
+        const centerOffsetY = treeRef.current.parentNode.clientHeight / 2;
         const zoom = d3.zoom().on("zoom", (event) => {
             svg.select("g").attr("transform", event.transform);
         });
@@ -520,7 +524,7 @@ const Tol = () => {
 
                     svg.transition()
                         .duration(750)
-                        .call(zoom.transform, d3.zoomIdentity.scale(1).translate(-targetY + 109, -targetX + 426)); // Adjust the scale and translation as needed
+                        .call(zoom.transform, d3.zoomIdentity.scale(1).translate(-targetY + centerOffsetX, -targetX + centerOffsetY)); // Adjust the scale and translation as needed
                 }
             });
 
@@ -586,7 +590,6 @@ const Tol = () => {
     };
 
     const toggleRightCollapse = () => {
-        console.log("Toggling right collapse");
         setIsRightCollapsed(!isRightCollapsed);
         isRightCollapsed ? setPipVisible(true) : setPipVisible(false);
     };

@@ -197,7 +197,7 @@ const LogoStack = React.forwardRef(
                 // Pulse the residue number we scrolled to
                 logoRefs.current.forEach((ref, refIndex) => {
                     try {
-                        centerOffset = ref.parentNode.clientWidth / 2;
+                        centerOffset = ref.parentNode.clientWidth / 2; 
 
                         const target = ref.firstChild.firstChild.children[index - 1].lastChild; // Target by class instead. TODO
                         //const originalFill = target.getAttribute("fill");
