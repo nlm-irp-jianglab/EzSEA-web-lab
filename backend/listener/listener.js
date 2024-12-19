@@ -224,7 +224,7 @@ app.post("/submit", upload.single('input_file'), (req, res) => {
                         "command": ["/bin/zsh", "-c"],
                         "args": [
                             "mkdir -p /database/output/EzSEA_" + job_id + "/Visualization/ "
-                            + "./run-esm-fold.sh -i /database/output/input/" + job_id
+                            + "&& ./run-esm-fold.sh -i /database/output/input/" + job_id
                             + ".fasta --pdb /database/output/EzSEA_" + job_id + "/Visualization/"
                         ],
                         "resources": {
@@ -276,15 +276,15 @@ app.post("/submit", upload.single('input_file'), (req, res) => {
 
     // Forgoing k8sapi.createNamespacedPod, running into issues with proper formatting 
 
-    exec("kubectl apply -f ./cpu-job-config.json", (err, stdout, stderr) => {
-        if (err) {
-            error = "There was a problem initializing your job, please try again later";
-            console.error(err); // Pino doesn't give new lines
-        } else {
-            logger.info("EzSEA run job started:" + job_id);
-            //monitorJob(job_id, "CPU", email);
-        }
-    });
+    // exec("kubectl apply -f ./cpu-job-config.json", (err, stdout, stderr) => {
+    //     if (err) {
+    //         error = "There was a problem initializing your job, please try again later";
+    //         console.error(err); // Pino doesn't give new lines
+    //     } else {
+    //         logger.info("EzSEA run job started:" + job_id);
+    //         //monitorJob(job_id, "CPU", email);
+    //     }
+    // });
 
     exec("kubectl apply -f ./gpu-job-config.json", (err, stdout, stderr) => {
         if (err) {
@@ -434,7 +434,7 @@ app.get("/status/:id", (req, res) => {
                 return;
             } else { // Job is still running / being tracked by kubectl
                 const pod = podsRes.body.items[0];
-                const status = pod.status.phase.trim();
+                var status = pod.status.phase.trim();
 
                 // Check container statuses for more detailed information
                 if (status === "Pending" && pod.status.containerStatuses) {
