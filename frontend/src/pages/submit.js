@@ -8,6 +8,8 @@ import { useNavigate } from "react-router-dom";
 import "../components/submit.css";
 import Snackbar, { SnackbarCloseReason } from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
+import CircularProgress from '@mui/material/CircularProgress';
+import { P } from '../components/glyphs';
 
 const Submit = () => {
     const [inputFile, setInputFile] = useState(null);
@@ -15,6 +17,7 @@ const Submit = () => {
     const [submitStatus, setSubmitStatus] = useState(false); // Once button is clicked, submit status set to True, ensure no double submission
 
     const emailInput = useRef(null);
+    const fileInput = useRef(null);
     let navigate = useNavigate();
 
     const [snackbarOpen, setSnackbarOpen] = React.useState(false);
@@ -32,6 +35,7 @@ const Submit = () => {
     const handleInputFile = (e) => {
         const file = e.target.files[0];
         setInputFile(file);
+        console.log("uploaded")
     }
 
     const downloadSampleFASTA = (e) => {
@@ -235,8 +239,6 @@ const Submit = () => {
             }
         });
 
-        inputFile.arrayBuffer().then(buffer => {console.log(buffer)});
-
         // Send JSON to backend
         fetch('/api/submit', {
             method: 'POST',
@@ -274,8 +276,10 @@ const Submit = () => {
             .catch((error) => {
                 console.error('Error:', error);
                 setSnackbarOpen(true);
-                return;
+                setSubmitStatus(false);
+
             });
+
     }
 
     useEffect(() => {
@@ -296,6 +300,7 @@ const Submit = () => {
     const clearInputs = () => {
         setInputFile(null);
         emailInput.current.value = "";
+        fileInput.current.value = '';
         setNumSeq(500);
         setPhylogeneticProgram("veryfasttree");
         setAncestralProgram("iqtree");
@@ -354,6 +359,7 @@ const Submit = () => {
                                 id="raised-button-file"
                                 type="file"
                                 onChange={handleInputFile}
+                                ref={fileInput}
                             />
                             <label htmlFor="raised-button-file">
                                 <Button variant="contained" component="span" className="upload-button">
@@ -388,6 +394,7 @@ const Submit = () => {
 
                     <br></br>
                     <br></br>
+
                     {!canSubmit ? (
                         <Tooltip title="Provide FASTA or PDB file" placement="bottom">
                             <span>
@@ -399,10 +406,11 @@ const Submit = () => {
                     ) : (
                         <span>
                             <Button variant="contained" onClick={submitJob} disabled={submitStatus}>
-                                Submit
+                                {submitStatus ? <CircularProgress size="1.5rem" /> : "Submit"}
                             </Button>
                         </span>
                     )}
+
                     <Button variant="outlined" onClick={() => clearInputs()} style={{ marginLeft: "1em" }}>
                         Clear All
                     </Button>

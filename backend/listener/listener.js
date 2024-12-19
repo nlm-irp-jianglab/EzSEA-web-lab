@@ -121,13 +121,12 @@ app.post("/submit", upload.single('input_file'), (req, res) => {
         } = req.body);
 
     } catch (err) {
-        logger.error("Error parsing request:", err);
+        logger.error("Error parsing request:" + err);
         return res.status(400).json({ error: "There was an error parsing your request. Please ensure all fields are filled out." });
     }
 
     logger.info("Received Job: " + job_id);
 
-    logger.info("Input file saved at " + input_file.path);
     // If input file extension is .pdb, copy input file to /output/EzSEA_job_id/Visualization/input.pdb
     if (input_file_name.endsWith('.pdb')) {
         const outputDir = `/output/EzSEA_${job_id}/Visualization`;
@@ -139,7 +138,85 @@ app.post("/submit", upload.single('input_file'), (req, res) => {
                 return res.status(500).json({ error: "There was an error copying the input file." });
             }
         });
+    } else { // Else, run ESM 
+        logger.info("Queuing ESMfold run: " + job_id);
+
+        const struct_command = {
+            "apiVersion": "batch/v1",
+            "kind": "Job",
+            "metadata": {
+                "name": job_id + "-struct"
+            },
+            "spec": {
+                "backoffLimit": 0,
+                "template": {
+                    "metadata": {
+                        "labels": {
+                            "id": job_id,
+                            "type": "structure"
+                        }
+                    },
+                    "spec": {
+                        "containers": [{
+                            "name": "ezsea",
+                            "image": "biochunan/esmfold-image:latest",
+                            "command": ["/bin/zsh", "-c"],
+                            "args": [
+                                "mkdir -p /database/output/EzSEA_" + job_id + "/Visualization/ "
+                                + "&& ./run-esm-fold.sh -i /database/output/input/" + job_id
+                                + ".fasta --pdb /database/output/EzSEA_" + job_id + "/Visualization/"
+                            ],
+                            "resources": {
+                                "requests": {
+                                    "nvidia.com/gpu": "1",
+                                    "cpu": "4",
+                                    "memory": "32Gi"
+                                },
+                                "limits": {
+                                    "nvidia.com/gpu": "1",
+                                    "cpu": "4",
+                                    "memory": "32Gi"
+                                }
+                            },
+                            "volumeMounts": [{
+                                "mountPath": "/database",
+                                "name": "ezsea-databases-volume"
+                            }]
+                        }],
+                        "restartPolicy": "Never",
+                        "nodeSelector": {
+                            "cloud.google.com/gke-accelerator": "nvidia-tesla-a100",
+                            "cloud.google.com/gke-accelerator-count": "1"
+                        },
+                        "volumes": [{
+                            "name": "ezsea-databases-volume",
+                            "persistentVolumeClaim": {
+                                "claimName": "ezsea-filestore-pvc"
+                            }
+                        }]
+                    }
+                }
+            }
+        };
+
+        fs.writeFile('gpu-job-config.json', JSON.stringify(struct_command, null, 2), (err) => {
+            if (err) {
+                console.error('Error writing Kubernetes job config to file', err);
+            }
+        });
+
+        exec("kubectl apply -f ./gpu-job-config.json", (err, stdout, stderr) => {
+            if (err) {
+                error = "There was a problem initializing your job, please try again later";
+                console.error(err); // Pino doesn't give new lines
+            } else {
+                logger.info("EzSEA structure job started:" + job_id);
+                //monitorJob(job_id + "-struct", "GPU");
+            }
+        });
     }
+
+    logger.info("Queuing EzSEA run: " + job_id);
 
     const run_command = {
         "apiVersion": "batch/v1",
@@ -202,80 +279,13 @@ app.post("/submit", upload.single('input_file'), (req, res) => {
         }
     };
 
-    const struct_command = {
-        "apiVersion": "batch/v1",
-        "kind": "Job",
-        "metadata": {
-            "name": job_id + "-struct"
-        },
-        "spec": {
-            "backoffLimit": 0,
-            "template": {
-                "metadata": {
-                    "labels": {
-                        "id": job_id,
-                        "type": "structure"
-                    }
-                },
-                "spec": {
-                    "containers": [{
-                        "name": "ezsea",
-                        "image": "biochunan/esmfold-image:latest",
-                        "command": ["/bin/zsh", "-c"],
-                        "args": [
-                            "mkdir -p /database/output/EzSEA_" + job_id + "/Visualization/ "
-                            + "&& ./run-esm-fold.sh -i /database/output/input/" + job_id
-                            + ".fasta --pdb /database/output/EzSEA_" + job_id + "/Visualization/"
-                        ],
-                        "resources": {
-                            "requests": {
-                                "nvidia.com/gpu": "1",
-                                "cpu": "4",
-                                "memory": "32Gi"
-                            },
-                            "limits": {
-                                "nvidia.com/gpu": "1",
-                                "cpu": "4",
-                                "memory": "32Gi"
-                            }
-                        },
-                        "volumeMounts": [{
-                            "mountPath": "/database",
-                            "name": "ezsea-databases-volume"
-                        }]
-                    }],
-                    "restartPolicy": "Never",
-                    "nodeSelector": {
-                        "cloud.google.com/gke-accelerator": "nvidia-tesla-a100",
-                        "cloud.google.com/gke-accelerator-count": "1"
-                    },
-                    "volumes": [{
-                        "name": "ezsea-databases-volume",
-                        "persistentVolumeClaim": {
-                            "claimName": "ezsea-filestore-pvc"
-                        }
-                    }]
-                }
-            }
-        }
-    };
-
     fs.writeFile('cpu-job-config.json', JSON.stringify(run_command, null, 2), (err) => {
         if (err) {
             console.error('Error writing Kubernetes job config to file', err);
         }
     });
 
-    fs.writeFile('gpu-job-config.json', JSON.stringify(struct_command, null, 2), (err) => {
-        if (err) {
-            console.error('Error writing Kubernetes job config to file', err);
-        }
-    });
-
-    logger.info("Queuing job: " + job_id);
-
     // Forgoing k8sapi.createNamespacedPod, running into issues with proper formatting 
-
     exec("kubectl apply -f ./cpu-job-config.json", (err, stdout, stderr) => {
         if (err) {
             error = "There was a problem initializing your job, please try again later";
@@ -283,16 +293,6 @@ app.post("/submit", upload.single('input_file'), (req, res) => {
         } else {
             logger.info("EzSEA run job started:" + job_id);
             //monitorJob(job_id, "CPU", email);
-        }
-    });
-
-    exec("kubectl apply -f ./gpu-job-config.json", (err, stdout, stderr) => {
-        if (err) {
-            error = "There was a problem initializing your job, please try again later";
-            console.error(err); // Pino doesn't give new lines
-        } else {
-            logger.info("EzSEA structure job started:" + job_id);
-            //monitorJob(job_id + "-struct", "GPU");
         }
     });
 
