@@ -282,7 +282,7 @@ app.post("/submit", upload.single('input_file'), (req, res) => {
             console.error(err); // Pino doesn't give new lines
         } else {
             logger.info("EzSEA run job started:" + job_id);
-            monitorJob(job_id, "CPU", data.email);
+            //monitorJob(job_id, "CPU", email);
         }
     });
 
