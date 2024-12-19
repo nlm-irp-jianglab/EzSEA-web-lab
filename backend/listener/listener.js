@@ -96,10 +96,10 @@ app.post("/submit", (req, res) => {
         logger.error("Error parsing JSON:", err);
         return res.status(400).json({ error: "There was an error parsing your request. Please ensure all fields are filled out." });
     }
-    logger.info("Received Job: " + job_id);
+    logger.info("Received Job: " + input_file.name);
 
     // Get file type of input_file (.pdb, .fasta, etc.)
-    const fileTypeMatch = input_file.name.match(/\.([0-9a-z]+)(?:[\?#]|$)/i);
+    const fileTypeMatch = String(input_file.name).match(/\.([0-9a-z]+)(?:[\?#]|$)/i);
     if (!fileTypeMatch) {
         return res.status(400).json({ error: "Invalid file type. Only .pdb, .fasta, or .fa files are allowed." });
     }
