@@ -98,6 +98,21 @@ app.post("/submit", (req, res) => {
     }
     logger.info("Received Job: " + job_id);
 
+    // Get file type of input_file (.pdb, .fasta, etc.)
+    const fileTypeMatch = input_file.match(/\.([0-9a-z]+)(?:[\?#]|$)/i);
+    if (!fileTypeMatch) {
+        return res.status(400).json({ error: "Invalid file type. Only .pdb, .fasta, or .fa files are allowed." });
+    }
+    const fileType = fileTypeMatch[1];
+
+    // Write the input file to tmp disk
+    fs.writeFile(`/outputs/input/${job_id}.${fileType}`, input_file, (err) => {
+        if (err) {
+            logger.error("Error writing input file:", err);
+            return res.status(500).json({ error: "Error writing input file." });
+        }
+    });
+
     const run_command = {
         "apiVersion": "batch/v1",
         "kind": "Job",
@@ -233,25 +248,25 @@ app.post("/submit", (req, res) => {
 
     // Forgoing k8sapi.createNamespacedPod, running into issues with proper formatting 
 
-    exec("kubectl apply -f ./cpu-job-config.json", (err, stdout, stderr) => {
-        if (err) {
-            error = "There was a problem initializing your job, please try again later";
-            console.error(err); // Pino doesn't give new lines
-        } else {
-            logger.info("EzSEA run job started:" + job_id);
-            monitorJob(job_id, "CPU", data.email);
-        }
-    });
+    // exec("kubectl apply -f ./cpu-job-config.json", (err, stdout, stderr) => {
+    //     if (err) {
+    //         error = "There was a problem initializing your job, please try again later";
+    //         console.error(err); // Pino doesn't give new lines
+    //     } else {
+    //         logger.info("EzSEA run job started:" + job_id);
+    //         monitorJob(job_id, "CPU", data.email);
+    //     }
+    // });
 
-    exec("kubectl apply -f ./gpu-job-config.json", (err, stdout, stderr) => {
-        if (err) {
-            error = "There was a problem initializing your job, please try again later";
-            console.error(err); // Pino doesn't give new lines
-        } else {
-            logger.info("EzSEA structure job started:" + job_id);
-            //monitorJob(job_id + "-struct", "GPU");
-        }
-    });
+    // exec("kubectl apply -f ./gpu-job-config.json", (err, stdout, stderr) => {
+    //     if (err) {
+    //         error = "There was a problem initializing your job, please try again later";
+    //         console.error(err); // Pino doesn't give new lines
+    //     } else {
+    //         logger.info("EzSEA structure job started:" + job_id);
+    //         //monitorJob(job_id + "-struct", "GPU");
+    //     }
+    // });
 
     setTimeout(function () {
         res.status(200).json({ body: "Job submitted successfully", error: error });
