@@ -96,7 +96,7 @@ app.post("/submit", (req, res) => {
         logger.error("Error parsing JSON:", err);
         return res.status(400).json({ error: "There was an error parsing your request. Please ensure all fields are filled out." });
     }
-    logger.info("Received Job: " + input_file);
+    logger.info("Received Job: " + input_file['name']);
 
     // Get file type of input_file (.pdb, .fasta, etc.)
     const fileTypeMatch = String(input_file.name).match(/\.([0-9a-z]+)(?:[\?#]|$)/i);
