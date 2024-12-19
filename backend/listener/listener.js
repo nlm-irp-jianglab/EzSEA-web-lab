@@ -14,7 +14,7 @@ const k8sApi = kc.makeApiClient(k8s.CoreV1Api);
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, '/outputs/input/');
+        cb(null, '/output/input/');
     },
     filename: (req, file, cb) => {
         const jobId = req.body.job_id;
@@ -128,9 +128,9 @@ app.post("/submit", upload.single('input_file'), (req, res) => {
     logger.info("Received Job: " + job_id);
 
     logger.info("Input file saved at " + input_file.path);
-    // If input file extension is .pdb, copy input file to /outputs/EzSEA_job_id/Visualization/input.pdb
+    // If input file extension is .pdb, copy input file to /output/EzSEA_job_id/Visualization/input.pdb
     if (input_file_name.endsWith('.pdb')) {
-        const outputDir = `/outputs/EzSEA_${job_id}/Visualization`;
+        const outputDir = `/output/EzSEA_${job_id}/Visualization`;
         const outputPath = path.join(outputDir, 'input.pdb');
         fs.mkdirSync(outputDir, { recursive: true });
         fs.copyFile(input_file.path, outputPath, (err) => {
@@ -162,7 +162,7 @@ app.post("/submit", upload.single('input_file'), (req, res) => {
                         "image": "us-central1-docker.pkg.dev/ncbi-research-cbb-jiang/ezsea/ezsea-image:latest",
                         "args": [
                             "ezsea", "run",
-                            "-i", input_file.path,
+                            "-i", `/database/${input_file.path}`,
                             "--output", `/database/output/EzSEA_${job_id}`,
                             "--db", `/database/database/${database}`,
                             "-n", String(num_seq),
@@ -303,7 +303,7 @@ app.post("/submit", upload.single('input_file'), (req, res) => {
 
 app.get("/results/:id", async (req, res) => {
     const id = req.params.id;
-    const folderPath = `/outputs/EzSEA_${id}/Visualization`;
+    const folderPath = `/output/EzSEA_${id}/Visualization`;
     const treePath = path.join(folderPath, 'asr.tree');
     const leafPath = path.join(folderPath, 'seq_trimmed.afa');
     const ancestralPath = path.join(folderPath, 'asr.fa');
@@ -316,7 +316,7 @@ app.get("/results/:id", async (req, res) => {
     }
 
     const structPath = path.join(folderPath, pdbFiles[0]);
-    const inputPath = `/outputs/EzSEA_${id}/input.fasta`;
+    const inputPath = `/output/EzSEA_${id}/input.fasta`;
     const ecPath = path.join(folderPath, 'ec.json');
     const asrPath = path.join(folderPath, 'seq.state.zst');
 
@@ -402,7 +402,7 @@ app.get("/results/:id", async (req, res) => {
 
 app.get("/status/:id", (req, res) => {
     const id = req.params.id;
-    const filePath = `/outputs/EzSEA_${id}/EzSEA.log`;
+    const filePath = `/output/EzSEA_${id}/EzSEA.log`;
     logger.info("Serving status for job: " + id);
     try {
         k8sApi.listNamespacedPod('default', undefined, undefined, undefined, undefined, `id=${id},type=run`).then((podsRes) => {

@@ -10,7 +10,7 @@ services:
       - "8002:5000"
     restart: always
     volumes:
-      - /mnt/filestore/output/:/outputs
+      - /mnt/filestore/output/:/output
   proxy:
     build: ./proxy
     ports:
