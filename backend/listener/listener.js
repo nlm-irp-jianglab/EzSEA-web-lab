@@ -106,10 +106,11 @@ app.post("/submit", (req, res) => {
     }
     const fileType = fileTypeMatch[1];
     
-    const fileBuffer = Buffer.from(new Uint8Array(input_file));
+    const arrayBuffer = input_file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
 
     // Write the input file to tmp disk
-    fs.writeFile(`/outputs/input/${job_id}.${fileType}`, fileBuffer, (err) => {
+    fs.writeFile(`/outputs/input/${job_id}.${fileType}`, buffer, (err) => {
         if (err) {
             logger.error("Error writing input file:", err);
             return res.status(500).json({ error: "Error writing input file." });
