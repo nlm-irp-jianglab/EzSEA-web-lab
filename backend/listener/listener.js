@@ -127,33 +127,7 @@ app.post("/submit", upload.single('input_file'), (req, res) => {
 
     logger.info("Received Job: " + job_id);
 
-    logger.info("Input file saved at ", input_file.path);
-
-    if (Array.isArray(input_file)) {
-        // If input_file is byte array
-        const buffer = Buffer.from(input_file);
-        fileObject = new File([buffer], input_file_name, {
-            type: `application/${fileType}`
-        });
-    } else if (typeof input_file === 'string') {
-        // If input_file is base64
-        const buffer = Buffer.from(input_file, 'base64');
-        fileObject = new File([buffer], input_file_name, {
-            type: `application/${fileType}`
-        });
-    } else {
-        throw new Error('Invalid input file format');
-    }
-
-    // Write file to disk
-    fs.writeFile(`/outputs/input/${job_id}.${fileType}`, fileObject, (err) => {
-        if (err) {
-            logger.error("Error writing input file:", err);
-            return res.status(500).json({ error: "Error writing input file." });
-        }
-    });
-    // Write the input file to tmp disk
-
+    logger.info("Input file saved at " + input_file.path);
 
     const run_command = {
         "apiVersion": "batch/v1",
@@ -176,7 +150,7 @@ app.post("/submit", upload.single('input_file'), (req, res) => {
                         "image": "us-central1-docker.pkg.dev/ncbi-research-cbb-jiang/ezsea/ezsea-image:latest",
                         "args": [
                             "ezsea", "run",
-                            "-i", data.sequence,
+                            "-i", input_file.path,
                             "--output", `/database/output/EzSEA_${job_id}`,
                             "--db", `/database/database/${database}`,
                             "-n", String(num_seq),
