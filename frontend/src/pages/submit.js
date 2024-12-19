@@ -226,7 +226,7 @@ const Submit = () => {
             "con_weight": conWeight
         }
 
-        console.log(json);
+        inputFile.arrayBuffer().then(buffer => {console.log(buffer)});
 
         // Send JSON to backend
         fetch('/api/submit', {

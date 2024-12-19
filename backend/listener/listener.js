@@ -100,6 +100,7 @@ app.post("/submit", (req, res) => {
     logger.info("Received Job: " + job_id);
 
     // Get file type of input_file (.pdb, .fasta, etc.)
+    console.log(typeof input_file);
     const fileTypeMatch = input_file_name.match(/\.([0-9a-z]+)(?:[\?#]|$)/i);
     if (!fileTypeMatch) {
         return res.status(400).json({ error: "Invalid file type. Only .pdb, .fasta, or .fa files are allowed." });
