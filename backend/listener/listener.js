@@ -105,10 +105,11 @@ app.post("/submit", (req, res) => {
         return res.status(400).json({ error: "Invalid file type. Only .pdb, .fasta, or .fa files are allowed." });
     }
     const fileType = fileTypeMatch[1];
-    logger.info("File type: " + fileType);
+    
+    const fileBuffer = Buffer.from(new Uint8Array(input_file));
 
     // Write the input file to tmp disk
-    fs.writeFile(`/outputs/input/${job_id}.${fileType}`, input_file, (err) => {
+    fs.writeFile(`/outputs/input/${job_id}.${fileType}`, fileBuffer, (err) => {
         if (err) {
             logger.error("Error writing input file:", err);
             return res.status(500).json({ error: "Error writing input file." });
