@@ -276,15 +276,15 @@ app.post("/submit", upload.single('input_file'), (req, res) => {
 
     // Forgoing k8sapi.createNamespacedPod, running into issues with proper formatting 
 
-    // exec("kubectl apply -f ./cpu-job-config.json", (err, stdout, stderr) => {
-    //     if (err) {
-    //         error = "There was a problem initializing your job, please try again later";
-    //         console.error(err); // Pino doesn't give new lines
-    //     } else {
-    //         logger.info("EzSEA run job started:" + job_id);
-    //         //monitorJob(job_id, "CPU", email);
-    //     }
-    // });
+    exec("kubectl apply -f ./cpu-job-config.json", (err, stdout, stderr) => {
+        if (err) {
+            error = "There was a problem initializing your job, please try again later";
+            console.error(err); // Pino doesn't give new lines
+        } else {
+            logger.info("EzSEA run job started:" + job_id);
+            //monitorJob(job_id, "CPU", email);
+        }
+    });
 
     exec("kubectl apply -f ./gpu-job-config.json", (err, stdout, stderr) => {
         if (err) {
