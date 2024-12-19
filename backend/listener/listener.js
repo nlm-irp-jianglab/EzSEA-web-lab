@@ -100,23 +100,44 @@ app.post("/submit", (req, res) => {
     logger.info("Received Job: " + job_id);
 
     // Get file type of input_file (.pdb, .fasta, etc.)
-    console.log(typeof input_file);
+
     const fileTypeMatch = input_file_name.match(/\.([0-9a-z]+)(?:[\?#]|$)/i);
     if (!fileTypeMatch) {
         return res.status(400).json({ error: "Invalid file type. Only .pdb, .fasta, or .fa files are allowed." });
     }
     const fileType = fileTypeMatch[1];
-    
-    input_file.arrayBuffer().then(fileBuffer => {
-        fs.writeFile(`/outputs/input/${job_id}.${fileType}`, fileBuffer, (err) => {
+
+    try {
+        if (Array.isArray(input_file)) {
+            // If input_file is byte array
+            const buffer = Buffer.from(input_file);
+            fileObject = new File([buffer], input_file_name, {
+                type: `application/${fileType}`
+            });
+        } else if (typeof input_file === 'string') {
+            // If input_file is base64
+            const buffer = Buffer.from(input_file, 'base64');
+            fileObject = new File([buffer], input_file_name, {
+                type: `application/${fileType}`
+            });
+        } else {
+            throw new Error('Invalid input file format');
+        }
+
+        // Write file to disk
+        fs.writeFile(`/outputs/input/${job_id}.${fileType}`, fileObject, (err) => {
             if (err) {
                 logger.error("Error writing input file:", err);
                 return res.status(500).json({ error: "Error writing input file." });
             }
         });
-    });
+
+    } catch (err) {
+        logger.error("Error processing input file:", err);
+        return res.status(400).json({ error: "Invalid input file format" });
+    }
     // Write the input file to tmp disk
-    
+
 
     const run_command = {
         "apiVersion": "batch/v1",
