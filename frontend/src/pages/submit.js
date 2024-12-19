@@ -216,6 +216,7 @@ const Submit = () => {
             "job_id": id,
             "email": emailInput.current.value,
             "input_file": inputFile,
+            "input_file_name": inputFile.name,
             "tree_program": phylogeneticProgram,
             "asr_program": ancestralProgram,
             "align_program": alignmentProgram,
