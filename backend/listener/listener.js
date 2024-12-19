@@ -6,10 +6,24 @@ const fs = require('fs');
 const pino = require('pino');
 const emailjs = require('@emailjs/nodejs');
 const k8s = require('@kubernetes/client-node');
+const multer = require('multer');
 
 const kc = new k8s.KubeConfig();
 kc.loadFromDefault();
 const k8sApi = kc.makeApiClient(k8s.CoreV1Api);
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, '/outputs/input/');
+    },
+    filename: (req, file, cb) => {
+        const jobId = req.body.job_id;
+        const fileExt = file.originalname.split('.').pop();
+        cb(null, `${jobId}.${fileExt}`);
+    }
+});
+
+const upload = multer({ storage: storage });
 
 var app = express();
 const logger = pino({
@@ -75,9 +89,8 @@ const sendEmail = async (recipient, jobId) => {
     }
 };
 
-app.post("/submit", (req, res) => {
+app.post("/submit", upload.single('input_file'), (req, res) => {
     // Retrieve JSON from the POST body 
-    data = req.body;
     var error = null;
     var job_id = null;
     var input_file = null;
@@ -92,21 +105,29 @@ app.post("/submit", (req, res) => {
     var email = null;
 
     try {
-        ({ job_id, input_file, input_file_name, database, num_seq, tree_program, asr_program, align_program, len_weight, con_weight, email } = data);
+        // Get file from multer
+        input_file = req.file;
+        input_file_name = req.file.originalname;
+        ({
+            job_id,
+            database,
+            num_seq,
+            tree_program,
+            asr_program,
+            align_program,
+            len_weight,
+            con_weight,
+            email
+        } = req.body);
+
     } catch (err) {
-        logger.error("Error parsing JSON:", err);
+        logger.error("Error parsing request:", err);
         return res.status(400).json({ error: "There was an error parsing your request. Please ensure all fields are filled out." });
     }
+
     logger.info("Received Job: " + job_id);
 
-    // Get file type of input_file (.pdb, .fasta, etc.)
-    logger.info("Input file: ", input_file);
-
-    const fileTypeMatch = input_file_name.match(/\.([0-9a-z]+)(?:[\?#]|$)/i);
-    if (!fileTypeMatch) {
-        return res.status(400).json({ error: "Invalid file type. Only .pdb, .fasta, or .fa files are allowed." });
-    }
-    const fileType = fileTypeMatch[1];
+    logger.info("Input file saved at ", input_file.path);
 
     if (Array.isArray(input_file)) {
         // If input_file is byte array
@@ -195,75 +216,75 @@ app.post("/submit", (req, res) => {
         }
     };
 
-    const struct_command = {
-        "apiVersion": "batch/v1",
-        "kind": "Job",
-        "metadata": {
-            "name": job_id + "-struct"
-        },
-        "spec": {
-            "backoffLimit": 0,
-            "template": {
-                "metadata": {
-                    "labels": {
-                        "id": job_id,
-                        "type": "structure"
-                    }
-                },
-                "spec": {
-                    "containers": [{
-                        "name": "ezsea",
-                        "image": "biochunan/esmfold-image:latest",
-                        "command": ["/bin/zsh", "-c"],
-                        "args": [
-                            "mkdir -p /database/output/EzSEA_" + job_id + "/ && echo \"" + data.sequence + "\" > /database/output/EzSEA_" + job_id
-                            + "/esm.fasta && ./run-esm-fold.sh -i /database/output/EzSEA_" + job_id
-                            + "/esm.fasta --pdb /database/output/EzSEA_" + job_id + "/Visualization/"
-                        ],
-                        "resources": {
-                            "requests": {
-                                "nvidia.com/gpu": "1",
-                                "cpu": "4",
-                                "memory": "32Gi"
-                            },
-                            "limits": {
-                                "nvidia.com/gpu": "1",
-                                "cpu": "4",
-                                "memory": "32Gi"
-                            }
-                        },
-                        "volumeMounts": [{
-                            "mountPath": "/database",
-                            "name": "ezsea-databases-volume"
-                        }]
-                    }],
-                    "restartPolicy": "Never",
-                    "nodeSelector": {
-                        "cloud.google.com/gke-accelerator": "nvidia-tesla-a100",
-                        "cloud.google.com/gke-accelerator-count": "1"
-                    },
-                    "volumes": [{
-                        "name": "ezsea-databases-volume",
-                        "persistentVolumeClaim": {
-                            "claimName": "ezsea-filestore-pvc"
-                        }
-                    }]
-                }
-            }
-        }
-    };
+    // const struct_command = {
+    //     "apiVersion": "batch/v1",
+    //     "kind": "Job",
+    //     "metadata": {
+    //         "name": job_id + "-struct"
+    //     },
+    //     "spec": {
+    //         "backoffLimit": 0,
+    //         "template": {
+    //             "metadata": {
+    //                 "labels": {
+    //                     "id": job_id,
+    //                     "type": "structure"
+    //                 }
+    //             },
+    //             "spec": {
+    //                 "containers": [{
+    //                     "name": "ezsea",
+    //                     "image": "biochunan/esmfold-image:latest",
+    //                     "command": ["/bin/zsh", "-c"],
+    //                     "args": [
+    //                         "mkdir -p /database/output/EzSEA_" + job_id + "/ && echo \"" + data.sequence + "\" > /database/output/EzSEA_" + job_id
+    //                         + "/esm.fasta && ./run-esm-fold.sh -i /database/output/EzSEA_" + job_id
+    //                         + "/esm.fasta --pdb /database/output/EzSEA_" + job_id + "/Visualization/"
+    //                     ],
+    //                     "resources": {
+    //                         "requests": {
+    //                             "nvidia.com/gpu": "1",
+    //                             "cpu": "4",
+    //                             "memory": "32Gi"
+    //                         },
+    //                         "limits": {
+    //                             "nvidia.com/gpu": "1",
+    //                             "cpu": "4",
+    //                             "memory": "32Gi"
+    //                         }
+    //                     },
+    //                     "volumeMounts": [{
+    //                         "mountPath": "/database",
+    //                         "name": "ezsea-databases-volume"
+    //                     }]
+    //                 }],
+    //                 "restartPolicy": "Never",
+    //                 "nodeSelector": {
+    //                     "cloud.google.com/gke-accelerator": "nvidia-tesla-a100",
+    //                     "cloud.google.com/gke-accelerator-count": "1"
+    //                 },
+    //                 "volumes": [{
+    //                     "name": "ezsea-databases-volume",
+    //                     "persistentVolumeClaim": {
+    //                         "claimName": "ezsea-filestore-pvc"
+    //                     }
+    //                 }]
+    //             }
+    //         }
+    //     }
+    // };
 
-    fs.writeFile('cpu-job-config.json', JSON.stringify(run_command, null, 2), (err) => {
-        if (err) {
-            console.error('Error writing Kubernetes job config to file', err);
-        }
-    });
+    // fs.writeFile('cpu-job-config.json', JSON.stringify(run_command, null, 2), (err) => {
+    //     if (err) {
+    //         console.error('Error writing Kubernetes job config to file', err);
+    //     }
+    // });
 
-    fs.writeFile('gpu-job-config.json', JSON.stringify(struct_command, null, 2), (err) => {
-        if (err) {
-            console.error('Error writing Kubernetes job config to file', err);
-        }
-    });
+    // fs.writeFile('gpu-job-config.json', JSON.stringify(struct_command, null, 2), (err) => {
+    //     if (err) {
+    //         console.error('Error writing Kubernetes job config to file', err);
+    //     }
+    // });
 
     logger.info("Queuing job: " + job_id);
 
