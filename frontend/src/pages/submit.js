@@ -211,6 +211,7 @@ const Submit = () => {
     const submitJob = () => {
         setSubmitStatus(true); // Prevent double submission
         const id = Math.random().toString(36).substring(2, 9) + Date.now().toString(36);
+        const formData = new FormData();
 
         const json = {
             "job_id": id,
@@ -226,15 +227,20 @@ const Submit = () => {
             "con_weight": conWeight
         }
 
+        Object.keys(json).forEach(key => {
+            if (key === 'input_file') {
+                formData.append('input_file', inputFile);
+            } else {
+                formData.append(key, json[key]);
+            }
+        });
+
         inputFile.arrayBuffer().then(buffer => {console.log(buffer)});
 
         // Send JSON to backend
         fetch('/api/submit', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(json),
+            body: formData
         })
             .then(response => {
                 if (response.status !== 200) {
