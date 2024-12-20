@@ -243,42 +243,39 @@ const Submit = () => {
         fetch('/api/submit', {
             method: 'POST',
             body: formData
-        })
-            .then(response => {
-                if (response.status !== 200) {
-                    return response.json().then(data => {
-                        console.log('Backend error:', data.error);
-                        setSnackbarOpen(true);
+        }).then(response => {
+            if (response.status !== 200) {
+                return response.json().then(data => {
+                    console.log('Backend error:', data.error);
+                    setSnackbarOpen(true);
+                });
+            } else {
+                response.json().then(data => {
+                    var currentdate = new Date();
+                    var datetime = "" + currentdate.getDate() + "/"
+                        + (currentdate.getMonth() + 1) + "/"
+                        + currentdate.getFullYear() + " @ "
+                        + currentdate.getHours() + ":"
+                        + currentdate.getMinutes() + ":"
+                        + currentdate.getSeconds();
+
+                    // Redirect to the results page
+                    navigate(`/status`, {
+                        state: {
+                            jobId: id,
+                            email: emailInput.current.value,
+                            time: datetime,
+                            submitError: data.error || null
+                        }
                     });
-                } else {
-                    response.json().then(data => {
-                        var currentdate = new Date();
-                        var datetime = "" + currentdate.getDate() + "/"
-                            + (currentdate.getMonth() + 1) + "/"
-                            + currentdate.getFullYear() + " @ "
-                            + currentdate.getHours() + ":"
-                            + currentdate.getMinutes() + ":"
-                            + currentdate.getSeconds();
+                });
 
-                        // Redirect to the results page
-                        navigate(`/status/${id}`, {
-                            state: {
-                                jobId: id,
-                                email: emailInput.current.value,
-                                time: datetime,
-                                error: data.error || null
-                            }
-                        });
-                    });
-
-                }
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-                setSnackbarOpen(true);
-                setSubmitStatus(false);
-
-            });
+            }
+        }).catch((error) => {
+            console.error('Error:', error);
+            setSnackbarOpen(true);
+            setSubmitStatus(false);
+        });
 
     }
 

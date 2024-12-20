@@ -135,7 +135,7 @@ app.post("/submit", upload.single('input_file'), (req, res) => {
         fs.copyFile(input_file.path, outputPath, (err) => {
             if (err) {
                 logger.error("Error copying input file:", err);
-                return res.status(500).json({ error: "There was an error copying the input file." });
+                return res.status(500).json({ error: "There was an error copying the input pdb file." });
             }
         });
     } else { // Else, run ESM 
@@ -440,15 +440,9 @@ app.get("/status/:id", (req, res) => {
                 if (status === "Pending" && pod.status.containerStatuses) {
                     const containerStatus = pod.status.containerStatuses[0];
                     if (containerStatus.state.waiting && containerStatus.state.waiting.reason === "ContainerCreating") {
-                        status = "ContainersCreating";
-                    }
-                }
-
-                if (status === "Pending") {
-                    if (pod.status.containerStatuses) {
-                        return res.status(200).json({ logs: ["Resources allocated, building compute environment"], status: pod.status.containerStatuses });
+                        return res.status(200).json({ logs: ["Resources allocated, building compute environment"], status: "container" });
                     } else {
-                        return res.status(200).json({ logs: ["Allocating resources for job, this may take a few minutes."], status: status });
+                        return res.status(200).json({ logs: ["Allocating resources for job, this may take a few minutes."], status: "alloc" });
                     }
                 } else { // status is Running, Succeeded, Failed, or Unknown
                     fs.readFile(filePath, 'utf8', (err, data) => {
@@ -461,6 +455,21 @@ app.get("/status/:id", (req, res) => {
                             }
                         }
                         const logsArray = data.split('\n');
+                        const lastLine = logsArray[logsArray.length - 1];
+
+                        if (/Error|failed|Stopping/i.test(lastLine)) {
+                            status = "Error"; // Check for error keywords
+                        } else if (/completed|success|Done/i.test(lastLine)) {
+                            status = "done"; // Check for successful completion
+                        } else if (/delineation/i.test(lastLine)) {
+                            status = "delineation"; // If none of the above conditions match
+                        } else if (/Tree/i.test(lastLine)) {
+                            status = "tree";
+                        } else if (/Alignment/i.test(lastLine)) {
+                            status = "align";
+                        } else if (/diamond/i.test(lastLine)) {
+                            status = "db";
+                        }
                         return res.status(200).json({ logs: logsArray, status: status });
                     });
                 }

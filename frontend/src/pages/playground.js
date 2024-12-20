@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import Navbar from "../components/navbar";
 import "../components/playground.css";
@@ -12,9 +13,10 @@ import CircularProgress from '@mui/material/CircularProgress';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
 const Playground = () => {
-    const [jobStatus, setJobStatus] = useState('tree');
+    const [jobStatus, setJobStatus] = useState(''); 
+    const location = useLocation();
+    const { jobId, email, time, submitError } = location.state || {};
     const [logs, setLogs] = useState(['']);
-    const { jobId } = useParams();
     const statusList = ['done', 'annot', 'delineation', 'tree', 'trim', 'align', 'db', 'container', 'alloc'];
     const statusMsg = ['Clean and finish', 'Retrieving annotations', 'Calculating delineation',
         'Building tree', 'Trimming sequences', 'Performing alignment', 'Querying database',
@@ -54,7 +56,7 @@ const Playground = () => {
     const renderStatusLoading = () => {
         let foundMatchedStatus = false;
         const spans = statusList.map((status, index) => {
-            if (status === 'align') {
+            if (status === jobStatus) {
                 foundMatchedStatus = true;
             }
             return (
@@ -73,7 +75,7 @@ const Playground = () => {
             <Navbar pageId={"WIP Status"} />
             <div className="processing-container">
                 <div>
-                    <h1>Job Processing...</h1>
+                    <h1>{ submitError ? <span>Our servers are down</span> : "Job Processing..." }</h1>
                 </div>
                 <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-evenly" }}>
                     <div className="processing-logo">
@@ -85,10 +87,10 @@ const Playground = () => {
                 </div>
                 <hr></hr>
                 <div>
-                    <p>Job ID: </p>
-                    <p>Notification will be sent to: </p>
+                    <p>Job ID: {jobId}</p>
+                    <p>{email ? `Notification will be sent to: ${email}` : "No email was provided."}</p>
                     <p>Results will display on this page when ready, or you can bookmark the link below and close this page:</p>
-                    <a href={`/results/${jobId}`}>link</a>
+                    <a href={`/results/${jobId}`}>http://34.135.121.20/results/{jobId}</a>
                 </div>
             </div>
 
