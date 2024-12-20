@@ -260,7 +260,7 @@ const Submit = () => {
                         + currentdate.getSeconds();
 
                     // Redirect to the results page
-                    navigate(`/status`, {
+                    navigate(`/status/${id}`, {
                         state: {
                             jobId: id,
                             email: emailInput.current.value,

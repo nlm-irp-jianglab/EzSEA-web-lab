@@ -205,15 +205,15 @@ app.post("/submit", upload.single('input_file'), (req, res) => {
             }
         });
 
-        exec("kubectl apply -f ./gpu-job-config.json", (err, stdout, stderr) => {
-            if (err) {
-                error = "There was a problem initializing your job, please try again later";
-                console.error(err); // Pino doesn't give new lines
-            } else {
-                logger.info("EzSEA structure job started:" + job_id);
-                //monitorJob(job_id + "-struct", "GPU");
-            }
-        });
+        // exec("kubectl apply -f ./gpu-job-config.json", (err, stdout, stderr) => {
+        //     if (err) {
+        //         error = "There was a problem initializing your job, please try again later";
+        //         console.error(err); // Pino doesn't give new lines
+        //     } else {
+        //         logger.info("EzSEA structure job started:" + job_id);
+        //         //monitorJob(job_id + "-struct", "GPU");
+        //     }
+        // });
     }
 
     logger.info("Queuing EzSEA run: " + job_id);
@@ -286,15 +286,15 @@ app.post("/submit", upload.single('input_file'), (req, res) => {
     });
 
     // Forgoing k8sapi.createNamespacedPod, running into issues with proper formatting 
-    exec("kubectl apply -f ./cpu-job-config.json", (err, stdout, stderr) => {
-        if (err) {
-            error = "There was a problem initializing your job, please try again later";
-            console.error(err); // Pino doesn't give new lines
-        } else {
-            logger.info("EzSEA run job started:" + job_id);
-            //monitorJob(job_id, "CPU", email);
-        }
-    });
+    // exec("kubectl apply -f ./cpu-job-config.json", (err, stdout, stderr) => {
+    //     if (err) {
+    //         error = "There was a problem initializing your job, please try again later";
+    //         console.error(err); // Pino doesn't give new lines
+    //     } else {
+    //         logger.info("EzSEA run job started:" + job_id);
+    //         //monitorJob(job_id, "CPU", email);
+    //     }
+    // });
 
     setTimeout(function () {
         res.status(200).json({ body: "Job submitted successfully", error: error });
@@ -421,7 +421,7 @@ app.get("/status/:id", (req, res) => {
                         if (/Error|failed|Stopping/i.test(lastLine)) {
                             status = "Error"; // Check for error keywords
                         } else if (/completed|success|Done/i.test(lastLine)) {
-                            status = "Completed"; // Check for successful completion
+                            status = "done"; // Check for successful completion
                         } else {
                             status = "Unknown"; // If none of the above conditions match
                         }
