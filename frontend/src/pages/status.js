@@ -5,7 +5,7 @@ import "../components/status.css";
 import CircularProgress from '@mui/material/CircularProgress';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
-const Playground = () => {
+const Status = () => {
     const [jobStatus, setJobStatus] = useState(''); 
     const location = useLocation();
     const { jobId, email, time, submitError } = location.state || {};
@@ -41,7 +41,7 @@ const Playground = () => {
         // Fetch logs every 20 seconds
         const interval = setInterval(() => {
             fetchLogs();
-        }, 2000);
+        }, 8000);
 
         return () => clearInterval(interval);
     }, [jobId]);
@@ -91,4 +91,4 @@ const Playground = () => {
     );
 };
 
-export default Playground;
+export default Status;
