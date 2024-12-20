@@ -316,7 +316,14 @@ app.get("/results/:id", async (req, res) => {
     }
     console.log("pdbFiles: ", pdbFiles);
 
-    const structPath = path.join(folderPath, pdbFiles[0]);
+    var structPath = path.join(folderPath, pdbFiles[0]);
+    if (pdbFiles.length === 0) {
+        logger.warn(`No PDB files found in folder: ${folderPath}`);
+        structPath = null;
+    } else {
+        structPath = path.join(folderPath, pdbFiles[0]);
+    }
+
     const inputPath = `/output/EzSEA_${id}/input.fasta`;
     const ecPath = path.join(folderPath, 'ec.json');
     const asrPath = path.join(folderPath, 'seq.state.zst');
