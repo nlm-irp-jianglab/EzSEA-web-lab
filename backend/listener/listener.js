@@ -316,7 +316,7 @@ app.get("/results/:id", async (req, res) => {
     }
     console.log("pdbFiles: ", pdbFiles);
 
-    var structPath = path.join(folderPath, pdbFiles[0]);
+    var structPath = "";
     if (pdbFiles.length === 0) {
         logger.warn(`No PDB files found in folder: ${folderPath}`);
         structPath = null;
