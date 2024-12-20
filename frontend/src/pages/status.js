@@ -26,6 +26,8 @@ const Status = () => {
             } else {
                 setLogs([`${data.error}`]);
             }
+            console.log("status: ", data.status);
+            console.log("logs: ", data.logs);
 
             setTimeout(() => {
             }, 1000);
@@ -41,7 +43,7 @@ const Status = () => {
         // Fetch logs every 20 seconds
         const interval = setInterval(() => {
             fetchLogs();
-        }, 8000);
+        }, 10000);
 
         return () => clearInterval(interval);
     }, [jobId]);
