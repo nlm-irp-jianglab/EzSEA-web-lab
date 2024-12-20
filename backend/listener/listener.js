@@ -314,6 +314,7 @@ app.get("/results/:id", async (req, res) => {
         logger.error("Error reading pdb files: " + e);
         return res.status(500).json({ structError: "Attempted to find pdb files. Does Visualization/ exist?" });
     }
+    console.log("pdbFiles: ", pdbFiles);
 
     const structPath = path.join(folderPath, pdbFiles[0]);
     const inputPath = `/output/EzSEA_${id}/input.fasta`;
