@@ -724,8 +724,9 @@ const Tol = () => {
 
 
 
-    function downloadCombinedSVG() {
-        // Select all svg elements within a specific div (e.g., with id "svgContainer")
+
+
+    function downloadCombinedSVG(event, left = 10, right = 20) {
         const svgElements = document.querySelectorAll('#logo-stack svg');
 
         if (svgElements.length === 0) {
@@ -739,21 +740,51 @@ const Tol = () => {
 
         // Positioning variables
         let yOffset = 0;
+        const glyphWidth = -5.45;
 
         svgElements.forEach((svg, index) => {
             const height = 60; // Default height if not provided
+            // Add these debug logs before the calculation
+            console.log('left value:', left);
+            console.log('glyphWidth value:', glyphWidth);
+            console.log('typeof glyphWidth:', typeof glyphWidth);
 
             // Create a group element to contain the svg
             const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
 
             // Adjust the position of the SVG using a transform
-            g.setAttribute("transform", `translate(0, ${yOffset})`);
+            g.setAttribute("transform", `translate(${left * glyphWidth}, ${yOffset})`);
 
-            // Add the current SVG into the group element
             const clonedSVG = svg.cloneNode(true);
-            g.appendChild(clonedSVG);
+            const glyphs = Array.from(clonedSVG.children[0].children);
+            const xlab = Array.from(clonedSVG.children[1].children[0].children);
+            const ylab = clonedSVG.children[2];
+
+            // Get viewBox dimensions
+            const viewBox = clonedSVG.getAttribute('viewBox').split(' ');
+            const viewBoxWidth = parseFloat(viewBox[2]);
+            const actualWidth = glyphs.length * Math.abs(glyphWidth);
+
+            // Calculate scale factor
+            const scaleFactor = viewBoxWidth / actualWidth;
+
+            // Apply scaled transform to ylab
+            ylab.setAttribute('transform', `translate(${left * -glyphWidth * scaleFactor}, 0)`);
+
+            // Create array of indices to remove (those outside left-right range)
+            const indicesToRemove = [...Array(glyphs.length).keys()]
+                .filter(i => i < left || i > right);
+
+            // Remove glyphs from highest index to lowest to avoid shifting issues
+            indicesToRemove.reverse().forEach(index => {
+                glyphs[index].remove();
+                xlab[index].remove();
+            });
+
+
 
             // Append the group element into the combined SVG
+            g.appendChild(clonedSVG);
             combinedSVG.appendChild(g);
 
             // Update yOffset for the next svg to be placed below the current one
@@ -871,7 +902,7 @@ const Tol = () => {
                                     aria-controls={labelMenuOpen ? 'basic-menu' : undefined}
                                     aria-haspopup="true"
                                     aria-expanded={labelMenuOpen ? 'true' : undefined}
-                                    onClick={handleLabelMenuClick} 
+                                    onClick={handleLabelMenuClick}
                                 ><LabelIcon /></Button>
                                 <Menu
                                     id="basic-menu"

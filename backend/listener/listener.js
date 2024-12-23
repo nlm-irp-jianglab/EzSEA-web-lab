@@ -159,12 +159,13 @@ app.post("/submit", upload.single('input_file'), (req, res) => {
                     "spec": {
                         "containers": [{
                             "name": "ezsea",
-                            "image": "biochunan/esmfold-image:latest",
+                            "image": "us-central1-docker.pkg.dev/ncbi-research-cbb-jiang/esmfold-fpocket/esmfold-fpocket:latest",
                             "command": ["/bin/zsh", "-c"],
                             "args": [
                                 "mkdir -p /database/output/EzSEA_" + job_id + "/Visualization/ "
                                 + "&& ./run-esm-fold.sh -i /database/output/input/" + job_id
                                 + ".fasta --pdb /database/output/EzSEA_" + job_id + "/Visualization/"
+                                + "&& fpocket -f /database/output/EzSEA_" + job_id + "/Visualization/input.pdb"
                             ],
                             "resources": {
                                 "requests": {
@@ -205,15 +206,15 @@ app.post("/submit", upload.single('input_file'), (req, res) => {
             }
         });
 
-        // exec("kubectl apply -f ./gpu-job-config.json", (err, stdout, stderr) => {
-        //     if (err) {
-        //         error = "There was a problem initializing your job, please try again later";
-        //         console.error(err); // Pino doesn't give new lines
-        //     } else {
-        //         logger.info("EzSEA structure job started:" + job_id);
-        //         //monitorJob(job_id + "-struct", "GPU");
-        //     }
-        // });
+        exec("kubectl apply -f ./gpu-job-config.json", (err, stdout, stderr) => {
+            if (err) {
+                error = "There was a problem initializing your job, please try again later";
+                console.error(err); // Pino doesn't give new lines
+            } else {
+                logger.info("EzSEA structure job started:" + job_id);
+                //monitorJob(job_id + "-struct", "GPU");
+            }
+        });
     }
 
     logger.info("Queuing EzSEA run: " + job_id);
@@ -249,6 +250,7 @@ app.post("/submit", upload.single('input_file'), (req, res) => {
                             "--alignprogram", align_program,
                             "--threads", "4",
                             "--ec_table", "/database/database/ec_dict.pkl",
+                            "--pdbtable", "/database/database/pdb_dict.pkl",
                             "--lenweight", String(len_weight),
                             "--conweight", String(con_weight),
                         ],

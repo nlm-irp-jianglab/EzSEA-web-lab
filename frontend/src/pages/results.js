@@ -77,6 +77,8 @@ const Results = () => {
     const [treeObj, setTreeObj] = useState(null);
     const [isErrorPopupVisible, setErrorPopupVisible] = useState(false);
 
+    //
+
     // Fetch the tree data and node data on component mount, store data into states
     useEffect(() => {
         try {
@@ -945,7 +947,7 @@ const Results = () => {
         document.body.removeChild(downloadLink);
     };
 
-    function downloadCombinedSVG() {
+    function downloadCombinedSVG(left = 10, right = 20) {
         // Select all svg elements within a specific div (e.g., with id "svgContainer")
         const svgElements = document.querySelectorAll('#logo-stack svg');
 
@@ -960,6 +962,7 @@ const Results = () => {
 
         // Positioning variables
         let yOffset = 0;
+        const glyphWidth = seqLength > 999 ? 20 : 21.5;
 
         svgElements.forEach((svg, index) => {
             const height = 60; // Default height if not provided
@@ -968,7 +971,7 @@ const Results = () => {
             const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
 
             // Adjust the position of the SVG using a transform
-            g.setAttribute("transform", `translate(0, ${yOffset})`);
+            g.setAttribute("transform", `translate(${left*glyphWidth}, ${yOffset})`);
 
             // Add the current SVG into the group element
             const clonedSVG = svg.cloneNode(true);
