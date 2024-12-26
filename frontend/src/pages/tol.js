@@ -726,7 +726,7 @@ const Tol = () => {
 
 
 
-    function downloadCombinedSVG(event, left = 10, right = 20) {
+    function downloadCombinedSVG(event, left = 200, right = 210) {
         const svgElements = document.querySelectorAll('#logo-stack svg');
 
         if (svgElements.length === 0) {
@@ -743,17 +743,15 @@ const Tol = () => {
         const glyphWidth = -5.45;
 
         svgElements.forEach((svg, index) => {
-            const height = 60; // Default height if not provided
-            // Add these debug logs before the calculation
-            console.log('left value:', left);
-            console.log('glyphWidth value:', glyphWidth);
-            console.log('typeof glyphWidth:', typeof glyphWidth);
+            // Get actual height, no viewbox height of svg
+            const height = svg.getBoundingClientRect().height;
 
             // Create a group element to contain the svg
             const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
 
             // Adjust the position of the SVG using a transform
-            g.setAttribute("transform", `translate(${left * glyphWidth}, ${yOffset})`);
+            //g.setAttribute("transform", `translate(${left * glyphWidth}, ${yOffset}) scale(4)`);
+            g.setAttribute("transform", `translate(0, ${yOffset})`);
 
             const clonedSVG = svg.cloneNode(true);
             const glyphs = Array.from(clonedSVG.children[0].children);
@@ -762,9 +760,13 @@ const Tol = () => {
 
             // Get viewBox dimensions
             const viewBox = clonedSVG.getAttribute('viewBox').split(' ');
+            console.log(viewBox)
             const viewBoxWidth = parseFloat(viewBox[2]);
-            const actualWidth = glyphs.length * Math.abs(glyphWidth);
+            const aspectRatio = parseFloat(viewBox[2]) / parseFloat(viewBox[3]);
+            const totalWidth = height * aspectRatio;
 
+            const actualWidth = glyphs.length * Math.abs(glyphWidth);
+            clonedSVG.setAttribute('width', totalWidth);
             // Calculate scale factor
             const scaleFactor = viewBoxWidth / actualWidth;
 
@@ -781,7 +783,8 @@ const Tol = () => {
                 xlab[index].remove();
             });
 
-
+            // Update svg width
+            //clonedSVG.setAttribute('width', (right - left) * Math.abs(glyphWidth) * 4);
 
             // Append the group element into the combined SVG
             g.appendChild(clonedSVG);
@@ -790,9 +793,9 @@ const Tol = () => {
             // Update yOffset for the next svg to be placed below the current one
             yOffset += parseFloat(height);
         });
-
-        // Set the combined SVG size (width as the largest width, height as the total yOffset)
-        combinedSVG.setAttribute("width", "100%");
+        
+        const logoBBox = svgElements[0].getBBox();
+        combinedSVG.setAttribute("width", logoBBox.width);
         combinedSVG.setAttribute("height", "100%");
 
         // Serialize the combined SVG to a string
@@ -804,6 +807,12 @@ const Tol = () => {
         <style>
             .glyphrect {
                 fill-opacity: 0.0;
+            }
+            svg {
+                overflow: visible !important;
+            }
+            * {
+                overflow: visible !important;
             }
         </style>`;
         svgString = svgString.replace('</svg>', `${styleString}</svg>`);

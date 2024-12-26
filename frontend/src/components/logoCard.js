@@ -139,8 +139,8 @@ export const LogoCard = ({ id, index, header, moveCard, ppm = null, fasta = null
                     }}
                 >
                     <p style={{ paddingLeft: "30px" }}>
-                        <button style={{ background: "none", color: "inherit", border: "none", padding: "0", outline: "inherit", cursor: "pointer"}}
-                            onClick={() => {findAndZoom(nodeId)}}
+                        <button style={{ background: "none", color: "inherit", border: "none", padding: "0", outline: "inherit", cursor: "pointer" }}
+                            onClick={() => { findAndZoom(nodeId) }}
                         >
                             <b>{header}</b>
                         </button>
@@ -174,7 +174,7 @@ export const LogoCard = ({ id, index, header, moveCard, ppm = null, fasta = null
                                 </svg>
                             </button>
                         )}
-                        {importantResiduesList[nodeId] &&
+                        {/* {importantResiduesList[nodeId] &&
                             importantResiduesList[nodeId].differing_residues.length > 0 && (
                                 <button
                                     className={`logo-color-btn logo-btn ${activeButton === `important-${index}` ? "active" : ""
@@ -209,7 +209,7 @@ export const LogoCard = ({ id, index, header, moveCard, ppm = null, fasta = null
                                         <path fill="none" d="M0 0h24v24H0z" />
                                     </svg>
                                 </button>
-                            )}
+                            )} */}
                         <button
                             className="logo-download-btn logo-btn"
                             style={styles.downloadBtn}
