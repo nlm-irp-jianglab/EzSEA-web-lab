@@ -196,6 +196,7 @@ const Results = () => {
             console.log(inputData);
             const inputHeader = inputData.split("\n")[0].substring(1);
             console.log(inputHeader);
+            console.log(leafData);
             try {
                 setGapOffsetArr(calcGapOffsetArr(leafData[inputHeader])); // Setting precalculated offsets for coloring important residues
                 setStructLogoMapArr(calcStructToLogoMap(leafData[inputHeader]));
