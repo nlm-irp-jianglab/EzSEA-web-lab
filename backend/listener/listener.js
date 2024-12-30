@@ -327,7 +327,6 @@ app.get("/results/:id", async (req, res) => {
         logger.error("Error reading pdb files: " + e);
         return res.status(500).json({ structError: "Attempted to find pdb files. Does Visualization/ exist?" });
     }
-    console.log("pdbFiles: ", pdbFiles);
 
     var structPath = "";
     if (pdbFiles.length === 0) {
@@ -476,7 +475,7 @@ app.get("/status/:id", (req, res) => {
                             }
                         }
                         const logsArray = data.split('\n');
-                        const lastLine = logsArray[logsArray.length - 1];
+                        const lastLine = logsArray[logsArray.length - 2]; // last line is empty
 
                         if (/Error|failed|Stopping/i.test(lastLine)) {
                             status = "Error"; // Check for error keywords
