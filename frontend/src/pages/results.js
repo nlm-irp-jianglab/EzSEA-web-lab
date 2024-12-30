@@ -194,8 +194,13 @@ const Results = () => {
             treeRef.current.innerHTML = '';
 
             const inputHeader = inputData.split("\n")[0].substring(1);
-            setGapOffsetArr(calcGapOffsetArr(leafData[inputHeader])); // Setting precalculated offsets for coloring important residues
-            setStructLogoMapArr(calcStructToLogoMap(leafData[inputHeader]));
+            try {
+                setGapOffsetArr(calcGapOffsetArr(leafData[inputHeader])); // Setting precalculated offsets for coloring important residues
+                setStructLogoMapArr(calcStructToLogoMap(leafData[inputHeader]));
+            } catch (e) {
+                console.error("Error calculating gap offset array:", e);
+            }
+            
             const tree = new pt.phylotree(newickData);
 
             function style_nodes(element, node_data) {
@@ -971,7 +976,7 @@ const Results = () => {
             const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
 
             // Adjust the position of the SVG using a transform
-            g.setAttribute("transform", `translate(${left*glyphWidth}, ${yOffset})`);
+            g.setAttribute("transform", `translate(${left * glyphWidth}, ${yOffset})`);
 
             // Add the current SVG into the group element
             const clonedSVG = svg.cloneNode(true);
@@ -1096,7 +1101,7 @@ const Results = () => {
                                     aria-controls={labelMenuOpen ? 'basic-menu' : undefined}
                                     aria-haspopup="true"
                                     aria-expanded={labelMenuOpen ? 'true' : undefined}
-                                    onClick={handleLabelMenuClick} 
+                                    onClick={handleLabelMenuClick}
                                 ><LabelIcon /></Button>
                                 <Menu
                                     id="basic-menu"

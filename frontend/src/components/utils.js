@@ -178,6 +178,7 @@ export const jsonToFasta = (jsonObject) => {
 };
 
 export const calcGapOffsetArr = (faString) => {
+    console.log("Recieved fa: ", faString);
     var gapOffsetArr = new Array(faString.length);
     var gaps = 0;
 
