@@ -261,7 +261,7 @@ app.post("/submit", upload.single('input_file'), (req, res) => {
                             "--alignprogram", align_program,
                             "--threads", "4",
                             "--ec_table", "/database/database/ec_dict.pkl",
-                            "--pdbtable", "/database/database/pdb_dict.pkl",
+                            "--pdbtable", "/database/database/pdb_uniref.pkl",
                             "--lenweight", String(len_weight),
                             "--conweight", String(con_weight),
                         ],

@@ -194,8 +194,7 @@ const Results = () => {
             treeRef.current.innerHTML = '';
 
             const inputHeader = inputData.split("\n")[0].substring(1).trim(); // Extracting the header from the input sequence
-            console.log(inputHeader);
-            console.log(leafData[inputHeader]);
+            
             try {
                 setGapOffsetArr(calcGapOffsetArr(leafData[inputHeader])); // Setting precalculated offsets for coloring important residues
                 setStructLogoMapArr(calcStructToLogoMap(leafData[inputHeader]));
