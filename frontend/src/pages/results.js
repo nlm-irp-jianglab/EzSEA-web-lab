@@ -193,10 +193,9 @@ const Results = () => {
         if (treeRef.current && newickData && nodeData && asrData) {
             treeRef.current.innerHTML = '';
 
-            console.log(inputData);
             const inputHeader = inputData.split("\n")[0].substring(1);
             console.log(inputHeader);
-            console.log(leafData);
+            console.log(leafData[inputHeader]);
             try {
                 setGapOffsetArr(calcGapOffsetArr(leafData[inputHeader])); // Setting precalculated offsets for coloring important residues
                 setStructLogoMapArr(calcStructToLogoMap(leafData[inputHeader]));
