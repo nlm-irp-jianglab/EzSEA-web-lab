@@ -193,14 +193,16 @@ const Results = () => {
         if (treeRef.current && newickData && nodeData && asrData) {
             treeRef.current.innerHTML = '';
 
+            console.log(inputData);
             const inputHeader = inputData.split("\n")[0].substring(1);
+            console.log(inputHeader);
             try {
                 setGapOffsetArr(calcGapOffsetArr(leafData[inputHeader])); // Setting precalculated offsets for coloring important residues
                 setStructLogoMapArr(calcStructToLogoMap(leafData[inputHeader]));
             } catch (e) {
                 console.error("Error calculating gap offset array:", e);
             }
-            
+
             const tree = new pt.phylotree(newickData);
 
             function style_nodes(element, node_data) {
@@ -283,7 +285,7 @@ const Results = () => {
                             ec_label.node().classList.add("leaf-node-ec-label");
                         }
                     } catch (error) {
-                        console.error("Error adding EC number to leaf node: ", node_data.data.name, error);
+                        //console.error("Error adding EC number to leaf node: ", node_data.data.name, error);
                     }
                     if (inputHeader === node_data.data.name) {
                         element.select("text").style("fill", "palevioletred").style("stoke", "palevioletred").style("font-size", "18px");
