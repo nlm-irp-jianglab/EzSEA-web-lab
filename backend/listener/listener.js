@@ -125,6 +125,17 @@ app.post("/submit", upload.single('input_file'), (req, res) => {
         return res.status(400).json({ error: "There was an error parsing your request. Please ensure all fields are filled out." });
     }
 
+    // Read header from input file
+    fs.readFile(input_file.path, 'utf8', (err, data) => {
+        if (err) {
+            logger.error("Error reading input file:", err);
+            return res.status(500).json({ error: "There was an error reading the input file." });
+        }
+        const lines = data.split('\n');
+        const header = lines[0].trim().slice(1);
+        console.log("Header: ", header);
+    });
+
     logger.info("Received Job: " + job_id);
 
     // If input file extension is .pdb, copy input file to /output/EzSEA_job_id/Visualization/input.pdb
