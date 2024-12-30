@@ -193,7 +193,7 @@ const Results = () => {
         if (treeRef.current && newickData && nodeData && asrData) {
             treeRef.current.innerHTML = '';
 
-            const inputHeader = inputData.split("\n")[0].substring(1);
+            const inputHeader = inputData.split("\n")[0].substring(1).trim(); // Extracting the header from the input sequence
             console.log(inputHeader);
             console.log(leafData[inputHeader]);
             try {
