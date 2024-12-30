@@ -138,6 +138,84 @@ app.post("/submit", upload.single('input_file'), (req, res) => {
                 return res.status(500).json({ error: "There was an error copying the input pdb file." });
             }
         });
+
+        logger.info("Queuing fpocket run: " + job_id);
+
+        const fpocket_command = {
+            "apiVersion": "batch/v1",
+            "kind": "Job",
+            "metadata": {
+                "name": job_id + "-struct"
+            },
+            "spec": {
+                "backoffLimit": 0,
+                "template": {
+                    "metadata": {
+                        "labels": {
+                            "id": job_id,
+                            "type": "structure"
+                        }
+                    },
+                    "spec": {
+                        "containers": [{
+                            "name": "ezsea",
+                            "image": "us-central1-docker.pkg.dev/ncbi-research-cbb-jiang/esmfold-fpocket/esmfold-fpocket:latest",
+                            "command": ["/bin/zsh", "-c"],
+                            "args": [
+                                "mkdir -p /database/output/EzSEA_" + job_id + "/Visualization/ "
+                                + "&& ./run-esm-fold.sh -i /database/output/input/" + job_id
+                                + ".fasta --pdb /database/output/EzSEA_" + job_id + "/Visualization/"
+                                + "&& fpocket -f /database/output/EzSEA_" + job_id + "/Visualization/" + header + ".pdb"
+                            ],
+                            "resources": {
+                                "requests": {
+                                    "nvidia.com/gpu": "1",
+                                    "cpu": "4",
+                                    "memory": "32Gi"
+                                },
+                                "limits": {
+                                    "nvidia.com/gpu": "1",
+                                    "cpu": "4",
+                                    "memory": "32Gi"
+                                }
+                            },
+                            "volumeMounts": [{
+                                "mountPath": "/database",
+                                "name": "ezsea-databases-volume"
+                            }]
+                        }],
+                        "restartPolicy": "Never",
+                        "nodeSelector": {
+                            "cloud.google.com/gke-accelerator": "nvidia-tesla-a100",
+                            "cloud.google.com/gke-accelerator-count": "1"
+                        },
+                        "volumes": [{
+                            "name": "ezsea-databases-volume",
+                            "persistentVolumeClaim": {
+                                "claimName": "ezsea-filestore-pvc"
+                            }
+                        }]
+                    }
+                }
+            }
+        };
+
+        fs.writeFile('gpu-job-config.json', JSON.stringify(fpocket_command, null, 2), (err) => {
+            if (err) {
+                console.error('Error writing Kubernetes job config to file', err);
+            }
+        });
+
+        // exec("kubectl apply -f ./gpu-job-config.json", (err, stdout, stderr) => {
+        //     if (err) {
+        //         error = "There was a problem initializing your job, please try again later";
+        //         console.error(err); // Pino doesn't give new lines
+        //     } else {
+        //         logger.info("EzSEA structure job started:" + job_id);
+        //         //monitorJob(job_id + "-struct", "GPU");
+        //     }
+        // });
+
     } else { // Else, run ESM 
         // Read header from input file
         fs.readFile(input_file.path, 'utf8', (err, data) => {
@@ -468,7 +546,7 @@ app.get("/status/:id", (req, res) => {
                     fs.readFile(filePath, 'utf8', (err, data) => {
                         if (err) {
                             if (status === "Running") {
-                                return res.status(200).json({ logs: ['Generating logs...'], status: status })
+                                return res.status(200).json({ logs: ['Generating logs...'], status: "container" })
                             } else {
                                 logger.error("Error reading file:", err);
                                 return res.status(500).json({ error: "No log file was found for this job." });
@@ -481,6 +559,8 @@ app.get("/status/:id", (req, res) => {
                             status = "Error"; // Check for error keywords
                         } else if (/completed|success|Done/i.test(lastLine)) {
                             status = "done"; // Check for successful completion
+                        } else if (/EC/i.test(lastLine)) {
+                            status = "annot"; // Check for annotation
                         } else if (/delineation/i.test(lastLine)) {
                             status = "delineation"; // If none of the above conditions match
                         } else if (/Tree/i.test(lastLine)) {
