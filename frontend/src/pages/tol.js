@@ -1083,7 +1083,6 @@ const Tol = () => {
 
                                 <div className="pvdiv" ref={pvdiv} style={{ height: '100%', flexGrow: "1" }}>
                                     <MolstarViewer
-                                        structData={structData}
                                         selectedResidue={selectedResidue}
                                         colorFile={colorArr}
                                         hoveredResidue={hoveredResidue}
