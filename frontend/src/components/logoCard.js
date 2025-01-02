@@ -96,7 +96,7 @@ export const LogoCard = ({ id, index, header, moveCard, ppm = null, fasta = null
         }),
     })
     const opacity = isDragging ? 0.3 : 1;
-    drag(drop(dragRef));
+    drag(dragRef);
 
     useEffect(() => {
         preview(getEmptyImage());
@@ -130,7 +130,7 @@ export const LogoCard = ({ id, index, header, moveCard, ppm = null, fasta = null
     };
 
     return (
-        <div className="dnd-container" style={{ display: "flex" }}>
+        <div ref={drop} className="dnd-container" style={{ display: "flex" }}>
             <div ref={dragRef}
                 style={{ ...dragHandleStyle, opacity }} data-handler-id={handlerId}>
                 <DragIndicatorIcon />

@@ -669,7 +669,7 @@ const Results = () => {
 
                     svg.transition()
                         .duration(750)
-                        .call(zoom.transform, d3.zoomIdentity.scale(1).translate(-targetY + centerOffsetX, -targetX + centerOffsetY)); // Adjust the scale and translation as needed
+                        .call(zoom.transform, d3.zoomIdentity.scale(1).translate(-targetY + centerOffsetX, -targetX + centerOffsetY)); // Weird, svg X and Y are flipped
                 }
             });
 
@@ -706,7 +706,7 @@ const Results = () => {
 
                     svg.transition()
                         .duration(750)
-                        .call(zoom.transform, d3.zoomIdentity.scale(1).translate(-targetY + 672, -targetX + 376)); // Adjust the scale and translation as needed
+                        .call(zoom.transform, d3.zoomIdentity.scale(1).translate(-targetY + centerOffsetX, -targetX + centerOffsetY)); // Adjust the scale and translation as needed
                 }
             });
 

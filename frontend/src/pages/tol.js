@@ -371,6 +371,7 @@ const Tol = () => {
     }, [logoContent]);
 
     const handleColumnClick = (index) => {
+        console.log("Column clicked:", index);
         setSelectedResidue(index + 1);
     };
 
@@ -486,7 +487,6 @@ const Tol = () => {
         const zoom = d3.zoom().on("zoom", (event) => {
             svg.select("g").attr("transform", event.transform);
         });
-        svg.call(zoom);
 
         var targetNode;
         d3.selectAll('.node')
@@ -561,7 +561,7 @@ const Tol = () => {
 
                     svg.transition()
                         .duration(750)
-                        .call(zoom.transform, d3.zoomIdentity.scale(1).translate(-targetY + 672, -targetX + 376)); // Adjust the scale and translation as needed
+                        .call(zoom.transform, d3.zoomIdentity.scale(1).translate(-targetY + centerOffsetX, -targetX + centerOffsetY)); // Adjust the scale and translation as needed
                 }
             });
 
@@ -970,11 +970,11 @@ const Tol = () => {
                             style={{
                                 display: 'flex',
                                 width: isRightCollapsed ? '2%' : (isLeftCollapsed ? '100%' : '50%'),
-                                display: 'flex', // Use flexbox to control layout
+                                userSelect: 'none',
                                 flexDirection: isLeftCollapsed ? 'row' : 'column', // Side by side if left is collapsed
                             }}
                         >
-                            <div className="expandedRight" style={{ width: isLeftCollapsed ? '50%' : '100%' }}>
+                            <div className="expandedRight" style={{ width: isLeftCollapsed ? '50%' : '100%', display: 'flex', flexDirection: 'column' }}>
                                 <div style={{ display: "flex", overflowY: "show", alignItems: "center", justifyContent: "space-between" }}>
                                     <input
                                         className="scrollInput zoomInput"
@@ -1046,7 +1046,7 @@ const Tol = () => {
                                         </FormControl>
                                     </div>
                                 </div>
-                                <div className="logodiv" style={{ width: '100%', height: isLeftCollapsed ? '100%' : (Object.keys(logoContent).length > 2 ? '570px' : (Object.keys(logoContent).length > 1 ? '380px' : '190px')) }}>
+                                <div className="logodiv" style={{ flexGrow: '1', width: '100%', height: isLeftCollapsed ? '100%' : (Object.keys(logoContent).length > 2 ? '570px' : (Object.keys(logoContent).length > 1 ? '380px' : '190px')) }}>
                                     <button
                                         className="logo-close-btn"
                                         onClick={() => {

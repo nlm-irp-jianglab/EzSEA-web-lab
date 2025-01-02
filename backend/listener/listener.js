@@ -166,12 +166,10 @@ app.post("/submit", upload.single('input_file'), (req, res) => {
                             ],
                             "resources": {
                                 "requests": {
-                                    "nvidia.com/gpu": "1",
                                     "cpu": "4",
                                     "memory": "32Gi"
                                 },
                                 "limits": {
-                                    "nvidia.com/gpu": "1",
                                     "cpu": "4",
                                     "memory": "32Gi"
                                 }
@@ -182,10 +180,6 @@ app.post("/submit", upload.single('input_file'), (req, res) => {
                             }]
                         }],
                         "restartPolicy": "Never",
-                        "nodeSelector": {
-                            "cloud.google.com/gke-accelerator": "nvidia-tesla-a100",
-                            "cloud.google.com/gke-accelerator-count": "1"
-                        },
                         "volumes": [{
                             "name": "ezsea-databases-volume",
                             "persistentVolumeClaim": {
