@@ -1162,11 +1162,11 @@ const Results = () => {
                             style={{
                                 display: 'flex',
                                 width: isRightCollapsed ? '2%' : (isLeftCollapsed ? '100%' : '50%'),
-                                display: 'flex', // Use flexbox to control layout
+                                userSelect: 'none',
                                 flexDirection: isLeftCollapsed ? 'row' : 'column', // Side by side if left is collapsed
                             }}
                         >
-                            <div className="expandedRight" style={{ width: isLeftCollapsed ? '50%' : '100%' }}>
+                            <div className="expandedRight" style={{ width: isLeftCollapsed ? '50%' : '100%', display: 'flex', flexDirection: 'column' }}>
                                 <div style={{ display: "flex", overflowY: "show", alignItems: "center", justifyContent: "space-between" }}>
                                     <input
                                         className="scrollInput zoomInput"
@@ -1238,7 +1238,7 @@ const Results = () => {
                                         </FormControl>
                                     </div>
                                 </div>
-                                <div className="logodiv" style={{ width: '100%', height: isLeftCollapsed ? '100%' : (Object.keys(logoContent).length > 2 ? '570px' : (Object.keys(logoContent).length > 1 ? '380px' : '190px')) }}>
+                                <div className="logodiv" style={{ flexGrow: '1', width: '100%', height: isLeftCollapsed ? '100%' : (Object.keys(logoContent).length > 2 ? '570px' : (Object.keys(logoContent).length > 1 ? '380px' : '190px')) }}>
                                     <Tooltip title="Clear All" placement="top">
                                         <button
                                             className="logo-close-btn"
