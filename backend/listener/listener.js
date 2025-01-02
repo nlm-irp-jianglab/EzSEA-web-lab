@@ -162,10 +162,7 @@ app.post("/submit", upload.single('input_file'), (req, res) => {
                             "image": "us-central1-docker.pkg.dev/ncbi-research-cbb-jiang/esmfold-fpocket/esmfold-fpocket:latest",
                             "command": ["/bin/zsh", "-c"],
                             "args": [
-                                "mkdir -p /database/output/EzSEA_" + job_id + "/Visualization/ "
-                                + "&& ./run-esm-fold.sh -i /database/output/input/" + job_id
-                                + ".fasta --pdb /database/output/EzSEA_" + job_id + "/Visualization/"
-                                + "&& fpocket -f /database/output/EzSEA_" + job_id + "/Visualization/" + header + ".pdb"
+                                "fpocket -f /database/output/EzSEA_" + job_id + "/Visualization/input.pdb"
                             ],
                             "resources": {
                                 "requests": {

@@ -194,7 +194,7 @@ const Results = () => {
             treeRef.current.innerHTML = '';
 
             const inputHeader = inputData.split("\n")[0].substring(1).trim(); // Extracting the header from the input sequence
-            
+
             try {
                 setGapOffsetArr(calcGapOffsetArr(leafData[inputHeader])); // Setting precalculated offsets for coloring important residues
                 setStructLogoMapArr(calcStructToLogoMap(leafData[inputHeader]));
@@ -1239,17 +1239,18 @@ const Results = () => {
                                     </div>
                                 </div>
                                 <div className="logodiv" style={{ width: '100%', height: isLeftCollapsed ? '100%' : (Object.keys(logoContent).length > 2 ? '570px' : (Object.keys(logoContent).length > 1 ? '380px' : '190px')) }}>
-                                    <button
-                                        className="logo-close-btn"
-                                        onClick={() => {
-                                            clearRightPanel();
-                                        }}
-                                    >
-                                        <svg fill="#000000" width="25px" height="25px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-                                            <title>Clear All</title>
-                                            <path d="M16 29c-7.18 0-13-5.82-13-13s5.82-13 13-13 13 5.82 13 13-5.82 13-13 13zM21.961 12.209c0.244-0.244 0.244-0.641 0-0.885l-1.328-1.327c-0.244-0.244-0.641-0.244-0.885 0l-3.761 3.761-3.761-3.761c-0.244-0.244-0.641-0.244-0.885 0l-1.328 1.327c-0.244 0.244-0.244 0.641 0 0.885l3.762 3.762-3.762 3.76c-0.244 0.244-0.244 0.641 0 0.885l1.328 1.328c0.244 0.244 0.641 0.244 0.885 0l3.761-3.762 3.761 3.762c0.244 0.244 0.641 0.244 0.885 0l1.328-1.328c0.244-0.244 0.244-0.641 0-0.885l-3.762-3.76 3.762-3.762z"></path>
-                                        </svg>
-                                    </button>
+                                    <Tooltip title="Clear All" placement="top">
+                                        <button
+                                            className="logo-close-btn"
+                                            onClick={() => {
+                                                clearRightPanel();
+                                            }}
+                                        >
+                                            <svg fill="#000000" width="25px" height="25px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M16 29c-7.18 0-13-5.82-13-13s5.82-13 13-13 13 5.82 13 13-5.82 13-13 13zM21.961 12.209c0.244-0.244 0.244-0.641 0-0.885l-1.328-1.327c-0.244-0.244-0.641-0.244-0.885 0l-3.761 3.761-3.761-3.761c-0.244-0.244-0.641-0.244-0.885 0l-1.328 1.327c-0.244 0.244-0.244 0.641 0 0.885l3.762 3.762-3.762 3.76c-0.244 0.244-0.244 0.641 0 0.885l1.328 1.328c0.244 0.244 0.641 0.244 0.885 0l3.761-3.762 3.761 3.762c0.244 0.244 0.641 0.244 0.885 0l1.328-1.328c0.244-0.244 0.244-0.641 0-0.885l-3.762-3.76 3.762-3.762z"></path>
+                                            </svg>
+                                        </button>
+                                    </Tooltip>
                                     <LogoStack
                                         data={logoContent}
                                         onColumnClick={handleColumnClick}
