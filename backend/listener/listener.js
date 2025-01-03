@@ -488,9 +488,10 @@ app.get("/results/:id", async (req, res) => {
 
     Promise.all(pocketPromises)
         .then(results => {
-            const data = results.map((result, index) => ({
-                [`pocket${index + 1}`]: result.pocket || result.pocketError
-            }));
+            const data = results.reduce((acc, result, index) => {
+                acc[`pocket${index + 1}`] = result.pocket || result.pocketError;
+                return acc;
+            }, {});
             console.log(data); // or do something with the data object
         })
         .catch(err => {
