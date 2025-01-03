@@ -15,6 +15,30 @@ export function MolStarWrapper({ structData, pocketData, selectedResidue, hovere
   const parent = createRef();
   const [isStructureLoaded, setIsStructureLoaded] = useState(false);
 
+  async function renderPocket(plugin, pocketData, pocketNumber) {
+    const pocketKey = `pocket${pocketNumber}`;
+    const secData = await plugin.builders.data.rawData({
+      data: pocketData[pocketKey]
+    }, { state: { isGhost: true } });
+
+    console.log(`Loading ${pocketKey}: `, pocketData[pocketKey]);
+
+    const pocketTraj = await plugin.builders.structure.parseTrajectory(secData, "pdb");
+    const model = await plugin.builders.structure.createModel(pocketTraj);
+    const structure_add = await plugin.builders.structure.createStructure(model);
+    const components = {
+      polymer: await plugin.builders.structure.tryCreateComponentStatic(structure_add, "polymer"),
+    }
+
+    const builder = plugin.builders.structure.representation;
+    const update = plugin.build();
+
+    const pocketModel = await builder.buildRepresentation(update, components.polymer, { type: "orientation", typeParams: { alpha: 0.51 } },
+      { tag: "polymer" });
+
+    await update.commit();
+  }
+
   useEffect(() => {
     async function init() {
       // Initialize the Mol* plugin
@@ -72,26 +96,9 @@ export function MolStarWrapper({ structData, pocketData, selectedResidue, hovere
       );
 
       // Loading pocket
-      const secData = await plugin.builders.data.rawData({
-        data: pocketData.pocket1
-      }, { state: { isGhost: true } });
-
-      console.log("Loading pocket1: ", pocketData.pocket1);
-
-      const pocketTraj = await plugin.builders.structure.parseTrajectory(secData, "pdb");
-      const model = await plugin.builders.structure.createModel(pocketTraj);
-      const structure_add = await plugin.builders.structure.createStructure(model);
-      const components = {
-        polymer: await plugin.builders.structure.tryCreateComponentStatic(structure_add, "polymer"),
+      for (let i = 1; i <= 5; i++) {
+        await renderPocket(plugin, pocketData, i);
       }
-
-      const builder = plugin.builders.structure.representation;
-      const update = plugin.build();
-
-      const pocketModel = await builder.buildRepresentation(update, components.polymer, { type: "orientation", typeParams: { alpha: 0.51 } },
-        { tag: "polymer" });
-
-      await update.commit();
 
       //setSubtreeVisibility(plugin.state.data, plugin.managers.structure.hierarchy.current.structures[0].components[0].cell.transform.ref, true);
 
