@@ -187,7 +187,7 @@ const Results = () => {
                         setErrorPopupVisible(true);
                         console.error("Error fetching pocket data:", data.pocketError);
                     } else {
-                        const pocketData = JSON.parse(data.pocket);
+                        const pocketData = JSON.parse(data.pockets);
                         console.log(pocketData);
                     }
 
