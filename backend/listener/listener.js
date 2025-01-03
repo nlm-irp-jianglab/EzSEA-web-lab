@@ -486,16 +486,16 @@ app.get("/results/:id", async (req, res) => {
     // Run all the promises concurrently and gather the results
     const results = await Promise.allSettled([treePromise, leafPromise, ancestralPromise, nodesPromise, structPromise, inputPromise, ecPromise, asrPromise]);
 
-    Promise.all(pocketPromises)
+    const pocketResults = await Promise.all(pocketPromises)
         .then(results => {
-            const data = results.reduce((acc, result, index) => {
+            return results.reduce((acc, result, index) => {
                 acc[`pocket${index + 1}`] = result.pocket || result.pocketError;
                 return acc;
             }, {});
-            console.log(data); // or do something with the data object
         })
         .catch(err => {
             logger.error("Error processing pocket files: " + err);
+            return {};
         });
 
     // Collect the resolved results into one object
@@ -505,6 +505,11 @@ app.get("/results/:id", async (req, res) => {
         }
         return acc;
     }, {});
+
+    // Attach the pocket dictionary to the response
+    response.pockets = pocketResults;
+
+    console.log(response); // or do something with the response object
 
     // Send response with the files that were successfully read and any error messages
     if (response['treeError'] && response['leafError'] && response['ancestralError']
