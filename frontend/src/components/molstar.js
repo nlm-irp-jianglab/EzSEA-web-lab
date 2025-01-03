@@ -37,7 +37,7 @@ export function MolStarWrapper({ structData, pocketData, selectedResidue, hovere
     await update.commit();
 
     if (hide) {
-      setSubtreeVisibility(plugin.state.data, plugin.managers.structure.hierarchy.current.structures[0].components[0].cell.transform.ref, true);
+      setSubtreeVisibility(plugin.state.data, plugin.managers.structure.hierarchy.current.structures[pocketNumber].components[0].cell.transform.ref, true);
     }
   }
 
