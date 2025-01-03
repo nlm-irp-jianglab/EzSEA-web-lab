@@ -76,6 +76,8 @@ export function MolStarWrapper({ structData, pocketData, selectedResidue, hovere
         data: pocketData.pocket1
       }, { state: { isGhost: true } });
 
+      console.log("Loading pocket1: ", pocketData.pocket1);
+
       const pocketTraj = await plugin.builders.structure.parseTrajectory(secData, "pdb");
       const model = await plugin.builders.structure.createModel(pocketTraj);
       const structure_add = await plugin.builders.structure.createStructure(model);
