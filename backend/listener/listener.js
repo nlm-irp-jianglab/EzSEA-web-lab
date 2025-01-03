@@ -396,7 +396,7 @@ app.get("/results/:id", async (req, res) => {
     // Read all pocket files
 
     const pocketPromises = pocketFiles.map((pocketFile) => {
-        fs.promises.readFile = (path.join(pocketPath, pocketFile), 'utf8') // Read each pocket file
+        return fs.promises.readFile(path.join(pocketPath, pocketFile), 'utf8') // Read each pocket file
             .then(data => ({ pocket: data }))
             .catch(err => {
                 logger.error("Error reading pocket file: " + err);
