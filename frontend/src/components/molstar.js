@@ -15,11 +15,13 @@ export function MolStarWrapper({ structData, pocketData, selectedResidue, hovere
   const parent = createRef();
   const [isStructureLoaded, setIsStructureLoaded] = useState(false);
 
-  async function renderPocket(plugin, pocketData, pocketNumber, hide=false) {
+  async function renderPocket(plugin, pocketData, pocketNumber, isVisible) {
     const pocketKey = `pocket${pocketNumber}`;
     const secData = await plugin.builders.data.rawData({
       data: pocketData[pocketKey]
     }, { state: { isGhost: true } });
+
+    console.log(`Loading ${pocketKey}: `, pocketData[pocketKey]);
 
     const pocketTraj = await plugin.builders.structure.parseTrajectory(secData, "pdb");
     const model = await plugin.builders.structure.createModel(pocketTraj);
@@ -34,11 +36,11 @@ export function MolStarWrapper({ structData, pocketData, selectedResidue, hovere
     const pocketModel = await builder.buildRepresentation(update, components.polymer, { type: "orientation", typeParams: { alpha: 0.51 } },
       { tag: "polymer" });
 
-    await update.commit();
-
-    if (hide) {
-      setSubtreeVisibility(plugin.state.data, plugin.managers.structure.hierarchy.current.structures[pocketNumber].components[0].cell.transform.ref, true);
+    if (!isVisible) {
+      pocketModel.setState({ visible: false });
     }
+
+    await update.commit();
   }
 
   useEffect(() => {
@@ -97,9 +99,9 @@ export function MolStarWrapper({ structData, pocketData, selectedResidue, hovere
         "default"
       );
 
-      // Loading pocket
+      // Render pockets 1-5, hiding all but pocket1
       for (let i = 1; i <= 5; i++) {
-        await renderPocket(plugin, pocketData, i, true);
+        await renderPocket(plugin, pocketData, i, i === 1);
       }
 
       const cartoon = structure.representation.representations.polymer.data.repr;
