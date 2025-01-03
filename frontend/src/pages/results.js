@@ -40,6 +40,7 @@ const Results = () => {
     const [structData, setStructData] = useState(null); // Structure data
 
     const [inputData, setInputData] = useState(null); // Query sequence 
+    const [inputHeader, setInputHeader] = useState(null); // Header of the query sequence
     const [gapOffsetArr, setGapOffsetArr] = useState([]);
     const [structLogoMapArr, setStructLogoMapArr] = useState([]);
     const [ecData, setEcData] = useState(null); // EC codes 
@@ -193,11 +194,12 @@ const Results = () => {
         if (treeRef.current && newickData && nodeData && asrData) {
             treeRef.current.innerHTML = '';
 
-            const inputHeader = inputData.split("\n")[0].substring(1).trim(); // Extracting the header from the input sequence
+            const header = inputData.split("\n")[0].substring(1).trim(); // Extracting the header from the input sequence
+            setInputHeader(header);
 
             try {
-                setGapOffsetArr(calcGapOffsetArr(leafData[inputHeader])); // Setting precalculated offsets for coloring important residues
-                setStructLogoMapArr(calcStructToLogoMap(leafData[inputHeader]));
+                setGapOffsetArr(calcGapOffsetArr(leafData[header])); // Setting precalculated offsets for coloring important residues
+                setStructLogoMapArr(calcStructToLogoMap(leafData[header]));
             } catch (e) {
                 console.error("Error calculating gap offset array:", e);
             }
@@ -286,7 +288,7 @@ const Results = () => {
                     } catch (error) {
                         //console.error("Error adding EC number to leaf node: ", node_data.data.name, error);
                     }
-                    if (inputHeader === node_data.data.name) {
+                    if (header === node_data.data.name) {
                         element.select("text").style("fill", "palevioletred").style("stoke", "palevioletred").style("font-size", "18px");
                     }
                 }
@@ -355,7 +357,7 @@ const Results = () => {
             treeRef.current.appendChild(tree.display.show());
 
             // Start with pan to input query
-            findAndZoom(inputHeader);
+            findAndZoom(header);
         }
     }, [newickData, faData, asrData, refresh]);
 
@@ -1095,7 +1097,7 @@ const Results = () => {
                     <div className="tree-div" style={{ width: isLeftCollapsed ? '2%' : (pipVisible ? '50%' : '100%'), textAlign: "center" }}>
                         <ButtonGroup variant="contained" aria-label="Basic button group">
                             <Tooltip title="Recenter on input" placement="top">
-                                <Button onClick={() => findAndZoom("PA14_rph")}><FilterCenterFocusIcon /></Button>
+                                <Button onClick={() => findAndZoom(inputHeader)}><FilterCenterFocusIcon /></Button>
                             </Tooltip>
                             <Tooltip title="Label Toggles" placement="top">
                                 <Button

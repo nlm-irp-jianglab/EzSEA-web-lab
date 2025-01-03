@@ -197,15 +197,15 @@ app.post("/submit", upload.single('input_file'), (req, res) => {
             }
         });
 
-        // exec("kubectl apply -f ./gpu-job-config.json", (err, stdout, stderr) => {
-        //     if (err) {
-        //         error = "There was a problem initializing your job, please try again later";
-        //         console.error(err); // Pino doesn't give new lines
-        //     } else {
-        //         logger.info("EzSEA structure job started:" + job_id);
-        //         //monitorJob(job_id + "-struct", "GPU");
-        //     }
-        // });
+        exec("kubectl apply -f ./gpu-job-config.json", (err, stdout, stderr) => {
+            if (err) {
+                error = "There was a problem initializing your job, please try again later";
+                console.error(err); // Pino doesn't give new lines
+            } else {
+                logger.info("EzSEA structure job started (fpocket only):" + job_id);
+                //monitorJob(job_id + "-struct", "GPU");
+            }
+        });
 
     } else { // Else, run ESM 
         // Read header from input file
