@@ -509,8 +509,6 @@ app.get("/results/:id", async (req, res) => {
     // Attach the pocket dictionary to the response
     response.pockets = pocketResults;
 
-    console.log(response); // or do something with the response object
-
     // Send response with the files that were successfully read and any error messages
     if (response['treeError'] && response['leafError'] && response['ancestralError']
         && response['nodesError'] && response['structError'] && response['inputError']

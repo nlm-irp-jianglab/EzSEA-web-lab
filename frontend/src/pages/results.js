@@ -182,6 +182,15 @@ const Results = () => {
                         });
                     }
 
+                    // read pocketData
+                    if (data.pocketError) {
+                        setErrorPopupVisible(true);
+                        console.error("Error fetching pocket data:", data.pocketError);
+                    } else {
+                        const pocketData = JSON.parse(data.pocket);
+                        console.log(pocketData);
+                    }
+
                 });
         } catch (error) {
             setErrorPopupVisible(true);
