@@ -390,6 +390,21 @@ app.get("/results/:id", async (req, res) => {
     const leafPath = path.join(folderPath, 'seq_trimmed.afa');
     const ancestralPath = path.join(folderPath, 'asr.fa');
     const nodesPath = path.join(folderPath, 'nodes.json');
+    const pocketPath = path.join(folderPath, 'pockets');
+
+    const pocketFiles = ['pocket1_atm.pdb', 'pocket2_atm.pdb', 'pocket3_atm.pdb', 'pocket4_atm.pdb', 'pocket5_atm.pdb'];
+    // Read all pocket files
+
+    const pocketPromises = pocketFiles.map((pocketFile) => {
+        fs.promises.readFile = (path.join(pocketPath, pocketFile), 'utf8') // Read each pocket file
+            .then(data => ({ pocket: data }))
+            .catch(err => {
+                logger.error("Error reading pocket file: " + err);
+                return { pocketError: "Error reading a pocket file." };
+            });
+    });
+
+
     try {
         var pdbFiles = fs.readdirSync(folderPath).filter(fn => fn.endsWith('.pdb')); // Returns an array of pdb files
     } catch (e) {
@@ -470,6 +485,17 @@ app.get("/results/:id", async (req, res) => {
 
     // Run all the promises concurrently and gather the results
     const results = await Promise.allSettled([treePromise, leafPromise, ancestralPromise, nodesPromise, structPromise, inputPromise, ecPromise, asrPromise]);
+
+    Promise.all(pocketPromises)
+        .then(results => {
+            const data = results.map((result, index) => ({
+                [`pocket${index + 1}`]: result.pocket || result.pocketError
+            }));
+            console.log(data); // or do something with the data object
+        })
+        .catch(err => {
+            logger.error("Error processing pocket files: " + err);
+        });
 
     // Collect the resolved results into one object
     const response = results.reduce((acc, result) => {
