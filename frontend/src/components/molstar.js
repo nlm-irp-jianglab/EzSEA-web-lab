@@ -11,7 +11,7 @@ import { Color } from 'molstar/lib/mol-util/color';
 import { setSubtreeVisibility } from 'molstar/lib/mol-plugin/behavior/static/state';
 import "./molstar/skin/light.scss";
 
-export function MolStarWrapper({ structData, selectedResidue, hoveredResidue, colorFile, scrollLogosTo }) {
+export function MolStarWrapper({ structData, pocketData, selectedResidue, hoveredResidue, colorFile, scrollLogosTo }) {
   const parent = createRef();
   const [isStructureLoaded, setIsStructureLoaded] = useState(false);
 
@@ -72,9 +72,8 @@ export function MolStarWrapper({ structData, selectedResidue, hoveredResidue, co
       );
 
       // Loading pocket
-      const pocketData = await fetch(`${process.env.PUBLIC_URL}/example/esmfold-out/pockets/pocket1_atm.pdb`).then((response) => response.text());
       const secData = await plugin.builders.data.rawData({
-        data: pocketData
+        data: pocketData.pocket1
       }, { state: { isGhost: true } });
 
       const pocketTraj = await plugin.builders.structure.parseTrajectory(secData, "pdb");

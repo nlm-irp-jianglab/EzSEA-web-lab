@@ -38,6 +38,7 @@ const Results = () => {
     const [newickData, setNewickData] = useState(null); // Tree
     const [nodeData, setnodeData] = useState(null); // asr stats, important residues
     const [structData, setStructData] = useState(null); // Structure data
+    const [pocketData, setPocketData] = useState({}); // Pocket data
 
     const [inputData, setInputData] = useState(null); // Query sequence 
     const [inputHeader, setInputHeader] = useState(null); // Header of the query sequence
@@ -187,7 +188,7 @@ const Results = () => {
                         setErrorPopupVisible(true);
                         console.error("Error fetching pocket data:", data.pocketError);
                     } else {
-                        console.log(data.pockets);
+                        setPocketData(data.pockets);
                     }
 
                 });
@@ -1287,6 +1288,7 @@ const Results = () => {
                                 <div className="pvdiv" ref={pvdiv} style={{ height: '100%', flexGrow: "1" }}>
                                     <MolstarViewer
                                         structData={structData}
+                                        pocketData={pocketData}
                                         selectedResidue={selectedResidue}
                                         colorFile={colorArr}
                                         hoveredResidue={hoveredResidue}
