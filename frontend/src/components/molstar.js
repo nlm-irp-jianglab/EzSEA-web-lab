@@ -6,7 +6,7 @@ import { PluginCommands } from "molstar/lib/mol-plugin/commands";
 import { StructureSelection, Structure, StructureProperties } from 'molstar/lib/mol-model/structure';
 import { ColorNames } from "molstar/lib/mol-util/color/names";
 import { Script } from 'molstar/lib/mol-script/script';
-import { setStructureOverpaint } from 'molstar/lib/mol-plugin-state/helpers/structure-overpaint';
+import { setStructureOverpaint, clearStructureOverpaint } from 'molstar/lib/mol-plugin-state/helpers/structure-overpaint';
 import { Color } from 'molstar/lib/mol-util/color';
 import { setSubtreeVisibility } from 'molstar/lib/mol-plugin/behavior/static/state';
 import "./molstar/skin/light.scss";
@@ -15,7 +15,7 @@ export function MolStarWrapper({ structData, pocketData, selectedResidue, hovere
   const parent = createRef();
   const [isStructureLoaded, setIsStructureLoaded] = useState(false);
 
-  async function renderPocket(plugin, pocketData, pocketNumber, hide=false) {
+  async function renderPocket(plugin, pocketData, pocketNumber, hide = false) {
     const pocketKey = `pocket${pocketNumber}`;
     const secData = await plugin.builders.data.rawData({
       data: pocketData[pocketKey]
@@ -44,7 +44,7 @@ export function MolStarWrapper({ structData, pocketData, selectedResidue, hovere
   useEffect(() => {
     async function init() {
       // Initialize the Mol* plugin
-      const plugin = await createPluginUI({
+      window.molstar = await createPluginUI({
         target: parent.current,
         render: renderReact18,
         spec: {
@@ -59,9 +59,9 @@ export function MolStarWrapper({ structData, pocketData, selectedResidue, hovere
       });
 
       // Set the background color of the viewer to gray
-      const renderer = plugin.canvas3d.props.renderer;
+      const renderer = window.molstar.canvas3d.props.renderer;
       if (renderer) {
-        PluginCommands.Canvas3D.SetSettings(plugin, {
+        PluginCommands.Canvas3D.SetSettings(window.molstar, {
           settings: {
             renderer: {
               ...renderer,
@@ -72,7 +72,7 @@ export function MolStarWrapper({ structData, pocketData, selectedResidue, hovere
       }
 
       // Set default spin
-      // plugin.canvas3d.setProps({
+      // window.molstar.canvas3d.setProps({
       //   trackball: { animate: { name: 'spin', params: { speed: .5 } } } // or { name: 'off', params: { }}
       // });
 
@@ -87,23 +87,25 @@ export function MolStarWrapper({ structData, pocketData, selectedResidue, hovere
       }
 
       // Rendering main structure
-      const mainData = await plugin.builders.data.rawData({
+      const mainData = await window.molstar.builders.data.rawData({
         data: structData
       }, { state: { isGhost: true } });
 
-      const trajectory = await plugin.builders.structure.parseTrajectory(mainData, "pdb");
-      const structure = await plugin.builders.structure.hierarchy.applyPreset( // builds default cartoon
+      const trajectory = await window.molstar.builders.structure.parseTrajectory(mainData, "pdb");
+      const structure = await window.molstar.builders.structure.hierarchy.applyPreset( // builds default cartoon
         trajectory,
         "default"
       );
 
-      // Loading pocket
-      for (let i = 1; i <= 5; i++) {
-        await renderPocket(plugin, pocketData, i, i !== 1);
+      // Loading pockets if provided
+      if (pocketData) {
+        for (let i = 1; i <= 5; i++) {
+          await renderPocket(window.molstar, pocketData, i);
+        }
       }
 
       const cartoon = structure.representation.representations.polymer.data.repr;
-      const reprCtx = plugin.representation.structure;
+      const reprCtx = window.molstar.representation.structure;
 
       cartoon.setTheme({
         "color": {
@@ -138,10 +140,10 @@ export function MolStarWrapper({ structData, pocketData, selectedResidue, hovere
 
 
       // Scrolls seqlogos to selection position
-      plugin.behaviors.interaction.click.subscribe(
+      window.molstar.behaviors.interaction.click.subscribe(
         (event) => {
           const selections = Array.from(
-            plugin.managers.structure.selection.entries.values()
+            window.molstar.managers.structure.selection.entries.values()
           );
           // selections is auto-sorted, lowest residue id first. Therefore, when multiple residues are selected, 
           // the logo will only scroll to the residue with the lowest id.
@@ -189,14 +191,12 @@ export function MolStarWrapper({ structData, pocketData, selectedResidue, hovere
     if (residueNumber == null) return;
     const seq_id = residueNumber;
 
-    console.log("selecting residue", seq_id);
-
-    if (!plugin || !plugin.managers.structure.hierarchy.current.structures.length) {
+    if (!window.molstar || !window.molstar.managers.structure.hierarchy.current.structures.length) {
       console.error("Mol* plugin or structure data is not initialized.");
       return;
     }
 
-    const structure = plugin.managers.structure.hierarchy.current.structures[0]?.cell?.obj?.data;
+    const structure = window.molstar.managers.structure.hierarchy.current.structures[0]?.cell?.obj?.data;
     if (!structure) {
       console.error("Structure data is not available.");
       return;
@@ -209,18 +209,25 @@ export function MolStarWrapper({ structData, pocketData, selectedResidue, hovere
     const loci = StructureSelection.toLociWithSourceUnits(sel);
 
     if (hovered) {
-      plugin.managers.interactivity.lociHighlights.highlightOnly({ loci }); // Highlight the residue
+      window.molstar.managers.interactivity.lociHighlights.highlightOnly({ loci }); // Highlight the residue
       return;
     }
     // Clear previous selections
-    plugin.managers.interactivity.lociSelects.deselectAll();
-    plugin.managers.interactivity.lociSelects.select({ loci }); // Select the residue
+    window.molstar.managers.interactivity.lociSelects.deselectAll();
+
+    window.molstar.managers.interactivity.lociSelects.select({ loci }); // Select the residue
+    window.molstar.managers.camera.focusLoci(loci); // Focus on the residue
   }
 
   async function applyColorFile(colorFile) {
     if (!colorFile) return;
 
-    if (!plugin || !plugin.managers.structure.hierarchy.current.structures.length) {
+    if (colorFile === "empty") { // if colorfile is the string "empty", clear the overpaint TODO: make this a separate func
+      clearStructureOverpaint(window.molstar, window.molstar.managers.structure.hierarchy.current.structures[0].components);
+      return;
+    };
+
+    if (!window.molstar || !window.molstar.managers.structure.hierarchy.current.structures.length) {
       console.error("Mol* plugin or structure data is not initialized.");
       return;
     }
@@ -229,8 +236,8 @@ export function MolStarWrapper({ structData, pocketData, selectedResidue, hovere
       const color = colorFile[i];
 
       await setStructureOverpaint(
-        plugin,
-        plugin.managers.structure.hierarchy.current.structures[0].components,
+        window.molstar,
+        window.molstar.managers.structure.hierarchy.current.structures[0].components,
         Color(color),
         (s) => {
           const sel = Script.getStructureSelection(Q =>
@@ -243,7 +250,6 @@ export function MolStarWrapper({ structData, pocketData, selectedResidue, hovere
         }
       );
     }
-
   }
 
   return (

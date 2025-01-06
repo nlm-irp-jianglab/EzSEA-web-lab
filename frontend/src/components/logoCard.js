@@ -27,7 +27,7 @@ const dragHandleStyle = {
     borderRadius: '.5rem',
 }
 export const LogoCard = ({ id, index, header, moveCard, ppm = null, fasta = null, applyEntropyStructColor, applyImportantStructColor,
-    removeLogo, onColumnClick, importantResiduesList, findAndZoom, addLogoRef }) => {
+    removeLogo, onSymbolClick, onSymbolHover, importantResiduesList, findAndZoom, addLogoRef }) => {
     const dragRef = useRef(null);
     const { activeButton, setActiveButton } = useContext(logoContext);
     const { logoContent, setLogoContent, logoAlphabet, setLogoAlphabet } = useContext(tolContext);
@@ -167,8 +167,13 @@ export const LogoCard = ({ id, index, header, moveCard, ppm = null, fasta = null
                                         border: activeButton === `entropy-${index}` ? "2px solid #4a7fa5" : "1px solid #95bee8", // Emphasized border
                                     }}
                                     onClick={() => {
-                                        setActiveButton(`entropy-${index}`);
-                                        applyEntropyStructColor(nodeId);
+                                        if (activeButton === `entropy-${index}`) {
+                                            setActiveButton(null);
+                                            applyEntropyStructColor(null, true); // Assuming you have a function to clear the color
+                                        } else {
+                                            setActiveButton(`entropy-${index}`);
+                                            applyEntropyStructColor(nodeId);
+                                        }
                                     }}
                                 >
                                     <svg
@@ -277,7 +282,8 @@ export const LogoCard = ({ id, index, header, moveCard, ppm = null, fasta = null
                         {...(ppm ? { ppm } : { fasta })}
                         header={header}
                         alphabet={allColors[logoAlphabet]}
-                        onSymbolClick={onColumnClick}
+                        onSymbolClick={onSymbolClick}
+                        onSymbolMouseOver={onSymbolHover}
                         importantResidues={
                             importantResiduesList[nodeId] || {
                                 differing_residues: [], // Default to empty list if no important residues are provided

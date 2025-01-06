@@ -248,7 +248,7 @@ const LogoStack = React.forwardRef(
                 {renderLogos ? (
                     <DndProvider backend={HTML5Backend}>
                         <DndLogo fastaContent={fastaContent} applyEntropyStructColor={applyEntropyStructColor}
-                            onSymbolClick={onColumnClick} importantResiduesList={importantResiduesList}
+                            onSymbolClick={onColumnClick} onSymbolHover={onColumnHover} importantResiduesList={importantResiduesList}
                             applyImportantStructColor={applyImportantStructColor} removeLogo={removeLogo} findAndZoom={findAndZoom} addLogoRef={addLogoRef} />
                     </DndProvider>
                 ) : (

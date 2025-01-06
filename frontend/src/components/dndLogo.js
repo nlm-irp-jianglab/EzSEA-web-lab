@@ -11,7 +11,7 @@ const style = {
     overflowX: "hidden",
 }
 export const DndLogo = ({ fastaContent, applyEntropyStructColor, applyImportantStructColor,
-    removeLogo, onColumnClick, importantResiduesList, findAndZoom, addLogoRef }) => {
+    removeLogo, onSymbolClick, onSymbolHover, importantResiduesList, findAndZoom, addLogoRef }) => {
     {
         const [cards, setCards] = useState([]);
         const { logoContent, setLogoContent } = useContext(tolContext);
@@ -48,7 +48,8 @@ export const DndLogo = ({ fastaContent, applyEntropyStructColor, applyImportantS
                     applyEntropyStructColor={applyEntropyStructColor}
                     applyImportantStructColor={applyImportantStructColor}
                     removeLogo={removeLogo}
-                    onColumnClick={onColumnClick}
+                    onSymbolClick={onSymbolClick}
+                    onSymbolHover={onSymbolHover}
                     importantResiduesList={importantResiduesList}
                     findAndZoom={findAndZoom}
                     addLogoRef={addLogoRef}
