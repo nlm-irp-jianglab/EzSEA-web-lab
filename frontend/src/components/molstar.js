@@ -100,7 +100,7 @@ export function MolStarWrapper({ structData, pocketData, selectedResidue, hovere
       // Loading pockets if provided
       if (pocketData) {
         for (let i = 1; i <= 5; i++) {
-          await renderPocket(window.molstar, pocketData, i);
+          await renderPocket(window.molstar, pocketData, i !== 1);
         }
       }
 
