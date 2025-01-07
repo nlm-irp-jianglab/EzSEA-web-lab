@@ -29,7 +29,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import Menu from '@mui/material/Menu';
-
+import downloadDialog from '../components/downloadlogo.tsx';
 
 const logoFiles = {};
 
@@ -726,115 +726,6 @@ const Tol = () => {
         );
     };
 
-
-
-
-
-    function downloadCombinedSVG(event, left = 200, right = 210) {
-        const svgElements = document.querySelectorAll('#logo-stack svg');
-
-        if (svgElements.length === 0) {
-            console.error("No SVG elements found!");
-            return;
-        }
-
-        // Create a new SVG element that will contain all the others
-        const combinedSVG = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-        combinedSVG.setAttribute("xmlns", "http://www.w3.org/2000/svg");
-
-        // Positioning variables
-        let yOffset = 0;
-        const glyphWidth = -5.45;
-
-        svgElements.forEach((svg, index) => {
-            // Get actual height, no viewbox height of svg
-            const height = svg.getBoundingClientRect().height;
-
-            // Create a group element to contain the svg
-            const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
-
-            // Adjust the position of the SVG using a transform
-            //g.setAttribute("transform", `translate(${left * glyphWidth}, ${yOffset}) scale(4)`);
-            g.setAttribute("transform", `translate(0, ${yOffset})`);
-
-            const clonedSVG = svg.cloneNode(true);
-            const glyphs = Array.from(clonedSVG.children[0].children);
-            const xlab = Array.from(clonedSVG.children[1].children[0].children);
-            const ylab = clonedSVG.children[2];
-
-            // Get viewBox dimensions
-            const viewBox = clonedSVG.getAttribute('viewBox').split(' ');
-            console.log(viewBox)
-            const viewBoxWidth = parseFloat(viewBox[2]);
-            const aspectRatio = parseFloat(viewBox[2]) / parseFloat(viewBox[3]);
-            const totalWidth = height * aspectRatio;
-
-            const actualWidth = glyphs.length * Math.abs(glyphWidth);
-            clonedSVG.setAttribute('width', totalWidth);
-            // Calculate scale factor
-            const scaleFactor = viewBoxWidth / actualWidth;
-
-            // Apply scaled transform to ylab
-            ylab.setAttribute('transform', `translate(${left * -glyphWidth * scaleFactor}, 0)`);
-
-            // Create array of indices to remove (those outside left-right range)
-            const indicesToRemove = [...Array(glyphs.length).keys()]
-                .filter(i => i < left || i > right);
-
-            // Remove glyphs from highest index to lowest to avoid shifting issues
-            indicesToRemove.reverse().forEach(index => {
-                glyphs[index].remove();
-                xlab[index].remove();
-            });
-
-            // Update svg width
-            //clonedSVG.setAttribute('width', (right - left) * Math.abs(glyphWidth) * 4);
-
-            // Append the group element into the combined SVG
-            g.appendChild(clonedSVG);
-            combinedSVG.appendChild(g);
-
-            // Update yOffset for the next svg to be placed below the current one
-            yOffset += parseFloat(height);
-        });
-
-        const logoBBox = svgElements[0].getBBox();
-        combinedSVG.setAttribute("width", logoBBox.width);
-        combinedSVG.setAttribute("height", "100%");
-
-        // Serialize the combined SVG to a string
-        const serializer = new XMLSerializer();
-        var svgString = serializer.serializeToString(combinedSVG);
-
-
-        const styleString = `
-        <style>
-            .glyphrect {
-                fill-opacity: 0.0;
-            }
-            svg {
-                overflow: visible !important;
-            }
-            * {
-                overflow: visible !important;
-            }
-        </style>`;
-        svgString = svgString.replace('</svg>', `${styleString}</svg>`);
-
-        // Create a blob for the SVG data
-        const blob = new Blob([svgString], { type: 'image/svg+xml' });
-
-        // Create a download link
-        const downloadLink = document.createElement('a');
-        downloadLink.href = URL.createObjectURL(blob);
-        downloadLink.download = `combined.svg`; // Name of the downloaded file
-
-        // Trigger the download
-        document.body.appendChild(downloadLink);
-        downloadLink.click();
-        document.body.removeChild(downloadLink); // Clean up
-    }
-
     return (
         <div style={{ height: '100%', display: 'flex', flexDirection: 'column', maxWidth: '100vw', flexGrow: '1' }}>
             <Navbar pageId={"Results: ru5hnx3m2np8010"} />
@@ -1013,7 +904,7 @@ const Tol = () => {
                                         marks={[{ value: 1, label: '1' }, { value: seqLength - 1, label: `${seqLength}` }]}
                                     />
 
-                                    <button className="download-stack-btn" onClick={downloadCombinedSVG} style={{ borderRadius: "3px", backgroundColor: "#def2b3", border: "none", cursor: "pointer" }}>
+                                    <button id="download-stack-btn" className="download-stack-btn" style={{ borderRadius: "3px", backgroundColor: "#def2b3", border: "none", cursor: "pointer" }}>
                                         <svg width="25px" height="25px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" version="1.1" fill="none" stroke="#000000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5">
                                             <title>Download Stack</title>
                                             <path d="m3.25 7.25-1.5.75 6.25 3.25 6.25-3.25-1.5-.75m-11 3.75 6.25 3.25 6.25-3.25" />
@@ -1021,6 +912,7 @@ const Tol = () => {
                                         </svg>
                                     </button>
 
+                                    <downloadDialog seqLength={seqLength}/>
                                     <div style={{ width: "400px" }}>
                                         <FormControl fullWidth size="small" >
                                             <InputLabel>Color Scheme</InputLabel>
