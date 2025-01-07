@@ -29,6 +29,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import Menu from '@mui/material/Menu';
+import downloadDialog from '../components/downloadlogo.tsx';
 
 const Results = () => {
     const { jobId } = useParams();
