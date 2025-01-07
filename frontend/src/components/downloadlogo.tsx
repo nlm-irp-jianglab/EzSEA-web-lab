@@ -152,7 +152,7 @@ function SimpleDialog(props: SimpleDialogProps) {
   );
 }
 
-export default function downloadDialog({ seqLength }: { seqLength: number }) {
+export default function DownloadDialog({ seqLength }: { seqLength: number }) {
   const [open, setOpen] = React.useState(false);
   const handleClickOpen = () => {
     setOpen(true);
