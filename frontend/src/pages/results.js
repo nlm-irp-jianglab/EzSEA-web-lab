@@ -914,6 +914,104 @@ const Results = () => {
         );
     };
 
+    const downloadTreeAsSVG = () => {
+        const svgElement = treeRef.current.querySelector('svg'); // Select the SVG from the tree container
+        if (!svgElement) {
+            console.error("SVG element not found in treeRef.");
+            return;
+        }
+        // Serialize the SVG content
+        const serializer = new XMLSerializer();
+        let source = serializer.serializeToString(svgElement);
+        // Manually styling the SVG content.
+        const styleString = `
+            <style>
+                .branch {
+                    fill: none;
+                    stroke: #999;
+                    stroke-width: 2px;
+                }
+                .internal-node circle {
+                    fill: #CCC;
+                    stroke: black;
+                    stroke-width: 0.5px;
+                }
+                .node {
+                    font: 10px sans-serif;
+                }
+                .branch-tracer {
+                    stroke: #bbb;
+					stroke-dasharray: 3, 4;
+					stroke-width: 1px;
+                }
+            </style>`;
+        if (!source.includes('xmlns="http://www.w3.org/2000/svg"')) {
+            source = source.replace('<svg', `<svg xmlns="http://www.w3.org/2000/svg"`);
+        }
+        source = source.replace('</svg>', `${styleString}</svg>`);
+        // Create a Blob and trigger the download
+        const svgBlob = new Blob([source], { type: "image/svg+xml;charset=utf-8" });
+        const svgUrl = URL.createObjectURL(svgBlob);
+        // Create a download link and trigger the download
+        const downloadLink = document.createElement("a");
+        downloadLink.href = svgUrl;
+        downloadLink.download = "tree.svg";
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+    };
+    function downloadCombinedSVG(left = 10, right = 20) {
+        // Select all svg elements within a specific div (e.g., with id "svgContainer")
+        const svgElements = document.querySelectorAll('#logo-stack svg');
+        if (svgElements.length === 0) {
+            console.error("No SVG elements found!");
+            return;
+        }
+        // Create a new SVG element that will contain all the others
+        const combinedSVG = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        combinedSVG.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+        // Positioning variables
+        let yOffset = 0;
+        const glyphWidth = seqLength > 999 ? 20 : 21.5;
+        svgElements.forEach((svg, index) => {
+            const height = 60; // Default height if not provided
+            // Create a group element to contain the svg
+            const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+            // Adjust the position of the SVG using a transform
+            g.setAttribute("transform", `translate(${left * glyphWidth}, ${yOffset})`);
+            // Add the current SVG into the group element
+            const clonedSVG = svg.cloneNode(true);
+            g.appendChild(clonedSVG);
+            // Append the group element into the combined SVG
+            combinedSVG.appendChild(g);
+            // Update yOffset for the next svg to be placed below the current one
+            yOffset += parseFloat(height);
+        });
+        // Set the combined SVG size (width as the largest width, height as the total yOffset)
+        combinedSVG.setAttribute("width", "100%");
+        combinedSVG.setAttribute("height", "100%");
+        // Serialize the combined SVG to a string
+        const serializer = new XMLSerializer();
+        var svgString = serializer.serializeToString(combinedSVG);
+        const styleString = `
+        <style>
+            .glyphrect {
+                fill-opacity: 0.0;
+            }
+        </style>`;
+        svgString = svgString.replace('</svg>', `${styleString}</svg>`);
+        // Create a blob for the SVG data
+        const blob = new Blob([svgString], { type: 'image/svg+xml' });
+        // Create a download link
+        const downloadLink = document.createElement('a');
+        downloadLink.href = URL.createObjectURL(blob);
+        downloadLink.download = `combined.svg`; // Name of the downloaded file
+        // Trigger the download
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink); // Clean up
+    }
+
     return (
         <div style={{ height: '100%', display: 'flex', flexDirection: 'column', maxWidth: '100vw', flexGrow: '1' }}>
             <Navbar pageId={`Results: ${jobId}`} />
@@ -1102,7 +1200,7 @@ const Results = () => {
                                         </svg>
                                     </button>
 
-                                    <downloadDialog seqLength={seqLength}/>
+                                    <downloadDialog seqLength={seqLength} />
                                     <div style={{ width: "400px" }}>
                                         <FormControl fullWidth size="small" >
                                             <InputLabel>Color Scheme</InputLabel>
