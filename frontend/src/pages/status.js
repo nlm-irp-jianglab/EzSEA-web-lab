@@ -5,11 +5,13 @@ import "../components/status.css";
 import CircularProgress from '@mui/material/CircularProgress';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import PendingIcon from '@mui/icons-material/Pending';
+import { useParams } from 'react-router-dom';
 
 const Status = () => {
+    const { jobId } = useParams();
     const [jobStatus, setJobStatus] = useState('');
     const location = useLocation();
-    const { jobId, email, time, submitError } = location.state || {};
+    const { email, time, submitError } = location.state || {};
     const [logs, setLogs] = useState(['']);
     const statusList = ['done', 'annot', 'delineation', 'tree', 'align', 'db', 'container', 'alloc'];
     const statusMsg = ['Clean and finish', 'Retrieving annotations', 'Calculating delineation',
