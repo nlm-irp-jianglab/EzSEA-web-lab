@@ -147,6 +147,7 @@ const Results = () => {
                         // setErrorPopupVisible(true);
                         console.error("Error fetching ec mappings:", data.ecError);
                     } else {
+                        console.log("EC data:", data.ec);
                         const json = JSON.parse(data.ec);
                         var ecDict = {};
                         for (const [key, value] of Object.entries(json)) {

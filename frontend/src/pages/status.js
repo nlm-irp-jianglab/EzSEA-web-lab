@@ -24,6 +24,9 @@ const Status = () => {
             if (response.status == 200) {
                 setLogs(data.logs);
                 setJobStatus(data.status);
+                if (data.status === 'done') {
+                    window.location.href = `/results/${jobId}`;
+                }
             } else {
                 setLogs([`${data.error}`]);
             }
