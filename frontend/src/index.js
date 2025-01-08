@@ -3,11 +3,10 @@ import { createRoot } from "react-dom/client";
 import "./styles.css";
 
 import About from "./pages/about";
-import App from "./pages/tolApp";
+import TolApp from "./pages/tolApp";
 import Playground from "./pages/playground";
 import NotFoundPage from "./pages/notfoundpage";
 import Submit from "./pages/submit";
-import JobQueued from "./pages/jobqueued";
 import Status from "./pages/status";
 import {
     BrowserRouter as Router,
@@ -46,12 +45,8 @@ root.render(
                         element={<Status />}
                     />
                     <Route
-                        path="/job-queued"
-                        element={<JobQueued />}
-                    />
-                    <Route
                         path="/tol"
-                        element={<App />}
+                        element={<TolApp />}
                     />
                     <Route
                         exact path="/playground"

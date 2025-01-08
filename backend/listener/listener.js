@@ -191,13 +191,13 @@ app.post("/submit", upload.single('input_file'), (req, res) => {
             }
         };
 
-        fs.writeFile('gpu-job-config.json', JSON.stringify(fpocket_command, null, 2), (err) => {
+        fs.writeFile('fpocket-job-config.json', JSON.stringify(fpocket_command, null, 2), (err) => {
             if (err) {
                 console.error('Error writing Kubernetes job config to file', err);
             }
         });
 
-        exec("kubectl apply -f ./gpu-job-config.json", (err, stdout, stderr) => {
+        exec("kubectl apply -f ./fpocket-job-config.json", (err, stdout, stderr) => {
             if (err) {
                 error = "There was a problem initializing your job, please try again later";
                 console.error(err); // Pino doesn't give new lines

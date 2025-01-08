@@ -204,8 +204,6 @@ const Submit = () => {
             case 1:
                 return phylogenyMenu();
             case 2:
-                return structPredMenu();
-            case 3:
                 return delinationMenu();
             default:
                 return homologMenu();
@@ -382,7 +380,6 @@ const Submit = () => {
                     >
                         <Tab label="Homolog" />
                         <Tab label="Phylogeny" />
-                        <Tab label="Structure" />
                         <Tab label="Delineation" />
                     </Tabs>
                     <div style={{ display: 'flex', justifyContent: 'center' }}>
@@ -419,14 +416,9 @@ const Submit = () => {
                 <br></br>
                 <h4>News</h4>
                 <p><b>12/16/2024</b> EzSEA sampletext!</p>
-                <hr></hr>
-                <p><b>12/16/2024</b> EzSEA sampletext!</p>
-                <hr></hr>
-                <p><b>12/16/2024</b> EzSEA sampletext!</p>
-                <hr></hr>
-                <p><b>12/16/2024</b> EzSEA sampletext!</p>
-                <br></br>
+
                 <div>
+                    <br></br>
                     <hr></hr>
                     <p>Citation</p>
                 </div>

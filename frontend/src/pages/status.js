@@ -4,9 +4,10 @@ import Navbar from "../components/navbar";
 import "../components/status.css";
 import CircularProgress from '@mui/material/CircularProgress';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import PendingIcon from '@mui/icons-material/Pending';
 
 const Status = () => {
-    const [jobStatus, setJobStatus] = useState(''); 
+    const [jobStatus, setJobStatus] = useState('');
     const location = useLocation();
     const { jobId, email, time, submitError } = location.state || {};
     const [logs, setLogs] = useState(['']);
@@ -53,13 +54,20 @@ const Status = () => {
         const spans = statusList.map((status, index) => {
             if (status === jobStatus) {
                 foundMatchedStatus = true;
+                return (
+                    <span key={index} className="processing-list-item">
+                        <CircularProgress size="1.5rem" />
+                        {statusMsg[index]}
+                    </span>
+                );
+            } else {
+                return (
+                    <span key={index} className="processing-list-item">
+                        {foundMatchedStatus ? <CheckCircleIcon sx={{ color: "green" }} /> : <PendingIcon sx={{ color: "gray" }} />}
+                        {statusMsg[index]}
+                    </span>
+                );
             }
-            return (
-                <span key={index} className="processing-list-item">
-                    {foundMatchedStatus ? <CheckCircleIcon sx={{color: "green"}}/> : <CircularProgress size="1.5rem"/>}
-                    {statusMsg[index]}
-                </span>
-            );
         });
         return spans.reverse();
     };
@@ -67,10 +75,10 @@ const Status = () => {
 
     return (
         <div style={{ flexGrow: 1 }}>
-            <Navbar pageId={"WIP Status"} />
+            <Navbar pageId={"Status"} />
             <div className="processing-container">
                 <div>
-                    <h1>{ submitError ? <span>Our servers are down</span> : "Job Processing..." }</h1>
+                    <h1>{submitError ? <span>Our servers are down</span> : "Job Processing..."}</h1>
                 </div>
                 <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-evenly" }}>
                     <div className="processing-logo">

@@ -1,9 +1,9 @@
-// App.js
+// Wraps the Tol component with TolContext
 import React from 'react';
 import { TolProvider } from '../components/tolContext';
 import Tol from './tol';
 
-function App() {
+function TolApp() {
     return (
         <TolProvider>
             <Tol />
@@ -11,4 +11,4 @@ function App() {
     );
 }
 
-export default App;
+export default TolApp;
