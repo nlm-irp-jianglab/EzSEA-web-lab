@@ -563,6 +563,8 @@ app.get("/status/:id", (req, res) => {
                     } else {
                         return res.status(200).json({ logs: ["Allocating resources for job, this may take a few minutes."], status: "alloc" });
                     }
+                } else if (status === "Failed") {
+                    return res.status(200).json({ status: status });
                 } else { // status is Running, Succeeded, Failed, or Unknown
                     fs.readFile(filePath, 'utf8', (err, data) => {
                         if (err) {
