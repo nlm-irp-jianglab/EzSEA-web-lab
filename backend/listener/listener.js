@@ -191,21 +191,21 @@ app.post("/submit", upload.single('input_file'), (req, res) => {
             }
         };
 
-        fs.writeFile('fpocket-job-config.json', JSON.stringify(fpocket_command, null, 2), (err) => {
-            if (err) {
-                console.error('Error writing Kubernetes job config to file', err);
-            }
-        });
+        // fs.writeFile('fpocket-job-config.json', JSON.stringify(fpocket_command, null, 2), (err) => {
+        //     if (err) {
+        //         console.error('Error writing Kubernetes job config to file', err);
+        //     }
+        // });
 
-        exec("kubectl apply -f ./fpocket-job-config.json", (err, stdout, stderr) => {
-            if (err) {
-                error = "There was a problem initializing your job, please try again later";
-                console.error(err); // Pino doesn't give new lines
-            } else {
-                logger.info("EzSEA structure job started (fpocket only):" + job_id);
-                //monitorJob(job_id + "-struct", "GPU");
-            }
-        });
+        // exec("kubectl apply -f ./fpocket-job-config.json", (err, stdout, stderr) => {
+        //     if (err) {
+        //         error = "There was a problem initializing your job, please try again later";
+        //         console.error(err); // Pino doesn't give new lines
+        //     } else {
+        //         logger.info("EzSEA structure job started (fpocket only):" + job_id);
+        //         //monitorJob(job_id + "-struct", "GPU");
+        //     }
+        // });
 
     } else { // Else, run ESM 
         // Read header from input file
@@ -244,6 +244,7 @@ app.post("/submit", upload.single('input_file'), (req, res) => {
                                     + "&& ./run-esm-fold.sh -i /database/output/input/" + job_id
                                     + ".fasta --pdb /database/output/EzSEA_" + job_id + "/Visualization/"
                                     + "&& fpocket -f /database/output/EzSEA_" + job_id + "/Visualization/" + header + ".pdb"
+                                    + "&& mv /database/output/EzSEA_" + job_id + "/Visualization/*_out/pockets /database/output/EzSEA_" + job_id + "/Visualization/"
                                 ],
                                 "resources": {
                                     "requests": {
