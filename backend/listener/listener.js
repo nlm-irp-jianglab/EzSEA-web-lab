@@ -557,7 +557,7 @@ app.get("/status/:id", (req, res) => {
                 var status = pod.status.phase.trim();
 
                 // Check container statuses for more detailed information
-                if (status === "Pending" && pod.status.containerStatuses) {
+                if (status === "Pending" && pod.status.containerStatuses) { // TODO alloc status never present here. Is second bool needed?
                     const containerStatus = pod.status.containerStatuses[0];
                     if (containerStatus.state.waiting && containerStatus.state.waiting.reason === "ContainerCreating") {
                         return res.status(200).json({ logs: ["Resources allocated, building compute environment"], status: "container" });
