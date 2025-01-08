@@ -43,7 +43,6 @@ function downloadCombinedSVG(left: number = 0, right: number = 10): void {
 
     // Get viewBox dimensions
     const viewBox = clonedSVG.getAttribute('viewBox')!.split(' ');
-    console.log(viewBox)
     const aspectRatio = parseFloat(viewBox[2]) / parseFloat(viewBox[3]);
     const totalWidth = height * aspectRatio;
 
@@ -69,8 +68,10 @@ function downloadCombinedSVG(left: number = 0, right: number = 10): void {
     const xlabXTranslation = xlab[left].getAttribute('y')!;
 
     // Apply xtransform to glyph container, xlab
-    clonedSVG.children[0].setAttribute('transform', `translate(-${parseFloat(glyphXTranslation) - 80}, 0)`);
-    clonedSVG.children[1].setAttribute('transform', `translate(-${parseFloat(xlabXTranslation) - 130}, 452.2)`);
+    if (left !== 0) { // if left is 0, no need to adjust
+      clonedSVG.children[0].setAttribute('transform', `translate(-${parseFloat(glyphXTranslation) - 80}, 0)`);
+      clonedSVG.children[1].setAttribute('transform', `translate(-${parseFloat(xlabXTranslation) - 130}, 452.2)`);
+    }
 
     // Append the group element into the combined SVG
     g.appendChild(clonedSVG);
@@ -129,7 +130,7 @@ function SimpleDialog(props: SimpleDialogProps) {
 
   const handleDownloadClick = () => {
     onClose('');
-    downloadCombinedSVG(value[0], value[1]);
+    downloadCombinedSVG(value[0] - 1, value[1] - 1);
   };
 
   return (
@@ -139,9 +140,10 @@ function SimpleDialog(props: SimpleDialogProps) {
         <Slider
           value={value}
           onChange={handleChange}
-          valueLabelDisplay="auto"
+          valueLabelDisplay="on"
           disableSwap
           max={seqLength}
+          min={1}
         />
       </div>
       <br />

@@ -9,12 +9,6 @@ import { logoContext } from './logoContext';
 import Tooltip from '@mui/material/Tooltip';
 import { getEmptyImage } from "react-dnd-html5-backend";
 
-const style = {
-    border: '1px dashed gray',
-    backgroundColor: 'white',
-    cursor: 'move',
-    paddingLeft: '20px',
-}
 const dragHandleStyle = {
     width: '24px',
     height: 'auto',
@@ -95,7 +89,7 @@ export const LogoCard = ({ id, index, header, moveCard, ppm = null, fasta = null
             isDragging: monitor.isDragging(),
         }),
     })
-    const opacity = isDragging ? 0.3 : 1;
+    const opacity = isDragging ? 0.6 : 1;
     drag(dragRef);
 
     useEffect(() => {
@@ -130,9 +124,9 @@ export const LogoCard = ({ id, index, header, moveCard, ppm = null, fasta = null
     };
 
     return (
-        <div ref={drop} className="dnd-container" style={{ display: "flex" }}>
+        <div ref={drop} className="dnd-container" style={{ display: "flex", padding: "0.5rem 0rem" }}>
             <div ref={dragRef}
-                style={{ ...dragHandleStyle, opacity }} data-handler-id={handlerId}>
+                style={{ ...dragHandleStyle, opacity, backgroundColor: "whitesmoke" }} data-handler-id={handlerId}>
                 <DragIndicatorIcon />
             </div>
             <div className="logo-scrollable-box" style={{ width: "95%" }}>
@@ -142,7 +136,7 @@ export const LogoCard = ({ id, index, header, moveCard, ppm = null, fasta = null
                         flexDirection: "row",
                         alignItems: "center",
                         height: "30px",
-                        margin: "3px",
+                        padding: "3px",
                         justifyContent: "space-between",
                     }}
                 >
