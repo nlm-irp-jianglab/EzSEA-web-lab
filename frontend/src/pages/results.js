@@ -284,18 +284,21 @@ const Results = () => {
                     }
                 } else { // edits to the leaf nodes
                     const node_label = element.select("text");
-                    const link = element.append("a")
-                        .attr("xlink:href", `https://www.uniprot.org/uniprotkb/${node_label.text()}`)  // Set link destination
-                        .attr("target", "_blank");  // Optional: open in new tab
+                    function compareMenuCondition(node) {
+                        return "Open Uniref Website";
+                    }
 
-                    // Move text element inside anchor
-                    node_label.each(function () {
-                        const text = d3.select(this);
-                        const parent = d3.select(this.parentNode);
-                        parent.node().removeChild(this);
-                        link.node().appendChild(this);
-                    });
+                    function compare(node, el) {
+                        // Open uniref website in new tab
+                        window.open(`https://www.uniprot.org/uniprotkb/${node.data.name}`, '_blank');
+                    }
+
+                    addCustomMenu(node_data, compareMenuCondition, function () {
+                        compare(node_data, element);
+                    }, () => true);
+
                     node_label.node().classList.add("leaf-node-label");
+                    
                     try {
                         // Adding EC number to leaf nodes
                         var ec = ecData[node_data.data.name];
