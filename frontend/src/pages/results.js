@@ -510,7 +510,7 @@ const Results = () => {
 
     const applyEntropyStructColor = (nodeId, clear = false) => {
         if (clear) {
-            setColorArr("empty");
+            setColorArr(null);
             return;
         }
 
@@ -518,10 +518,10 @@ const Results = () => {
             .each(function () {
                 var node = d3.select(this).data()[0];
                 if (node.data.name === nodeId) {
-                    var descendants = selectAllDescendants(node, false, true);
+                    var descendants = selectAllDescendants(node, true, false); // Get all terminal descendants
                     var desc_fa = "";
                     for (var desc of descendants) {
-                        desc_fa += `>${desc.data.name}\n${faData[desc.data.name]}\n`;
+                        desc_fa += `>${desc.data.name}\n${leafData[desc.data.name]}\n`;
                     }
                     calcEntropyFromMSA(desc_fa).then((entropy) => mapEntropyToColors(entropy)).then((colors) => { setColorArr(colors) });
                 }
@@ -1237,6 +1237,17 @@ const Results = () => {
                                     margin: '3px 3px'
                                 }}
                             ></div>
+                            <div style={{flex: '1', display: 'flex', flexDirection: 'column'}}>
+                                {colorArr && <img
+                                    src={process.env.PUBLIC_URL + "/gradient.png"}
+                                    alt="Gradient Legend"
+                                    style={{
+                                        width: '100%',
+                                        height: '20px',
+                                        marginTop: '10px',
+                                        borderRadius: '4px'
+                                    }}
+                                />}
                             <div style={{ display: "flex", height: "100%", flexGrow: "1", flexDirection: isLeftCollapsed ? "column" : "row" }}>
 
                                 <div className="pvdiv" ref={pvdiv} style={{ height: '100%', flexGrow: "1" }}>
@@ -1248,6 +1259,7 @@ const Results = () => {
                                         hoveredResidue={hoveredResidue}
                                         scrollLogosTo={(index) => handleScrollLogosTo(index)}
                                     />
+                                    </div>
                                 </div>
                             </div>
                         </div>

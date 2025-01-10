@@ -388,18 +388,15 @@ const Tol = () => {
 
     const applyEntropyStructColor = (nodeId, clear = false) => {
         if (clear) {
-            setColorArr("empty");
+            setColorArr(null);
             return;
         }
-
-        console.log("Applying entropy struct color for node:", nodeId);
 
         d3.selectAll('.internal-node')
             .each(function () {
                 var node = d3.select(this).data()[0];
                 if (node.data.name === nodeId) {
                     var descendants = selectAllDescendants(node, true, false); // Get all terminal descendants
-                    console.log("found descendants:", descendants);
                     var desc_fa = "";
                     for (var desc of descendants) {
                         desc_fa += `>${desc.data.name}\n${leafData[desc.data.name]}\n`;
@@ -992,15 +989,27 @@ const Tol = () => {
                                     margin: '3px 3px'
                                 }}
                             ></div>
-                            <div style={{ display: "flex", height: "100%", flexGrow: "1", flexDirection: isLeftCollapsed ? "column" : "row" }}>
+                            <div style={{flex: '1', display: 'flex', flexDirection: 'column'}}>
+                                {colorArr && <img
+                                    src={process.env.PUBLIC_URL + "/gradient.png"}
+                                    alt="Gradient Legend"
+                                    style={{
+                                        width: '100%',
+                                        height: '20px',
+                                        marginTop: '10px',
+                                        borderRadius: '4px'
+                                    }}
+                                />}
+                                <div style={{ display: "flex", height: "100%", flexGrow: "1", flexDirection: isLeftCollapsed ? "column" : "row" }}>
 
-                                <div className="pvdiv" ref={pvdiv} style={{ height: '100%', flexGrow: "1" }}>
-                                    <MolstarViewer
-                                        selectedResidue={selectedResidue}
-                                        colorFile={colorArr}
-                                        hoveredResidue={hoveredResidue}
-                                        scrollLogosTo={(index) => logoStackRef.current.scrollToHighlightIndex(index)}
-                                    />
+                                    <div className="pvdiv" ref={pvdiv} style={{ height: '100%', flexGrow: "1" }}>
+                                        <MolstarViewer
+                                            selectedResidue={selectedResidue}
+                                            colorFile={colorArr}
+                                            hoveredResidue={hoveredResidue}
+                                            scrollLogosTo={(index) => logoStackRef.current.scrollToHighlightIndex(index)}
+                                        />
+                                    </div>
                                 </div>
                             </div>
                         </div>

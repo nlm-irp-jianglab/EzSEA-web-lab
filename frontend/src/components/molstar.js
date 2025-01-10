@@ -220,9 +220,7 @@ export function MolStarWrapper({ structData, pocketData, selectedResidue, hovere
   }
 
   async function applyColorFile(colorFile) {
-    if (!colorFile) return;
-
-    if (colorFile === "empty") { // if colorfile is the string "empty", clear the overpaint TODO: make this a separate func
+    if (!colorFile) {
       clearStructureOverpaint(window.molstar, window.molstar.managers.structure.hierarchy.current.structures[0].components);
       return;
     };
