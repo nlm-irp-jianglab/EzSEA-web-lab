@@ -392,14 +392,17 @@ const Tol = () => {
             return;
         }
 
+        console.log("Applying entropy struct color for node:", nodeId);
+
         d3.selectAll('.internal-node')
             .each(function () {
                 var node = d3.select(this).data()[0];
                 if (node.data.name === nodeId) {
-                    var descendants = selectAllDescendants(node, false, true);
+                    var descendants = selectAllDescendants(node, true, false); // Get all terminal descendants
+                    console.log("found descendants:", descendants);
                     var desc_fa = "";
                     for (var desc of descendants) {
-                        desc_fa += `>${desc.data.name}\n${faData[desc.data.name]}\n`;
+                        desc_fa += `>${desc.data.name}\n${leafData[desc.data.name]}\n`;
                     }
                     calcEntropyFromMSA(desc_fa).then((entropy) => mapEntropyToColors(entropy)).then((colors) => { setColorArr(colors) });
                 }
