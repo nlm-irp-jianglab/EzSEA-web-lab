@@ -105,7 +105,6 @@ export const parseNodeData = async (nodeData) => {
 
 // Calculate the entropy of a multiple sequence alignment given as a fasta string
 export const calcEntropyFromMSA = async (msa) => {
-    console.log(msa)
     const sequences = Object.values(await fastaToDict(msa));
     const numSequences = sequences.length;
     const seqLength = sequences[0].length;
@@ -162,11 +161,6 @@ export const mapEntropyToColors = async (entropyArray) => {
         const normalizedValue = normalize(entropy, minEntropy, maxEntropy);
         return interpolateColor(normalizedValue);
     });
-
-    // Calculate a legend with 20 evenly spaced entropy values
-    const legendValues = Array.from({ length: 20 }, (_, i) => minEntropy + (maxEntropy - minEntropy) * i / 19);
-    const legendColors = legendValues.map(value => interpolateColor(normalize(value, minEntropy, maxEntropy)));
-    console.log(legendColors);
 
     return colorArray;
 };
