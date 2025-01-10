@@ -375,7 +375,9 @@ app.post("/submit", upload.single('input_file'), (req, res) => {
             console.error(err); // Pino doesn't give new lines
         } else {
             logger.info("EzSEA run job started: " + job_id);
-            //monitorJob(job_id, "CPU", email);
+            if (email) {
+                monitorJob(job_id, "CPU", email);
+            }
         }
     });
 
@@ -557,16 +559,20 @@ app.get("/status/:id", (req, res) => {
                 var status = pod.status.phase.trim();
 
                 // Check container statuses for more detailed information
-                if (status === "Pending" && pod.status.containerStatuses) { // TODO alloc status never present here. Is second bool needed?
-                    const containerStatus = pod.status.containerStatuses[0];
-                    if (containerStatus.state.waiting && containerStatus.state.waiting.reason === "ContainerCreating") {
-                        return res.status(200).json({ logs: ["Resources allocated, building compute environment"], status: "container" });
+                if (status === "Pending") { // TODO alloc status never present here. Is second bool needed?
+                    if (pod.status.containerStatuses) {
+                        const containerStatus = pod.status.containerStatuses[0];
+                        if (containerStatus.state.waiting && containerStatus.state.waiting.reason === "ContainerCreating") {
+                            return res.status(200).json({ logs: ["Resources allocated, building compute environment"], status: "container" });
+                        } else {
+                            return res.status(200).json({ logs: ["Allocating resources for job, this may take a few minutes."], status: "alloc" });
+                        }
                     } else {
                         return res.status(200).json({ logs: ["Allocating resources for job, this may take a few minutes."], status: "alloc" });
                     }
                 } else if (status === "Failed") {
                     return res.status(200).json({ status: status });
-                } else { // status is Running, Succeeded, Failed, or Unknown
+                } else { // status is Running, Succeeded, Unknown
                     fs.readFile(filePath, 'utf8', (err, data) => {
                         if (err) {
                             if (status === "Running") {
