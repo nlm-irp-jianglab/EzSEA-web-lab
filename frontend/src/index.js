@@ -8,6 +8,7 @@ import Playground from "./pages/playground";
 import NotFoundPage from "./pages/notfoundpage";
 import Submit from "./pages/submit";
 import Status from "./pages/status";
+import Help from "./pages/help";
 import {
     BrowserRouter as Router,
     Routes,
@@ -56,6 +57,11 @@ root.render(
                         exact
                         path="/about"
                         element={<About />}
+                    />
+                    <Route
+                        exact
+                        path="/help"
+                        element={<Help />}
                     />
                     <Route
                         path="*"
