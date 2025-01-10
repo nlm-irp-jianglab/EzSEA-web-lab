@@ -284,18 +284,21 @@ const Results = () => {
                     }
                 } else { // edits to the leaf nodes
                     const node_label = element.select("text");
-                    const link = element.append("a")
-                        .attr("xlink:href", `https://www.uniprot.org/uniprotkb/${node_label.text()}`)  // Set link destination
-                        .attr("target", "_blank");  // Optional: open in new tab
+                    function compareMenuCondition(node) {
+                        return "Open Uniref Website";
+                    }
 
-                    // Move text element inside anchor
-                    node_label.each(function () {
-                        const text = d3.select(this);
-                        const parent = d3.select(this.parentNode);
-                        parent.node().removeChild(this);
-                        link.node().appendChild(this);
-                    });
+                    function compare(node, el) {
+                        // Open uniref website in new tab
+                        window.open(`https://www.uniprot.org/uniprotkb/${node.data.name}`, '_blank');
+                    }
+
+                    addCustomMenu(node_data, compareMenuCondition, function () {
+                        compare(node_data, element);
+                    }, () => true);
+
                     node_label.node().classList.add("leaf-node-label");
+                    
                     try {
                         // Adding EC number to leaf nodes
                         var ec = ecData[node_data.data.name];
@@ -934,9 +937,15 @@ const Results = () => {
             console.error("SVG element not found in treeRef.");
             return;
         }
+        // Create a copy of the svgElement
+        const svgCopy = svgElement.cloneNode(true);
+
+        // Edit the transform attribute of the copied SVG
+        svgCopy.setAttribute('transform', 'translate(20,0)');
+
         // Serialize the SVG content
         const serializer = new XMLSerializer();
-        let source = serializer.serializeToString(svgElement);
+        let source = serializer.serializeToString(svgCopy);
         // Manually styling the SVG content.
         const styleString = `
             <style>
@@ -974,57 +983,6 @@ const Results = () => {
         downloadLink.click();
         document.body.removeChild(downloadLink);
     };
-    function downloadCombinedSVG(left = 10, right = 20) {
-        // Select all svg elements within a specific div (e.g., with id "svgContainer")
-        const svgElements = document.querySelectorAll('#logo-stack svg');
-        if (svgElements.length === 0) {
-            console.error("No SVG elements found!");
-            return;
-        }
-        // Create a new SVG element that will contain all the others
-        const combinedSVG = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-        combinedSVG.setAttribute("xmlns", "http://www.w3.org/2000/svg");
-        // Positioning variables
-        let yOffset = 0;
-        const glyphWidth = seqLength > 999 ? 20 : 21.5;
-        svgElements.forEach((svg, index) => {
-            const height = 60; // Default height if not provided
-            // Create a group element to contain the svg
-            const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
-            // Adjust the position of the SVG using a transform
-            g.setAttribute("transform", `translate(${left * glyphWidth}, ${yOffset})`);
-            // Add the current SVG into the group element
-            const clonedSVG = svg.cloneNode(true);
-            g.appendChild(clonedSVG);
-            // Append the group element into the combined SVG
-            combinedSVG.appendChild(g);
-            // Update yOffset for the next svg to be placed below the current one
-            yOffset += parseFloat(height);
-        });
-        // Set the combined SVG size (width as the largest width, height as the total yOffset)
-        combinedSVG.setAttribute("width", "100%");
-        combinedSVG.setAttribute("height", "100%");
-        // Serialize the combined SVG to a string
-        const serializer = new XMLSerializer();
-        var svgString = serializer.serializeToString(combinedSVG);
-        const styleString = `
-        <style>
-            .glyphrect {
-                fill-opacity: 0.0;
-            }
-        </style>`;
-        svgString = svgString.replace('</svg>', `${styleString}</svg>`);
-        // Create a blob for the SVG data
-        const blob = new Blob([svgString], { type: 'image/svg+xml' });
-        // Create a download link
-        const downloadLink = document.createElement('a');
-        downloadLink.href = URL.createObjectURL(blob);
-        downloadLink.download = `combined.svg`; // Name of the downloaded file
-        // Trigger the download
-        document.body.appendChild(downloadLink);
-        downloadLink.click();
-        document.body.removeChild(downloadLink); // Clean up
-    }
 
     return (
         <div style={{ height: '100%', display: 'flex', flexDirection: 'column', maxWidth: '100vw', flexGrow: '1' }}>

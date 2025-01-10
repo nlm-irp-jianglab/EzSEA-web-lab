@@ -207,6 +207,19 @@ const Tol = () => {
                     }
                 } else { // append classname to leaf nodes
                     element.select("text").node().classList.add("leaf-node-label");
+
+                    function compareMenuCondition(node) {
+                        return "Open Uniref Website";
+                    }
+
+                    function compare(node, el) {
+                        // Open uniref website in new tab
+                        window.open(`https://www.uniprot.org/uniprotkb/${node.data.name}`, '_blank');
+                    }
+
+                    addCustomMenu(node_data, compareMenuCondition, function () {
+                        compare(node_data, element);
+                    }, () => true);
                 }
             }
 
@@ -291,7 +304,6 @@ const Tol = () => {
             return updatedLogoContent;  // Return the new state
         });
     };
-
 
     const pushNodeToLogo = (node) => {
         setLogoContent(prevLogoContent => {
