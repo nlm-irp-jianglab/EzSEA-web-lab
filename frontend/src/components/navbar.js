@@ -28,6 +28,9 @@ const Navbar = (options) => {
         <Link to="/about" className="about">
           <li>About</li>
         </Link>
+        <Link to="/help" className="help">
+          <li>Help</li>
+        </Link>
       </ul>
     </div>
   );
