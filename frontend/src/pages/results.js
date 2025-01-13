@@ -939,8 +939,8 @@ const Results = () => {
         // Create a copy of the svgElement
         const svgCopy = svgElement.cloneNode(true);
 
-        // Edit the transform attribute of the copied SVG
-        svgCopy.setAttribute('transform', 'translate(20,0)');
+        // Edit the transform attribute of the copied SVG to show entire tree
+        svgCopy.querySelector('g').setAttribute('transform', 'translate(20,0)');
 
         // Serialize the SVG content
         const serializer = new XMLSerializer();

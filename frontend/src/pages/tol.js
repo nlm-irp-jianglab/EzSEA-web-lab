@@ -738,6 +738,59 @@ const Tol = () => {
         );
     };
 
+    const downloadTreeAsSVG = () => {
+        const svgElement = treeRef.current.querySelector('svg'); // Select the SVG from the tree container
+        if (!svgElement) {
+            console.error("SVG element not found in treeRef.");
+            return;
+        }
+        // Create a copy of the svgElement
+        const svgCopy = svgElement.cloneNode(true);
+
+        // Edit the transform attribute of the copied SVG
+        svgCopy.querySelector('g').setAttribute('transform', 'translate(20,0)');
+
+        // Serialize the SVG content
+        const serializer = new XMLSerializer();
+        let source = serializer.serializeToString(svgCopy);
+        // Manually styling the SVG content.
+        const styleString = `
+            <style>
+                .branch {
+                    fill: none;
+                    stroke: #999;
+                    stroke-width: 2px;
+                }
+                .internal-node circle {
+                    fill: #CCC;
+                    stroke: black;
+                    stroke-width: 0.5px;
+                }
+                .node {
+                    font: 10px sans-serif;
+                }
+                .branch-tracer {
+                    stroke: #bbb;
+					stroke-dasharray: 3, 4;
+					stroke-width: 1px;
+                }
+            </style>`;
+        if (!source.includes('xmlns="http://www.w3.org/2000/svg"')) {
+            source = source.replace('<svg', `<svg xmlns="http://www.w3.org/2000/svg"`);
+        }
+        source = source.replace('</svg>', `${styleString}</svg>`);
+        // Create a Blob and trigger the download
+        const svgBlob = new Blob([source], { type: "image/svg+xml;charset=utf-8" });
+        const svgUrl = URL.createObjectURL(svgBlob);
+        // Create a download link and trigger the download
+        const downloadLink = document.createElement("a");
+        downloadLink.href = svgUrl;
+        downloadLink.download = "tree.svg";
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+    };
+
     return (
         <div style={{ height: '100%', display: 'flex', flexDirection: 'column', maxWidth: '100vw', flexGrow: '1' }}>
             <Navbar pageId={"Results: ru5hnx3m2np8010"} />
@@ -805,6 +858,7 @@ const Tol = () => {
                                 Download {fileName} Logo File
                             </button>
                         ))}
+                        <button onClick={downloadTreeAsSVG}>Tree SVG</button>
                     </div>
                 </div>
                 <div className="view">
@@ -989,7 +1043,7 @@ const Tol = () => {
                                     margin: '3px 3px'
                                 }}
                             ></div>
-                            <div style={{flex: '1', display: 'flex', flexDirection: 'column'}}>
+                            <div style={{ flex: '1', display: 'flex', flexDirection: 'column' }}>
                                 {colorArr && <img
                                     src={process.env.PUBLIC_URL + "/gradient.png"}
                                     alt="Gradient Legend"
