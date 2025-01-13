@@ -49,7 +49,7 @@ const Status = () => {
         // Fetch logs every 20 seconds
         const interval = setInterval(() => {
             fetchLogs();
-        }, 2000);
+        }, 20000);
 
         return () => clearInterval(interval);
     }, [jobId]);

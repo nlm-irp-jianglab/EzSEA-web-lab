@@ -16,28 +16,32 @@ export function MolStarWrapper({ structData, pocketData, selectedResidue, hovere
   const [isStructureLoaded, setIsStructureLoaded] = useState(false);
 
   async function renderPocket(plugin, pocketData, pocketNumber, hide = false) {
-    const pocketKey = `pocket${pocketNumber}`;
-    const secData = await plugin.builders.data.rawData({
-      data: pocketData[pocketKey]
-    }, { state: { isGhost: true } });
+    try {
+      const pocketKey = `pocket${pocketNumber}`;
+      const secData = await plugin.builders.data.rawData({
+        data: pocketData[pocketKey]
+      }, { state: { isGhost: true } });
 
-    const pocketTraj = await plugin.builders.structure.parseTrajectory(secData, "pdb");
-    const model = await plugin.builders.structure.createModel(pocketTraj);
-    const structure_add = await plugin.builders.structure.createStructure(model);
-    const components = {
-      polymer: await plugin.builders.structure.tryCreateComponentStatic(structure_add, "polymer"),
-    }
+      const pocketTraj = await plugin.builders.structure.parseTrajectory(secData, "pdb");
+      const model = await plugin.builders.structure.createModel(pocketTraj);
+      const structure_add = await plugin.builders.structure.createStructure(model);
+      const components = {
+        polymer: await plugin.builders.structure.tryCreateComponentStatic(structure_add, "polymer"),
+      }
 
-    const builder = plugin.builders.structure.representation;
-    const update = plugin.build();
+      const builder = plugin.builders.structure.representation;
+      const update = plugin.build();
 
-    const pocketModel = await builder.buildRepresentation(update, components.polymer, { type: "orientation", typeParams: { alpha: 0.51 } },
-      { tag: "polymer" });
+      const pocketModel = await builder.buildRepresentation(update, components.polymer, { type: "orientation", typeParams: { alpha: 0.51 } },
+        { tag: "polymer" });
 
-    await update.commit();
+      await update.commit();
 
-    if (hide) {
-      setSubtreeVisibility(plugin.state.data, plugin.managers.structure.hierarchy.current.structures[pocketNumber].components[0].cell.transform.ref, true);
+      if (hide) {
+        setSubtreeVisibility(plugin.state.data, plugin.managers.structure.hierarchy.current.structures[pocketNumber].components[0].cell.transform.ref, true);
+      }
+    } catch (error) {
+      console.error("Error rendering pocket:", error);
     }
   }
 

@@ -274,7 +274,6 @@ const Tol = () => {
                 'edge-styler': style_edges,
                 'show-scale': false,
                 'font-size': 12,
-                'background-color': 'lightblue',
                 'collapsible': true,
                 'reroot': true,
                 'hide': false, // Causes weird rendering in radial
