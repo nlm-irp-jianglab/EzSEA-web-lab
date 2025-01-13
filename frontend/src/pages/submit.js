@@ -9,7 +9,7 @@ import "../components/submit.css";
 import Snackbar, { SnackbarCloseReason } from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
-import { P } from '../components/glyphs';
+import HelpIcon from '@mui/icons-material/Help';
 
 const Submit = () => {
     const [inputFile, setInputFile] = useState(null);
@@ -27,8 +27,8 @@ const Submit = () => {
     const [ancestralProgram, setAncestralProgram] = useState("iqtree");
     const [alignmentProgram, setAlignmentProgram] = useState("famsa");
     const [database, setDatabase] = useState("uniref90");
-    const [lenWeight, setLenWeight] = useState(50);
-    const [conWeight, setConWeight] = useState(.5);
+    const [minLeaves, setMinLeaves] = useState(10);
+    const [conWeight, setConWeight] = useState(.01);
     const [conThreshold, setConThreshold] = useState(.85);
     const [submenu, setSubmenu] = useState(0);
 
@@ -146,38 +146,32 @@ const Submit = () => {
     const delinationMenu = () => {
         return (
             <div className="submenu">
-                <p>Weight of branch length in delination step</p>
+                <p>Weight of conserved residues in delination step
+                    <Tooltip title="Weight of conserved residues when determining the S score of a node, 
+                                    the higher weight results in less emphasis placed on the branches length" placement="top" arrow>
+                        <HelpIcon sx={{ width: ".95rem" }} />
+                    </Tooltip>
+                </p>
                 <span>
                     <Slider
                         size="medium"
-                        defaultValue={50}
+                        defaultValue={.01}
                         aria-label="default"
                         valueLabelDisplay="on"
                         min={0}
-                        max={100}
-                        value={lenWeight}
-                        onChange={(e, value) => setLenWeight(value)}
-                        style={{ width: '70%', marginTop: '1.5em' }}
-                        marks={[{ value: 0, label: '0' }, { value: 25, label: '25' }, { value: 50, label: '50' }, { value: 75, label: '75' }, { value: 100, label: '100' }]}
-                    />
-                </span>
-                <p>Weight of conserved residues in delination step</p>
-                <span>
-                    <Slider
-                        size="medium"
-                        defaultValue={.50}
-                        aria-label="default"
-                        valueLabelDisplay="on"
-                        min={0}
-                        max={1}
-                        step={.01}
+                        max={0.04}
+                        step={.001}
                         value={conWeight}
                         onChange={(e, value) => setConWeight(value)}
                         style={{ width: '70%', marginTop: '1.5em' }}
-                        marks={[{ value: 0, label: '0' }, { value: 1, label: '1.0' }]}
+                        marks={[{ value: 0, label: '0' }, { value: 0.01, label: '0.01' }, { value: 0.02, label: '0.02' }, { value: 0.03, label: '0.03' }, { value: 0.04, label: '0.04' }]}
                     />
                 </span>
-                <p>Conservation threshold</p>
+                <p>Conservation threshold
+                    <Tooltip title='A residue will be considered "conserved" and contribute to the score if its proportion in the alignment column meets or exceeds this threshold. For example, if the threshold is set to 0.85, and 86% of the residues in position X of the alignment are the same amino acid, then that position will be classified as conserved."' placement="top" arrow>
+                        <HelpIcon sx={{ width: ".95rem" }} />
+                    </Tooltip>
+                </p>
                 <span>
                     <Slider
                         size="medium"
@@ -191,6 +185,26 @@ const Submit = () => {
                         onChange={(e, value) => setConThreshold(value)}
                         style={{ width: '70%', marginTop: '1.5em' }}
                         marks={[{ value: 0, label: '0' }, { value: 1, label: '1.0' }]}
+                    />
+                </span>
+                <p>Minimum clade size
+                    <Tooltip title="Minimum number of leaves for a clade to be considered for the delineation step" placement="top" arrow>
+                        <HelpIcon sx={{ width: ".95rem" }} />
+                    </Tooltip>
+                </p>
+                <span>
+                    <Slider
+                        size="medium"
+                        defaultValue={10}
+                        aria-label="default"
+                        valueLabelDisplay="on"
+                        min={1}
+                        max={20}
+                        step={1}
+                        value={minLeaves}
+                        onChange={(e, value) => setMinLeaves(value)}
+                        style={{ width: '70%', marginTop: '1.5em' }}
+                        marks={[{ value: 1, label: '1 leaf' }, { value: 20, label: '20 leaves' }]}
                     />
                 </span>
             </div>
@@ -301,8 +315,8 @@ const Submit = () => {
         setAncestralProgram("iqtree");
         setAlignmentProgram("famsa");
         setDatabase("uniref90");
-        setLenWeight(50);
-        setConWeight(.5);
+        setMinLeaves(10);
+        setConWeight(.01);
         setConThreshold(.85);
         setSubmenu(0);
         setSubmitStatus(false);

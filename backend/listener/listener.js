@@ -100,8 +100,8 @@ app.post("/submit", upload.single('input_file'), (req, res) => {
     var tree_program = null;
     var asr_program = null;
     var align_program = null;
-    var len_weight = null;
-    var con_weight = null;
+    var con_weight = null; // 0 to 0.05 default 0.02
+    var min_leaves = null; // 5 to 20 default 10
     var email = null;
 
     try {
@@ -115,8 +115,8 @@ app.post("/submit", upload.single('input_file'), (req, res) => {
             tree_program,
             asr_program,
             align_program,
-            len_weight,
             con_weight,
+            min_leaves,
             email
         } = req.body);
 
@@ -332,7 +332,7 @@ app.post("/submit", upload.single('input_file'), (req, res) => {
                             "--threads", "4",
                             "--ec_table", "/database/database/ec_dict.pkl",
                             "--pdbtable", "/database/database/pdb_uniref.pkl",
-                            "--lenweight", String(len_weight),
+                            "--minleaves", String(min_leaves),
                             "--conweight", String(con_weight),
                         ],
                         "resources": {
