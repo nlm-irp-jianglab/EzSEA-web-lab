@@ -557,17 +557,20 @@ app.get("/status/:id", (req, res) => {
             } else { // Job is still running / being tracked by kubectl
                 const pod = podsRes.body.items[0];
                 var status = pod.status.phase.trim();
+                console.log("Pod found in k8s, status:", status);
 
                 // Check container statuses for more detailed information
-                if (status === "Pending") { // TODO alloc status never present here. Is second bool needed?
+                if (status === "Pending") {
                     if (pod.status.containerStatuses) {
                         const containerStatus = pod.status.containerStatuses[0];
+                        console.log("-Pod is pending, checking container statuses: ", containerStatus);
                         if (containerStatus.state.waiting && containerStatus.state.waiting.reason === "ContainerCreating") {
                             return res.status(200).json({ logs: ["Resources allocated, building compute environment"], status: "container" });
                         } else {
                             return res.status(200).json({ logs: ["Allocating resources for job, this may take a few minutes."], status: "alloc" });
                         }
                     } else {
+                        console.log("-Pod is pending, no container status found");
                         return res.status(200).json({ logs: ["Allocating resources for job, this may take a few minutes."], status: "alloc" });
                     }
                 } else if (status === "Failed") {
