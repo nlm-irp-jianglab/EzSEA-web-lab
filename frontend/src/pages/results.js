@@ -297,7 +297,7 @@ const Results = () => {
                     }, () => true);
 
                     node_label.node().classList.add("leaf-node-label");
-                    
+
                     try {
                         // Adding EC number to leaf nodes
                         var ec = ecData[node_data.data.name];
@@ -1091,28 +1091,40 @@ const Results = () => {
                     {Object.keys(logoContent).length > 0 && (
                         <div className="center-console">
                             {!isRightCollapsed && (
-                                <button className="triangle-button" onClick={toggleLeftCollapse}>
-                                    {isLeftCollapsed ? <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <title>Expand Left</title>
-                                        <path d="M21 6H13M9 6V18M21 10H13M21 14H13M21 18H13M3 10L5 12L3 14" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                    </svg> :
-                                        <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" transform='rotate(180)'>
-                                            <title>Collapse Left</title>
-                                            <path d="M21 6H13M9 6V18M21 10H13M21 14H13M21 18H13M3 10L5 12L3 14" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                        </svg>}
-                                </button>
+                                <div>
+                                    <Tooltip title={isLeftCollapsed ? "Expand Left" : "Collapse Left"} placement="top">
+                                        <button className="triangle-button" onClick={toggleLeftCollapse}>
+                                            {isLeftCollapsed ?
+                                                <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <title>Expand Left</title>
+                                                    <path d="M21 6H13M9 6V18M21 10H13M21 14H13M21 18H13M3 10L5 12L3 14" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                                </svg>
+                                                :
+                                                <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" transform='rotate(180)'>
+                                                    <title>Collapse Left</title>
+                                                    <path d="M21 6H13M9 6V18M21 10H13M21 14H13M21 18H13M3 10L5 12L3 14" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                                </svg>
+                                            }
+                                        </button>
+                                    </Tooltip>
+                                </div>
                             )}
                             {!isLeftCollapsed && (
-                                <button className="triangle-button" onClick={toggleRightCollapse}>
-                                    {isRightCollapsed ? <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" transform='rotate(180)'>
-                                        <title>Expand Right</title>
-                                        <path d="M21 6H13M9 6V18M21 10H13M21 14H13M21 18H13M3 10L5 12L3 14" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                    </svg> :
-                                        <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <title>Collapse Right</title>
-                                            <path d="M21 6H13M9 6V18M21 10H13M21 14H13M21 18H13M3 10L5 12L3 14" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                        </svg>}
-                                </button>
+                                <Tooltip title={isRightCollapsed ? "Expand Right" : "Collapse Right"} placement="bottom">
+                                    <button className="triangle-button" onClick={toggleRightCollapse}>
+                                        {isRightCollapsed ?
+                                            <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" transform='rotate(180)'>
+                                                <title>Expand Right</title>
+                                                <path d="M21 6H13M9 6V18M21 10H13M21 14H13M21 18H13M3 10L5 12L3 14" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                            </svg>
+                                            :
+                                            <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <title>Collapse Right</title>
+                                                <path d="M21 6H13M9 6V18M21 10H13M21 14H13M21 18H13M3 10L5 12L3 14" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                            </svg>
+                                        }
+                                    </button>
+                                </Tooltip>
                             )}
                         </div>
                     )}
@@ -1235,7 +1247,7 @@ const Results = () => {
                                     margin: '3px 3px'
                                 }}
                             ></div>
-                            <div style={{flex: '1', display: 'flex', flexDirection: 'column'}}>
+                            <div style={{ flex: '1', display: 'flex', flexDirection: 'column' }}>
                                 {colorArr && <img
                                     src={process.env.PUBLIC_URL + "/gradient.png"}
                                     alt="Gradient Legend"
@@ -1246,17 +1258,17 @@ const Results = () => {
                                         borderRadius: '4px'
                                     }}
                                 />}
-                            <div style={{ display: "flex", height: "100%", flexGrow: "1", flexDirection: isLeftCollapsed ? "column" : "row" }}>
+                                <div style={{ display: "flex", height: "100%", flexGrow: "1", flexDirection: isLeftCollapsed ? "column" : "row" }}>
 
-                                <div className="pvdiv" ref={pvdiv} style={{ height: '100%', flexGrow: "1" }}>
-                                    <MolstarViewer
-                                        structData={structData}
-                                        pocketData={pocketData}
-                                        selectedResidue={selectedResidue}
-                                        colorFile={colorArr}
-                                        hoveredResidue={hoveredResidue}
-                                        scrollLogosTo={(index) => handleScrollLogosTo(index)}
-                                    />
+                                    <div className="pvdiv" ref={pvdiv} style={{ height: '100%', flexGrow: "1" }}>
+                                        <MolstarViewer
+                                            structData={structData}
+                                            pocketData={pocketData}
+                                            selectedResidue={selectedResidue}
+                                            colorFile={colorArr}
+                                            hoveredResidue={hoveredResidue}
+                                            scrollLogosTo={(index) => handleScrollLogosTo(index)}
+                                        />
                                     </div>
                                 </div>
                             </div>

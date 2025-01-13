@@ -30,6 +30,7 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import Menu from '@mui/material/Menu';
 import DownloadDialog from '../components/downloadlogo.tsx';
+import Skeleton from '@mui/material/Skeleton';
 
 const logoFiles = {};
 
@@ -892,34 +893,46 @@ const Tol = () => {
                         <div
                             id="tree_container"
                             ref={treeRef}
-                        ></div>
+                        ><Skeleton variant="rounded" height="100em" animation="wave" sx={{ bgcolor: 'lightgrey' }} /></div>
                     </div>
 
                     {Object.keys(logoContent).length > 0 && (
                         <div className="center-console">
                             {!isRightCollapsed && (
-                                <button className="triangle-button" onClick={toggleLeftCollapse}>
-                                    {isLeftCollapsed ? <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <title>Expand Left</title>
-                                        <path d="M21 6H13M9 6V18M21 10H13M21 14H13M21 18H13M3 10L5 12L3 14" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                    </svg> :
-                                        <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" transform='rotate(180)'>
-                                            <title>Collapse Left</title>
-                                            <path d="M21 6H13M9 6V18M21 10H13M21 14H13M21 18H13M3 10L5 12L3 14" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                        </svg>}
-                                </button>
+                                <div>
+                                    <Tooltip title={isLeftCollapsed ? "Expand Left" : "Collapse Left"} placement="top">
+                                        <button className="triangle-button" onClick={toggleLeftCollapse}>
+                                            {isLeftCollapsed ?
+                                                <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <title>Expand Left</title>
+                                                    <path d="M21 6H13M9 6V18M21 10H13M21 14H13M21 18H13M3 10L5 12L3 14" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                                </svg>
+                                                :
+                                                <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" transform='rotate(180)'>
+                                                    <title>Collapse Left</title>
+                                                    <path d="M21 6H13M9 6V18M21 10H13M21 14H13M21 18H13M3 10L5 12L3 14" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                                </svg>
+                                            }
+                                        </button>
+                                    </Tooltip>
+                                </div>
                             )}
                             {!isLeftCollapsed && (
-                                <button className="triangle-button" onClick={toggleRightCollapse}>
-                                    {isRightCollapsed ? <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" transform='rotate(180)'>
-                                        <title>Expand Right</title>
-                                        <path d="M21 6H13M9 6V18M21 10H13M21 14H13M21 18H13M3 10L5 12L3 14" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                    </svg> :
-                                        <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <title>Collapse Right</title>
-                                            <path d="M21 6H13M9 6V18M21 10H13M21 14H13M21 18H13M3 10L5 12L3 14" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                        </svg>}
-                                </button>
+                                <Tooltip title={isRightCollapsed ? "Expand Right" : "Collapse Right"} placement="bottom">
+                                    <button className="triangle-button" onClick={toggleRightCollapse}>
+                                        {isRightCollapsed ?
+                                            <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" transform='rotate(180)'>
+                                                <title>Expand Right</title>
+                                                <path d="M21 6H13M9 6V18M21 10H13M21 14H13M21 18H13M3 10L5 12L3 14" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                            </svg>
+                                            :
+                                            <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <title>Collapse Right</title>
+                                                <path d="M21 6H13M9 6V18M21 10H13M21 14H13M21 18H13M3 10L5 12L3 14" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                            </svg>
+                                        }
+                                    </button>
+                                </Tooltip>
                             )}
                         </div>
                     )}
@@ -1069,7 +1082,7 @@ const Tol = () => {
                     )}
                 </div>
             </div>
-        </div>
+        </div >
     );
 };
 
