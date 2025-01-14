@@ -63,6 +63,10 @@ root.render(
                         path="/help"
                         element={<Help />}
                     />
+                    <Route
+                        path="*"
+                        element={<Submit />}
+                    />
                 </Routes>
             </Router>
         </>
