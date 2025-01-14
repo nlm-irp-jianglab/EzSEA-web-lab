@@ -239,7 +239,7 @@ const Submit = () => {
             "align_program": alignmentProgram,
             "num_seq": numSeq,
             "database": database,
-            "len_weight": lenWeight,
+            "min_leaves": minLeaves,
             "con_weight": conWeight
         }
 
