@@ -71,6 +71,7 @@ const Tol = () => {
     const pvdiv = useRef(null);
     const logoStackRef = useRef(null);
     const scrollInputRef = useRef(null);
+    const [importantResidues, setImportantResidues] = useState([]);
 
     // Storing tree reference itself
     const [treeObj, setTreeObj] = useState(null);
@@ -306,6 +307,7 @@ const Tol = () => {
     };
 
     const pushNodeToLogo = (node) => {
+        setImportantResidues([]); // Clear important residues (may cause unnecessary re-renders)
         setLogoContent(prevLogoContent => {
             const updatedLogoContent = { ...prevLogoContent };
             // Add or do nothing if node is already in logoContent
@@ -320,6 +322,7 @@ const Tol = () => {
     };
 
     const pushNodeToEntropyLogo = (node) => {
+        setImportantResidues([]); // Clear important residues (may cause unnecessary re-renders)
         setLogoContent(prevLogoContent => {
             const updatedLogoContent = { ...prevLogoContent };
 
@@ -488,6 +491,7 @@ const Tol = () => {
                     pushNodeToLogo(node)
                     pushNodeToLogo(node.parent);
                     pushNodeToEntropyLogo(node);
+                    setImportantResidues(nodeData);
                 }
             });
 
@@ -1038,7 +1042,7 @@ const Tol = () => {
                                         data={logoContent}
                                         onColumnClick={handleColumnClick}
                                         onColumnHover={handleColumnHover}
-                                        importantResiduesList={nodeData}
+                                        importantResiduesList={importantResidues}
                                         removeNodeHandle={handleNodeRemove}
                                         applyEntropyStructColor={applyEntropyStructColor}
                                         applyImportantStructColor={applyImportantStructColor}

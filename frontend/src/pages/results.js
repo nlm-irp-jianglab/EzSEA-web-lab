@@ -30,6 +30,7 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import Menu from '@mui/material/Menu';
 import DownloadDialog from '../components/downloadlogo.tsx';
+import Skeleton from '@mui/material/Skeleton';
 
 const Results = () => {
     const { jobId } = useParams();
@@ -49,7 +50,7 @@ const Results = () => {
     const [topNodes, setTopNodes] = useState({}); // Top 10 nodes for the tree
     const [asrData, setAsrData] = useState(null);
 
-    // State to store the logo content (formatted for logoJS) and color file
+    // Array of colors for the structure viewer
     const [colorArr, setColorArr] = useState(null);
 
     // Context states
@@ -75,6 +76,7 @@ const Results = () => {
     const pvdiv = useRef(null);
     const logoStackRef = useRef(null);
     const scrollInputRef = useRef(null);
+    const [importantResidues, setImportantResidues] = useState([]);
 
     // Storing tree reference itself
     const [treeObj, setTreeObj] = useState(null);
@@ -215,6 +217,7 @@ const Results = () => {
             }
 
             const tree = new pt.phylotree(newickData);
+            setTreeObj(tree);
 
             function style_nodes(element, node_data) {
                 var node_label = element.select("text");
@@ -353,8 +356,6 @@ const Results = () => {
 
             }
 
-            setTreeObj(tree);
-
 
             tree.render({
                 'container': "#tree_container",
@@ -411,6 +412,7 @@ const Results = () => {
         node: a node object 
     */
     const pushNodeToLogo = (node) => {
+        setImportantResidues([]); // Clear important residues (may cause unnecessary re-renders)
         setLogoContent(prevLogoContent => {
             const updatedLogoContent = { ...prevLogoContent };
             // Add or do nothing if node is already in logoContent
@@ -429,6 +431,7 @@ const Results = () => {
         node: a node object 
     */
     const pushNodeToEntropyLogo = (node) => {
+        setImportantResidues([]); // Clear important residues (may cause unnecessary re-renders)
         setLogoContent(prevLogoContent => {
             const updatedLogoContent = { ...prevLogoContent };
 
@@ -640,6 +643,7 @@ const Results = () => {
                     pushNodeToLogo(node)
                     pushNodeToLogo(node.parent);
                     pushNodeToEntropyLogo(node);
+                    setImportantResidues(nodeData);
                 }
             });
 
@@ -1085,7 +1089,7 @@ const Results = () => {
                         <div
                             id="tree_container"
                             ref={treeRef}
-                        ></div>
+                        ><Skeleton variant="rounded" height="100em" animation="wave" sx={{ bgcolor: 'lightgrey' }} /></div>
                     </div>
 
                     {Object.keys(logoContent).length > 0 && (
@@ -1230,7 +1234,7 @@ const Results = () => {
                                         data={logoContent}
                                         onColumnClick={handleColumnClick}
                                         onColumnHover={handleColumnHover}
-                                        importantResiduesList={nodeData}
+                                        importantResiduesList={importantResidues}
                                         removeNodeHandle={handleNodeRemove}
                                         applyEntropyStructColor={applyEntropyStructColor}
                                         applyImportantStructColor={applyImportantStructColor}

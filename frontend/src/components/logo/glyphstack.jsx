@@ -62,7 +62,7 @@ const GlyphStack = ({ height, width, indices, alphabet, lv, transform, alpha, in
 		<g transform={transform}>
 			{glyphs}
 			{/* {important && (<circle r={8} transform='translate(45,500)' fill={"red"}></circle>)} */}
-			<rect className="glyphrect" style={{ width: "73px", height: "445px", fill: important ? "blue" : "red", fillOpacity: important ? ".2" : ""}} // var border here to allow red border for important residues
+			<rect className="glyphrect" style={{ width: "73px", height: "500px", fill: important ? "blue" : "red", fillOpacity: important ? ".2" : ""}} // var border here to allow red border for important residues
 				onClick={onSymbolClick && (() => onSymbolClick(alphabet))}
 				onMouseOver={onSymbolMouseOver && (() => onSymbolMouseOver(alphabet))}
 			>
