@@ -65,7 +65,7 @@ root.render(
                     />
                     <Route
                         path="*"
-                        element={<Submit />}
+                        element={<NotFoundPage />}
                     />
                 </Routes>
             </Router>
