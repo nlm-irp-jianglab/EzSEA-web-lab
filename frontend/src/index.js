@@ -63,10 +63,6 @@ root.render(
                         path="/help"
                         element={<Help />}
                     />
-                    <Route
-                        path="*"
-                        element={<NotFoundPage />}
-                    />
                 </Routes>
             </Router>
         </>
