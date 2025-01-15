@@ -19,14 +19,14 @@ const Help = () => {
                     <h2>Workflow</h2>
                 </div>
                 <div className="help-content">
-                <img src={process.env.PUBLIC_URL + "/workflow.png"} alt="delineation" style={{ width: "100%" }}></img>
+                <img src={process.env.PUBLIC_URL + "/ezsea/workflow.png"} alt="delineation" style={{ width: "100%" }}></img>
                 </div>
 
                 <div className="submit-header">
                     <h2>Getting Started</h2>
                 </div>
                 <div className="help-content">
-                <img src={process.env.PUBLIC_URL + "/help_input.png"} alt="delineation" style={{ width: "40%" }}></img>
+                <img src={process.env.PUBLIC_URL + "/ezsea/help_input.png"} alt="delineation" style={{ width: "40%" }}></img>
                     <p>
                         EzSEA accepts <b>FASTA</b> or <b>PDB</b> files. The FASTA file should have a single valid header and amino acid sequence. If only a FASTA is provided, EzSEA will predict the 3D structure using ESMfold. You can download example files for a test run.
                     </p>
