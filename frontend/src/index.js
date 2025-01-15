@@ -67,6 +67,14 @@ root.render(
                             element={<Help />}
                         />
                         <Route
+                            path="/ezsea/"
+                            element={<Submit />}
+                        />
+                        <Route
+                            path="/ezsea/submit"
+                            element={<Submit />}
+                        />
+                        <Route
                             path="*"
                             element={<NotFoundPage />}
                         />
