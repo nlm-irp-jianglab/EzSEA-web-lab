@@ -644,12 +644,11 @@ const Results = () => {
                     pushNodeToLogo(node.parent);
                     pushNodeToEntropyLogo(node);
                     setImportantResidues(nodeData);
+                    setIsRightCollapsed(false);
+                    setPipVisible(true);
+                    findAndZoom(nodeId); // Zoom to the node
                 }
             });
-
-        setIsRightCollapsed(false);
-        setPipVisible(true);
-        findAndZoom(nodeId); // Zoom to the node
     }
 
     /*
