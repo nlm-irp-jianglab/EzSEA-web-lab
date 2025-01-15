@@ -3,9 +3,8 @@
     margin-bottom: 0;
     background-color: rgba(0, 0, 0, .03);
     border-radius: .5rem;
-    margin: 2em 5em;
+    margin: 2em 10em;
     display: block;
-    max-width: 1230px;
 }
 
 .processing-list-item {

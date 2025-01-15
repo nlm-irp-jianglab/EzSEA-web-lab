@@ -351,7 +351,7 @@ const Submit = () => {
                 </div>
 
                 <div className="alert">
-                    <b>12/16/2024</b> EzSEA sampletext!
+                    <b>1/15/2025</b> Migrated to Jiang Lab domain!
                 </div>
                 <br></br>
                 <div className="submit-header" style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -362,7 +362,7 @@ const Submit = () => {
                     <div className="form-group">
                         <div>
                             <input
-                                accept=".pdb,.fasta,.fa"
+                                accept=".pdb,.fasta,.fa,.fna,.mfa,.fas,.faa,.txt"
                                 className="file-input"
                                 style={{ display: 'none' }}
                                 id="raised-button-file"

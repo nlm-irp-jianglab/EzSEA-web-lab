@@ -48,7 +48,11 @@ const Status = () => {
 
         // Fetch logs every 20 seconds
         const interval = setInterval(() => {
-            fetchLogs();
+            if (jobStatus === "Error") {
+                clearInterval(interval);
+            } else {
+                fetchLogs();
+            }
         }, 20000);
 
         return () => clearInterval(interval);
@@ -83,7 +87,7 @@ const Status = () => {
             <Navbar pageId={"Status"} />
             <div className="processing-container">
                 <div>
-                    <h1>{submitError ? <span>Our servers are down</span> : "Job Processing..."}</h1>
+                    <h1>{jobStatus === "Error" ? <span>Job Failed!</span> : "Job Processing..."}</h1>
                 </div>
                 <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-evenly" }}>
                     <div className="processing-logo">
