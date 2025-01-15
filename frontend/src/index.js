@@ -13,73 +13,46 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from "react-route
 import ResultsApp from "./pages/resultsApp";
 
 const root = createRoot(document.getElementById("root"));
-const PathLogger = ({ children }) => {
-    const location = useLocation();
-    console.log('Current path:', location.pathname);
-    return children;
-};
+
+const DualPathRoutes = () => (
+    <Routes>
+        {/* Base paths */}
+        <Route path="/*" element={
+            <Routes>
+                <Route exact path="/" element={<Submit />} />
+                <Route exact path="/submit" element={<Submit />} />
+                <Route exact path="/reactvis" element={<Submit />} />
+                <Route path="/results/:jobId" element={<ResultsApp />} />
+                <Route path="/status/:jobId" element={<Status />} />
+                <Route path="/tol" element={<TolApp />} />
+                <Route exact path="/playground" element={<Playground />} />
+                <Route exact path="/about" element={<About />} />
+                <Route exact path="/help" element={<Help />} />
+            </Routes>
+        } />
+
+        {/* Ezsea prefixed paths */}
+        <Route path="/ezsea/*" element={
+            <Routes>
+                <Route exact path="/" element={<Submit />} />
+                <Route exact path="/submit" element={<Submit />} />
+                <Route exact path="/reactvis" element={<Submit />} />
+                <Route path="/results/:jobId" element={<ResultsApp />} />
+                <Route path="/status/:jobId" element={<Status />} />
+                <Route path="/tol" element={<TolApp />} />
+                <Route exact path="/playground" element={<Playground />} />
+                <Route exact path="/about" element={<About />} />
+                <Route exact path="/help" element={<Help />} />
+            </Routes>
+        } />
+    </Routes>
+);
 
 root.render(
     <React.StrictMode>
         <>
             <Router>
-                <PathLogger>
-                    <Routes>
-                        <Route
-                            exact
-                            path="/"
-                            element={<Submit />}
-                        />
-                        <Route
-                            exact
-                            path="/submit"
-                            element={<Submit />}
-                        />
-                        <Route
-                            exact
-                            path="/reactvis"
-                            element={<Submit />}
-                        />
-                        <Route
-                            path="/results/:jobId"
-                            element={<ResultsApp />}
-                        />
-                        <Route
-                            path="/status/:jobId"
-                            element={<Status />}
-                        />
-                        <Route
-                            path="/tol"
-                            element={<TolApp />}
-                        />
-                        <Route
-                            exact path="/playground"
-                            element={<Playground />}
-                        />
-                        <Route
-                            exact
-                            path="/about"
-                            element={<About />}
-                        />
-                        <Route
-                            exact
-                            path="/help"
-                            element={<Help />}
-                        />
-                        <Route
-                            path="/ezsea/"
-                            element={<Submit />}
-                        />
-                        <Route
-                            path="/ezsea/submit"
-                            element={<Submit />}
-                        />
-                        <Route
-                            path="*"
-                            element={<NotFoundPage />}
-                        />
-                    </Routes>
-                </PathLogger>
+                <DualPathRoutes />
             </Router>
         </>
     </React.StrictMode>
