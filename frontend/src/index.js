@@ -9,7 +9,7 @@ import NotFoundPage from "./pages/notfoundpage";
 import Submit from "./pages/submit";
 import Status from "./pages/status";
 import Help from "./pages/help";
-import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import ResultsApp from "./pages/resultsApp";
 
 const root = createRoot(document.getElementById("root"));
@@ -28,6 +28,7 @@ const DualPathRoutes = () => (
                 <Route exact path="/playground" element={<Playground />} />
                 <Route exact path="/about" element={<About />} />
                 <Route exact path="/help" element={<Help />} />
+                <Route path="*" element={<NotFoundPage />} />
             </Routes>
         } />
 
@@ -43,6 +44,7 @@ const DualPathRoutes = () => (
                 <Route exact path="/playground" element={<Playground />} />
                 <Route exact path="/about" element={<About />} />
                 <Route exact path="/help" element={<Help />} />
+                <Route path="*" element={<NotFoundPage />} />
             </Routes>
         } />
     </Routes>
@@ -50,10 +52,8 @@ const DualPathRoutes = () => (
 
 root.render(
     <React.StrictMode>
-        <>
-            <Router>
-                <DualPathRoutes />
-            </Router>
-        </>
+        <Router basename="/ezsea">
+            <DualPathRoutes />
+        </Router>
     </React.StrictMode>
 );
