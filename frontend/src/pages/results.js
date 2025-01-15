@@ -88,7 +88,7 @@ const Results = () => {
     useEffect(() => {
         try {
             // Fetching data from the backend
-            const response = fetch(`/api/results/${jobId}`);
+            const response = fetch(`${process.env.PUBLIC_URL}/api/results/${jobId}`);
             response.then(res => res.json())
                 .then(data => {
                     // Check if error

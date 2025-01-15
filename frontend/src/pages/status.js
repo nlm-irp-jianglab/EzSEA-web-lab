@@ -21,7 +21,7 @@ const Status = () => {
     // Function to fetch logs
     const fetchLogs = async () => {
         try {
-            const response = await fetch(`/api/status/${jobId}`);
+            const response = await fetch(`${process.env.PUBLIC_URL}/api/status/${jobId}`);
             const data = await response.json();
             if (response.status == 200) {
                 setLogs(data.logs);

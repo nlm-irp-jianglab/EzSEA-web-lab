@@ -252,7 +252,7 @@ const Submit = () => {
         });
 
         // Send JSON to backend
-        fetch('/api/submit', {
+        fetch(`${process.env.PUBLIC_URL}/api/submit`, {
             method: 'POST',
             body: formData
         }).then(response => {
