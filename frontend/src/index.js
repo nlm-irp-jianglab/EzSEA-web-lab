@@ -9,11 +9,7 @@ import NotFoundPage from "./pages/notfoundpage";
 import Submit from "./pages/submit";
 import Status from "./pages/status";
 import Help from "./pages/help";
-import {
-    BrowserRouter as Router,
-    Routes,
-    Route,
-} from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import ResultsApp from "./pages/resultsApp";
 
 const root = createRoot(document.getElementById("root"));
