@@ -342,8 +342,7 @@ app.get("/results/:id", async (req, res) => {
     try {
         var pdbFiles = fs.readdirSync(folderPath).filter(fn => fn.endsWith('.pdb')); // Returns an array of pdb files
     } catch (e) {
-        logger.error("Error reading pdb files: " + e);
-        return res.status(500).json({ structError: "Attempted to find pdb files. Does Visualization/ exist?" });
+        logger.error("Attempted to find pdb files. Does Visualization/ exist?: " + e);
     }
 
     var structPath = "";
