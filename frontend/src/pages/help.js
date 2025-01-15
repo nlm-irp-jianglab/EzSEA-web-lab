@@ -19,14 +19,14 @@ const Help = () => {
                     <h2>Workflow</h2>
                 </div>
                 <div className="help-content">
-                <img src={process.env.PUBLIC_URL + "/ezsea/workflow.png"} alt="delineation" style={{ width: "100%" }}></img>
+                    <img src={process.env.PUBLIC_URL + "/workflow.png"} alt="delineation" style={{ width: "100%" }}></img>
                 </div>
 
                 <div className="submit-header">
                     <h2>Getting Started</h2>
                 </div>
                 <div className="help-content">
-                <img src={process.env.PUBLIC_URL + "/ezsea/help_input.png"} alt="delineation" style={{ width: "40%" }}></img>
+                    <img src={process.env.PUBLIC_URL + "/help_input.png"} alt="delineation" style={{ width: "40%" }}></img>
                     <p>
                         EzSEA accepts <b>FASTA</b> or <b>PDB</b> files. The FASTA file should have a single valid header and amino acid sequence. If only a FASTA is provided, EzSEA will predict the 3D structure using ESMfold. You can download example files for a test run.
                     </p>
@@ -61,74 +61,74 @@ LFDVQALEDKGVQVSFVGDCNERAADINRAVEEGYLAANVL`}
                     <h2>Job Parameters</h2>
                 </div>
                 <div className="help-content">
-                <img src={process.env.PUBLIC_URL + "/help_homology.png"} alt="delineation" style={{ width: "60%" }}></img>
+                    <img src={process.env.PUBLIC_URL + "/help_homology.png"} alt="delineation" style={{ width: "60%" }}></img>
                     <p>The parameters in the <strong>Homolog</strong> tab allow you to customize the database used and the number of homologs retrieved.</p>
                     <table className="table">
                         <thead className="thead-dark">
-                        <tr>
-                            <th>Parameter</th>
-                            <th>Description</th>
-                        </tr>
+                            <tr>
+                                <th>Parameter</th>
+                                <th>Description</th>
+                            </tr>
                         </thead>
                         <tbody>
-                        <tr id="db">
-                            <td>Database</td>
-                            <td>EzSEA has UniRef100, UniRef90 (default), and UniRef50 available for homology searches. UniRef90 and 50 are a reduction of the UniRef100 database size.</td>
-                        </tr>
-                        <tr id="homologs">
-                            <td>Number of Sequences to Retrieve</td>
-                            <td>How many homologous sequences should EzSEA retrieve from the chosen UniRef database. These will be the top homologs found in the database. The final number of leaves in the tree may not be exactly this number due to quality control.</td>
-                        </tr>
+                            <tr id="db">
+                                <td>Database</td>
+                                <td>EzSEA has UniRef100, UniRef90 (default), and UniRef50 available for homology searches. UniRef90 and 50 are a reduction of the UniRef100 database size.</td>
+                            </tr>
+                            <tr id="homologs">
+                                <td>Number of Sequences to Retrieve</td>
+                                <td>How many homologous sequences should EzSEA retrieve from the chosen UniRef database. These will be the top homologs found in the database. The final number of leaves in the tree may not be exactly this number due to quality control.</td>
+                            </tr>
                         </tbody>
-                        </table>
+                    </table>
                     <img src={process.env.PUBLIC_URL + "/help_phylogeny.png"} alt="delineation" style={{ width: "60%" }}></img>
                     <p>The parameters in the <strong>Phylogeny</strong> tab allow the user to customize the phylogenetic tree built.</p>
                     <table className="table">
                         <thead className="thead-dark">
-                        <tr>
-                            <th>Parameter</th>
-                            <th>Description</th>
-                        </tr>
+                            <tr>
+                                <th>Parameter</th>
+                                <th>Description</th>
+                            </tr>
                         </thead>
                         <tbody>
-                        <tr id="alignprogram">
-                            <td>Alignment Program</td>
-                            <td>Which alignment program to use. Default is FAMSA.</td>
-                        </tr>
-                        <tr id="treeprogram">
-                            <td>Phylogenetic Tree Program</td>
-                            <td>Which program to use to build a phylogenetic tree. Note that IQ-TREE and RAxML are much slower, but more accurate options than the default. Expect to see runtime of at least a few hours if IQ-TREE/RAxML are chosen.</td>
-                        </tr>
-                        <tr id="asrprogram">
-                            <td>Ancestral State Inference Program</td>
-                            <td>Which ancestral state inference program to use. Note that for GRASP, the ancestral probabilities are not available, only the most probable ancestor.</td>
-                        </tr>
+                            <tr id="alignprogram">
+                                <td>Alignment Program</td>
+                                <td>Which alignment program to use. Default is FAMSA.</td>
+                            </tr>
+                            <tr id="treeprogram">
+                                <td>Phylogenetic Tree Program</td>
+                                <td>Which program to use to build a phylogenetic tree. Note that IQ-TREE and RAxML are much slower, but more accurate options than the default. Expect to see runtime of at least a few hours if IQ-TREE/RAxML are chosen.</td>
+                            </tr>
+                            <tr id="asrprogram">
+                                <td>Ancestral State Inference Program</td>
+                                <td>Which ancestral state inference program to use. Note that for GRASP, the ancestral probabilities are not available, only the most probable ancestor.</td>
+                            </tr>
                         </tbody>
-                        </table>
+                    </table>
                     <img src={process.env.PUBLIC_URL + "/help_delineation.png"} alt="delineation" style={{ width: "60%" }}></img>
                     <p>The parameters in the <strong>Delineation</strong> tab change the way the nodes are scored when delineating the enzyme.</p>
                     <table className="table">
                         <thead className="thead-dark">
-                        <tr>
-                            <th>Parameter</th>
-                            <th>Description</th>
-                        </tr>
+                            <tr>
+                                <th>Parameter</th>
+                                <th>Description</th>
+                            </tr>
                         </thead>
                         <tbody>
-                        <tr id="lenweight">
-                            <td>Weight of branch length in delination step</td>
-                            <td>How much the EzSEA delineation algorithm should take branch length into account when scoring nodes. The score is in part calculated through <code>branch_length × weight</code>. Default is 50.</td>
-                        </tr>
-                        <tr id="conweight">
-                            <td>Weight of conserved residues in delination step</td>
-                            <td>The weight assigned to each residue that meets the conservation threshold parameter (detailed below) for delineation scoring. To prioritize nodes with more conserved mutations and assign them a higher score, increase this parameter. The default value is 0.5, with a maximum allowable value of 1.0.</td>
-                        </tr>
-                        <tr id="conthreshold">
-                            <td>Conservation threshold</td>
-                            <td>A residue will be considered "conserved" and contribute to the score if its proportion in the alignment column meets or exceeds this threshold. For example, if the threshold is set to 0.85, and 86% of the residues in position X of the alignment are the same amino acid, then that position will be classified as conserved.</td>
-                        </tr>
+                            <tr id="lenweight">
+                                <td>Weight of branch length in delination step</td>
+                                <td>How much the EzSEA delineation algorithm should take branch length into account when scoring nodes. The score is in part calculated through <code>branch_length × weight</code>. Default is 50.</td>
+                            </tr>
+                            <tr id="conweight">
+                                <td>Weight of conserved residues in delination step</td>
+                                <td>The weight assigned to each residue that meets the conservation threshold parameter (detailed below) for delineation scoring. To prioritize nodes with more conserved mutations and assign them a higher score, increase this parameter. The default value is 0.5, with a maximum allowable value of 1.0.</td>
+                            </tr>
+                            <tr id="conthreshold">
+                                <td>Conservation threshold</td>
+                                <td>A residue will be considered "conserved" and contribute to the score if its proportion in the alignment column meets or exceeds this threshold. For example, if the threshold is set to 0.85, and 86% of the residues in position X of the alignment are the same amino acid, then that position will be classified as conserved.</td>
+                            </tr>
                         </tbody>
-                        </table>
+                    </table>
                 </div>
                 <br />
 
@@ -136,9 +136,9 @@ LFDVQALEDKGVQVSFVGDCNERAADINRAVEEGYLAANVL`}
                     <h2>Job Status Page</h2>
                 </div>
                 <div className="help-content">
-                <img src={process.env.PUBLIC_URL + "/status.png"} alt="delineation" style={{ width: "60%" }}></img>
-                <p>After clicking submit, you will be taken to a page to view the status of your job. Do not close the window unless you saved link provided on the status page, or provided an email on job submission.</p>
-                <p>If the job errors out, it will be reflected on the status page. Please double check the file formats you uploaded. If further issues occur, contact us through the email below.</p>
+                    <img src={process.env.PUBLIC_URL + "/status.png"} alt="delineation" style={{ width: "60%" }}></img>
+                    <p>After clicking submit, you will be taken to a page to view the status of your job. Do not close the window unless you saved link provided on the status page, or provided an email on job submission.</p>
+                    <p>If the job errors out, it will be reflected on the status page. Please double check the file formats you uploaded. If further issues occur, contact us through the email below.</p>
                 </div>
                 <br />
                 <div className="submit-header">
