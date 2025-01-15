@@ -132,7 +132,7 @@ const Results = () => {
                     }
 
                     if (data.structError) {
-                        // setErrorPopupVisible(true);
+                        setErrorPopupVisible(true);
                         console.error("Error fetching structure data:", data.structError);
                     } else {
                         setStructData(data.struct);
@@ -646,7 +646,9 @@ const Results = () => {
                     setImportantResidues(nodeData);
                     setIsRightCollapsed(false);
                     setPipVisible(true);
-                    findAndZoom(nodeId); // Zoom to the node
+                    this.setTimeout(() => {
+                        findAndZoom(nodeId);
+                    }, 1500);
                 }
             });
     }
@@ -989,7 +991,9 @@ const Results = () => {
         <div style={{ height: '100%', display: 'flex', flexDirection: 'column', maxWidth: '100vw', flexGrow: '1' }}>
             <Navbar pageId={`Results: ${jobId}`} />
             {isErrorPopupVisible && (
-                <ErrorPopup errorMessage="Results not available" onClose={() => setErrorPopupVisible(false)} />
+                <ErrorPopup errorMessage="Results not available" onClose={() => {setErrorPopupVisible(false);
+                    window.location.href = '/';
+                }} />
             )}
             <div style={{ display: 'flex', flexGrow: '1' }}>
                 <div className="sidebar" style={{
