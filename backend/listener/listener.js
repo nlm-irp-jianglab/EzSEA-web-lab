@@ -18,7 +18,7 @@ const storage = multer.diskStorage({
     },
     filename: (req, file, cb) => {
         const jobId = req.body.job_id;
-        const fileExt = file.originalname.split('.').pop();
+        var fileExt = file.originalname.split('.').pop();
         if (fileExt !== 'pdb') {
             fileExt = 'fasta'; // K8 jobs expect .fasta extensions
         }
