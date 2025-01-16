@@ -19,6 +19,9 @@ const storage = multer.diskStorage({
     filename: (req, file, cb) => {
         const jobId = req.body.job_id;
         const fileExt = file.originalname.split('.').pop();
+        if (fileExt !== 'pdb') {
+            fileExt = 'fasta'; // K8 jobs expect .fasta extensions
+        }
         cb(null, `${jobId}.${fileExt}`);
     }
 });
@@ -159,7 +162,7 @@ app.post("/submit", upload.single('input_file'), (req, res) => {
                     "name": job_id + "-struct"
                 },
                 "spec": {
-                    "backoffLimit": 0,
+                    "backoffLimit": 6,
                     "template": {
                         "metadata": {
                             "labels": {
@@ -240,7 +243,7 @@ app.post("/submit", upload.single('input_file'), (req, res) => {
             "name": job_id
         },
         "spec": {
-            "backoffLimit": 0,
+            "backoffLimit": 6,
             "template": {
                 "metadata": {
                     "labels": {
@@ -340,19 +343,19 @@ app.get("/results/:id", async (req, res) => {
             });
     });
 
+    var structPath = "";
 
     try {
         var pdbFiles = fs.readdirSync(folderPath).filter(fn => fn.endsWith('.pdb')); // Returns an array of pdb files
+        if (!pdbFiles) {
+            logger.warn(`No PDB files found in folder: ${folderPath}`);
+            structPath = null;
+        } else {
+            structPath = path.join(folderPath, pdbFiles[0]);
+        }
     } catch (e) {
         logger.error("Attempted to find pdb files. Does Visualization/ exist?: " + e);
-    }
 
-    var structPath = "";
-    if (!pdbFiles) {
-        logger.warn(`No PDB files found in folder: ${folderPath}`);
-        structPath = null;
-    } else {
-        structPath = path.join(folderPath, pdbFiles[0]);
     }
 
     const inputPath = `/output/EzSEA_${id}/input.fasta`;
