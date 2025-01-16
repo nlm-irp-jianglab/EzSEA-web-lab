@@ -291,8 +291,31 @@ const Results = () => {
                     }
 
                     function compare(node, el) {
-                        // Open uniref website in new tab
-                        window.open(`https://www.uniprot.org/uniprotkb/${node.data.name}`, '_blank');
+                        const url = `https://rest.uniprot.org/uniref/search?query=${node.data.name}&fields=id`;
+
+                        fetch(url)
+                            .then(response => {
+                                if (!response.ok) {
+                                    alert('UniProt database error.');
+                                } else {
+                                    return response.json();
+                                }
+                            })
+                            .then(data => {
+                                if (data && data.results) {
+                                    const uniref100 = data.results.find(result => result.id.startsWith('UniRef100'));
+                                    if (uniref100) {
+                                        const unirefUrl = `https://www.uniprot.org/uniref/${uniref100.id}`;
+                                        window.open(unirefUrl, '_blank');
+                                    } else {
+                                        alert('No UniRef100 ID found.');
+                                    }
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error checking URL:', error);
+                                alert('There was an error checking the URL. Please check your network connection and try again.');
+                            });
                     }
 
                     addCustomMenu(node_data, compareMenuCondition, function () {

@@ -403,7 +403,6 @@ const Submit = () => {
                                     {inputFile && <span style={{ marginLeft: '10px' }}>{inputFile.name}</span>}
                                 </>
                             )}
-                            {inputFile && <span style={{ marginLeft: '10px' }}>{inputFile.name}</span>}
                             <p>Download example <a href="" onClick={downloadSampleFASTA}>FASTA file</a> or <a href="" onClick={downloadSamplePDB}>PDB file</a>.</p>
                         </div>
                         <div>
