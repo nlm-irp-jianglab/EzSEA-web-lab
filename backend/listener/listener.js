@@ -346,7 +346,7 @@ app.get("/results/:id", async (req, res) => {
     }
 
     var structPath = "";
-    if (pdbFiles.length === 0) {
+    if (!pdbFiles) {
         logger.warn(`No PDB files found in folder: ${folderPath}`);
         structPath = null;
     } else {
