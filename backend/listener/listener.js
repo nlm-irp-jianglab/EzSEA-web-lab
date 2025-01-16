@@ -47,8 +47,8 @@ app.use(express.static(path.join(__dirname, 'build')));
 
 // Monitor for job completion
 function monitorJob(jobId, jobType, recipient) {
-    const completionCmd = `kubectl wait pod -l id=${jobId} --for=condition=complete `;
-    const failureCmd = `kubectl wait --for=condition=failed job/${jobId}`;
+    const completionCmd = `kubectl wait pod -l id=${jobId} --for=condition=complete --timeout=12h`;
+    const failureCmd = `kubectl wait pod -l id=${jobId} --for=condition=failed --timeout=12h`;
 
     const completionProcess = exec(completionCmd);
     const failureProcess = exec(failureCmd);
