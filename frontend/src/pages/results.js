@@ -992,7 +992,7 @@ const Results = () => {
             <Navbar pageId={`Results: ${jobId}`} />
             {isErrorPopupVisible && (
                 <ErrorPopup errorMessage="Results not available" onClose={() => {setErrorPopupVisible(false);
-                    window.location.href = '/';
+                    window.location.href = `${process.env.PUBLIC_URL}/`;
                 }} />
             )}
             <div style={{ display: 'flex', flexGrow: '1' }}>
