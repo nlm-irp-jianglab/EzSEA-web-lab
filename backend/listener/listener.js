@@ -44,7 +44,7 @@ app.use(express.static(path.join(__dirname, 'build')));
 
 // Monitor for job completion
 function monitorJob(jobId, jobType, recipient) {
-    const completionCmd = `kubectl wait --for=condition=complete job/${jobId}`;
+    const completionCmd = `kubectl wait pod -l id=${jobId} --for=condition=complete `;
     const failureCmd = `kubectl wait --for=condition=failed job/${jobId}`;
 
     const completionProcess = exec(completionCmd);
@@ -58,6 +58,8 @@ function monitorJob(jobId, jobType, recipient) {
                 logger.info(`${jobType} job ${jobId} completed successfully, sending push email.`);
                 hasResponded = true;
                 sendEmail(recipient, jobId);
+            } else {
+                logger.info(`${jobType} job ${jobId} monitoring failed. May have taken longer than timeout`);
             }
         }
     });
@@ -513,7 +515,7 @@ app.get("/status/:id", (req, res) => {
                             }
                         }
                         const logsArray = data.split('\n');
-                        const lastLine = logsArray[logsArray.length - 2]; // last line is empty
+                        const lastLine = logsArray[logsArray.length - 1]; // last line is empty or maybe not?
 
                         if (/Error|failed|Stopping/i.test(lastLine)) {
                             status = "Error"; // Check for error keywords
