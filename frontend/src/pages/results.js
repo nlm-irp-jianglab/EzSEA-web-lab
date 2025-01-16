@@ -644,13 +644,14 @@ const Results = () => {
                     pushNodeToLogo(node.parent);
                     pushNodeToEntropyLogo(node);
                     setImportantResidues(nodeData);
-                    setIsRightCollapsed(false);
-                    setPipVisible(true);
-                    this.setTimeout(() => {
-                        findAndZoom(nodeId);
-                    }, 1500);
                 }
             });
+
+        setIsRightCollapsed(false);
+        setPipVisible(true);
+        setTimeout(() => {
+            findAndZoom(nodeId);
+        }, 2000);
     }
 
     /*
@@ -991,7 +992,8 @@ const Results = () => {
         <div style={{ height: '100%', display: 'flex', flexDirection: 'column', maxWidth: '100vw', flexGrow: '1' }}>
             <Navbar pageId={`Results: ${jobId}`} />
             {isErrorPopupVisible && (
-                <ErrorPopup errorMessage="Results not available" onClose={() => {setErrorPopupVisible(false);
+                <ErrorPopup errorMessage="Results not available" onClose={() => {
+                    setErrorPopupVisible(false);
                     window.location.href = `${process.env.PUBLIC_URL}/`;
                 }} />
             )}

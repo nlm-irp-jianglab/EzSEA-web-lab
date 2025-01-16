@@ -162,7 +162,7 @@ app.post("/submit", upload.single('input_file'), (req, res) => {
                     "name": job_id + "-struct"
                 },
                 "spec": {
-                    "backoffLimit": 6,
+                    "backoffLimit": 5,
                     "template": {
                         "metadata": {
                             "labels": {
@@ -191,7 +191,7 @@ app.post("/submit", upload.single('input_file'), (req, res) => {
                                     "limits": {
                                         "nvidia.com/gpu": "1",
                                         "cpu": "4",
-                                        "memory": "32Gi"
+                                        "memory": "64Gi"
                                     }
                                 },
                                 "volumeMounts": [{
@@ -474,7 +474,7 @@ app.get("/status/:id", (req, res) => {
 
                     // Dynamically check for status based on the last line of logs
                     if (logsArray.length > 0) {
-                        const lastLine = logsArray[logsArray.length - 1];
+                        const lastLine = logsArray[logsArray.length - 2];
                         if (/Error|failed|Stopping/i.test(lastLine)) {
                             status = "Error"; // Check for error keywords
                         } else if (/completed|success|Done/i.test(lastLine)) {

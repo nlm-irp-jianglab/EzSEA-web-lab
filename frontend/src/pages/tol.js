@@ -497,7 +497,9 @@ const Tol = () => {
 
         setIsRightCollapsed(false);
         setPipVisible(true);
-        findAndZoom(nodeId);
+        setTimeout(() => {
+            findAndZoom(nodeId);
+        }, 2000);
     }
 
     const findAndZoom = (query) => {

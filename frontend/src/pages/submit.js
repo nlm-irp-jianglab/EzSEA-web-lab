@@ -10,11 +10,14 @@ import Snackbar, { SnackbarCloseReason } from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
 import HelpIcon from '@mui/icons-material/Help';
+import Switch from '@mui/material/Switch';
 
 const Submit = () => {
     const [inputFile, setInputFile] = useState(null);
     const [canSubmit, setCanSubmit] = useState(false);
     const [submitStatus, setSubmitStatus] = useState(false); // Once button is clicked, submit status set to True, ensure no double submission
+    const [textInput, setTextInput] = useState(false);
+    const textInputRef = useRef(null);
 
     const emailInput = useRef(null);
     const fileInput = useRef(null);
@@ -228,12 +231,23 @@ const Submit = () => {
         setSubmitStatus(true); // Prevent double submission
         const id = Math.random().toString(36).substring(2, 9) + Date.now().toString(36);
         const formData = new FormData();
-
+    
+        let inputFileToUpload = inputFile;
+        let inputFileName = inputFile ? inputFile.name : '';
+    
+        if (textInput) {
+            const textContent = textInputRef.current.value;
+            const fileExt = textContent.startsWith('>') ? 'fasta' : 'pdb';
+            inputFileName = `input.${fileExt}`;
+            const blob = new Blob([textContent], { type: 'text/plain' });
+            inputFileToUpload = new File([blob], inputFileName, { type: 'text/plain' });
+        }
+    
         const json = {
             "job_id": id,
             "email": emailInput.current.value,
-            "input_file": inputFile,
-            "input_file_name": inputFile.name,
+            "input_file": inputFileToUpload,
+            "input_file_name": inputFileName,
             "tree_program": phylogeneticProgram,
             "asr_program": ancestralProgram,
             "align_program": alignmentProgram,
@@ -242,15 +256,15 @@ const Submit = () => {
             "min_leaves": minLeaves,
             "con_weight": conWeight
         }
-
+    
         Object.keys(json).forEach(key => {
             if (key === 'input_file') {
-                formData.append('input_file', inputFile);
+                formData.append('input_file', inputFileToUpload);
             } else {
                 formData.append(key, json[key]);
             }
         });
-
+    
         // Send JSON to backend
         fetch(`${process.env.PUBLIC_URL}/api/submit`, {
             method: 'POST',
@@ -270,7 +284,7 @@ const Submit = () => {
                         + currentdate.getHours() + ":"
                         + currentdate.getMinutes() + ":"
                         + currentdate.getSeconds();
-
+    
                     // Redirect to the results page
                     navigate(`/status/${id}`, {
                         state: {
@@ -281,14 +295,13 @@ const Submit = () => {
                         }
                     });
                 });
-
+    
             }
         }).catch((error) => {
             console.error('Error:', error);
             setSnackbarOpen(true);
             setSubmitStatus(false);
         });
-
     }
 
     useEffect(() => {
@@ -349,32 +362,47 @@ const Submit = () => {
                     <br></br>
                     <span className="ibm-plex-sans-semibold">Please cite the following <a href="">paper</a> if you are using EzSEA for your research!</span>
                 </div>
-
-                <div className="alert">
-                    <b>1/15/2025</b> Migrated to Jiang Lab domain!
-                </div>
-                <br></br>
                 <div className="submit-header" style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <h2>Input Data</h2>
+                    <span>
+                        Upload
+                        <Switch size="small" checked={textInput} onChange={() => setTextInput(!textInput)} />
+                        Text Input
+                    </span>
                 </div>
                 <div className='input-container'>
-                    <p>Please provide a FASTA or PDB file. </p>
                     <div className="form-group">
                         <div>
-                            <input
-                                accept=".pdb,.fasta,.fa,.fna,.mfa,.fas,.faa,.txt"
-                                className="file-input"
-                                style={{ display: 'none' }}
-                                id="raised-button-file"
-                                type="file"
-                                onChange={handleInputFile}
-                                ref={fileInput}
-                            />
-                            <label htmlFor="raised-button-file">
-                                <Button variant="contained" component="span" className="upload-button">
-                                    Upload
-                                </Button>
-                            </label>
+                            {textInput ? (
+                                <>
+                                    <p>Please enter a FASTA or PDB sequence. </p>
+                                    <textarea
+                                        placeholder="Input Sequence"
+                                        className="data-input"
+                                        ref={textInputRef}
+                                        style={{ height: "150px", width: "100%", resize: "vertical", minHeight: "100px" }}>
+                                    </textarea>
+                                </>
+                            ) : (
+                                <>
+                                    <p>Please provide a FASTA or PDB file. </p>
+                                    <input
+                                        accept=".pdb,.fasta,.fa,.fna,.mfa,.fas,.faa,.txt"
+                                        className="file-input"
+                                        style={{ display: 'none' }}
+                                        id="raised-button-file"
+                                        type="file"
+                                        onChange={handleInputFile}
+                                        ref={fileInput}
+                                    />
+                                    <label htmlFor="raised-button-file">
+                                        <Button variant="contained" component="span" className="upload-button">
+                                            Upload
+                                        </Button>
+                                    </label>
+                                    {inputFile && <span style={{ marginLeft: '10px' }}>{inputFile.name}</span>}
+                                </>
+                            )}
                             {inputFile && <span style={{ marginLeft: '10px' }}>{inputFile.name}</span>}
                             <p>Download example <a href="" onClick={downloadSampleFASTA}>FASTA file</a> or <a href="" onClick={downloadSamplePDB}>PDB file</a>.</p>
                         </div>

@@ -141,9 +141,15 @@ export const LogoCard = ({ id, index, header, moveCard, ppm = null, fasta = null
                     }}
                 >
                     <p style={{ paddingLeft: "30px" }}>
-                        <button style={{ background: "none", color: "inherit", border: "none", padding: "0", outline: "inherit", cursor: "pointer" }}
-                            onClick={() => { findAndZoom(nodeId) }}
-                        >
+                        <button
+                            className="logo-btn"
+                            style={{
+                                outline: "none",
+                                cursor: "pointer",
+                                borderRadius: "5px",
+                                border: "black solid 1px"
+                            }}
+                            onClick={() => { findAndZoom(nodeId) }}>
                             <b>{header}</b>
                         </button>
                     </p>
