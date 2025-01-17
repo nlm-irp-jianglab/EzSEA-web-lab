@@ -18,6 +18,8 @@ const Submit = () => {
     const [submitStatus, setSubmitStatus] = useState(false); // Once button is clicked, submit status set to True, ensure no double submission
     const [textInput, setTextInput] = useState(false);
     const textInputRef = useRef(null);
+    const [warnFasta, setWarnFasta] = useState(false);
+    const [warnMsg, setWarnMsg] = useState('');
 
     const emailInput = useRef(null);
     const fileInput = useRef(null);
@@ -49,6 +51,30 @@ const Submit = () => {
     const downloadSamplePDB = (e) => {
         e.preventDefault();
         console.log("Downloading sample PDB file");
+    }
+
+    const verifyInputText = () => {
+        const textContent = textInputRef.current.value;
+        const lines = textContent.split('\n');
+
+        if (textContent.startsWith('>')) { // Input is FASTA
+            if (lines.length > 1 && lines[1].length > 20 && lines[1].length < 1001) {
+                setCanSubmit(true);
+                setWarnFasta(false);
+            } else {
+                setWarnFasta(true);
+                setCanSubmit(false);
+                setWarnMsg('Please enter a valid FASTA sequence');
+            }
+        } else { // Input is PDB
+            if (textContent.trim().length > 0) { // Input is PDB
+                setCanSubmit(true);
+                setWarnFasta(false);
+            } else { // Input is empty
+                setCanSubmit(false);
+                setWarnFasta(false);
+            }
+        }
     }
 
     const phylogenyMenu = () => {
@@ -231,10 +257,10 @@ const Submit = () => {
         setSubmitStatus(true); // Prevent double submission
         const id = Math.random().toString(36).substring(2, 9) + Date.now().toString(36);
         const formData = new FormData();
-    
+
         let inputFileToUpload = inputFile;
         let inputFileName = inputFile ? inputFile.name : '';
-    
+
         if (textInput) {
             const textContent = textInputRef.current.value;
             const fileExt = textContent.startsWith('>') ? 'fasta' : 'pdb';
@@ -242,7 +268,7 @@ const Submit = () => {
             const blob = new Blob([textContent], { type: 'text/plain' });
             inputFileToUpload = new File([blob], inputFileName, { type: 'text/plain' });
         }
-    
+
         const json = {
             "job_id": id,
             "email": emailInput.current.value,
@@ -256,7 +282,7 @@ const Submit = () => {
             "min_leaves": minLeaves,
             "con_weight": conWeight
         }
-    
+
         Object.keys(json).forEach(key => {
             if (key === 'input_file') {
                 formData.append('input_file', inputFileToUpload);
@@ -264,7 +290,7 @@ const Submit = () => {
                 formData.append(key, json[key]);
             }
         });
-    
+
         // Send JSON to backend
         fetch(`${process.env.PUBLIC_URL}/api/submit`, {
             method: 'POST',
@@ -284,7 +310,7 @@ const Submit = () => {
                         + currentdate.getHours() + ":"
                         + currentdate.getMinutes() + ":"
                         + currentdate.getSeconds();
-    
+
                     // Redirect to the results page
                     navigate(`/status/${id}`, {
                         state: {
@@ -295,7 +321,7 @@ const Submit = () => {
                         }
                     });
                 });
-    
+
             }
         }).catch((error) => {
             console.error('Error:', error);
@@ -305,7 +331,7 @@ const Submit = () => {
     }
 
     useEffect(() => {
-        if (inputFile) {
+        if (inputFile && !textInput) {
             setCanSubmit(true);
         } else {
             setCanSubmit(false);
@@ -376,12 +402,21 @@ const Submit = () => {
                             {textInput ? (
                                 <>
                                     <p>Please enter a FASTA or PDB sequence. </p>
-                                    <textarea
-                                        placeholder="Input Sequence"
-                                        className="data-input"
-                                        ref={textInputRef}
-                                        style={{ height: "150px", width: "100%", resize: "vertical", minHeight: "100px" }}>
-                                    </textarea>
+                                    <Tooltip title="Please enter valid FASTA format" placement="bottom" arrow
+                                        open={warnFasta}
+                                        onOpen={() => setWarnFasta(true)}
+                                        onClose={() => setWarnFasta(false)}
+                                        disableHoverListener={true}
+                                        disableFocusListener={true}
+                                    >
+                                        <textarea
+                                            placeholder="Input Sequence"
+                                            className="data-input"
+                                            onChange={verifyInputText}
+                                            ref={textInputRef}
+                                            style={{ height: "150px", width: "100%", resize: "vertical", minHeight: "100px" }}>
+                                        </textarea>
+                                    </Tooltip>
                                 </>
                             ) : (
                                 <>
