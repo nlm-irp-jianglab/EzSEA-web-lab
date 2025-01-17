@@ -19,7 +19,6 @@ const Submit = () => {
     const [textInput, setTextInput] = useState(false);
     const textInputRef = useRef(null);
     const [warnFasta, setWarnFasta] = useState(false);
-    const [warnMsg, setWarnMsg] = useState('');
 
     const emailInput = useRef(null);
     const fileInput = useRef(null);
@@ -64,7 +63,6 @@ const Submit = () => {
             } else {
                 setWarnFasta(true);
                 setCanSubmit(false);
-                setWarnMsg('Please enter a valid FASTA sequence');
             }
         } else { // Input is PDB
             if (textContent.trim().length > 0) { // Input is PDB

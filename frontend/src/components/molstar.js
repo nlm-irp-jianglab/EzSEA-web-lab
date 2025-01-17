@@ -149,7 +149,10 @@ export function MolStarWrapper({ structData, pocketData, selectedResidue, hovere
           const selections = Array.from(
             window.molstar.managers.structure.selection.entries.values()
           );
-          console.log(window.molstar.selection);
+
+          //Remove previous selections by turning selection mode on and off
+
+
           // selections is auto-sorted, lowest residue id first. Therefore, when multiple residues are selected, 
           // the logo will only scroll to the residue with the lowest id.
           var localSelected = [];
@@ -159,15 +162,15 @@ export function MolStarWrapper({ structData, pocketData, selectedResidue, hovere
             if (!structure) continue;
             Structure.eachAtomicHierarchyElement(structure, {
               residue: (loc) => {
-                console.log(loc);
                 const position = StructureProperties.residue.label_seq_id(loc);
                 localSelected.push({ position });
               },
             });
-            console.log(Structure.eachAtomicHierarchyElement)
           }
           if (localSelected[0]) {
             scrollLogosTo(localSelected[0].position);
+            window.molstar.selectionMode = !window.molstar.selectionMode;
+            window.molstar.selectionMode = !window.molstar.selectionMode;
           }
         });
 
