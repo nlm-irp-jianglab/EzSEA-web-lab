@@ -46,35 +46,18 @@ app.use(bodyParser.urlencoded({ extended: false, limit: '50mb' }));
 app.use(express.static(path.join(__dirname, 'build')));
 
 // Monitor for job completion
-function monitorJob(jobId, jobType, recipient) {
+function monitorJob(jobId, jobType, recipient) { // Need to handle failure case, and maybe timeout case better
     logger.info("Monitoring job: " + jobId);
-    const completionCmd = `kubectl wait pod -l id=${jobId} --for=condition=completed --timeout=12h`;
-    const failureCmd = `kubectl wait pod -l id=${jobId} --for=condition=failed --timeout=12h`;
+    const completionCmd = `kubectl wait --for=condition=complete job/${jobId} --timeout=12h`;
 
     const completionProcess = exec(completionCmd);
-    const failureProcess = exec(failureCmd);
-
-    let hasResponded = false;
 
     completionProcess.on('exit', (code) => {
-        if (!hasResponded) {
-            if (code === 0) {
-                logger.info(`${jobType} job ${jobId} completed successfully, sending push email.`);
-                hasResponded = true;
-                sendEmail(recipient, jobId);
-            } else {
-                logger.info(`${jobType} job ${jobId} monitoring failed. May have taken longer than timeout`);
-            }
-        }
-    });
-
-    failureProcess.on('exit', (code) => {
-        if (!hasResponded) {
-            if (code === 0) {
-                logger.error(`${jobType} job ${jobId} failed.`);
-                hasResponded = true;
-                // Handle failure case
-            }
+        if (code === 0) {
+            logger.info(`${jobType} job ${jobId} completed successfully, sending push email.`);
+            sendEmail(recipient, jobId);
+        } else {
+            logger.info(`${jobType} job ${jobId} monitoring failed. May have taken longer than timeout`);
         }
     });
 }
