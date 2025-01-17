@@ -49,20 +49,52 @@ app.use(express.static(path.join(__dirname, 'build')));
 function monitorJob(jobId, jobType, recipient) { // Need to handle failure case, and maybe timeout case better
     logger.info("Monitoring job: " + jobId);
     const completionCmd = `kubectl wait --for=condition=complete job/${jobId} --timeout=12h`;
+    const failureCmd = `kubectl wait --for=condition=failed job/${jobId} --timeout=12h`;
 
     const completionProcess = exec(completionCmd);
+    const failureProcess = exec(failureCmd);
+
+    let failureOccurred = false;
+
+    failureProcess.on('exit', (code) => {
+        if (code === 0) {
+            failureOccurred = true;
+            logger.info(`${jobType} job ${jobId} failed, sending failure email.`);
+            sendFailureEmail(recipient, jobId);
+        } else {
+            logger.info(`${jobType} job ${jobId} failure monitoring failed. May have taken longer than timeout`);
+        }
+    });
 
     completionProcess.on('exit', (code) => {
-        if (code === 0) {
-            logger.info(`${jobType} job ${jobId} completed successfully, sending push email.`);
-            sendEmail(recipient, jobId);
-        } else {
-            logger.info(`${jobType} job ${jobId} monitoring failed. May have taken longer than timeout`);
+        if (!failureOccurred) {
+            if (code === 0) {
+                logger.info(`${jobType} job ${jobId} completed successfully, sending push email.`);
+                sendSuccessEmail(recipient, jobId);
+            } else {
+                logger.info(`${jobType} job ${jobId} monitoring failed. May have taken longer than timeout`);
+            }
         }
     });
 }
 
-const sendEmail = async (recipient, jobId) => {
+const sendSuccessEmail = async (recipient, jobId) => {
+    try {
+        const response = await emailjs.send("service_key", "template_key", {
+            recipient: recipient,
+            jobId: jobId,
+        },
+            {
+                publicKey: "PUBLIC_KEY",
+                privateKey: "PRIVATE_KEY",
+            });
+        logger.info('Email sent successfully:', response);
+    } catch (error) {
+        logger.info("Error sending email:", error);
+    }
+};
+
+const sendFailureEmail = async (recipient, jobId) => {
     try {
         const response = await emailjs.send("service_key", "template_key", {
             recipient: recipient,
@@ -493,7 +525,7 @@ app.get("/status/:id", (req, res) => {
                     return res.status(200).json({ status: status });
                 } else { // status is Running, Succeeded, Unknown
                     if (status === "Succeeded") {
-                        return res.status(200).json({ logs: logsArray, status: "done" });
+                        return res.status(200).json({ logs: "", status: "done" });
                     } else {
                         fs.readFile(filePath, 'utf8', (err, data) => {
                             if (err) {
