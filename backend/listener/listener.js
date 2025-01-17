@@ -48,7 +48,7 @@ app.use(express.static(path.join(__dirname, 'build')));
 // Monitor for job completion
 function monitorJob(jobId, jobType, recipient) {
     logger.info("Monitoring job: " + jobId);
-    const completionCmd = `kubectl wait pod -l id=${jobId} --for=condition=complete --timeout=12h`;
+    const completionCmd = `kubectl wait pod -l id=${jobId} --for=condition=completed --timeout=12h`;
     const failureCmd = `kubectl wait pod -l id=${jobId} --for=condition=failed --timeout=12h`;
 
     const completionProcess = exec(completionCmd);
@@ -509,35 +509,39 @@ app.get("/status/:id", (req, res) => {
                 } else if (status === "Failed") {
                     return res.status(200).json({ status: status });
                 } else { // status is Running, Succeeded, Unknown
-                    fs.readFile(filePath, 'utf8', (err, data) => {
-                        if (err) {
-                            if (status === "Running") {
-                                return res.status(200).json({ logs: ['Generating logs...'], status: "container" })
-                            } else {
-                                logger.error("Error reading file:", err);
-                                return res.status(500).json({ error: "No log file was found for this job." });
+                    if (status === "Succeeded") {
+                        return res.status(200).json({ logs: logsArray, status: "done" });
+                    } else {
+                        fs.readFile(filePath, 'utf8', (err, data) => {
+                            if (err) {
+                                if (status === "Running") {
+                                    return res.status(200).json({ logs: ['Generating logs...'], status: "container" })
+                                } else {
+                                    logger.error("Error reading file:", err);
+                                    return res.status(500).json({ error: "No log file was found for this job." });
+                                }
                             }
-                        }
-                        const logsArray = data.split('\n');
-                        const lastLine = logsArray[logsArray.length - 1]; // last line is empty or maybe not?
+                            const logsArray = data.split('\n');
+                            const lastLine = logsArray[logsArray.length - 2]; // last line is empty or maybe not?
 
-                        if (/Error|failed|Stopping/i.test(lastLine)) {
-                            status = "Error"; // Check for error keywords
-                        } else if (/completed|success|Done/i.test(lastLine)) {
-                            status = "done"; // Check for successful completion
-                        } else if (/EC/i.test(lastLine)) {
-                            status = "annot"; // Check for annotation
-                        } else if (/delineation/i.test(lastLine)) {
-                            status = "delineation"; // If none of the above conditions match
-                        } else if (/Tree/i.test(lastLine)) {
-                            status = "tree";
-                        } else if (/Alignment/i.test(lastLine)) {
-                            status = "align";
-                        } else if (/diamond/i.test(lastLine)) {
-                            status = "db";
-                        }
-                        return res.status(200).json({ logs: logsArray, status: status });
-                    });
+                            if (/Error|failed|Stopping/i.test(lastLine)) {
+                                status = "Error"; // Check for error keywords
+                            } else if (/completed|success|Done/i.test(lastLine)) {
+                                status = "done"; // Check for successful completion
+                            } else if (/EC/i.test(lastLine)) {
+                                status = "annot"; // Check for annotation
+                            } else if (/delineation/i.test(lastLine)) {
+                                status = "delineation"; // If none of the above conditions match
+                            } else if (/Tree/i.test(lastLine)) {
+                                status = "tree";
+                            } else if (/Alignment/i.test(lastLine)) {
+                                status = "align";
+                            } else if (/diamond/i.test(lastLine)) {
+                                status = "db";
+                            }
+                            return res.status(200).json({ logs: logsArray, status: status });
+                        });
+                    }
                 }
             }
 

@@ -147,7 +147,7 @@ const Submit = () => {
                             defaultValue={500}
                             aria-label="default"
                             valueLabelDisplay="on"
-                            min={500}
+                            min={50}
                             max={2000}
                             step={10}
                             value={numSeq}
@@ -487,14 +487,9 @@ const Submit = () => {
                 <div className="submit-header">
                     <h2>Webserver Status: Online</h2>
                 </div>
-                <br></br>
-                <h4>News</h4>
-                <p><b>12/16/2024</b> EzSEA sampletext!</p>
-
                 <div>
                     <br></br>
                     <hr></hr>
-                    <p>Citation</p>
                 </div>
             </div>
 
