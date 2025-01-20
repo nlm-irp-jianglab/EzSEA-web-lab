@@ -384,7 +384,6 @@ const Submit = () => {
                     <span className="ibm-plex-sans-semibold">See an example of the webserver's output </span><a href={process.env.PUBLIC_URL + "/tol"}>here</a>
                     <br></br>
                     <br></br>
-                    <span className="ibm-plex-sans-semibold">Please cite the following <a href="">paper</a> if you are using EzSEA for your research!</span>
                 </div>
                 <div className="submit-header" style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <h2>Input Data</h2>
