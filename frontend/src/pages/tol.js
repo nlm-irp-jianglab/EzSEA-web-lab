@@ -125,9 +125,11 @@ const Tol = () => {
         Promise.all([1, 2, 3, 4, 5].map(i =>
             fetch(`${process.env.PUBLIC_URL}/example/pockets/pocket${i}_atm.pdb`)
                 .then(response => response.text())
+                .then(text => ({ [`pocket${i}`]: text }))
         ))
-            .then(pocketTexts => {
-                setPocketData(pocketTexts); // Assuming you have a setPocketData state setter
+            .then(pocketArray => {
+                const pocketData = Object.assign({}, ...pocketArray);
+                setPocketData(pocketData);
             })
             .catch(error => console.error('Error loading pocket data:', error));
 

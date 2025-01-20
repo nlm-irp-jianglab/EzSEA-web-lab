@@ -44,13 +44,39 @@ const Submit = () => {
 
     const downloadSampleFASTA = (e) => {
         e.preventDefault();
-        console.log("Downloading sample FASTA file");
-    }
+
+        fetch(`${process.env.PUBLIC_URL}/bilr.fasta`)
+            .then(response => response.blob())
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = "bilr.fasta";
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+            })
+            .catch(error => console.error('Error downloading BILR file:', error));
+    };
 
     const downloadSamplePDB = (e) => {
         e.preventDefault();
-        console.log("Downloading sample PDB file");
-    }
+        
+        fetch(`${process.env.PUBLIC_URL}/bilr.pdb`)
+            .then(response => response.blob())
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = "bilr.pdb";
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+            })
+            .catch(error => console.error('Error downloading PDB file:', error));
+    };
 
     const verifyInputText = () => {
         const textContent = textInputRef.current.value;
