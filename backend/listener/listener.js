@@ -178,7 +178,7 @@ app.post("/submit", upload.single('input_file'), (req, res) => {
                     "name": job_id + "-struct"
                 },
                 "spec": {
-                    "backoffLimit": 5,
+                    "backoffLimit": 0,
                     "template": {
                         "metadata": {
                             "labels": {
@@ -259,7 +259,7 @@ app.post("/submit", upload.single('input_file'), (req, res) => {
             "name": job_id
         },
         "spec": {
-            "backoffLimit": 6,
+            "backoffLimit": 0,
             "template": {
                 "metadata": {
                     "labels": {
