@@ -77,16 +77,15 @@ function monitorJob(jobId, jobType, recipient) { // Need to handle failure case,
         }
     });
 }
-
 const sendSuccessEmail = async (recipient, jobId) => {
     try {
-        const response = await emailjs.send("service_key", "template_key", {
+        const response = await emailjs.send("service_4xzjhqa", "template_tvfo26t", {
             recipient: recipient,
             jobId: jobId,
         },
             {
-                publicKey: "PUBLIC_KEY",
-                privateKey: "PRIVATE_KEY",
+                publicKey: "XERY1jPqO6z7AFRg9",
+                privateKey: "hJinkbgdeR5NnpDnlENm-",
             });
         logger.info('Email sent successfully:', response);
     } catch (error) {
@@ -96,20 +95,19 @@ const sendSuccessEmail = async (recipient, jobId) => {
 
 const sendFailureEmail = async (recipient, jobId) => {
     try {
-        const response = await emailjs.send("service_key", "template_key", {
+        const response = await emailjs.send("service_4xzjhqa", "template_7w1hzy5", {
             recipient: recipient,
             jobId: jobId,
         },
             {
-                publicKey: "PUBLIC_KEY",
-                privateKey: "PRIVATE_KEY",
+                publicKey: "XERY1jPqO6z7AFRg9",
+                privateKey: "hJinkbgdeR5NnpDnlENm-",
             });
         logger.info('Email sent successfully:', response);
     } catch (error) {
         logger.info("Error sending email:", error);
     }
 };
-
 app.post("/submit", upload.single('input_file'), (req, res) => {
     // Retrieve JSON from the POST body 
     var error = null;
