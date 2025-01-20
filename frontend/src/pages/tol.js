@@ -44,6 +44,7 @@ const Tol = () => {
     const [structData, setStructData] = useState(null); // Structure data
     const [topNodes, setTopNodes] = useState({}); // Top 10 nodes for the tree
     const [asrData, setAsrData] = useState(null);
+    const [pocketData, setPocketData] = useState({}); // Pocket data
 
     // State to store the logo content (formatted for logoJS) and color file
     const [colorArr, setColorArr] = useState(null);
@@ -114,6 +115,21 @@ const Tol = () => {
             });
 
         readFastaToDict(`${process.env.PUBLIC_URL}/example/seq_trimmed.afa`).then(data => { setLeafData(data) });
+
+        // Fetch the structure data
+        // fetch(`${process.env.PUBLIC_URL}/example/seq.pdb`)
+        //     .then(response => response.text())
+        //     .then(data => setStructData(data));
+
+        // Fetch pocket data
+        Promise.all([1, 2, 3, 4, 5].map(i =>
+            fetch(`${process.env.PUBLIC_URL}/example/pockets/pocket${i}_atm.pdb`)
+                .then(response => response.text())
+        ))
+            .then(pocketTexts => {
+                setPocketData(pocketTexts); // Assuming you have a setPocketData state setter
+            })
+            .catch(error => console.error('Error loading pocket data:', error));
 
         const uint8ArrayToString = (uint8Array) => {
             const decoder = new TextDecoder('utf-8');
@@ -307,7 +323,7 @@ const Tol = () => {
             treeRef.current.appendChild(tree.display.show());
 
             // Start with pan to input query
-            findAndZoom("PA14_rph");
+            findAndZoom("bilR");
         }
     }, [newickData, faData, asrData, refresh]);
 
@@ -822,7 +838,7 @@ const Tol = () => {
 
     return (
         <div style={{ height: '100%', display: 'flex', flexDirection: 'column', maxWidth: '100vw', flexGrow: '1' }}>
-            <Navbar pageId={"Results: ru5hnx3m2np8010"} />
+            <Navbar pageId={"Results: BilR Example"} />
             {isErrorPopupVisible && (
                 <ErrorPopup errorMessage="An error occurred!" onClose={closeErrorPopup} />
             )}
@@ -894,7 +910,7 @@ const Tol = () => {
                     <div className="tree-div" style={{ width: isLeftCollapsed ? '2%' : (pipVisible ? '50%' : '100%'), textAlign: "center" }}>
                         <ButtonGroup variant="contained" aria-label="Basic button group">
                             <Tooltip title="Recenter on input" placement="top">
-                                <Button onClick={() => findAndZoom("PA14_rph")}><FilterCenterFocusIcon /></Button>
+                                <Button onClick={() => findAndZoom("bilR")}><FilterCenterFocusIcon /></Button>
                             </Tooltip>
                             <Tooltip title="Label Toggles" placement="top">
                                 <Button
@@ -1099,6 +1115,8 @@ const Tol = () => {
 
                                     <div className="pvdiv" ref={pvdiv} style={{ height: '100%', flexGrow: "1" }}>
                                         <MolstarViewer
+                                            structData={structData}
+                                            pocketData={pocketData}
                                             selectedResidue={selectedResidue}
                                             colorFile={colorArr}
                                             hoveredResidue={hoveredResidue}

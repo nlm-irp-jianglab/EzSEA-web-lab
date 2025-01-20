@@ -381,7 +381,7 @@ const Submit = () => {
                     <h1 className="ibm-plex-sans-medium">Welcome to EzSEA web!</h1>
                     <hr></hr>
                     <p>A tool that combines structure, phylogenetics, and ancestral state reconstruction to delineate an enzyme from its closest relatives and identify evolutionarily important residues.</p>
-                    <span className="ibm-plex-sans-semibold">See an example of the webserver's output </span><a href="">here</a>
+                    <span className="ibm-plex-sans-semibold">See an example of the webserver's output </span><a href={process.env.PUBLIC_URL + "/tol"}>here</a>
                     <br></br>
                     <br></br>
                     <span className="ibm-plex-sans-semibold">Please cite the following <a href="">paper</a> if you are using EzSEA for your research!</span>

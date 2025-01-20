@@ -17,6 +17,7 @@ export function MolStarWrapper({ structData, pocketData, selectedResidue, hovere
 
   async function renderPocket(plugin, pocketData, pocketNumber, hide = false) {
     try {
+      console.log(pocketData[pocketNumber])
       const pocketKey = `pocket${pocketNumber}`;
       const secData = await plugin.builders.data.rawData({
         data: pocketData[pocketKey]
@@ -82,7 +83,7 @@ export function MolStarWrapper({ structData, pocketData, selectedResidue, hovere
 
       // Loading the default pdb file
       if (structData == null) {
-        await fetch(`${process.env.PUBLIC_URL}/example/seq.pdb`)
+        await fetch(`${process.env.PUBLIC_URL}/example/bilR.pdb`)
           .then((response) => response.text())
           .then((text) => {
             structData = text;
@@ -109,7 +110,6 @@ export function MolStarWrapper({ structData, pocketData, selectedResidue, hovere
       }
 
       const cartoon = structure.representation.representations.polymer.data.repr;
-      const reprCtx = window.molstar.representation.structure;
 
       cartoon.setTheme({
         "color": {
