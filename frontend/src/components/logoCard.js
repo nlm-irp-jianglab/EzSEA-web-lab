@@ -155,7 +155,7 @@ export const LogoCard = ({ id, index, header, moveCard, ppm = null, fasta = null
                     </p>
                     <span style={{ paddingRight: "30px" }}>
                         {fasta && (
-                            <Tooltip title="Color Entropy" placement="top">
+                            <Tooltip title="Color Conservation" placement="top">
                                 <button
                                     className={`logo-color-btn logo-btn ${activeButton === `entropy-${index}` ? "active" : ""
                                         }`}

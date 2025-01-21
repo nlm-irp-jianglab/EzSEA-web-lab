@@ -208,11 +208,11 @@ const Submit = () => {
                 <span>
                     <Slider
                         size="medium"
-                        defaultValue={.01}
+                        defaultValue={.05}
                         aria-label="default"
                         valueLabelDisplay="on"
-                        min={0}
-                        max={0.04}
+                        min={0.01}
+                        max={0.1}
                         step={.001}
                         value={conWeight}
                         onChange={(e, value) => setConWeight(value)}
@@ -379,7 +379,7 @@ const Submit = () => {
         setAlignmentProgram("famsa");
         setDatabase("uniref90");
         setMinLeaves(10);
-        setConWeight(.01);
+        setConWeight(.05);
         setConThreshold(.85);
         setSubmenu(0);
         setSubmitStatus(false);
