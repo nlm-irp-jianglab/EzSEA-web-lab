@@ -483,12 +483,11 @@ app.get("/status/:id", (req, res) => {
                         logger.error(`Error reading log file for job ${id}, does it exist?`);
                         return res.status(500).json({ error: "There was an error reading the log file. Please ensure your job ID is correct." });
                     }
-                    const logsArray = data.split('\n').filter(line => line.trim() !== ''); // Remove empty lines
+                    const logsArray = data.split('\n').filter(line => line.trim().length > 0); // Remove empty lines
                     let status = "Unknown"; // Default status
 
-                    // Dynamically check for status based on the last line of logs
                     if (logsArray.length > 0) {
-                        const lastLine = logsArray[logsArray.length - 2];
+                        const lastLine = logsArray[logsArray.length - 1];
                         if (/Error|failed|Stopping/i.test(lastLine)) {
                             status = "Error"; // Check for error keywords
                         } else if (/completed|success|Done/i.test(lastLine)) {
