@@ -91,7 +91,7 @@ const Status = () => {
                 </div>
                 <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-evenly" }}>
                     <div className="processing-logo">
-                        <img src={process.env.PUBLIC_URL + "/tree.svg"} alt="Logo" style={{ width: "90%" }}></img>
+                        <img src={process.env.PUBLIC_URL + "/tree.svg"} alt="Logo" style={{ width: "18em" }}></img>
                     </div>
                     <div className="processing-list">
                         {renderStatusLoading()}

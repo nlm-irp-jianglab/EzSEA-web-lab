@@ -173,7 +173,7 @@ const Submit = () => {
                             defaultValue={500}
                             aria-label="default"
                             valueLabelDisplay="on"
-                            min={50}
+                            min={500}
                             max={2000}
                             step={10}
                             value={numSeq}
