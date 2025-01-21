@@ -486,10 +486,8 @@ app.get("/status/:id", (req, res) => {
                     const logsArray = data.split('\n').filter(line => line.trim().length > 0); // Remove empty lines
                     let status = "Unknown"; // Default status
 
+                    // Dynamically check for status based on the last line of logs
                     if (logsArray.length > 0) {
-                        if (logsArray[logsArray.length - 1].trim() === '') {
-                            logsArray.pop();
-                        }
                         const lastLine = logsArray[logsArray.length - 1];
                         if (/Error|failed|Stopping/i.test(lastLine)) {
                             status = "Error"; // Check for error keywords
@@ -536,7 +534,7 @@ app.get("/status/:id", (req, res) => {
                                     return res.status(500).json({ error: "No log file was found for this job." });
                                 }
                             }
-                            const logsArray = data.split('\n');
+                            const logsArray = data.split('\n').filter(line => line.trim().length > 0); // Remove empty lines
                             const lastLine = logsArray[logsArray.length - 2]; // last line is empty or maybe not?
 
                             if (/Error|failed|Stopping/i.test(lastLine)) {
