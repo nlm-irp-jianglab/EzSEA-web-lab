@@ -32,7 +32,7 @@ const Submit = () => {
     const [alignmentProgram, setAlignmentProgram] = useState("famsa");
     const [database, setDatabase] = useState("uniref90");
     const [minLeaves, setMinLeaves] = useState(10);
-    const [conWeight, setConWeight] = useState(.01);
+    const [conWeight, setConWeight] = useState(.05);
     const [conThreshold, setConThreshold] = useState(.85);
     const [submenu, setSubmenu] = useState(0);
 
@@ -217,7 +217,7 @@ const Submit = () => {
                         value={conWeight}
                         onChange={(e, value) => setConWeight(value)}
                         style={{ width: '70%', marginTop: '1.5em' }}
-                        marks={[{ value: 0, label: '0' }, { value: 0.01, label: '0.01' }, { value: 0.02, label: '0.02' }, { value: 0.03, label: '0.03' }, { value: 0.04, label: '0.04' }]}
+                        marks={[{ value: 0, label: '0' }, { value: 0.025, label: '0.025' }, { value: 0.05, label: '0.05' }, { value: 0.075, label: '0.075' }, { value: 0.1, label: '0.1' }]}
                     />
                 </span>
                 <p>Conservation threshold

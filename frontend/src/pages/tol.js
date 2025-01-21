@@ -665,9 +665,18 @@ const Tol = () => {
         setLabelMenuAnchor(null);
     };
 
-    const handleDownload = (filename, content) => {
+    const handleDownload = (filename, content, fasta = false) => {
+        // If content is an object, stringify it; otherwise, use the content as it is
+        var fileContent;
+        if (fasta) {
+            fileContent = jsonToFasta(content);
+        } else {
+            fileContent = typeof content === 'object' ? JSON.stringify(content, null, 2) : content;
+        }
+
+        // Create a Blob and download the file
         const element = document.createElement("a");
-        const file = new Blob([content], { type: 'application/json' });
+        const file = new Blob([fileContent], { type: 'text/plain' });
         element.href = URL.createObjectURL(file);
         element.download = filename;
         document.body.appendChild(element); // Required for this to work in FireFox
@@ -679,11 +688,15 @@ const Tol = () => {
         const element = document.createElement("a");
         var zip = new JSZip();
 
-        zip.file("tree.nwk", newickData).file("asr.fa", jsonToFasta(faData)).file("seq.pdb", structData);
+        zip.file("asr.fa", jsonToFasta(faData))
+            .file("leaf.afa", jsonToFasta(leafData))
+            .file("tree.nwk", newickData)
+            .file("nodes.json", JSON.stringify(nodeData, null, 2))
+            .file("seq.pdb", structData);
 
         zip.generateAsync({ type: "blob" }).then(function (blob) {
             element.href = URL.createObjectURL(blob);
-            element.download = "files.zip";
+            element.download = `BilR_all.zip`;
             document.body.appendChild(element); // Required for this to work in FireFox
             element.click();
             document.body.removeChild(element);
@@ -692,11 +705,6 @@ const Tol = () => {
 
     const downloadNewickData = () => {
         handleDownload('tree_data.nwk', newickData);
-    };
-
-    const downloadLogoFile = (fileName) => {
-        const logoFileContent = JSON.stringify(logoFiles[fileName], null, 2); // Formatting as JSON
-        handleDownload(`${fileName}.json`, logoFileContent);
     };
 
     const downloadsDropdown = () => {
@@ -899,12 +907,12 @@ const Tol = () => {
                         {downloadsDropdown()}
                     </div>
                     <div className="downloads-dropdown-content dropdown-content transition-element">
-                        <button onClick={downloadNewickData}>Newick Data</button>
-                        {Object.keys(logoFiles).map(fileName => (
-                            <button key={fileName} onClick={() => downloadLogoFile(fileName)}>
-                                Download {fileName} Logo File
-                            </button>
-                        ))}
+                        <button onClick={() => handleDownload(`BilR_asr_nodes.fa`, faData, true)}>Ancestral Sequences</button>
+                        <button onClick={() => handleDownload(`BilR_leaf_nodes.fa`, leafData, true)}>Leaf Sequences</button>
+                        <button onClick={() => handleDownload(`BilR_nodes.json`, nodeData)}>Node Info</button>
+                        <button onClick={() => handleDownload(`BilR_struct.pdb`, structData)}>Structure PDB</button>
+                        <button onClick={() => handleDownload(`BilR_tree_data.nwk`, newickData)}>Tree Newick</button>
+                        <button onClick={() => downloadZip()}>All</button>
                         <button onClick={downloadTreeAsSVG}>Tree SVG</button>
                     </div>
                 </div>

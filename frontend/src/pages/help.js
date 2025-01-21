@@ -115,17 +115,16 @@ LFDVQALEDKGVQVSFVGDCNERAADINRAVEEGYLAANVL`}
                             </tr>
                         </thead>
                         <tbody>
-                            <tr id="lenweight">
-                                <td>Weight of branch length in delination step</td>
-                                <td>How much the EzSEA delineation algorithm should take branch length into account when scoring nodes. The score is in part calculated through <code>branch_length × weight</code>. Default is 50.</td>
-                            </tr>
                             <tr id="conweight">
                                 <td>Weight of conserved residues in delination step</td>
-                                <td>The weight assigned to each residue that meets the conservation threshold parameter (detailed below) for delineation scoring. To prioritize nodes with more conserved mutations and assign them a higher score, increase this parameter. The default value is 0.5, with a maximum allowable value of 1.0.</td>
+                                <td>Weight of conserved residues when determining the S score of a node, the higher weight results in less emphasis placed on the branches length. Default is 0.05.</td>
                             </tr>
                             <tr id="conthreshold">
                                 <td>Conservation threshold</td>
                                 <td>A residue will be considered "conserved" and contribute to the score if its proportion in the alignment column meets or exceeds this threshold. For example, if the threshold is set to 0.85, and 86% of the residues in position X of the alignment are the same amino acid, then that position will be classified as conserved.</td>
+                            </tr><tr id="conthreshold">
+                                <td>Minimum Clade Size</td>
+                                <td>Minimum number of leaves for a clade to be considered for the delineation step. Default only considers clades with 10 leaves.</td>
                             </tr>
                         </tbody>
                     </table>
