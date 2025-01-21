@@ -8,6 +8,7 @@ import { tolContext } from './tolContext';
 import { logoContext } from './logoContext';
 import Tooltip from '@mui/material/Tooltip';
 import { getEmptyImage } from "react-dnd-html5-backend";
+import { svg } from 'd3';
 
 const dragHandleStyle = {
     width: '24px',
@@ -102,13 +103,20 @@ export const LogoCard = ({ id, index, header, moveCard, ppm = null, fasta = null
             console.error('Logo not found');
             return;
         }
-        const svgElement = logoRef.current.querySelector('svg');
+        const svgElement = logoRef.current.querySelector('svg').cloneNode(true);
         const serializer = new XMLSerializer();
+
+        // Target the <g> element with the class yaxis and set its transform attribute
+        const yAxisElement = svgElement.querySelector('.yaxis');
+        if (yAxisElement) {
+            yAxisElement.style.transform = 'translate(-10px, 10px)';
+        }
+
         let source = serializer.serializeToString(svgElement);
         const styleString = `
             <style>
                 .glyphrect {
-                    fill-opacity: 0.0;
+                    fill-opacity: 0.0 !important;
                 }
             </style>`;
         source = source.replace('</svg>', `${styleString}</svg>`);

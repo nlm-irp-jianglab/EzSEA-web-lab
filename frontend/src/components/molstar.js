@@ -17,7 +17,6 @@ export function MolStarWrapper({ structData, pocketData, selectedResidue, hovere
 
   async function renderPocket(plugin, pocketData, pocketNumber, hide = false) {
     try {
-      console.log(pocketData[pocketNumber])
       const pocketKey = `pocket${pocketNumber}`;
       const secData = await plugin.builders.data.rawData({
         data: pocketData[pocketKey]
