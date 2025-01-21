@@ -32,8 +32,6 @@ import Menu from '@mui/material/Menu';
 import DownloadDialog from '../components/downloadlogo.tsx';
 import Skeleton from '@mui/material/Skeleton';
 
-const logoFiles = {};
-
 const Tol = () => {
     const { jobId } = useParams();
     // State to store the tree data and node data
@@ -42,9 +40,11 @@ const Tol = () => {
     const [newickData, setNewickData] = useState(null);
     const [nodeData, setnodeData] = useState(null);
     const [structData, setStructData] = useState(null); // Structure data
+    const [pocketData, setPocketData] = useState({}); // Pocket data
+
+    const [ecData, setEcData] = useState(null); // EC codes 
     const [topNodes, setTopNodes] = useState({}); // Top 10 nodes for the tree
     const [asrData, setAsrData] = useState(null);
-    const [pocketData, setPocketData] = useState({}); // Pocket data
 
     // State to store the logo content (formatted for logoJS) and color file
     const [colorArr, setColorArr] = useState(null);
@@ -133,6 +133,17 @@ const Tol = () => {
             })
             .catch(error => console.error('Error loading pocket data:', error));
 
+        // Fetch the ecDict
+        fetch(`${process.env.PUBLIC_URL}/example/ec.json`)
+            .then(response => response.json())
+            .then(data => {
+                var ecDict = {};
+                for (const [key, value] of Object.entries(data)) {
+                    ecDict[key] = value;
+                }
+
+                setEcData(ecDict);
+            });
         const uint8ArrayToString = (uint8Array) => {
             const decoder = new TextDecoder('utf-8');
             return decoder.decode(uint8Array);
@@ -225,9 +236,8 @@ const Tol = () => {
                             compareDescendants(node_data, element);
                         }, () => true);
                     }
-                } else { // append classname to leaf nodes
-                    element.select("text").node().classList.add("leaf-node-label");
-
+                } else { // edits to the leaf nodes
+                    const node_label = element.select("text");
                     function compareMenuCondition(node) {
                         return "Open Uniref Website";
                     }
@@ -263,6 +273,28 @@ const Tol = () => {
                     addCustomMenu(node_data, compareMenuCondition, function () {
                         compare(node_data, element);
                     }, () => true);
+
+                    node_label.node().classList.add("leaf-node-label");
+
+                    try {
+                        // Adding EC number to leaf nodes
+                        var ec = ecData[node_data.data.name];
+                        if (ec.ec_number) {
+                            const transform = node_label.attr("transform");
+                            const translateRegex = /translate\s*\(\s*([\d.-]+)\s*,\s*([\d.-]+)\s*\)/;
+                            const match = transform.match(translateRegex);
+                            const x = parseFloat(match[1]);
+                            const ec_line = element.insert("line", ":first-child").attr("x1", x).attr("x2", x + 400).attr("y1", 0).attr("y2", 0)
+                            ec_line.node().classList.add("branch-tracer");
+                            const ec_label = element.append("text").text("EC " + ec.ec_number || "not found").attr("transform", `translate(${x + 400}, 0)`).attr("dy", "3.96").style("font-size", "12px");
+                            ec_label.node().classList.add("leaf-node-ec-label");
+                        }
+                    } catch (error) {
+                        //console.error("Error adding EC number to leaf node: ", node_data.data.name, error);
+                    }
+                    if (node_data.data.name === "bilR") {
+                        element.select("text").style("fill", "palevioletred").style("stoke", "palevioletred").style("font-size", "18px");
+                    }
                 }
             }
 
@@ -647,6 +679,17 @@ const Tol = () => {
                 }
             });
     };
+    const toggleECLabels = () => {
+        d3.selectAll('.leaf-node-ec-label')
+            .each(function () {
+                const label = d3.select(this);
+                if (label.style("display") === "none") {
+                    label.style("display", "block");
+                } else {
+                    label.style("display", "none");
+                }
+            });
+    };
 
     const toggleLeftCollapse = () => {
         setIsLeftCollapsed(!isLeftCollapsed);
@@ -939,6 +982,7 @@ const Tol = () => {
                                     }}
                                 >
                                     <MenuItem onClick={() => toggleLeafLabels()}>Toggle leaf labels</MenuItem>
+                                    <MenuItem onClick={() => toggleECLabels()}>Toggle EC labels</MenuItem>
                                 </Menu>
                             </Tooltip>
                             <Tooltip title="Reset tree" placement="top">

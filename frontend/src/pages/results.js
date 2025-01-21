@@ -332,7 +332,7 @@ const Results = () => {
                             const translateRegex = /translate\s*\(\s*([\d.-]+)\s*,\s*([\d.-]+)\s*\)/;
                             const match = transform.match(translateRegex);
                             const x = parseFloat(match[1]);
-                            const ec_line = element.append("line").attr("x1", x).attr("x2", x + 400).attr("y1", 0).attr("y2", 0)
+                            const ec_line = element.insert("line", ":first-child").attr("x1", x).attr("x2", x + 400).attr("y1", 0).attr("y2", 0)
                             ec_line.node().classList.add("branch-tracer");
                             const ec_label = element.append("text").text("EC " + ec.ec_number || "not found").attr("transform", `translate(${x + 400}, 0)`).attr("dy", "3.96").style("font-size", "12px");
                             ec_label.node().classList.add("leaf-node-ec-label");
@@ -340,7 +340,7 @@ const Results = () => {
                     } catch (error) {
                         //console.error("Error adding EC number to leaf node: ", node_data.data.name, error);
                     }
-                    if (header === node_data.data.name) {
+                    if (node_data.data.name === header) {
                         element.select("text").style("fill", "palevioletred").style("stoke", "palevioletred").style("font-size", "18px");
                     }
                 }
