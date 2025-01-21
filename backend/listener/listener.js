@@ -487,6 +487,9 @@ app.get("/status/:id", (req, res) => {
                     let status = "Unknown"; // Default status
 
                     if (logsArray.length > 0) {
+                        if (logsArray[logsArray.length - 1].trim() === '') {
+                            logsArray.pop();
+                        }
                         const lastLine = logsArray[logsArray.length - 1];
                         if (/Error|failed|Stopping/i.test(lastLine)) {
                             status = "Error"; // Check for error keywords
