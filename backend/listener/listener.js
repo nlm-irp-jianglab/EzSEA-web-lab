@@ -539,7 +539,7 @@ app.get("/status/:id", (req, res) => {
                                 }
                             }
                             const logsArray = data.split('\n').filter(line => line.trim().length > 0); // Remove empty lines
-                            const lastLine = logsArray[logsArray.length - 2]; // last line is empty or maybe not?
+                            const lastLine = logsArray[logsArray.length - 1]; 
 
                             if (/Error|failed|Stopping/i.test(lastLine)) {
                                 status = "Error"; // Check for error keywords
