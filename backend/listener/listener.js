@@ -176,7 +176,7 @@ app.post("/submit", upload.single('input_file'), (req, res) => {
                     "name": job_id + "-struct"
                 },
                 "spec": {
-                    "backoffLimit": 0,
+                    "backoffLimit": 2,
                     "template": {
                         "metadata": {
                             "labels": {
@@ -200,12 +200,14 @@ app.post("/submit", upload.single('input_file'), (req, res) => {
                                     "requests": {
                                         "nvidia.com/gpu": "1",
                                         "cpu": "4",
-                                        "memory": "32Gi"
+                                        "memory": "32Gi",
+                                        "ephemeral-storage": "5Gi"
                                     },
                                     "limits": {
                                         "nvidia.com/gpu": "1",
                                         "cpu": "4",
-                                        "memory": "64Gi"
+                                        "memory": "64Gi",
+                                        "ephemeral-storage": "10Gi"
                                     }
                                 },
                                 "volumeMounts": [{
@@ -257,7 +259,7 @@ app.post("/submit", upload.single('input_file'), (req, res) => {
             "name": job_id
         },
         "spec": {
-            "backoffLimit": 0,
+            "backoffLimit": 2,
             "template": {
                 "metadata": {
                     "labels": {
@@ -288,11 +290,13 @@ app.post("/submit", upload.single('input_file'), (req, res) => {
                         "resources": {
                             "requests": {
                                 "cpu": "8",
-                                "memory": "16Gi"
+                                "memory": "16Gi",
+                                "ephemeral-storage": "5Gi"
                             },
                             "limits": {
                                 "cpu": "8",
-                                "memory": "32Gi"
+                                "memory": "32Gi",
+                                "ephemeral-storage": "10Gi"
                             }
                         },
                         "volumeMounts": [{
