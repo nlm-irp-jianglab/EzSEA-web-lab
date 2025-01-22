@@ -139,9 +139,6 @@ const Submit = () => {
                     <button className="bp3-button bp3-minimal" onClick={() => setAncestralProgram('iqtree')} style={{ backgroundColor: ancestralProgram === 'iqtree' ? '#007bff' : '#eee', color: ancestralProgram === 'iqtree' ? 'white' : 'black' }} >
                         IQ-TREE
                     </button>
-                    <button className="bp3-button bp3-minimal" onClick={() => setAncestralProgram('GRASP')} style={{ backgroundColor: ancestralProgram === 'GRASP' ? '#007bff' : '#eee', color: ancestralProgram === 'GRASP' ? 'white' : 'black' }} >
-                        GRASP
-                    </button>
                     <button className="bp3-button bp3-minimal" onClick={() => setAncestralProgram('raxml-ng')} style={{ backgroundColor: ancestralProgram === 'raxml-ng' ? '#007bff' : '#eee', color: ancestralProgram === 'raxml-ng' ? 'white' : 'black' }} >
                         RAxML-NG
                     </button>
