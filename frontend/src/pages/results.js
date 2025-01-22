@@ -404,6 +404,7 @@ const Results = () => {
             });
 
             treeRef.current.appendChild(tree.display.show());
+            treeRef.current.querySelector("svg").attributes.width.value = "8000px";
 
             // Start with pan to input query
             findAndZoom(header);

@@ -87,8 +87,7 @@ const Status = () => {
             <Navbar pageId={"Status"} />
             <div className="processing-container">
                 <div>
-                    <h1>{jobStatus === "Error" ? <span>Job Failed!</span> : "Job Processing..."}</h1>
-                </div>
+                    <h1>{["Unknown", "Failed", "Error"].includes(jobStatus) ? <span>Job Failed!</span> : "Job Processing..."}</h1>                </div>
                 <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-evenly" }}>
                     <div className="processing-logo">
                         <img src={process.env.PUBLIC_URL + "/tree.svg"} alt="Logo" style={{ width: "18em" }}></img>

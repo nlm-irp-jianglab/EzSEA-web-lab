@@ -356,6 +356,9 @@ const Tol = () => {
 
             treeRef.current.appendChild(tree.display.show());
 
+            // Set the width attribute to so users can drag 
+            treeRef.current.querySelector("svg").attributes.width.value = "8000px";
+
             // Start with pan to input query
             findAndZoom("bilR");
         }
@@ -514,10 +517,6 @@ const Tol = () => {
     const handleColumnHover = (index) => {
         setHoveredResidue(index + 1);
     };
-
-    const handleScrollLogosTo = (index) => {
-        logoStackRef.current.scrollToHighlightIndex(structLogoMapArr[index]);
-    }
 
     const handleSlider = (e, value) => {
         setScrollPosition(value + 1);
