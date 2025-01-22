@@ -1,11 +1,11 @@
 {
     "BILR_CLOD3": {
-        "ec_number": null,
+        "ec_number": "1.3.-.-",
         "pdb": null,
-        "is_top_homolog": false
+        "is_top_homolog": true
     },
     "A0A381KN10_CLODI": {
-        "ec_number": null,
+        "ec_number": "1.-.-.-",
         "pdb": null,
         "is_top_homolog": false
     },
@@ -45,7 +45,7 @@
         "is_top_homolog": false
     },
     "A0A173UI27_9FIRM": {
-        "ec_number": null,
+        "ec_number": "1.-.-.-",
         "pdb": null,
         "is_top_homolog": false
     },
@@ -65,7 +65,7 @@
         "is_top_homolog": false
     },
     "A0A174V9L3_9FIRM": {
-        "ec_number": null,
+        "ec_number": "1.-.-.-",
         "pdb": null,
         "is_top_homolog": false
     },
@@ -75,7 +75,7 @@
         "is_top_homolog": false
     },
     "A0A174J207_9FIRM": {
-        "ec_number": null,
+        "ec_number": "1.-.-.-",
         "pdb": null,
         "is_top_homolog": false
     },
@@ -155,7 +155,7 @@
         "is_top_homolog": false
     },
     "A0A564SKS3_9FIRM": {
-        "ec_number": null,
+        "ec_number": "1.-.-.-",
         "pdb": null,
         "is_top_homolog": false
     },
@@ -175,7 +175,7 @@
         "is_top_homolog": false
     },
     "A0A1C5PX79_9FIRM": {
-        "ec_number": null,
+        "ec_number": "1.-.-.-",
         "pdb": null,
         "is_top_homolog": false
     },
@@ -235,7 +235,7 @@
         "is_top_homolog": false
     },
     "A0A1C6GU67_9FIRM": {
-        "ec_number": null,
+        "ec_number": "1.-.-.-",
         "pdb": null,
         "is_top_homolog": false
     },
@@ -265,7 +265,7 @@
         "is_top_homolog": false
     },
     "BILR_CLOS6": {
-        "ec_number": null,
+        "ec_number": "1.3.-.-",
         "pdb": null,
         "is_top_homolog": false
     },
@@ -405,7 +405,7 @@
         "is_top_homolog": false
     },
     "A0A1C6CSR0_9FIRM": {
-        "ec_number": null,
+        "ec_number": "1.-.-.-",
         "pdb": null,
         "is_top_homolog": false
     },
@@ -440,7 +440,7 @@
         "is_top_homolog": false
     },
     "A0A1C5LJG2_9CLOT": {
-        "ec_number": null,
+        "ec_number": "1.-.-.-",
         "pdb": null,
         "is_top_homolog": false
     },
@@ -475,7 +475,7 @@
         "is_top_homolog": false
     },
     "B1BWY9_CLOPF": {
-        "ec_number": null,
+        "ec_number": "1.-.-.-",
         "pdb": null,
         "is_top_homolog": false
     },
@@ -510,12 +510,12 @@
         "is_top_homolog": false
     },
     "A0A173VJB5_9FIRM": {
-        "ec_number": null,
+        "ec_number": "1.3.1.34",
         "pdb": null,
         "is_top_homolog": false
     },
     "BILR_MEDG5": {
-        "ec_number": null,
+        "ec_number": "1.3.-.-",
         "pdb": null,
         "is_top_homolog": false
     },
@@ -555,12 +555,12 @@
         "is_top_homolog": false
     },
     "A0A1R4GR36_9GAMM": {
-        "ec_number": null,
+        "ec_number": "1.3.1.34",
         "pdb": null,
         "is_top_homolog": false
     },
     "A0A6N2YF35_9FIRM": {
-        "ec_number": null,
+        "ec_number": "1.-.-.-",
         "pdb": null,
         "is_top_homolog": false
     },
@@ -610,7 +610,7 @@
         "is_top_homolog": false
     },
     "A0A173RZF6_9FIRM": {
-        "ec_number": null,
+        "ec_number": "1.-.-.-",
         "pdb": null,
         "is_top_homolog": false
     },
@@ -635,7 +635,7 @@
         "is_top_homolog": false
     },
     "A0A6N3GUK8_9CLOT": {
-        "ec_number": null,
+        "ec_number": "1.-.-.-",
         "pdb": null,
         "is_top_homolog": false
     },
@@ -695,7 +695,7 @@
         "is_top_homolog": false
     },
     "A0A379LK23_9GAMM": {
-        "ec_number": null,
+        "ec_number": "1.-.-.-",
         "pdb": null,
         "is_top_homolog": false
     },
@@ -720,12 +720,12 @@
         "is_top_homolog": false
     },
     "A0A143X7M8_9ACTN": {
-        "ec_number": null,
+        "ec_number": "1.-.-.-",
         "pdb": null,
         "is_top_homolog": false
     },
     "A0A087D053_9BIFI": {
-        "ec_number": null,
+        "ec_number": "1.3.1.34",
         "pdb": null,
         "is_top_homolog": false
     },
@@ -740,7 +740,7 @@
         "is_top_homolog": false
     },
     "A0A0D0R2P8_9GAMM": {
-        "ec_number": null,
+        "ec_number": "1.3.1.34",
         "pdb": null,
         "is_top_homolog": false
     },
@@ -760,7 +760,7 @@
         "is_top_homolog": false
     },
     "A0A0X7BFH7_9FLAO": {
-        "ec_number": null,
+        "ec_number": "1.-.-.-",
         "pdb": null,
         "is_top_homolog": false
     },
@@ -810,7 +810,7 @@
         "is_top_homolog": false
     },
     "A0A174ZG75_9FIRM": {
-        "ec_number": null,
+        "ec_number": "1.3.1.34",
         "pdb": null,
         "is_top_homolog": false
     },
@@ -860,7 +860,7 @@
         "is_top_homolog": false
     },
     "A0A1C5TMN5_9CLOT": {
-        "ec_number": null,
+        "ec_number": "1.3.1.34",
         "pdb": null,
         "is_top_homolog": false
     },
@@ -935,7 +935,7 @@
         "is_top_homolog": false
     },
     "A0A087API1_9BIFI": {
-        "ec_number": null,
+        "ec_number": "1.6.99.1",
         "pdb": null,
         "is_top_homolog": false
     },
@@ -965,7 +965,7 @@
         "is_top_homolog": false
     },
     "A0A8T3KPQ3_UNCFI": {
-        "ec_number": null,
+        "ec_number": "1.3.1.34",
         "pdb": null,
         "is_top_homolog": false
     },
@@ -1065,7 +1065,7 @@
         "is_top_homolog": false
     },
     "A0A949VTQ1_9CHLR": {
-        "ec_number": null,
+        "ec_number": "1.-.-.-",
         "pdb": null,
         "is_top_homolog": false
     },
@@ -1085,7 +1085,7 @@
         "is_top_homolog": false
     },
     "I3DZS3_BACMM": {
-        "ec_number": null,
+        "ec_number": "1.-.-.-",
         "pdb": null,
         "is_top_homolog": false
     },
@@ -1135,7 +1135,7 @@
         "is_top_homolog": false
     },
     "I3DZS1_BACMM": {
-        "ec_number": null,
+        "ec_number": "1.-.-.-",
         "pdb": null,
         "is_top_homolog": false
     },
@@ -1160,7 +1160,7 @@
         "is_top_homolog": false
     },
     "A0A9R0BMZ5_CLODR": {
-        "ec_number": null,
+        "ec_number": "1.3.1.31",
         "pdb": null,
         "is_top_homolog": false
     },
@@ -1170,7 +1170,7 @@
         "is_top_homolog": false
     },
     "F4LXK0_TEPAE": {
-        "ec_number": null,
+        "ec_number": "1.3.1.34",
         "pdb": null,
         "is_top_homolog": false
     },
@@ -1240,7 +1240,7 @@
         "is_top_homolog": false
     },
     "A0A7U6KCT0_9FIRM": {
-        "ec_number": null,
+        "ec_number": "1.3.1.34",
         "pdb": null,
         "is_top_homolog": false
     },
@@ -1260,7 +1260,7 @@
         "is_top_homolog": false
     },
     "A0A6N3DIB3_9FIRM": {
-        "ec_number": null,
+        "ec_number": "1.3.1.31",
         "pdb": null,
         "is_top_homolog": false
     },
@@ -1280,7 +1280,7 @@
         "is_top_homolog": false
     },
     "A0A841KR38_9FIRM": {
-        "ec_number": null,
+        "ec_number": "1.3.1.31",
         "pdb": null,
         "is_top_homolog": false
     },
@@ -1350,7 +1350,7 @@
         "is_top_homolog": false
     },
     "A0A1S8LHE0_9CLOT": {
-        "ec_number": null,
+        "ec_number": "1.-.-.-",
         "pdb": null,
         "is_top_homolog": false
     },
@@ -1400,7 +1400,7 @@
         "is_top_homolog": false
     },
     "A0A1C5TNH7_9CLOT": {
-        "ec_number": null,
+        "ec_number": "1.-.-.-",
         "pdb": null,
         "is_top_homolog": false
     },
@@ -1425,7 +1425,7 @@
         "is_top_homolog": false
     },
     "A0A5C6DFQ0_9BACT": {
-        "ec_number": null,
+        "ec_number": "1.3.1.34",
         "pdb": null,
         "is_top_homolog": false
     },
@@ -1450,7 +1450,7 @@
         "is_top_homolog": false
     },
     "B0N8B0_9FIRM": {
-        "ec_number": null,
+        "ec_number": "1.-.-.-",
         "pdb": null,
         "is_top_homolog": false
     },
@@ -1510,7 +1510,7 @@
         "is_top_homolog": false
     },
     "A0A1C5T785_9FIRM": {
-        "ec_number": null,
+        "ec_number": "1.-.-.-",
         "pdb": null,
         "is_top_homolog": false
     },
@@ -1540,7 +1540,7 @@
         "is_top_homolog": false
     },
     "A0A1C6K5E4_9CLOT": {
-        "ec_number": null,
+        "ec_number": "1.3.1.34",
         "pdb": null,
         "is_top_homolog": false
     },
@@ -1730,7 +1730,7 @@
         "is_top_homolog": false
     },
     "A0A143XRH5_9FIRM": {
-        "ec_number": null,
+        "ec_number": "1.-.-.-",
         "pdb": null,
         "is_top_homolog": false
     },
@@ -1765,7 +1765,7 @@
         "is_top_homolog": false
     },
     "A0A162TBE6_9CLOT": {
-        "ec_number": null,
+        "ec_number": "1.-.-.-",
         "pdb": null,
         "is_top_homolog": false
     },
@@ -1800,7 +1800,7 @@
         "is_top_homolog": false
     },
     "A0A6I5ZUG1_9FIRM": {
-        "ec_number": null,
+        "ec_number": "1.-.-.-",
         "pdb": null,
         "is_top_homolog": false
     },
@@ -1815,12 +1815,12 @@
         "is_top_homolog": false
     },
     "A0A1V4WT81_9BACT": {
-        "ec_number": null,
+        "ec_number": "1.-.-.-",
         "pdb": null,
         "is_top_homolog": false
     },
     "A0A075WEI3_ARCFL": {
-        "ec_number": null,
+        "ec_number": "1.3.1.34",
         "pdb": null,
         "is_top_homolog": false
     },
@@ -1870,7 +1870,7 @@
         "is_top_homolog": false
     },
     "A0A1C5LIC1_9FIRM": {
-        "ec_number": null,
+        "ec_number": "1.-.-.-",
         "pdb": null,
         "is_top_homolog": false
     },
@@ -1940,7 +1940,7 @@
         "is_top_homolog": false
     },
     "A0A2T0AVY6_9FIRM": {
-        "ec_number": null,
+        "ec_number": "1.-.-.-",
         "pdb": null,
         "is_top_homolog": false
     },
@@ -1960,7 +1960,7 @@
         "is_top_homolog": false
     },
     "A0A162QU91_9CLOT": {
-        "ec_number": null,
+        "ec_number": "1.-.-.-",
         "pdb": null,
         "is_top_homolog": false
     },
@@ -1995,12 +1995,12 @@
         "is_top_homolog": false
     },
     "A0A1V4IRV7_9CLOT": {
-        "ec_number": null,
+        "ec_number": "1.3.1.31",
         "pdb": null,
         "is_top_homolog": false
     },
     "A0A1V5D592_9BACT": {
-        "ec_number": null,
+        "ec_number": "1.-.-.-",
         "pdb": null,
         "is_top_homolog": false
     },
@@ -2090,7 +2090,7 @@
         "is_top_homolog": false
     },
     "A0A3P3XM85_9SPIR": {
-        "ec_number": null,
+        "ec_number": "1.-.-.-",
         "pdb": null,
         "is_top_homolog": false
     },
@@ -2125,7 +2125,7 @@
         "is_top_homolog": false
     },
     "A5N8V0_CLOK5": {
-        "ec_number": null,
+        "ec_number": "1.3.1.31",
         "pdb": null,
         "is_top_homolog": false
     },
@@ -2410,7 +2410,7 @@
         "is_top_homolog": false
     },
     "A0A1K1LCJ2_9BACT": {
-        "ec_number": null,
+        "ec_number": "1.3.1.34",
         "pdb": null,
         "is_top_homolog": false
     },
@@ -2430,7 +2430,7 @@
         "is_top_homolog": false
     },
     "Q081S5_SHEFN": {
-        "ec_number": null,
+        "ec_number": "1.3.1.34",
         "pdb": null,
         "is_top_homolog": false
     },
@@ -2445,7 +2445,7 @@
         "is_top_homolog": false
     },
     "A0A1V5I010_9SPIR": {
-        "ec_number": null,
+        "ec_number": "1.-.-.-",
         "pdb": null,
         "is_top_homolog": false
     },
@@ -2480,7 +2480,7 @@
         "is_top_homolog": false
     },
     "A0A1A6AR76_9CLOT": {
-        "ec_number": null,
+        "ec_number": "1.-.-.-",
         "pdb": null,
         "is_top_homolog": false
     },
