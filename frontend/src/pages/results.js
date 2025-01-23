@@ -436,6 +436,10 @@ const Results = () => {
         node: a node object 
     */
     const pushNodeToLogo = (node) => {
+        // Quick patch for comparing on root. Root is a renamed node, so we need to find the actual header
+        if (node.parent === null) { // is root node
+            node.data.name = "Node1"
+        }
         setImportantResidues([]); // Clear important residues (may cause unnecessary re-renders)
         setLogoContent(prevLogoContent => {
             const updatedLogoContent = { ...prevLogoContent };
