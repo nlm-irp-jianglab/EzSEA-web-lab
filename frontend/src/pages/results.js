@@ -463,14 +463,16 @@ const Results = () => {
         setLogoContent(prevLogoContent => {
             const updatedLogoContent = { ...prevLogoContent };
 
-            var descendants = selectAllDescendants(node, true, false);
-            var desc_fa = "";
-            for (var desc of descendants) {
-                desc_fa += `>${desc.data.name}\n${leafData[desc.data.name]}\n`; // Concat fasta of descendants
-            }
-            if (desc_fa === "") {
+            var descendants = nodeData[node.data.name].leaves;
+            
+            if (!descendants) {
                 console.log("No descendants found for node:", node.data.name);
                 return updatedLogoContent;
+            }
+
+            var desc_fa = "";
+            for (var desc of descendants) {
+                desc_fa += `>${desc}\n${leafData[desc]}\n`;
             }
 
             node['compare-descendants'] = true;

@@ -8,7 +8,7 @@ import "../components/phylotree.css";
 import "../components/tol.css";
 import MolstarViewer from "../components/molstar";
 import LogoStack from '../components/logo-stack';
-import { readFastaToDict, parseNodeData, calcEntropyFromMSA, mapEntropyToColors, jsonToFasta, parseAsrData } from '../components/utils';
+import { readFastaToDict, parseNodeData, calcEntropyFromMSA, mapEntropyToColors, jsonToFasta } from '../components/utils';
 import { useParams } from 'react-router-dom';
 import * as d3 from 'd3';
 import ErrorPopup from '../components/errorpopup';
@@ -38,7 +38,7 @@ const Tol = () => {
     const [faData, setFaData] = useState(null);
     const [leafData, setLeafData] = useState({});
     const [newickData, setNewickData] = useState(null);
-    const [nodeData, setnodeData] = useState(null);
+    const [nodeData, setNodeData] = useState(null);
     const [structData, setStructData] = useState(null); // Structure data
     const [pocketData, setPocketData] = useState({}); // Pocket data
 
@@ -111,7 +111,7 @@ const Tol = () => {
             .then(response => response.json())
             .then((json) => {
                 parseNodeData(json.slice(0, 10)).then((parsedData) => setTopNodes(parsedData));
-                parseNodeData(json).then((parsedData) => setnodeData(parsedData));
+                parseNodeData(json).then((parsedData) => setNodeData(parsedData));
             });
 
         readFastaToDict(`${process.env.PUBLIC_URL}/example/seq_trimmed.afa`).then(data => { setLeafData(data) });
@@ -406,14 +406,18 @@ const Tol = () => {
         setLogoContent(prevLogoContent => {
             const updatedLogoContent = { ...prevLogoContent };
 
-            var descendants = selectAllDescendants(node, true, false);
-            var desc_fa = "";
-            for (var desc of descendants) {
-                desc_fa += `>${desc.data.name}\n${leafData[desc.data.name]}\n`;
-            }
-            if (desc_fa === "") {
+            // Getting all leaves
+            // var descendants = selectAllDescendants(node, true, false);
+            var descendants = nodeData[node.data.name].leaves;
+            
+            if (!descendants) {
                 console.log("No descendants found for node:", node.data.name);
                 return updatedLogoContent;
+            }
+
+            var desc_fa = "";
+            for (var desc of descendants) {
+                desc_fa += `>${desc}\n${leafData[desc]}\n`;
             }
 
             node['compare-descendants'] = true;

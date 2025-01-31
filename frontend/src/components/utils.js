@@ -98,6 +98,9 @@ export const parseNodeData = async (nodeData) => {
         parsedData[item.node] = {
             differing_residues: item.differing_residues,
             score: item.score,
+            ancestoral_node: item.ancestral_node,
+            descendant_node: item.descendant_node,
+            leaves: item.leaves,
         }
     });
     return parsedData;
