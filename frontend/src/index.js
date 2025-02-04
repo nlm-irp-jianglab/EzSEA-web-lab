@@ -4,6 +4,7 @@ import "./styles.css";
 
 import About from "./pages/about";
 import TolApp from "./pages/tolApp";
+import TestApp from "./pages/testApp";
 import Playground from "./pages/playground";
 import NotFoundPage from "./pages/notfoundpage";
 import Submit from "./pages/submit";
@@ -25,6 +26,7 @@ const DualPathRoutes = () => (
                 <Route path="/results/:jobId" element={<ResultsApp />} />
                 <Route path="/status/:jobId" element={<Status />} />
                 <Route path="/tol" element={<TolApp />} />
+                <Route path="/test" element={<TestApp />} />
                 <Route exact path="/playground" element={<Playground />} />
                 <Route exact path="/about" element={<About />} />
                 <Route exact path="/help" element={<Help />} />
