@@ -18,7 +18,10 @@ const storage = multer.diskStorage({
     },
     filename: (req, file, cb) => {
         const jobId = req.body.job_id;
-        const fileExt = file.originalname.split('.').pop();
+        var fileExt = file.originalname.split('.').pop();
+        if (fileExt !== 'pdb') {
+            fileExt = 'fasta'; // K8 jobs expect .fasta extensions
+        }
         cb(null, `${jobId}.${fileExt}`);
     }
 });
@@ -43,45 +46,46 @@ app.use(bodyParser.urlencoded({ extended: false, limit: '50mb' }));
 app.use(express.static(path.join(__dirname, 'build')));
 
 // Monitor for job completion
-function monitorJob(jobId, jobType, recipient) {
-    const completionCmd = `kubectl wait --for=condition=complete job/${jobId}`;
-    const failureCmd = `kubectl wait --for=condition=failed job/${jobId}`;
+function monitorJob(jobId, jobType, recipient) { // Need to handle failure case, and maybe timeout case better
+    logger.info("Monitoring job: " + jobId);
+    const completionCmd = `kubectl wait --for=condition=complete job/${jobId} --timeout=12h`;
+    const failureCmd = `kubectl wait --for=condition=failed job/${jobId} --timeout=12h`;
 
     const completionProcess = exec(completionCmd);
     const failureProcess = exec(failureCmd);
 
-    let hasResponded = false;
+    let failureOccurred = false;
 
-    completionProcess.on('exit', (code) => {
-        if (!hasResponded) {
-            if (code === 0) {
-                logger.info(`${jobType} job ${jobId} completed successfully, sending push email.`);
-                hasResponded = true;
-                sendEmail(recipient, jobId);
-            }
+    failureProcess.on('exit', (code) => {
+        if (code === 0) {
+            failureOccurred = true;
+            logger.info(`${jobType} job ${jobId} failed, sending failure email.`);
+            sendFailureEmail(recipient, jobId);
+        } else {
+            logger.info(`${jobType} job ${jobId} failure monitoring failed. May have taken longer than timeout`);
         }
     });
 
-    failureProcess.on('exit', (code) => {
-        if (!hasResponded) {
+    completionProcess.on('exit', (code) => {
+        if (!failureOccurred) {
             if (code === 0) {
-                logger.error(`${jobType} job ${jobId} failed.`);
-                hasResponded = true;
-                // Handle failure case
+                logger.info(`${jobType} job ${jobId} completed successfully, sending push email.`);
+                sendSuccessEmail(recipient, jobId);
+            } else {
+                logger.info(`${jobType} job ${jobId} monitoring failed. May have taken longer than timeout`);
             }
         }
     });
 }
-
-const sendEmail = async (recipient, jobId) => {
+const sendSuccessEmail = async (recipient, jobId) => {
     try {
-        const response = await emailjs.send("service_key", "template_key", {
+        const response = await emailjs.send("service_4xzjhqa", "template_tvfo26t", {
             recipient: recipient,
             jobId: jobId,
         },
             {
-                publicKey: "PUBLIC_KEY",
-                privateKey: "PRIVATE_KEY",
+                publicKey: "XERY1jPqO6z7AFRg9",
+                privateKey: "hJinkbgdeR5NnpDnlENm-",
             });
         logger.info('Email sent successfully:', response);
     } catch (error) {
@@ -89,6 +93,21 @@ const sendEmail = async (recipient, jobId) => {
     }
 };
 
+const sendFailureEmail = async (recipient, jobId) => {
+    try {
+        const response = await emailjs.send("service_4xzjhqa", "template_7w1hzy5", {
+            recipient: recipient,
+            jobId: jobId,
+        },
+            {
+                publicKey: "XERY1jPqO6z7AFRg9",
+                privateKey: "hJinkbgdeR5NnpDnlENm-",
+            });
+        logger.info('Email sent successfully:', response);
+    } catch (error) {
+        logger.info("Error sending email:", error);
+    }
+};
 app.post("/submit", upload.single('input_file'), (req, res) => {
     // Retrieve JSON from the POST body 
     var error = null;
@@ -100,8 +119,8 @@ app.post("/submit", upload.single('input_file'), (req, res) => {
     var tree_program = null;
     var asr_program = null;
     var align_program = null;
-    var len_weight = null;
-    var con_weight = null;
+    var con_weight = null; // 0 to 0.05 default 0.02
+    var min_leaves = null; // 5 to 20 default 10
     var email = null;
 
     try {
@@ -115,8 +134,8 @@ app.post("/submit", upload.single('input_file'), (req, res) => {
             tree_program,
             asr_program,
             align_program,
-            len_weight,
             con_weight,
+            min_leaves,
             email
         } = req.body);
 
@@ -138,75 +157,6 @@ app.post("/submit", upload.single('input_file'), (req, res) => {
                 return res.status(500).json({ error: "There was an error copying the input pdb file." });
             }
         });
-
-        logger.info("Queuing fpocket run: " + job_id);
-
-        const fpocket_command = {
-            "apiVersion": "batch/v1",
-            "kind": "Job",
-            "metadata": {
-                "name": job_id + "-struct"
-            },
-            "spec": {
-                "backoffLimit": 0,
-                "template": {
-                    "metadata": {
-                        "labels": {
-                            "id": job_id,
-                            "type": "structure"
-                        }
-                    },
-                    "spec": {
-                        "containers": [{
-                            "name": "ezsea",
-                            "image": "us-central1-docker.pkg.dev/ncbi-research-cbb-jiang/esmfold-fpocket/esmfold-fpocket:latest",
-                            "command": ["/bin/zsh", "-c"],
-                            "args": [
-                                "fpocket -f /database/output/EzSEA_" + job_id + "/Visualization/input.pdb"
-                            ],
-                            "resources": {
-                                "requests": {
-                                    "cpu": "4",
-                                    "memory": "32Gi"
-                                },
-                                "limits": {
-                                    "cpu": "4",
-                                    "memory": "32Gi"
-                                }
-                            },
-                            "volumeMounts": [{
-                                "mountPath": "/database",
-                                "name": "ezsea-databases-volume"
-                            }]
-                        }],
-                        "restartPolicy": "Never",
-                        "volumes": [{
-                            "name": "ezsea-databases-volume",
-                            "persistentVolumeClaim": {
-                                "claimName": "ezsea-filestore-pvc"
-                            }
-                        }]
-                    }
-                }
-            }
-        };
-
-        // fs.writeFile('fpocket-job-config.json', JSON.stringify(fpocket_command, null, 2), (err) => {
-        //     if (err) {
-        //         console.error('Error writing Kubernetes job config to file', err);
-        //     }
-        // });
-
-        // exec("kubectl apply -f ./fpocket-job-config.json", (err, stdout, stderr) => {
-        //     if (err) {
-        //         error = "There was a problem initializing your job, please try again later";
-        //         console.error(err); // Pino doesn't give new lines
-        //     } else {
-        //         logger.info("EzSEA structure job started (fpocket only):" + job_id);
-        //         //monitorJob(job_id + "-struct", "GPU");
-        //     }
-        // });
-
     } else { // Else, run ESM 
         // Read header from input file
         fs.readFile(input_file.path, 'utf8', (err, data) => {
@@ -226,7 +176,7 @@ app.post("/submit", upload.single('input_file'), (req, res) => {
                     "name": job_id + "-struct"
                 },
                 "spec": {
-                    "backoffLimit": 0,
+                    "backoffLimit": 2,
                     "template": {
                         "metadata": {
                             "labels": {
@@ -250,12 +200,14 @@ app.post("/submit", upload.single('input_file'), (req, res) => {
                                     "requests": {
                                         "nvidia.com/gpu": "1",
                                         "cpu": "4",
-                                        "memory": "32Gi"
+                                        "memory": "32Gi",
+                                        "ephemeral-storage": "5Gi"
                                     },
                                     "limits": {
                                         "nvidia.com/gpu": "1",
                                         "cpu": "4",
-                                        "memory": "32Gi"
+                                        "memory": "64Gi",
+                                        "ephemeral-storage": "10Gi"
                                     }
                                 },
                                 "volumeMounts": [{
@@ -307,7 +259,7 @@ app.post("/submit", upload.single('input_file'), (req, res) => {
             "name": job_id
         },
         "spec": {
-            "backoffLimit": 0,
+            "backoffLimit": 2,
             "template": {
                 "metadata": {
                     "labels": {
@@ -332,17 +284,19 @@ app.post("/submit", upload.single('input_file'), (req, res) => {
                             "--threads", "4",
                             "--ec_table", "/database/database/ec_dict.pkl",
                             "--pdbtable", "/database/database/pdb_uniref.pkl",
-                            "--lenweight", String(len_weight),
+                            "--minleaves", String(min_leaves),
                             "--conweight", String(con_weight),
                         ],
                         "resources": {
                             "requests": {
                                 "cpu": "8",
-                                "memory": "16Gi"
+                                "memory": "16Gi",
+                                "ephemeral-storage": "5Gi"
                             },
                             "limits": {
                                 "cpu": "8",
-                                "memory": "32Gi"
+                                "memory": "32Gi",
+                                "ephemeral-storage": "10Gi"
                             }
                         },
                         "volumeMounts": [{
@@ -375,7 +329,9 @@ app.post("/submit", upload.single('input_file'), (req, res) => {
             console.error(err); // Pino doesn't give new lines
         } else {
             logger.info("EzSEA run job started: " + job_id);
-            //monitorJob(job_id, "CPU", email);
+            if (email) {
+                monitorJob(job_id, "CPU", email);
+            }
         }
     });
 
@@ -405,20 +361,19 @@ app.get("/results/:id", async (req, res) => {
             });
     });
 
+    var structPath = "";
 
     try {
         var pdbFiles = fs.readdirSync(folderPath).filter(fn => fn.endsWith('.pdb')); // Returns an array of pdb files
+        if (!pdbFiles) {
+            logger.warn(`No PDB files found in folder: ${folderPath}`);
+            structPath = null;
+        } else {
+            structPath = path.join(folderPath, pdbFiles[0]);
+        }
     } catch (e) {
-        logger.error("Error reading pdb files: " + e);
-        return res.status(500).json({ structError: "Attempted to find pdb files. Does Visualization/ exist?" });
-    }
+        logger.error("Attempted to find pdb files. Does Visualization/ exist?: " + e);
 
-    var structPath = "";
-    if (pdbFiles.length === 0) {
-        logger.warn(`No PDB files found in folder: ${folderPath}`);
-        structPath = null;
-    } else {
-        structPath = path.join(folderPath, pdbFiles[0]);
     }
 
     const inputPath = `/output/EzSEA_${id}/input.fasta`;
@@ -532,7 +487,7 @@ app.get("/status/:id", (req, res) => {
                         logger.error(`Error reading log file for job ${id}, does it exist?`);
                         return res.status(500).json({ error: "There was an error reading the log file. Please ensure your job ID is correct." });
                     }
-                    const logsArray = data.split('\n').filter(line => line.trim() !== ''); // Remove empty lines
+                    const logsArray = data.split('\n').filter(line => line.trim().length > 0); // Remove empty lines
                     let status = "Unknown"; // Default status
 
                     // Dynamically check for status based on the last line of logs
@@ -557,45 +512,53 @@ app.get("/status/:id", (req, res) => {
                 var status = pod.status.phase.trim();
 
                 // Check container statuses for more detailed information
-                if (status === "Pending" && pod.status.containerStatuses) {
-                    const containerStatus = pod.status.containerStatuses[0];
-                    if (containerStatus.state.waiting && containerStatus.state.waiting.reason === "ContainerCreating") {
-                        return res.status(200).json({ logs: ["Resources allocated, building compute environment"], status: "container" });
+                if (status === "Pending") {
+                    if (pod.status.containerStatuses) {
+                        const containerStatus = pod.status.containerStatuses[0];
+                        if (containerStatus.state.waiting && containerStatus.state.waiting.reason === "ContainerCreating") {
+                            return res.status(200).json({ logs: ["Resources allocated, building compute environment"], status: "container" });
+                        } else {
+                            return res.status(200).json({ logs: ["Allocating resources for job, this may take a few minutes."], status: "alloc" });
+                        }
                     } else {
                         return res.status(200).json({ logs: ["Allocating resources for job, this may take a few minutes."], status: "alloc" });
                     }
                 } else if (status === "Failed") {
                     return res.status(200).json({ status: status });
-                } else { // status is Running, Succeeded, Failed, or Unknown
-                    fs.readFile(filePath, 'utf8', (err, data) => {
-                        if (err) {
-                            if (status === "Running") {
-                                return res.status(200).json({ logs: ['Generating logs...'], status: "container" })
-                            } else {
-                                logger.error("Error reading file:", err);
-                                return res.status(500).json({ error: "No log file was found for this job." });
+                } else { // status is Running, Succeeded, Unknown
+                    if (status === "Succeeded") {
+                        return res.status(200).json({ logs: "", status: "done" });
+                    } else {
+                        fs.readFile(filePath, 'utf8', (err, data) => {
+                            if (err) {
+                                if (status === "Running") {
+                                    return res.status(200).json({ logs: ['Generating logs...'], status: "container" })
+                                } else {
+                                    logger.error("Error reading file:", err);
+                                    return res.status(500).json({ error: "No log file was found for this job." });
+                                }
                             }
-                        }
-                        const logsArray = data.split('\n');
-                        const lastLine = logsArray[logsArray.length - 2]; // last line is empty
+                            const logsArray = data.split('\n').filter(line => line.trim().length > 0); // Remove empty lines
+                            const lastLine = logsArray[logsArray.length - 1]; 
 
-                        if (/Error|failed|Stopping/i.test(lastLine)) {
-                            status = "Error"; // Check for error keywords
-                        } else if (/completed|success|Done/i.test(lastLine)) {
-                            status = "done"; // Check for successful completion
-                        } else if (/EC/i.test(lastLine)) {
-                            status = "annot"; // Check for annotation
-                        } else if (/delineation/i.test(lastLine)) {
-                            status = "delineation"; // If none of the above conditions match
-                        } else if (/Tree/i.test(lastLine)) {
-                            status = "tree";
-                        } else if (/Alignment/i.test(lastLine)) {
-                            status = "align";
-                        } else if (/diamond/i.test(lastLine)) {
-                            status = "db";
-                        }
-                        return res.status(200).json({ logs: logsArray, status: status });
-                    });
+                            if (/Error|failed|Stopping/i.test(lastLine)) {
+                                status = "Error"; // Check for error keywords
+                            } else if (/completed|success|Done/i.test(lastLine)) {
+                                status = "done"; // Check for successful completion
+                            } else if (/EC/i.test(lastLine)) {
+                                status = "annot"; // Check for annotation
+                            } else if (/delineation/i.test(lastLine)) {
+                                status = "delineation"; // If none of the above conditions match
+                            } else if (/Tree/i.test(lastLine)) {
+                                status = "tree";
+                            } else if (/Alignment/i.test(lastLine)) {
+                                status = "align";
+                            } else if (/diamond/i.test(lastLine)) {
+                                status = "db";
+                            }
+                            return res.status(200).json({ logs: logsArray, status: status });
+                        });
+                    }
                 }
             }
 

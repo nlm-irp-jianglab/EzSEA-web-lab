@@ -10,7 +10,7 @@ const ConsoleLogs = React.forwardRef(({ jobid, updateStatusCallback }, ref) => {
     const fetchLogs = async () => {
         setLoading(true);
         try {
-            const response = await fetch(`/api/status/${jobid}`);
+            const response = await fetch(`${process.env.PUBLIC_URL}/api/status/${jobid}`);
             const data = await response.json();
             if (response.status == 200) {
                 setLogs(data.logs);

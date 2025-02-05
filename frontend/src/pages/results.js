@@ -30,6 +30,7 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import Menu from '@mui/material/Menu';
 import DownloadDialog from '../components/downloadlogo.tsx';
+import Skeleton from '@mui/material/Skeleton';
 
 const Results = () => {
     const { jobId } = useParams();
@@ -49,7 +50,7 @@ const Results = () => {
     const [topNodes, setTopNodes] = useState({}); // Top 10 nodes for the tree
     const [asrData, setAsrData] = useState(null);
 
-    // State to store the logo content (formatted for logoJS) and color file
+    // Array of colors for the structure viewer
     const [colorArr, setColorArr] = useState(null);
 
     // Context states
@@ -75,6 +76,7 @@ const Results = () => {
     const pvdiv = useRef(null);
     const logoStackRef = useRef(null);
     const scrollInputRef = useRef(null);
+    const [importantResidues, setImportantResidues] = useState([]);
 
     // Storing tree reference itself
     const [treeObj, setTreeObj] = useState(null);
@@ -86,7 +88,7 @@ const Results = () => {
     useEffect(() => {
         try {
             // Fetching data from the backend
-            const response = fetch(`/api/results/${jobId}`);
+            const response = fetch(`${process.env.PUBLIC_URL}/api/results/${jobId}`);
             response.then(res => res.json())
                 .then(data => {
                     // Check if error
@@ -130,7 +132,7 @@ const Results = () => {
                     }
 
                     if (data.structError) {
-                        // setErrorPopupVisible(true);
+                        setErrorPopupVisible(true);
                         console.error("Error fetching structure data:", data.structError);
                     } else {
                         setStructData(data.struct);
@@ -147,7 +149,6 @@ const Results = () => {
                         // setErrorPopupVisible(true);
                         console.error("Error fetching ec mappings:", data.ecError);
                     } else {
-                        console.log("EC data:", data.ec);
                         const json = JSON.parse(data.ec);
                         var ecDict = {};
                         for (const [key, value] of Object.entries(json)) {
@@ -216,6 +217,7 @@ const Results = () => {
             }
 
             const tree = new pt.phylotree(newickData);
+            setTreeObj(tree);
 
             function style_nodes(element, node_data) {
                 var node_label = element.select("text");
@@ -284,18 +286,44 @@ const Results = () => {
                     }
                 } else { // edits to the leaf nodes
                     const node_label = element.select("text");
-                    const link = element.append("a")
-                        .attr("xlink:href", `https://www.uniprot.org/uniprotkb/${node_label.text()}`)  // Set link destination
-                        .attr("target", "_blank");  // Optional: open in new tab
+                    function compareMenuCondition(node) {
+                        return "Open Uniref Website";
+                    }
 
-                    // Move text element inside anchor
-                    node_label.each(function () {
-                        const text = d3.select(this);
-                        const parent = d3.select(this.parentNode);
-                        parent.node().removeChild(this);
-                        link.node().appendChild(this);
-                    });
+                    function compare(node, el) {
+                        const url = `https://rest.uniprot.org/uniref/search?query=${node.data.name}&fields=id`;
+
+                        fetch(url)
+                            .then(response => {
+                                if (!response.ok) {
+                                    alert('UniProt database error.');
+                                } else {
+                                    return response.json();
+                                }
+                            })
+                            .then(data => {
+                                if (data && data.results) {
+                                    const uniref100 = data.results.find(result => result.id.startsWith('UniRef100'));
+                                    if (uniref100) {
+                                        const unirefUrl = `https://www.uniprot.org/uniref/${uniref100.id}`;
+                                        window.open(unirefUrl, '_blank');
+                                    } else {
+                                        alert('No UniRef100 ID found.');
+                                    }
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error checking URL:', error);
+                                alert('There was an error checking the URL. Please check your network connection and try again.');
+                            });
+                    }
+
+                    addCustomMenu(node_data, compareMenuCondition, function () {
+                        compare(node_data, element);
+                    }, () => true);
+
                     node_label.node().classList.add("leaf-node-label");
+
                     try {
                         // Adding EC number to leaf nodes
                         var ec = ecData[node_data.data.name];
@@ -304,7 +332,7 @@ const Results = () => {
                             const translateRegex = /translate\s*\(\s*([\d.-]+)\s*,\s*([\d.-]+)\s*\)/;
                             const match = transform.match(translateRegex);
                             const x = parseFloat(match[1]);
-                            const ec_line = element.append("line").attr("x1", x).attr("x2", x + 400).attr("y1", 0).attr("y2", 0)
+                            const ec_line = element.insert("line", ":first-child").attr("x1", x).attr("x2", x + 400).attr("y1", 0).attr("y2", 0)
                             ec_line.node().classList.add("branch-tracer");
                             const ec_label = element.append("text").text("EC " + ec.ec_number || "not found").attr("transform", `translate(${x + 400}, 0)`).attr("dy", "3.96").style("font-size", "12px");
                             ec_label.node().classList.add("leaf-node-ec-label");
@@ -312,7 +340,7 @@ const Results = () => {
                     } catch (error) {
                         //console.error("Error adding EC number to leaf node: ", node_data.data.name, error);
                     }
-                    if (header === node_data.data.name) {
+                    if (node_data.data.name === header) {
                         element.select("text").style("fill", "palevioletred").style("stoke", "palevioletred").style("font-size", "18px");
                     }
                 }
@@ -351,8 +379,6 @@ const Results = () => {
 
             }
 
-            setTreeObj(tree);
-
 
             tree.render({
                 'container': "#tree_container",
@@ -372,13 +398,13 @@ const Results = () => {
                 'edge-styler': style_edges,
                 'show-scale': false,
                 'font-size': 12,
-                'background-color': 'lightblue',
                 'collapsible': true,
                 'reroot': true,
                 'hide': false, // Causes weird rendering in radial
             });
 
             treeRef.current.appendChild(tree.display.show());
+            treeRef.current.querySelector("svg").attributes.width.value = "8000px";
 
             // Start with pan to input query
             findAndZoom(header);
@@ -410,6 +436,11 @@ const Results = () => {
         node: a node object 
     */
     const pushNodeToLogo = (node) => {
+        // Quick patch for comparing on root. Root is a renamed node, so we need to find the actual header
+        if (node.parent === null) { // is root node
+            node.data.name = "Node1"
+        }
+        setImportantResidues([]); // Clear important residues (may cause unnecessary re-renders)
         setLogoContent(prevLogoContent => {
             const updatedLogoContent = { ...prevLogoContent };
             // Add or do nothing if node is already in logoContent
@@ -428,17 +459,20 @@ const Results = () => {
         node: a node object 
     */
     const pushNodeToEntropyLogo = (node) => {
+        setImportantResidues([]); // Clear important residues (may cause unnecessary re-renders)
         setLogoContent(prevLogoContent => {
             const updatedLogoContent = { ...prevLogoContent };
 
-            var descendants = selectAllDescendants(node, true, false);
-            var desc_fa = "";
-            for (var desc of descendants) {
-                desc_fa += `>${desc.data.name}\n${leafData[desc.data.name]}\n`; // Concat fasta of descendants
-            }
-            if (desc_fa === "") {
+            var descendants = nodeData[node.data.name].leaves;
+            
+            if (!descendants) {
                 console.log("No descendants found for node:", node.data.name);
                 return updatedLogoContent;
+            }
+
+            var desc_fa = "";
+            for (var desc of descendants) {
+                desc_fa += `>${desc}\n${leafData[desc]}\n`;
             }
 
             node['compare-descendants'] = true;
@@ -507,7 +541,7 @@ const Results = () => {
 
     const applyEntropyStructColor = (nodeId, clear = false) => {
         if (clear) {
-            setColorArr("empty");
+            setColorArr(null);
             return;
         }
 
@@ -515,10 +549,10 @@ const Results = () => {
             .each(function () {
                 var node = d3.select(this).data()[0];
                 if (node.data.name === nodeId) {
-                    var descendants = selectAllDescendants(node, false, true);
+                    var descendants = selectAllDescendants(node, true, false); // Get all terminal descendants
                     var desc_fa = "";
                     for (var desc of descendants) {
-                        desc_fa += `>${desc.data.name}\n${faData[desc.data.name]}\n`;
+                        desc_fa += `>${desc.data.name}\n${leafData[desc.data.name]}\n`;
                     }
                     calcEntropyFromMSA(desc_fa).then((entropy) => mapEntropyToColors(entropy)).then((colors) => { setColorArr(colors) });
                 }
@@ -639,12 +673,15 @@ const Results = () => {
                     pushNodeToLogo(node)
                     pushNodeToLogo(node.parent);
                     pushNodeToEntropyLogo(node);
+                    setImportantResidues(nodeData);
                 }
             });
 
         setIsRightCollapsed(false);
         setPipVisible(true);
-        findAndZoom(nodeId); // Zoom to the node
+        setTimeout(() => {
+            findAndZoom(nodeId);
+        }, 2000);
     }
 
     /*
@@ -937,8 +974,8 @@ const Results = () => {
         // Create a copy of the svgElement
         const svgCopy = svgElement.cloneNode(true);
 
-        // Edit the transform attribute of the copied SVG
-        svgCopy.setAttribute('transform', 'translate(20,0)');
+        // Edit the transform attribute of the copied SVG to show entire tree
+        svgCopy.querySelector('g').setAttribute('transform', 'translate(20,0)');
 
         // Serialize the SVG content
         const serializer = new XMLSerializer();
@@ -985,7 +1022,10 @@ const Results = () => {
         <div style={{ height: '100%', display: 'flex', flexDirection: 'column', maxWidth: '100vw', flexGrow: '1' }}>
             <Navbar pageId={`Results: ${jobId}`} />
             {isErrorPopupVisible && (
-                <ErrorPopup errorMessage="Results not available" onClose={() => setErrorPopupVisible(false)} />
+                <ErrorPopup errorMessage="Results not available" onClose={() => {
+                    setErrorPopupVisible(false);
+                    window.location.href = `${process.env.PUBLIC_URL}/`;
+                }} />
             )}
             <div style={{ display: 'flex', flexGrow: '1' }}>
                 <div className="sidebar" style={{
@@ -1084,34 +1124,46 @@ const Results = () => {
                         <div
                             id="tree_container"
                             ref={treeRef}
-                        ></div>
+                        ><Skeleton variant="rounded" height="100em" animation="wave" sx={{ bgcolor: 'lightgrey' }} /></div>
                     </div>
 
                     {Object.keys(logoContent).length > 0 && (
                         <div className="center-console">
                             {!isRightCollapsed && (
-                                <button className="triangle-button" onClick={toggleLeftCollapse}>
-                                    {isLeftCollapsed ? <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <title>Expand Left</title>
-                                        <path d="M21 6H13M9 6V18M21 10H13M21 14H13M21 18H13M3 10L5 12L3 14" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                    </svg> :
-                                        <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" transform='rotate(180)'>
-                                            <title>Collapse Left</title>
-                                            <path d="M21 6H13M9 6V18M21 10H13M21 14H13M21 18H13M3 10L5 12L3 14" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                        </svg>}
-                                </button>
+                                <div>
+                                    <Tooltip title={isLeftCollapsed ? "Expand Left" : "Collapse Left"} placement="top">
+                                        <button className="triangle-button" onClick={toggleLeftCollapse}>
+                                            {isLeftCollapsed ?
+                                                <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <title>Expand Left</title>
+                                                    <path d="M21 6H13M9 6V18M21 10H13M21 14H13M21 18H13M3 10L5 12L3 14" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                                </svg>
+                                                :
+                                                <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" transform='rotate(180)'>
+                                                    <title>Collapse Left</title>
+                                                    <path d="M21 6H13M9 6V18M21 10H13M21 14H13M21 18H13M3 10L5 12L3 14" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                                </svg>
+                                            }
+                                        </button>
+                                    </Tooltip>
+                                </div>
                             )}
                             {!isLeftCollapsed && (
-                                <button className="triangle-button" onClick={toggleRightCollapse}>
-                                    {isRightCollapsed ? <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" transform='rotate(180)'>
-                                        <title>Expand Right</title>
-                                        <path d="M21 6H13M9 6V18M21 10H13M21 14H13M21 18H13M3 10L5 12L3 14" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                    </svg> :
-                                        <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <title>Collapse Right</title>
-                                            <path d="M21 6H13M9 6V18M21 10H13M21 14H13M21 18H13M3 10L5 12L3 14" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                        </svg>}
-                                </button>
+                                <Tooltip title={isRightCollapsed ? "Expand Right" : "Collapse Right"} placement="bottom">
+                                    <button className="triangle-button" onClick={toggleRightCollapse}>
+                                        {isRightCollapsed ?
+                                            <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" transform='rotate(180)'>
+                                                <title>Expand Right</title>
+                                                <path d="M21 6H13M9 6V18M21 10H13M21 14H13M21 18H13M3 10L5 12L3 14" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                            </svg>
+                                            :
+                                            <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <title>Collapse Right</title>
+                                                <path d="M21 6H13M9 6V18M21 10H13M21 14H13M21 18H13M3 10L5 12L3 14" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                            </svg>
+                                        }
+                                    </button>
+                                </Tooltip>
                             )}
                         </div>
                     )}
@@ -1217,7 +1269,7 @@ const Results = () => {
                                         data={logoContent}
                                         onColumnClick={handleColumnClick}
                                         onColumnHover={handleColumnHover}
-                                        importantResiduesList={nodeData}
+                                        importantResiduesList={importantResidues}
                                         removeNodeHandle={handleNodeRemove}
                                         applyEntropyStructColor={applyEntropyStructColor}
                                         applyImportantStructColor={applyImportantStructColor}
@@ -1234,17 +1286,29 @@ const Results = () => {
                                     margin: '3px 3px'
                                 }}
                             ></div>
-                            <div style={{ display: "flex", height: "100%", flexGrow: "1", flexDirection: isLeftCollapsed ? "column" : "row" }}>
+                            <div style={{ flex: '1', display: 'flex', flexDirection: 'column' }}>
+                                {colorArr && <img
+                                    src={process.env.PUBLIC_URL + "/gradient.png"}
+                                    alt="Gradient Legend"
+                                    style={{
+                                        width: '100%',
+                                        height: '20px',
+                                        marginTop: '10px',
+                                        borderRadius: '4px'
+                                    }}
+                                />}
+                                <div style={{ display: "flex", height: "100%", flexGrow: "1", flexDirection: isLeftCollapsed ? "column" : "row" }}>
 
-                                <div className="pvdiv" ref={pvdiv} style={{ height: '100%', flexGrow: "1" }}>
-                                    <MolstarViewer
-                                        structData={structData}
-                                        pocketData={pocketData}
-                                        selectedResidue={selectedResidue}
-                                        colorFile={colorArr}
-                                        hoveredResidue={hoveredResidue}
-                                        scrollLogosTo={(index) => handleScrollLogosTo(index)}
-                                    />
+                                    <div className="pvdiv" ref={pvdiv} style={{ height: '100%', flexGrow: "1" }}>
+                                        <MolstarViewer
+                                            structData={structData}
+                                            pocketData={pocketData}
+                                            selectedResidue={selectedResidue}
+                                            colorFile={colorArr}
+                                            hoveredResidue={hoveredResidue}
+                                            scrollLogosTo={(index) => handleScrollLogosTo(index)}
+                                        />
+                                    </div>
                                 </div>
                             </div>
                         </div>

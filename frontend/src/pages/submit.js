@@ -9,12 +9,16 @@ import "../components/submit.css";
 import Snackbar, { SnackbarCloseReason } from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
-import { P } from '../components/glyphs';
+import HelpIcon from '@mui/icons-material/Help';
+import Switch from '@mui/material/Switch';
 
 const Submit = () => {
     const [inputFile, setInputFile] = useState(null);
     const [canSubmit, setCanSubmit] = useState(false);
     const [submitStatus, setSubmitStatus] = useState(false); // Once button is clicked, submit status set to True, ensure no double submission
+    const [textInput, setTextInput] = useState(false);
+    const textInputRef = useRef(null);
+    const [warnFasta, setWarnFasta] = useState(false);
 
     const emailInput = useRef(null);
     const fileInput = useRef(null);
@@ -27,8 +31,8 @@ const Submit = () => {
     const [ancestralProgram, setAncestralProgram] = useState("iqtree");
     const [alignmentProgram, setAlignmentProgram] = useState("famsa");
     const [database, setDatabase] = useState("uniref90");
-    const [lenWeight, setLenWeight] = useState(50);
-    const [conWeight, setConWeight] = useState(.5);
+    const [minLeaves, setMinLeaves] = useState(10);
+    const [conWeight, setConWeight] = useState(.05);
     const [conThreshold, setConThreshold] = useState(.85);
     const [submenu, setSubmenu] = useState(0);
 
@@ -40,12 +44,61 @@ const Submit = () => {
 
     const downloadSampleFASTA = (e) => {
         e.preventDefault();
-        console.log("Downloading sample FASTA file");
-    }
+
+        fetch(`${process.env.PUBLIC_URL}/bilr.fasta`)
+            .then(response => response.blob())
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = "bilr.fasta";
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+            })
+            .catch(error => console.error('Error downloading BILR file:', error));
+    };
 
     const downloadSamplePDB = (e) => {
         e.preventDefault();
-        console.log("Downloading sample PDB file");
+        
+        fetch(`${process.env.PUBLIC_URL}/bilr.pdb`)
+            .then(response => response.blob())
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = "bilr.pdb";
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+            })
+            .catch(error => console.error('Error downloading PDB file:', error));
+    };
+
+    const verifyInputText = () => {
+        const textContent = textInputRef.current.value;
+        const lines = textContent.split('\n');
+
+        if (textContent.startsWith('>')) { // Input is FASTA
+            if (lines.length > 1 && lines[1].length > 20 && lines[1].length < 1001) {
+                setCanSubmit(true);
+                setWarnFasta(false);
+            } else {
+                setWarnFasta(true);
+                setCanSubmit(false);
+            }
+        } else { // Input is PDB
+            if (textContent.trim().length > 0) { // Input is PDB
+                setCanSubmit(true);
+                setWarnFasta(false);
+            } else { // Input is empty
+                setCanSubmit(false);
+                setWarnFasta(false);
+            }
+        }
     }
 
     const phylogenyMenu = () => {
@@ -85,9 +138,6 @@ const Submit = () => {
                 <span>
                     <button className="bp3-button bp3-minimal" onClick={() => setAncestralProgram('iqtree')} style={{ backgroundColor: ancestralProgram === 'iqtree' ? '#007bff' : '#eee', color: ancestralProgram === 'iqtree' ? 'white' : 'black' }} >
                         IQ-TREE
-                    </button>
-                    <button className="bp3-button bp3-minimal" onClick={() => setAncestralProgram('GRASP')} style={{ backgroundColor: ancestralProgram === 'GRASP' ? '#007bff' : '#eee', color: ancestralProgram === 'GRASP' ? 'white' : 'black' }} >
-                        GRASP
                     </button>
                     <button className="bp3-button bp3-minimal" onClick={() => setAncestralProgram('raxml-ng')} style={{ backgroundColor: ancestralProgram === 'raxml-ng' ? '#007bff' : '#eee', color: ancestralProgram === 'raxml-ng' ? 'white' : 'black' }} >
                         RAxML-NG
@@ -146,38 +196,32 @@ const Submit = () => {
     const delinationMenu = () => {
         return (
             <div className="submenu">
-                <p>Weight of branch length in delination step</p>
+                <p>Weight of conserved residues in delination step
+                    <Tooltip title="Weight of conserved residues when determining the S score of a node, 
+                                    the higher weight results in less emphasis placed on the branches length" placement="top" arrow>
+                        <HelpIcon sx={{ width: ".95rem" }} />
+                    </Tooltip>
+                </p>
                 <span>
                     <Slider
                         size="medium"
-                        defaultValue={50}
+                        defaultValue={.05}
                         aria-label="default"
                         valueLabelDisplay="on"
-                        min={0}
-                        max={100}
-                        value={lenWeight}
-                        onChange={(e, value) => setLenWeight(value)}
-                        style={{ width: '70%', marginTop: '1.5em' }}
-                        marks={[{ value: 0, label: '0' }, { value: 25, label: '25' }, { value: 50, label: '50' }, { value: 75, label: '75' }, { value: 100, label: '100' }]}
-                    />
-                </span>
-                <p>Weight of conserved residues in delination step</p>
-                <span>
-                    <Slider
-                        size="medium"
-                        defaultValue={.50}
-                        aria-label="default"
-                        valueLabelDisplay="on"
-                        min={0}
-                        max={1}
-                        step={.01}
+                        min={0.01}
+                        max={0.1}
+                        step={.001}
                         value={conWeight}
                         onChange={(e, value) => setConWeight(value)}
                         style={{ width: '70%', marginTop: '1.5em' }}
-                        marks={[{ value: 0, label: '0' }, { value: 1, label: '1.0' }]}
+                        marks={[{ value: 0, label: '0' }, { value: 0.025, label: '0.025' }, { value: 0.05, label: '0.05' }, { value: 0.075, label: '0.075' }, { value: 0.1, label: '0.1' }]}
                     />
                 </span>
-                <p>Conservation threshold</p>
+                <p>Conservation threshold
+                    <Tooltip title='A residue will be considered "conserved" and contribute to the score if its proportion in the alignment column meets or exceeds this threshold. For example, if the threshold is set to 0.85, and 86% of the residues in position X of the alignment are the same amino acid, then that position will be classified as conserved."' placement="top" arrow>
+                        <HelpIcon sx={{ width: ".95rem" }} />
+                    </Tooltip>
+                </p>
                 <span>
                     <Slider
                         size="medium"
@@ -191,6 +235,26 @@ const Submit = () => {
                         onChange={(e, value) => setConThreshold(value)}
                         style={{ width: '70%', marginTop: '1.5em' }}
                         marks={[{ value: 0, label: '0' }, { value: 1, label: '1.0' }]}
+                    />
+                </span>
+                <p>Minimum clade size
+                    <Tooltip title="Minimum number of leaves for a clade to be considered for the delineation step" placement="top" arrow>
+                        <HelpIcon sx={{ width: ".95rem" }} />
+                    </Tooltip>
+                </p>
+                <span>
+                    <Slider
+                        size="medium"
+                        defaultValue={10}
+                        aria-label="default"
+                        valueLabelDisplay="on"
+                        min={1}
+                        max={20}
+                        step={1}
+                        value={minLeaves}
+                        onChange={(e, value) => setMinLeaves(value)}
+                        style={{ width: '70%', marginTop: '1.5em' }}
+                        marks={[{ value: 1, label: '1 leaf' }, { value: 20, label: '20 leaves' }]}
                     />
                 </span>
             </div>
@@ -215,30 +279,41 @@ const Submit = () => {
         const id = Math.random().toString(36).substring(2, 9) + Date.now().toString(36);
         const formData = new FormData();
 
+        let inputFileToUpload = inputFile;
+        let inputFileName = inputFile ? inputFile.name : '';
+
+        if (textInput) {
+            const textContent = textInputRef.current.value;
+            const fileExt = textContent.startsWith('>') ? 'fasta' : 'pdb';
+            inputFileName = `input.${fileExt}`;
+            const blob = new Blob([textContent], { type: 'text/plain' });
+            inputFileToUpload = new File([blob], inputFileName, { type: 'text/plain' });
+        }
+
         const json = {
             "job_id": id,
             "email": emailInput.current.value,
-            "input_file": inputFile,
-            "input_file_name": inputFile.name,
+            "input_file": inputFileToUpload,
+            "input_file_name": inputFileName,
             "tree_program": phylogeneticProgram,
             "asr_program": ancestralProgram,
             "align_program": alignmentProgram,
             "num_seq": numSeq,
             "database": database,
-            "len_weight": lenWeight,
+            "min_leaves": minLeaves,
             "con_weight": conWeight
         }
 
         Object.keys(json).forEach(key => {
             if (key === 'input_file') {
-                formData.append('input_file', inputFile);
+                formData.append('input_file', inputFileToUpload);
             } else {
                 formData.append(key, json[key]);
             }
         });
 
         // Send JSON to backend
-        fetch('/api/submit', {
+        fetch(`${process.env.PUBLIC_URL}/api/submit`, {
             method: 'POST',
             body: formData
         }).then(response => {
@@ -274,11 +349,10 @@ const Submit = () => {
             setSnackbarOpen(true);
             setSubmitStatus(false);
         });
-
     }
 
     useEffect(() => {
-        if (inputFile) {
+        if (inputFile && !textInput) {
             setCanSubmit(true);
         } else {
             setCanSubmit(false);
@@ -301,8 +375,8 @@ const Submit = () => {
         setAncestralProgram("iqtree");
         setAlignmentProgram("famsa");
         setDatabase("uniref90");
-        setLenWeight(50);
-        setConWeight(.5);
+        setMinLeaves(10);
+        setConWeight(.05);
         setConThreshold(.85);
         setSubmenu(0);
         setSubmitStatus(false);
@@ -330,38 +404,60 @@ const Submit = () => {
                     <h1 className="ibm-plex-sans-medium">Welcome to EzSEA web!</h1>
                     <hr></hr>
                     <p>A tool that combines structure, phylogenetics, and ancestral state reconstruction to delineate an enzyme from its closest relatives and identify evolutionarily important residues.</p>
-                    <span className="ibm-plex-sans-semibold">See an example of the webserver's output </span><a href="">here</a>
+                    <span className="ibm-plex-sans-semibold">See an example of the webserver's output </span><a href={process.env.PUBLIC_URL + "/tol"}>here</a>
                     <br></br>
                     <br></br>
-                    <span className="ibm-plex-sans-semibold">Please cite the following <a href="">paper</a> if you are using EzSEA for your research!</span>
                 </div>
-
-                <div className="alert">
-                    <b>12/16/2024</b> EzSEA sampletext!
-                </div>
-                <br></br>
                 <div className="submit-header" style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <h2>Input Data</h2>
+                    <span>
+                        Upload
+                        <Switch size="small" checked={textInput} onChange={() => setTextInput(!textInput)} />
+                        Text Input
+                    </span>
                 </div>
                 <div className='input-container'>
-                    <p>Please provide a FASTA or PDB file. </p>
                     <div className="form-group">
                         <div>
-                            <input
-                                accept=".pdb,.fasta,.fa"
-                                className="file-input"
-                                style={{ display: 'none' }}
-                                id="raised-button-file"
-                                type="file"
-                                onChange={handleInputFile}
-                                ref={fileInput}
-                            />
-                            <label htmlFor="raised-button-file">
-                                <Button variant="contained" component="span" className="upload-button">
-                                    Upload
-                                </Button>
-                            </label>
-                            {inputFile && <span style={{ marginLeft: '10px' }}>{inputFile.name}</span>}
+                            {textInput ? (
+                                <>
+                                    <p>Please enter a FASTA or PDB sequence. </p>
+                                    <Tooltip title="Please enter valid FASTA format" placement="bottom" arrow
+                                        open={warnFasta}
+                                        onOpen={() => setWarnFasta(true)}
+                                        onClose={() => setWarnFasta(false)}
+                                        disableHoverListener={true}
+                                        disableFocusListener={true}
+                                    >
+                                        <textarea
+                                            placeholder="Input Sequence"
+                                            className="data-input"
+                                            onChange={verifyInputText}
+                                            ref={textInputRef}
+                                            style={{ height: "150px", width: "100%", resize: "vertical", minHeight: "100px" }}>
+                                        </textarea>
+                                    </Tooltip>
+                                </>
+                            ) : (
+                                <>
+                                    <p>Please provide a FASTA or PDB file. </p>
+                                    <input
+                                        accept=".pdb,.fasta,.fa,.fna,.mfa,.fas,.faa,.txt"
+                                        className="file-input"
+                                        style={{ display: 'none' }}
+                                        id="raised-button-file"
+                                        type="file"
+                                        onChange={handleInputFile}
+                                        ref={fileInput}
+                                    />
+                                    <label htmlFor="raised-button-file">
+                                        <Button variant="contained" component="span" className="upload-button">
+                                            Upload
+                                        </Button>
+                                    </label>
+                                    {inputFile && <span style={{ marginLeft: '10px' }}>{inputFile.name}</span>}
+                                </>
+                            )}
                             <p>Download example <a href="" onClick={downloadSampleFASTA}>FASTA file</a> or <a href="" onClick={downloadSamplePDB}>PDB file</a>.</p>
                         </div>
                         <div>
@@ -413,14 +509,9 @@ const Submit = () => {
                 <div className="submit-header">
                     <h2>Webserver Status: Online</h2>
                 </div>
-                <br></br>
-                <h4>News</h4>
-                <p><b>12/16/2024</b> EzSEA sampletext!</p>
-
                 <div>
                     <br></br>
                     <hr></hr>
-                    <p>Citation</p>
                 </div>
             </div>
 

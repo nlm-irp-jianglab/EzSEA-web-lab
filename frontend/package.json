@@ -1,6 +1,7 @@
 {
   "name": "reactvis",
   "version": "1.0.0",
+  "homepage": "/ezsea",
   "main": "/src/index.js",
   "scripts": {
     "predeploy": "npm run build",

@@ -11,33 +11,37 @@ import { Color } from 'molstar/lib/mol-util/color';
 import { setSubtreeVisibility } from 'molstar/lib/mol-plugin/behavior/static/state';
 import "./molstar/skin/light.scss";
 
-export function MolStarWrapper({ structData, pocketData, selectedResidue, hoveredResidue, colorFile, scrollLogosTo }) {
+export function MolStarWrapper({ structData, pocketData, selectedResidue, hoveredResidue, colorFile, scrollLogosTo, example }) {
   const parent = createRef();
   const [isStructureLoaded, setIsStructureLoaded] = useState(false);
 
   async function renderPocket(plugin, pocketData, pocketNumber, hide = false) {
-    const pocketKey = `pocket${pocketNumber}`;
-    const secData = await plugin.builders.data.rawData({
-      data: pocketData[pocketKey]
-    }, { state: { isGhost: true } });
+    try {
+      const pocketKey = `pocket${pocketNumber}`;
+      const secData = await plugin.builders.data.rawData({
+        data: pocketData[pocketKey]
+      }, { state: { isGhost: true } });
 
-    const pocketTraj = await plugin.builders.structure.parseTrajectory(secData, "pdb");
-    const model = await plugin.builders.structure.createModel(pocketTraj);
-    const structure_add = await plugin.builders.structure.createStructure(model);
-    const components = {
-      polymer: await plugin.builders.structure.tryCreateComponentStatic(structure_add, "polymer"),
-    }
+      const pocketTraj = await plugin.builders.structure.parseTrajectory(secData, "pdb");
+      const model = await plugin.builders.structure.createModel(pocketTraj);
+      const structure_add = await plugin.builders.structure.createStructure(model);
+      const components = {
+        polymer: await plugin.builders.structure.tryCreateComponentStatic(structure_add, "polymer"),
+      }
 
-    const builder = plugin.builders.structure.representation;
-    const update = plugin.build();
+      const builder = plugin.builders.structure.representation;
+      const update = plugin.build();
 
-    const pocketModel = await builder.buildRepresentation(update, components.polymer, { type: "orientation", typeParams: { alpha: 0.51 } },
-      { tag: "polymer" });
+      const pocketModel = await builder.buildRepresentation(update, components.polymer, { type: "orientation", typeParams: { alpha: 0.51 } },
+        { tag: "polymer" });
 
-    await update.commit();
+      await update.commit();
 
-    if (hide) {
-      setSubtreeVisibility(plugin.state.data, plugin.managers.structure.hierarchy.current.structures[pocketNumber].components[0].cell.transform.ref, true);
+      if (hide) {
+        setSubtreeVisibility(plugin.state.data, plugin.managers.structure.hierarchy.current.structures[pocketNumber].components[0].cell.transform.ref, true);
+      }
+    } catch (error) {
+      console.error("Error rendering pocket:", error);
     }
   }
 
@@ -78,7 +82,7 @@ export function MolStarWrapper({ structData, pocketData, selectedResidue, hovere
 
       // Loading the default pdb file
       if (structData == null) {
-        await fetch(`${process.env.PUBLIC_URL}/example/seq.pdb`)
+        await fetch(`${process.env.PUBLIC_URL}/example/bilR.pdb`)
           .then((response) => response.text())
           .then((text) => {
             structData = text;
@@ -105,7 +109,6 @@ export function MolStarWrapper({ structData, pocketData, selectedResidue, hovere
       }
 
       const cartoon = structure.representation.representations.polymer.data.repr;
-      const reprCtx = window.molstar.representation.structure;
 
       cartoon.setTheme({
         "color": {
@@ -145,9 +148,15 @@ export function MolStarWrapper({ structData, pocketData, selectedResidue, hovere
           const selections = Array.from(
             window.molstar.managers.structure.selection.entries.values()
           );
+
+          //Remove previous selections by turning selection mode on and off
+
+
           // selections is auto-sorted, lowest residue id first. Therefore, when multiple residues are selected, 
           // the logo will only scroll to the residue with the lowest id.
-          const localSelected = [];
+          var localSelected = [];
+          localSelected.length = 0;
+
           for (const { structure } of selections) {
             if (!structure) continue;
             Structure.eachAtomicHierarchyElement(structure, {
@@ -159,6 +168,8 @@ export function MolStarWrapper({ structData, pocketData, selectedResidue, hovere
           }
           if (localSelected[0]) {
             scrollLogosTo(localSelected[0].position);
+            window.molstar.selectionMode = !window.molstar.selectionMode;
+            window.molstar.selectionMode = !window.molstar.selectionMode;
           }
         });
 
@@ -220,9 +231,7 @@ export function MolStarWrapper({ structData, pocketData, selectedResidue, hovere
   }
 
   async function applyColorFile(colorFile) {
-    if (!colorFile) return;
-
-    if (colorFile === "empty") { // if colorfile is the string "empty", clear the overpaint TODO: make this a separate func
+    if (!colorFile) {
       clearStructureOverpaint(window.molstar, window.molstar.managers.structure.hierarchy.current.structures[0].components);
       return;
     };

@@ -8,6 +8,7 @@ import { tolContext } from './tolContext';
 import { logoContext } from './logoContext';
 import Tooltip from '@mui/material/Tooltip';
 import { getEmptyImage } from "react-dnd-html5-backend";
+import { svg } from 'd3';
 
 const dragHandleStyle = {
     width: '24px',
@@ -102,13 +103,20 @@ export const LogoCard = ({ id, index, header, moveCard, ppm = null, fasta = null
             console.error('Logo not found');
             return;
         }
-        const svgElement = logoRef.current.querySelector('svg');
+        const svgElement = logoRef.current.querySelector('svg').cloneNode(true);
         const serializer = new XMLSerializer();
+
+        // Target the <g> element with the class yaxis and set its transform attribute
+        const yAxisElement = svgElement.querySelector('.yaxis');
+        if (yAxisElement) {
+            yAxisElement.style.transform = 'translate(-10px, 10px)';
+        }
+
         let source = serializer.serializeToString(svgElement);
         const styleString = `
             <style>
                 .glyphrect {
-                    fill-opacity: 0.0;
+                    fill-opacity: 0.0 !important;
                 }
             </style>`;
         source = source.replace('</svg>', `${styleString}</svg>`);
@@ -141,15 +149,21 @@ export const LogoCard = ({ id, index, header, moveCard, ppm = null, fasta = null
                     }}
                 >
                     <p style={{ paddingLeft: "30px" }}>
-                        <button style={{ background: "none", color: "inherit", border: "none", padding: "0", outline: "inherit", cursor: "pointer" }}
-                            onClick={() => { findAndZoom(nodeId) }}
-                        >
+                        <button
+                            className="logo-btn"
+                            style={{
+                                outline: "none",
+                                cursor: "pointer",
+                                borderRadius: "5px",
+                                border: "black solid 1px"
+                            }}
+                            onClick={() => { findAndZoom(nodeId) }}>
                             <b>{header}</b>
                         </button>
                     </p>
                     <span style={{ paddingRight: "30px" }}>
                         {fasta && (
-                            <Tooltip title="Color Entropy" placement="top">
+                            <Tooltip title="Color Conservation" placement="top">
                                 <button
                                     className={`logo-color-btn logo-btn ${activeButton === `entropy-${index}` ? "active" : ""
                                         }`}
@@ -182,42 +196,6 @@ export const LogoCard = ({ id, index, header, moveCard, ppm = null, fasta = null
                                 </button>
                             </Tooltip>
                         )}
-                        {/* {importantResiduesList[nodeId] &&
-                            importantResiduesList[nodeId].differing_residues.length > 0 && (
-                                <button
-                                    className={`logo-color-btn logo-btn ${activeButton === `important-${index}` ? "active" : ""
-                                        }`}
-                                    style={{
-                                        ...styles.colorBtn,
-                                        backgroundColor:
-                                            activeButton === `important-${index}` ? "#639fc7" : "#95bee8",
-                                        boxShadow: activeButton === `important-${index}` ? "inset 0px 4px 6px rgba(0, 0, 0, 0.2)" : "none", // Inset shadow
-                                        transform: activeButton === `important-${index}` ? "translateY(2px)" : "none", // Lowered position
-                                        border: activeButton === `important-${index}` ? "2px solid #4a7fa5" : "1px solid #95bee8", // Emphasized border
-                                    }}
-                                    onClick={() => {
-                                        setActiveButton(`important-${index}`);
-                                        applyImportantStructColor(
-                                            nodeId,
-                                            importantResiduesList[nodeId].differing_residues
-                                        );
-                                    }}
-                                >
-                                    <svg
-                                        width="22px"
-                                        height="25px"
-                                        viewBox="0 0 24 24"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                    >
-                                        <title>Color Important Residues</title>
-                                        <path d="M6.5 4l5.5 6 5.5-6zm2.273 1h6.454L12 8.52zM23 20v-8H1v8zM2 19v-6h20v6z" />
-                                        <path opacity=".5" d="M8 13h8v6H8z" />
-                                        <path opacity=".25" d="M8 19H2v-6h6z" />
-                                        <path opacity=".75" d="M22 19h-6v-6h6z" />
-                                        <path fill="none" d="M0 0h24v24H0z" />
-                                    </svg>
-                                </button>
-                            )} */}
                         <Tooltip title="Download Individual" placement="top">
                             <button
                                 className="logo-download-btn logo-btn"
@@ -273,7 +251,8 @@ export const LogoCard = ({ id, index, header, moveCard, ppm = null, fasta = null
                     ref={(el) => { addLogoRef(el); logoRef.current = el; }}
                 >
                     <Logo
-                        {...(ppm ? { ppm } : { fasta })}
+                        fasta={fasta}
+                        ppm={ppm}
                         header={header}
                         alphabet={allColors[logoAlphabet]}
                         onSymbolClick={onSymbolClick}
@@ -285,6 +264,7 @@ export const LogoCard = ({ id, index, header, moveCard, ppm = null, fasta = null
                         }
                         mode={ppm ? "FREQUENCY" : "INFORMATION_CONTENT"}
                         height={150}
+                        countUnaligned={true}
                     />
                 </div>
             </div>

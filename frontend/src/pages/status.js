@@ -21,13 +21,13 @@ const Status = () => {
     // Function to fetch logs
     const fetchLogs = async () => {
         try {
-            const response = await fetch(`/api/status/${jobId}`);
+            const response = await fetch(`${process.env.PUBLIC_URL}/api/status/${jobId}`);
             const data = await response.json();
             if (response.status == 200) {
                 setLogs(data.logs);
                 setJobStatus(data.status);
                 if (data.status === 'done') {
-                    window.location.href = `/results/${jobId}`;
+                    window.location.href = `/ezsea/results/${jobId}`;
                 }
             } else {
                 setLogs([`${data.error}`]);
@@ -48,8 +48,12 @@ const Status = () => {
 
         // Fetch logs every 20 seconds
         const interval = setInterval(() => {
-            fetchLogs();
-        }, 10000);
+            if (jobStatus === "Error") {
+                clearInterval(interval);
+            } else {
+                fetchLogs();
+            }
+        }, 20000);
 
         return () => clearInterval(interval);
     }, [jobId]);
@@ -83,11 +87,10 @@ const Status = () => {
             <Navbar pageId={"Status"} />
             <div className="processing-container">
                 <div>
-                    <h1>{submitError ? <span>Our servers are down</span> : "Job Processing..."}</h1>
-                </div>
+                    <h1>{["Unknown", "Failed", "Error"].includes(jobStatus) ? <span style={{ color: 'red' }}>Job Failed!</span> : "Job Processing..."}</h1>                </div>
                 <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-evenly" }}>
                     <div className="processing-logo">
-                        <img src={process.env.PUBLIC_URL + "/tree.svg"} alt="Logo" style={{ width: "90%" }}></img>
+                        <img src={process.env.PUBLIC_URL + "/tree.svg"} alt="Logo" style={{ width: "18em" }}></img>
                     </div>
                     <div className="processing-list">
                         {renderStatusLoading()}
@@ -98,7 +101,7 @@ const Status = () => {
                     <p>Job ID: {jobId}</p>
                     <p>{email ? `Notification will be sent to: ${email}` : "No email was provided."}</p>
                     <p>Results will display on this page when ready, or you can bookmark the link below and close this page:</p>
-                    <a href={`/results/${jobId}`}>http://34.135.121.20/results/{jobId}</a>
+                    <a href={`/ezsea/results/${jobId}`}>https://jianglabnlm/ezsea/results/{jobId}</a>
                 </div>
             </div>
 

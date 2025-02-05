@@ -98,6 +98,9 @@ export const parseNodeData = async (nodeData) => {
         parsedData[item.node] = {
             differing_residues: item.differing_residues,
             score: item.score,
+            ancestoral_node: item.ancestral_node,
+            descendant_node: item.descendant_node,
+            leaves: item.leaves,
         }
     });
     return parsedData;
@@ -133,27 +136,29 @@ export const mapEntropyToColors = async (entropyArray) => {
 
     // Function to interpolate colors based on normalized value
     const interpolateColor = (value) => {
-        // Define color stops for heatmap: from blue (low entropy) to white (moderate entropy) to red (high entropy)
+        // Low entropy, maroon to high entropy, cyan
         const colorStops = [
-            { r: 0, g: 0, b: 255 },   // Blue (low entropy)
-            { r: 255, g: 255, b: 255 }, // White (moderate entropy)
-            { r: 255, g: 0, b: 0 }    // Red (high entropy)
+            { r: 160, g: 36, b: 96 },
+            { r: 240, g: 125, b: 171 },
+            { r: 250, g: 201, b: 222 },
+            { r: 252, g: 237, b: 244 },
+            { r: 255, g: 255, b: 255 },
+            { r: 234, g: 255, b: 255 },
+            { r: 214, g: 255, b: 255 },
+            { r: 140, g: 255, b: 255 },
+            { r: 17, g: 200, b: 209 }
         ];
 
-        // Map normalized value to a position in the color stop range
-        if (value <= 0.5) {
-            const localValue = normalize(value, 0, 0.5);
-            const r = Math.round(colorStops[0].r + (colorStops[1].r - colorStops[0].r) * localValue);
-            const g = Math.round(colorStops[0].g + (colorStops[1].g - colorStops[0].g) * localValue);
-            const b = Math.round(colorStops[0].b + (colorStops[1].b - colorStops[0].b) * localValue);
-            return `0x${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
-        } else {
-            const localValue = normalize(value, 0.5, 1);
-            const r = Math.round(colorStops[1].r + (colorStops[2].r - colorStops[1].r) * localValue);
-            const g = Math.round(colorStops[1].g + (colorStops[2].g - colorStops[1].g) * localValue);
-            const b = Math.round(colorStops[1].b + (colorStops[2].b - colorStops[1].b) * localValue);
-            return `0x${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
-        }
+        // Normalize value to a position in the color stop range
+        const segment = 1 / (colorStops.length - 1);
+        const index = Math.min(Math.floor(value / segment), colorStops.length - 2);
+        const localValue = (value - index * segment) / segment;
+
+        const r = Math.round(colorStops[index].r + (colorStops[index + 1].r - colorStops[index].r) * localValue);
+        const g = Math.round(colorStops[index].g + (colorStops[index + 1].g - colorStops[index].g) * localValue);
+        const b = Math.round(colorStops[index].b + (colorStops[index + 1].b - colorStops[index].b) * localValue);
+
+        return `0x${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
     };
 
     // Normalize entropies and map to colors
@@ -161,6 +166,10 @@ export const mapEntropyToColors = async (entropyArray) => {
         const normalizedValue = normalize(entropy, minEntropy, maxEntropy);
         return interpolateColor(normalizedValue);
     });
+
+    // Get rgb values for 9 evenly spaced values between 0 and 1
+    // const colorStops = Array.from({ length: 9 }, (_, i) => i / 8).map(interpolateColor);
+    // console.log(colorStops);
 
     return colorArray;
 };
