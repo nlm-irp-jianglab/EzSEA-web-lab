@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState, forwardRef, useImperativeHandle } f
 import { createRoot } from 'react-dom/client';
 import * as d3 from 'd3';
 import { D3Node, RadialNode, Link, RadialTreeProps } from './types.ts';
-import { convertToD3Format, readTree } from './utils.ts';
+import { convertToD3Format, readTree, findAndZoom } from './utils.ts';
 import {
   highlightDescendantsRadial,
   countLeaves,
@@ -12,8 +12,8 @@ import {
   toggleCollapseClade,
   reroot
 } from './radialUtils.ts';
-import '../css/tree3.css';
-import '../css/menu.css';
+import './tree3.css';
+import './menu.css';
 
 export interface RadialTreeRef {
   getLinkExtensions: () => d3.Selection<SVGPathElement, Link<RadialNode>, SVGGElement, unknown> | null;
@@ -37,6 +37,7 @@ export const RadialTree = forwardRef<RadialTreeRef, RadialTreeProps>(({
   customNodeMenuItems,
   nodeStyler,
   linkStyler,
+  leafStyler
 }, ref) => {
   const [variableLinks, setVariableLinks] = useState(false);
   const [displayLeaves, setDisplayLeaves] = useState(true);
@@ -141,7 +142,7 @@ export const RadialTree = forwardRef<RadialTreeRef, RadialTreeProps>(({
       .attr("font-size", 5)
       .call(zoom);
 
-    const svg = svgMain.append("g");
+    const svg = svgMain.append("g").attr("class", "tree");
 
     // Styles TODO: Move to CSS
     svg.append("style").text(`
@@ -230,6 +231,7 @@ export const RadialTree = forwardRef<RadialTreeRef, RadialTreeProps>(({
 
     // Draw links
     const linkExtensions = svg.append("g")
+      .attr("class", "link-extensions")
       .attr("fill", "none")
       .attr("stroke", "#000")
       .attr("stroke-opacity", 0.25)
@@ -241,6 +243,7 @@ export const RadialTree = forwardRef<RadialTreeRef, RadialTreeProps>(({
       .attr("d", linkExtensionConstant);
 
     const links = svg.append("g")
+      .attr("class", "links")
       .attr("fill", "none")
       .attr("stroke", "#444")
       .selectAll("path")
@@ -253,7 +256,7 @@ export const RadialTree = forwardRef<RadialTreeRef, RadialTreeProps>(({
       .on("mouseover", linkhovered(true))
       .on("mouseout", linkhovered(false))
       .on("click", linkClicked);
-    
+
     // If given linkStyler, apply it
     if (linkStyler) {
       links.each((d) => linkStyler(d.source, d.target));
@@ -285,6 +288,7 @@ export const RadialTree = forwardRef<RadialTreeRef, RadialTreeProps>(({
 
     // Draw leaf labels
     const leafLabels = svg.append("g")
+      .attr("class", "leaves")
       .selectAll("text")
       .data(varData.leaves())
       .join("text")
@@ -296,6 +300,11 @@ export const RadialTree = forwardRef<RadialTreeRef, RadialTreeProps>(({
       .on("mouseover", leafhovered(true))
       .on("mouseout", leafhovered(false))
       .on("click", leafClicked);
+
+    // If given leafStyler, apply it
+    if (leafStyler) {
+      leafLabels.each((d) => leafStyler(d));
+    }
 
     // Node functions
     function nodeHovered(active: boolean): (event: MouseEvent, d: RadialNode) => void {
@@ -401,7 +410,7 @@ export const RadialTree = forwardRef<RadialTreeRef, RadialTreeProps>(({
             {customNodeMenuItems?.map(item => {
               if (item.toShow(d)) {
                 return (
-                  <a className="dropdown-item" onClick={() => item.onClick(d)}>
+                  <a className="dropdown-item" onClick={() => { item.onClick(d); menu?.remove(); }}>
                     {item.label(d)}
                   </a>
                 );
@@ -436,6 +445,7 @@ export const RadialTree = forwardRef<RadialTreeRef, RadialTreeProps>(({
 
     // Add nodes
     const nodes = svg.append("g")
+      .attr("class", "nodes")
       .selectAll(".node")
       .data(varData.descendants().filter(d => d.children))
       .join("g")
@@ -458,7 +468,7 @@ export const RadialTree = forwardRef<RadialTreeRef, RadialTreeProps>(({
       .on("mouseout", nodeHovered(false))
       .on('mouseenter', showHoverLabel)
       .on('mouseleave', hideHoverLabel);
-    
+
     // If given nodeStyler, apply it
     if (nodeStyler) {
       nodes.each((d) => nodeStyler(d));
@@ -469,7 +479,7 @@ export const RadialTree = forwardRef<RadialTreeRef, RadialTreeProps>(({
     nodesRef.current = nodes as unknown as d3.Selection<SVGGElement, RadialNode, SVGGElement, unknown>;
     leafLabelsRef.current = leafLabels as unknown as d3.Selection<SVGTextElement, RadialNode, SVGGElement, unknown>;
     svgRef.current = svgMain.node();
-    
+
   }, [varData, width]);
 
   useEffect(() => { // Transition between variable and constant links, and tip alignment
@@ -528,6 +538,13 @@ export const RadialTree = forwardRef<RadialTreeRef, RadialTreeProps>(({
     setTipAlign: (value: boolean) => setTipAlign(value),
     recenterView: () => recenterView(),
     refresh: () => setRefreshTrigger(prev => prev + 1),
+    findAndZoom: (name: string) => {
+      if (svgRef.current) {
+        findAndZoom(name, d3.select(svgRef.current));
+      }
+    },
+    getRoot: () => varData,
+    getContainer: () => containerRef.current
   }));
 
   return (

@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState, forwardRef, useImperativeHandle } f
 import { createRoot } from 'react-dom/client';
 import * as d3 from 'd3';
 import { D3Node, RadialNode, Link, RadialTreeProps } from './types.ts';
-import { convertToD3Format, readTree } from './utils.ts';
+import { convertToD3Format, readTree, findAndZoom } from './utils.ts';
 import {
   countLeaves,
   toggleHighlightDescendantLinks,
@@ -14,8 +14,8 @@ import {
 import {
   highlightDescendantsRect,
 } from './rectUtils.ts';
-import '../css/tree3.css';
-import '../css/menu.css';
+import './tree3.css';
+import './menu.css';
 
 export interface RectTreeRef {
   getLinkExtensions: () => d3.Selection<SVGPathElement, Link<RadialNode>, SVGGElement, unknown> | null;
@@ -39,6 +39,7 @@ export const RectTree = forwardRef<RectTreeRef, RadialTreeProps>(({
   customNodeMenuItems,
   nodeStyler,
   linkStyler,
+  leafStyler
 }, ref) => {
   const [variableLinks, setVariableLinks] = useState(true);
   const [displayLeaves, setDisplayLeaves] = useState(true);
@@ -221,6 +222,7 @@ export const RectTree = forwardRef<RectTreeRef, RadialTreeProps>(({
 
     // Draw links
     const linkExtensions = svg.append("g")
+      .attr("class", "link-extensions")
       .attr("fill", "none")
       .attr("stroke", "#000")
       .attr("stroke-opacity", 0.25)
@@ -232,6 +234,7 @@ export const RectTree = forwardRef<RectTreeRef, RadialTreeProps>(({
       .attr("d", linkExtensionVariable);
 
     const links = svg.append("g")
+      .attr("class", "links")
       .attr("fill", "none")
       .attr("stroke", "#444")
       .selectAll("path")
@@ -276,6 +279,7 @@ export const RectTree = forwardRef<RectTreeRef, RadialTreeProps>(({
 
     // Draw leaf labels
     const leafLabels = svg.append("g")
+      .attr("class", "leaves")
       .selectAll("text")
       .data(varData.leaves())
       .join("text")
@@ -286,6 +290,11 @@ export const RectTree = forwardRef<RectTreeRef, RadialTreeProps>(({
       .on("mouseover", leafhovered(true))
       .on("mouseout", leafhovered(false))
       .on("click", leafClicked);
+
+    // If given leafStyler, apply it
+    if (leafStyler) {
+      leafLabels.each((d) => leafStyler(d));
+    }
 
     // Node functions
     function nodeHovered(active: boolean): (event: MouseEvent, d: RadialNode) => void {
@@ -389,7 +398,7 @@ export const RectTree = forwardRef<RectTreeRef, RadialTreeProps>(({
             {customNodeMenuItems?.map(item => {
               if (item.toShow(d)) {
                 return (
-                  <a className="dropdown-item" onClick={() => item.onClick(d)}>
+                  <a className="dropdown-item" onClick={() => { item.onClick(d); menu?.remove(); }}>
                     {item.label(d)}
                   </a>
                 );
@@ -424,6 +433,7 @@ export const RectTree = forwardRef<RectTreeRef, RadialTreeProps>(({
 
     // Create nodes
     const nodes = svg.append("g")
+      .attr("class", "nodes")
       .selectAll(".node")
       .data(varData.descendants().filter(d => d.children))
       .join("g")
@@ -511,6 +521,14 @@ export const RectTree = forwardRef<RectTreeRef, RadialTreeProps>(({
     setTipAlign: (value: boolean) => setTipAlign(value),
     recenterView: () => recenterView(),
     refresh: () => setRefreshTrigger(prev => prev + 1),
+    findAndZoom: (name: string) => {
+      if (svgRef.current) {
+        console.log("Rectangular tree findAndZoom", name);
+        findAndZoom(name, d3.select(svgRef.current));
+      }
+    },
+    getRoot: () => varData,
+    getContainer: () => containerRef.current
   }));
 
   return (
