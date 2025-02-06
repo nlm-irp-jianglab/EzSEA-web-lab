@@ -578,8 +578,7 @@ const TestTol = () => {
 
   const zoomToElem = () => {
     const handleSidebarSearchClick = () => {
-      if (document.querySelector('.downloads-dropdown-content').classList.contains('visible')
-        || document.querySelector('.nodes-dropdown-content').classList.contains('visible')) {
+      if (document.querySelector('.nodes-dropdown-content').classList.contains('visible')) {
         setSidebarExpanded(true);
       } else {
         setSidebarExpanded(!sidebarExpanded);
@@ -660,7 +659,7 @@ const TestTol = () => {
                   treeRef.current.findAndZoom("Node1");
                 }}><FilterCenterFocusIcon /></Button>
               </Tooltip>
-              <Tooltip title="Label Toggles" placement="top">
+              <Tooltip title="Labels" placement="top">
                 <Button
                   aria-controls={labelMenuOpen ? 'basic-menu' : undefined}
                   aria-haspopup="true"
@@ -676,8 +675,9 @@ const TestTol = () => {
                     'aria-labelledby': 'basic-button',
                   }}
                 >
-                  <MenuItem onClick={() => toggleLeafLabels()}>Toggle leaf labels</MenuItem>
-                  <MenuItem onClick={() => toggleECLabels()}>Toggle EC labels</MenuItem>
+                  <MenuItem onClick={() => treeRef.current.setVariableLinks(prev => !prev)}>Variable Links</MenuItem>
+                  <MenuItem onClick={() => treeRef.current.setTipAlign(prev => !prev)}>Align Tips</MenuItem>
+                  <MenuItem onClick={() => treeRef.current.setDisplayLeaves(prev => !prev)}>Toggle Labels</MenuItem>
                 </Menu>
               </Tooltip>
               <Tooltip title="Reset tree" placement="top">

@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState, forwardRef, useImperativeHandle } f
 import { createRoot } from 'react-dom/client';
 import * as d3 from 'd3';
 import { D3Node, RadialNode, Link, RadialTreeProps } from './types.ts';
-import { convertToD3Format, readTree, findAndZoom } from './utils.ts';
+import { convertToD3Format, readTree } from './utils.ts';
 import {
   highlightDescendantsRadial,
   countLeaves,
@@ -10,7 +10,8 @@ import {
   toggleHighlightTerminalLinks,
   toggleHighlightLinkToRoot,
   toggleCollapseClade,
-  reroot
+  reroot,
+  findAndZoom 
 } from './radialUtils.ts';
 import './tree3.css';
 import './menu.css';
