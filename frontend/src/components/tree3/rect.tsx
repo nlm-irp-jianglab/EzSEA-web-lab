@@ -13,6 +13,7 @@ import {
 } from './radialUtils.ts';
 import {
   highlightDescendantsRect,
+  getNodePosition,
   findAndZoom
 } from './rectUtils.ts';
 import './tree3.css';
@@ -517,18 +518,24 @@ export const RectTree = forwardRef<RectTreeRef, RadialTreeProps>(({
     getLinks: () => linkRef.current,
     getInnerNodes: () => nodesRef.current,
     getLeaves: () => leafLabelsRef.current,
+    getSvgRef: () => svgRef.current,
     setVariableLinks: (value: boolean) => setVariableLinks(value),
     setDisplayLeaves: (value: boolean) => setDisplayLeaves(value),
     setTipAlign: (value: boolean) => setTipAlign(value),
     recenterView: () => recenterView(),
     refresh: () => setRefreshTrigger(prev => prev + 1),
-    findAndZoom: (name: string) => {
+    getNodePosition: (name: string) => {
       if (svgRef.current) {
-        findAndZoom(name, d3.select(svgRef.current));
+        return getNodePosition(name, d3.select(svgRef.current));
       }
     },
     getRoot: () => varData,
-    getContainer: () => containerRef.current
+    getContainer: () => containerRef.current,
+    findAndZoom: (name: string, container: React.MutableRefObject<HTMLDivElement>) => {
+      if (svgRef.current) {
+        findAndZoom(name, d3.select(svgRef.current), container);
+      }
+    }
   }));
 
   return (
@@ -536,9 +543,7 @@ export const RectTree = forwardRef<RectTreeRef, RadialTreeProps>(({
       <div ref={containerRef} style={{
         width: "100%",
         height: "100%",
-        overflow: "hidden",
-        border: "1px solid #ccc",
-        borderRadius: "4px"
+        overflow: "show"
       }} />
     </div>
   );

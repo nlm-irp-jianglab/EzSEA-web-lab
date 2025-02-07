@@ -78,6 +78,7 @@ const TestTol = () => {
 
   // References for rendering
   const treeRef = useRef(null);
+  const treediv = useRef(null);
   const pvdiv = useRef(null);
   const logoStackRef = useRef(null);
   const scrollInputRef = useRef(null);
@@ -500,7 +501,7 @@ const TestTol = () => {
     setIsRightCollapsed(false);
     setPipVisible(true);
     setTimeout(() => {
-      treeRef.current.findAndZoom(nodeId);
+      treeRef.current.findAndZoom(nodeId, treediv);
     }, 2000);
   };
 
@@ -631,7 +632,7 @@ const TestTol = () => {
                       inputLabel: { style: { fontSize: '14px' } },
                     }}
                   />}
-                onChange={(event, value) => treeRef.current.findAndZoom(value)}
+                onChange={(event, value) => treeRef.current.findAndZoom(value, treediv)}
               />}
             {notification && (
               <div className="notification">
@@ -652,11 +653,11 @@ const TestTol = () => {
           </div>
         </div>
         <div className="view">
-          <div className="tree-div" onDrop={() => handleTreeDrop()} style={{ width: isLeftCollapsed ? '2%' : (pipVisible ? '50%' : '100%'), textAlign: "center" }}>
+          <div className="tree-div" ref={treediv} onDrop={() => handleTreeDrop()} style={{ width: isLeftCollapsed ? '2%' : (pipVisible ? '50%' : '100%'), textAlign: "center" }}>
             <ButtonGroup variant="contained" aria-label="Basic button group">
               <Tooltip title="Recenter on input" placement="top">
                 <Button onClick={() => {
-                  treeRef.current.findAndZoom("Node1");
+                  treeRef.current.findAndZoom("Node1", treediv);
                 }}><FilterCenterFocusIcon /></Button>
               </Tooltip>
               <Tooltip title="Labels" placement="top">
@@ -839,7 +840,7 @@ const TestTol = () => {
                     removeNodeHandle={handleNodeRemove}
                     applyEntropyStructColor={applyEntropyStructColor}
                     applyImportantStructColor={applyImportantStructColor}
-                    findAndZoom={treeRef.current.findAndZoom}
+                    findAndZoom={function (name) { treeRef.current.findAndZoom(name, treediv) }}
                     ref={logoStackRef}
                   />
                 </div>

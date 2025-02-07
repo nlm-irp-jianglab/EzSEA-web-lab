@@ -201,7 +201,7 @@ export function reroot(node: RadialNode, data: TreeNode): RadialNode {
   return node;
 }
 
-export function findAndZoom(name: string, svg: d3.Selection<SVGSVGElement, unknown, null, undefined>): void {
+export function findAndZoom(name: string, svg: d3.Selection<SVGSVGElement, unknown, null, undefined>, container: React.MutableRefObject<HTMLDivElement>): void {
   // Find node with name in tree
   const node = svg.select('g.nodes')
     .selectAll<SVGGElement, RadialNode>('g.inner-node')
@@ -210,32 +210,22 @@ export function findAndZoom(name: string, svg: d3.Selection<SVGSVGElement, unkno
   if (!node.empty()) {
     const nodeElement = node.node();
     const nodeData = node.data()[0];
-    if (!nodeElement) return;
 
-    console.log("Found node", nodeData);
+    const radius = nodeData.radius ?? 0;
+    const y = nodeData.y ?? 0;
+
+    const centerOffsetX = container.current.clientWidth / 2;
+    const centerOffsetY = container.current.clientHeight / 2;
 
     const zoom = d3.zoom().on("zoom", (event) => {
       svg.select("g").attr("transform", event.transform);
     });
 
-    const transform = nodeElement.transform.baseVal.consolidate();
-    if (!transform) return;
-
-    const matrix = transform.matrix;
-    const x = matrix.e;  // translation X
-    const y = matrix.f;  // translation Y
-
-    const svgNode = svg.node();
-    if (!svgNode) return;
-
-    const width = svgNode.getBoundingClientRect().width;
-    const height = svgNode.getBoundingClientRect().height;
-
     svg.transition()
       .duration(750)
       .call(zoom.transform as any, d3.zoomIdentity
-        .translate(width / 2 - x, height / 2 - y)
-        .scale(2));
+        .translate(0, 0)
+        .scale(1));
 
     const circle = d3.select(nodeElement).select('circle');
     const currRadius = circle.attr("r");
@@ -260,13 +250,14 @@ export function findAndZoom(name: string, svg: d3.Selection<SVGSVGElement, unkno
       .style("fill", currColor)
       .style("r", currRadius);
 
-    // Find leaf with name in tree
-    const leaf = svg.select('g.leaves')
-      .selectAll<SVGGElement, RadialNode>('g.leaf')
-      .filter(d => d.data.name === name);
+  }
 
-    if (!leaf.empty()) {
-      console.log("Found leaf", leaf);
-    }
+  // Find leaf with name in tree
+  const leaf = svg.select('g.leaves')
+    .selectAll<SVGGElement, RadialNode>('g.leaf')
+    .filter(d => d.data.name === name);
+
+  if (!leaf.empty()) {
+    console.log("Found leaf", leaf);
   }
 }

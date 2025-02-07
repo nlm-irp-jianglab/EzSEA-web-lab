@@ -539,13 +539,13 @@ export const RadialTree = forwardRef<RadialTreeRef, RadialTreeProps>(({
     setTipAlign: (value: boolean) => setTipAlign(value),
     recenterView: () => recenterView(),
     refresh: () => setRefreshTrigger(prev => prev + 1),
-    findAndZoom: (name: string) => {
+    getRoot: () => varData,
+    getContainer: () => containerRef.current,
+    findAndZoom: (name: string, container: React.MutableRefObject<HTMLDivElement>) => {
       if (svgRef.current) {
-        findAndZoom(name, d3.select(svgRef.current));
+        findAndZoom(name, d3.select(svgRef.current), container);
       }
     },
-    getRoot: () => varData,
-    getContainer: () => containerRef.current
   }));
 
   return (
@@ -553,9 +553,7 @@ export const RadialTree = forwardRef<RadialTreeRef, RadialTreeProps>(({
       <div ref={containerRef} style={{
         width: "100%",
         height: "100%",
-        overflow: "hidden",
-        border: "1px solid #ccc",
-        borderRadius: "4px"
+        overflow: "show",
       }} />
     </div>
   );
