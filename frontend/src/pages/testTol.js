@@ -659,6 +659,7 @@ const TestTol = () => {
                     const content = e.target?.result;
                     fastaToDict(content).then(data => {
                       setLeafData(data);
+                      setSeqLength(Object.values(data)[0].length);
                       console.log("Uploaded data: ", data)
                     });
                     setTreeKey(prev => prev + 1);
