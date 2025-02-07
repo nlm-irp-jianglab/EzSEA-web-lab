@@ -4,7 +4,6 @@ import { useParams } from 'react-router-dom';
 
 // Third Party Libraries
 import * as d3 from 'd3';
-import { isLeafNode, selectAllDescendants } from 'phylotree/src/nodes';
 import { ZstdInit, ZstdDec } from '@oneidentity/zstd-js/decompress';
 
 // Material UI Components
@@ -30,7 +29,7 @@ import DownloadDialog from '../components/downloadlogo.tsx';
 import LogoStack from '../components/logo-stack.js';
 import MolstarViewer from "../components/molstar.js";
 import { tolContext } from '../components/tolContext.js';
-import { readFastaToDict, parseNodeData, calcEntropyFromMSA, mapEntropyToColors, jsonToFasta } from '../components/utils.js';
+import { readFastaToDict, parseNodeData, calcEntropyFromMSA, mapEntropyToColors, jsonToFasta, fastaToDict } from '../components/utils.js';
 
 // Tree3
 import { RadialTree } from '../components/tree3/radial.tsx';
@@ -72,7 +71,6 @@ const TestTol = () => {
   const [isRightCollapsed, setIsRightCollapsed] = useState(false);
   const [sidebarExpanded, setSidebarExpanded] = useState(false);
   const [notification, setNotification] = useState('');
-  const [refresh, setRefresh] = useState(false);
   const [labelMenuAnchor, setLabelMenuAnchor] = useState(null);
   const labelMenuOpen = Boolean(labelMenuAnchor);
 
@@ -87,72 +85,57 @@ const TestTol = () => {
   // Add state for tree key
   const [treeKey, setTreeKey] = useState(0);
 
-
   const cycleLayout = () => {
     const currentIndex = layouts.indexOf(treeLayout);
     const nextIndex = (currentIndex + 1) % layouts.length;
     setTreeLayout(layouts[nextIndex]);
   };
 
+  // ASR data
+  const uint8ArrayToString = (uint8Array) => {
+    const decoder = new TextDecoder('utf-8');
+    return decoder.decode(uint8Array);
+  };
+
   // Fetch the tree data and node data on component mount, store data into states
-  useEffect(() => {
-    const fetchDefaultTree = async () => { // Fetch the default tree data
-      try {
-        const response = await fetch(`${process.env.PUBLIC_URL}/example/asr.tree`);
-        const text = await response.text();
-        setNewickData(text);
-      } catch (error) {
-        console.error("Error fetching the default tree:", error);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchDefaultTree = async () => { // Fetch the default tree data
+  //     try {
+  //       const response = await fetch(`${process.env.PUBLIC_URL}/example/asr.tree`);
+  //       const text = await response.text();
+  //       setNewickData(text);
+  //     } catch (error) {
+  //       console.error("Error fetching the default tree:", error);
+  //     }
+  //   };
 
-    fetchDefaultTree();
+  //   fetchDefaultTree();
 
-    readFastaToDict(`${process.env.PUBLIC_URL}/example/asr.fa`).then(data => {
-      setFaData(data);
-      setSeqLength(data[Object.keys(data)[0]].length);
-    });
+  //   // Node info, ask Angela about JSON format
+  //   fetch(`${process.env.PUBLIC_URL}/example/nodes.json`)
+  //     .then(response => response.json())
+  //     .then((json) => {
+  //       parseNodeData(json).then((parsedData) => setNodeData(parsedData));
+  //     });
 
+  //   // Leaf sequences
+  //   readFastaToDict(`${process.env.PUBLIC_URL}/example/seq_trimmed.afa`).then(data => { setLeafData(data) });
 
-    fetch(`${process.env.PUBLIC_URL}/example/nodes.json`)
-      .then(response => response.json())
-      .then((json) => {
-        //parseNodeData(json.slice(0, 10)).then((parsedData) => setTopNodes(parsedData));
-        parseNodeData(json).then((parsedData) => setNodeData(parsedData));
-      });
+  //   // ASR data
+  //   ZstdInit().then(({ ZstdSimple, ZstdStream }) => {
+  //     // Load the compressed data
+  //     fetch(`${process.env.PUBLIC_URL}/example/seq.state.zst`).then(response => {
+  //       response.arrayBuffer().then(compressedData => {
+  //         // Decompress the compressed simple data
+  //         const decompressedStreamData = ZstdStream.decompress(new Uint8Array(compressedData));
+  //         const asrDict = JSON.parse(uint8ArrayToString(decompressedStreamData))
+  //         setAsrData(asrDict);
+  //         setSeqLength(asrDict[Object.keys(asrDict)[0]].length);
+  //       });
+  //     });
 
-    readFastaToDict(`${process.env.PUBLIC_URL}/example/seq_trimmed.afa`).then(data => { setLeafData(data) });
-
-    // Fetch pocket data
-    Promise.all([1, 2, 3, 4, 5].map(i =>
-      fetch(`${process.env.PUBLIC_URL}/example/pockets/pocket${i}_atm.pdb`)
-        .then(response => response.text())
-        .then(text => ({ [`pocket${i}`]: text }))
-    ))
-      .then(pocketArray => {
-        const pocketData = Object.assign({}, ...pocketArray);
-        setPocketData(pocketData);
-      })
-      .catch(error => console.error('Error loading pocket data:', error));
-
-    const uint8ArrayToString = (uint8Array) => {
-      const decoder = new TextDecoder('utf-8');
-      return decoder.decode(uint8Array);
-    };
-
-    ZstdInit().then(({ ZstdSimple, ZstdStream }) => {
-      // Load the compressed data
-      fetch(`${process.env.PUBLIC_URL}/example/seq.state.zst`).then(response => {
-        response.arrayBuffer().then(compressedData => {
-          // Decompress the compressed simple data
-          const decompressedStreamData = ZstdStream.decompress(new Uint8Array(compressedData));
-          const asrDict = JSON.parse(uint8ArrayToString(decompressedStreamData))
-          setAsrData(asrDict);
-        });
-      });
-
-    });
-  }, []);
+  //   });
+  // }, []);
 
   function style_nodes(node) { // nodes are all internal
     if (topNodes && node.data.name in topNodes) { // First condition to ensure nodeData is populated
@@ -254,10 +237,10 @@ const TestTol = () => {
   // Deals with tree rendering
   useEffect(() => {
     setTreeKey(prev => prev + 1);
-  }, [newickData, faData, asrData, leafData]);
+  }, [newickData, asrData, leafData]);
 
   const renderTree = () => {
-    if (newickData && faData && nodeData) {
+    if (newickData) {
       if (treeLayout === 'radial') {
         return <RadialTree
           key={treeKey}
@@ -402,7 +385,7 @@ const TestTol = () => {
       .each(function () {
         var node = d3.select(this).data()[0];
         if (node.data.name === nodeId) {
-          var descendants = selectAllDescendants(node, true, false); // Get all terminal descendants
+          var descendants = selectAllLeaves(node, true, false); // Get all terminal descendants
           var desc_fa = "";
           for (var desc of descendants) {
             desc_fa += `>${desc.data.name}\n${leafData[desc.data.name]}\n`;
@@ -413,8 +396,7 @@ const TestTol = () => {
   }
 
   const applyImportantStructColor = (nodeId, residueList) => {
-    var fa = faData[nodeId];
-    var importantColors = Array(fa.length).fill(0x00FF00);
+    var importantColors = Array(seqLength).fill(0x00FF00);
 
     for (var res of residueList) {
       importantColors[res] = 0xFF0000;
@@ -484,7 +466,7 @@ const TestTol = () => {
         var node = d3.select(this).data()[0];
         if (node.data.name === nodeId) {
           setLogoContent({});
-          var desc = selectAllDescendants(treeObj.getNodes(), false, true);
+          var desc = selectAllLeaves(treeObj.getNodes(), false, true);
           // Map set node-compare to false over desc
           desc.forEach(node => {
             node['compare-node'] = false;
@@ -545,8 +527,8 @@ const TestTol = () => {
     setLabelMenuAnchor(null);
   };
 
-  const importantNodesDropdown = () => {
-    const handleSidebarNodesClick = () => {
+  const uploadsDropdown = () => {
+    const handleSidebarUploadsClick = () => {
       const dropdownContent = document.querySelector('.nodes-dropdown-content');
       const btn = document.querySelector('.dropbtn-nodes');
 
@@ -555,9 +537,7 @@ const TestTol = () => {
 
       if (dropdownContent.classList.contains('visible')) {
         dropdownContent.classList.remove('visible');
-        if (!document.querySelector('.downloads-dropdown-content').classList.contains('visible')) {
-          setSidebarExpanded(false);
-        }
+        setSidebarExpanded(false);
       } else {
         dropdownContent.classList.add('visible');
         setSidebarExpanded(true);
@@ -565,14 +545,14 @@ const TestTol = () => {
     };
 
     return (
-      <div className="dropdown" onClick={handleSidebarNodesClick}>
+      <div className="dropdown" onClick={handleSidebarUploadsClick}>
         <button className="dropbtn-nodes dropbtn">
           <svg fill="#FFFFFF" width="25px" height="25px" xmlns="http://www.w3.org/2000/svg">
-            <title>Candidates for clade delineation</title>
+            <title>Upload files for visualization</title>
             <path d="M20,9H16a1,1,0,0,0-1,1v1H7V7H8A1,1,0,0,0,9,6V2A1,1,0,0,0,8,1H4A1,1,0,0,0,3,2V6A1,1,0,0,0,4,7H5V20a1,1,0,0,0,1,1h9v1a1,1,0,0,0,1,1h4a1,1,0,0,0,1-1V18a1,1,0,0,0-1-1H16a1,1,0,0,0-1,1v1H7V13h8v1a1,1,0,0,0,1,1h4a1,1,0,0,0,1-1V10A1,1,0,0,0,20,9ZM5,3H7V5H5ZM17,19h2v2H17Zm2-6H17V11h2Z" />
           </svg>
         </button>
-        {sidebarExpanded && <span className="sidebar-label">Key Nodes</span>}
+        {sidebarExpanded && <span className="sidebar-label">Upload</span>}
       </div>
     );
   };
@@ -615,7 +595,7 @@ const TestTol = () => {
                 selectOnFocus
                 freeSolo
                 size="small"
-                options={Object.keys(faData).concat(Object.keys(leafData))}
+                options={(asrData && leafData) ? Object.keys(asrData).concat(Object.keys(leafData)) : []}
                 getOptionLabel={(option) => option}
                 style={{ width: 150 }}
                 renderInput={(params) =>
@@ -641,21 +621,56 @@ const TestTol = () => {
             )}
           </div>
           <div className="sidebar-item nodes-label">
-            {importantNodesDropdown()}
+            {uploadsDropdown()}
           </div>
           <div className="nodes-dropdown-content dropdown-content transition-element">
-            {Object.keys(topNodes).map(key => (
-              <button key={key} onClick={() => setImportantView(key)} style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start' }}>
-                <span style={{ fontWeight: 'bold', minWidth: '60px' }}>{key}</span>
-                <span>Score: {topNodes[key]['score'].toFixed(2)}</span>
-              </button>
-            ))}
+            <button style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start' }}>
+              <span style={{ fontWeight: 'bold', minWidth: '60px' }}>Tree</span>
+              <input
+                type="file"
+                accept=".nwk,.newick,.tree"
+                onChange={(event) => {
+                  const file = event.target.files[0];
+                  const reader = new FileReader();
+                  reader.onload = (e) => {
+                    const content = e.target?.result;
+                    setNewickData(content);
+                    setTreeKey(prev => prev + 1);
+                  };
+                  reader.readAsText(file);
+                }}
+              />
+            </button>
+            <button style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start' }}>
+              <span style={{ fontWeight: 'bold', minWidth: '60px' }}>ASR</span>
+            </button>
+            <button style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start' }}>
+              <span style={{ fontWeight: 'bold', minWidth: '60px' }}>Sequences</span>
+              <input
+                type="file"
+                accept=".fa,.fasta,.afa,.fna,.mfa,.fas,.faa,.txt"
+                onChange={(event) => {
+                  const file = event.target.files[0];
+                  const reader = new FileReader();
+                  reader.onload = (e) => {
+                    const content = e.target?.result;
+                    fastaToDict(content).then(data => {setLeafData(data)});
+                    setTreeKey(prev => prev + 1);
+                  };
+                  reader.readAsText(file);
+                }}
+              />
+              
+            </button>
+            <button style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start' }}>
+              <span style={{ fontWeight: 'bold', minWidth: '60px' }}>Node Info (JSON)</span>
+            </button>
           </div>
         </div>
         <div className="view">
           <div className="tree-div" ref={treediv} onDrop={() => handleTreeDrop()} style={{ width: isLeftCollapsed ? '2%' : (pipVisible ? '50%' : '100%'), textAlign: "center" }}>
             <ButtonGroup variant="contained" aria-label="Basic button group">
-              <Tooltip title="Recenter on input" placement="top">
+              <Tooltip title="Recenter on root" placement="top">
                 <Button onClick={() => {
                   treeRef.current.findAndZoom("Node1", treediv);
                 }}><FilterCenterFocusIcon /></Button>
@@ -867,14 +882,14 @@ const TestTol = () => {
                 <div style={{ display: "flex", height: "100%", flexGrow: "1", flexDirection: isLeftCollapsed ? "column" : "row" }}>
 
                   <div className="pvdiv" ref={pvdiv} style={{ height: '100%', flexGrow: "1" }}>
-                    <MolstarViewer
+                    {/* <MolstarViewer
                       structData={structData}
                       pocketData={pocketData}
                       selectedResidue={selectedResidue}
                       colorFile={colorArr}
                       hoveredResidue={hoveredResidue}
                       scrollLogosTo={(index) => logoStackRef.current.scrollToHighlightIndex(index)}
-                    />
+                    /> */}
                   </div>
                 </div>
               </div>

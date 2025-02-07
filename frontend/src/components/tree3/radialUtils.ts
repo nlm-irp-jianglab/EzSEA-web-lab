@@ -224,7 +224,7 @@ export function findAndZoom(name: string, svg: d3.Selection<SVGSVGElement, unkno
     svg.transition()
       .duration(750)
       .call(zoom.transform as any, d3.zoomIdentity
-        .translate(0, 0)
+        .translate(0, -400)
         .scale(1));
 
     const circle = d3.select(nodeElement).select('circle');
