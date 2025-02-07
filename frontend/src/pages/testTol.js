@@ -232,7 +232,7 @@ const TestTol = () => {
         }
       }
     }
-  ], [asrData]);
+  ], [asrData, leafData]);
 
   // Deals with tree rendering
   useEffect(() => {
@@ -309,10 +309,13 @@ const TestTol = () => {
     setIsRightCollapsed(false);
   };
 
-  const pushNodeToEntropyLogo = (node) => {
-    setImportantResidues([]); // Clear important residues (may cause unnecessary re-renders)
+  const pushNodeToEntropyLogo = useCallback((node) => {
+    setImportantResidues([]);
     setLogoContent(prevLogoContent => {
       const updatedLogoContent = { ...prevLogoContent };
+
+      console.log(leafData);
+      console.log("Node name:", node.data.name);
 
       var descendants = selectAllLeaves(node);
       var desc_fa = "";
@@ -329,11 +332,11 @@ const TestTol = () => {
       updatedLogoContent["Information Logo of Clade " + node.data.name] = desc_fa;
       setNodeColor(node.data.name, "green");
 
-      return updatedLogoContent;  // Return the new state
+      return updatedLogoContent;
     });
     setPipVisible(true);
     setIsRightCollapsed(false);
-  };
+  }, [leafData]);
 
   const setNodeColor = (nodeId, color = null) => {
     d3.selectAll('.inner-node')
@@ -654,13 +657,16 @@ const TestTol = () => {
                   const reader = new FileReader();
                   reader.onload = (e) => {
                     const content = e.target?.result;
-                    fastaToDict(content).then(data => {setLeafData(data)});
+                    fastaToDict(content).then(data => {
+                      setLeafData(data);
+                      console.log("Uploaded data: ", data)
+                    });
                     setTreeKey(prev => prev + 1);
                   };
                   reader.readAsText(file);
                 }}
               />
-              
+
             </button>
             <button style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start' }}>
               <span style={{ fontWeight: 'bold', minWidth: '60px' }}>Node Info (JSON)</span>
