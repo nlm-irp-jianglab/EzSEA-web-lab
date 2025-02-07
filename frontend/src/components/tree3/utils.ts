@@ -120,3 +120,17 @@ export function selectAllLeaves(node: RadialNode): RadialNode[] {
   traverse(node);
   return leaves;
 }
+
+export function selectAllNodes(node: RadialNode): RadialNode[] {
+  const nodes: RadialNode[] = [];
+  
+  function traverse(currentNode: RadialNode) {
+    nodes.push(currentNode);
+    if (currentNode.children) {
+      currentNode.children.forEach(child => traverse(child));
+    }
+  }
+
+  traverse(node);
+  return nodes;
+}

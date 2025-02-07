@@ -1,6 +1,5 @@
 // React Core
 import React, { useEffect, useRef, useState, useContext, useMemo, useCallback } from 'react';
-import { useParams } from 'react-router-dom';
 
 // Third Party Libraries
 import * as d3 from 'd3';
@@ -34,7 +33,7 @@ import { readFastaToDict, parseNodeData, calcEntropyFromMSA, mapEntropyToColors,
 // Tree3
 import { RadialTree } from '../components/tree3/radial.tsx';
 import { RectTree } from '../components/tree3/rect.tsx';
-import { selectAllLeaves } from '../components/tree3/utils.ts';
+import { selectAllLeaves, selectAllNodes } from '../components/tree3/utils.ts';
 
 // Styles
 import "../components/phylotree.css";
@@ -42,7 +41,6 @@ import "../components/tol.css";
 
 const TestTol = () => {
   // State to store the tree data and node data
-  const [faData, setFaData] = useState(null);
   const [leafData, setLeafData] = useState({});
   const [newickData, setNewickData] = useState(null);
   const [nodeData, setNodeData] = useState(null);
@@ -66,6 +64,13 @@ const TestTol = () => {
   // States for rendering control
   const [treeLayout, setTreeLayout] = useState('radial');
   const layouts = ['radial', 'rectangular', 'unrooted'];
+
+  /** 
+   * pipVisible is the state for the right panel visibility 
+   * (pip = picture in picture, outdated name as I originally 
+   * intended to have a small window)
+   * 
+   * */
   const [pipVisible, setPipVisible] = useState(false);
   const [isLeftCollapsed, setIsLeftCollapsed] = useState(false);
   const [isRightCollapsed, setIsRightCollapsed] = useState(false);
@@ -73,6 +78,7 @@ const TestTol = () => {
   const [notification, setNotification] = useState('');
   const [labelMenuAnchor, setLabelMenuAnchor] = useState(null);
   const labelMenuOpen = Boolean(labelMenuAnchor);
+  const [searchOptions, setSearchOptions] = useState([]);
 
   // References for rendering
   const treeRef = useRef(null);
@@ -97,29 +103,12 @@ const TestTol = () => {
     return decoder.decode(uint8Array);
   };
 
-  // Fetch the tree data and node data on component mount, store data into states
-  // useEffect(() => {
-  //   const fetchDefaultTree = async () => { // Fetch the default tree data
-  //     try {
-  //       const response = await fetch(`${process.env.PUBLIC_URL}/example/asr.tree`);
-  //       const text = await response.text();
-  //       setNewickData(text);
-  //     } catch (error) {
-  //       console.error("Error fetching the default tree:", error);
-  //     }
-  //   };
-
-  //   fetchDefaultTree();
-
   //   // Node info, ask Angela about JSON format
   //   fetch(`${process.env.PUBLIC_URL}/example/nodes.json`)
   //     .then(response => response.json())
   //     .then((json) => {
   //       parseNodeData(json).then((parsedData) => setNodeData(parsedData));
   //     });
-
-  //   // Leaf sequences
-  //   readFastaToDict(`${process.env.PUBLIC_URL}/example/seq_trimmed.afa`).then(data => { setLeafData(data) });
 
   //   // ASR data
   //   ZstdInit().then(({ ZstdSimple, ZstdStream }) => {
@@ -134,17 +123,14 @@ const TestTol = () => {
   //       });
   //     });
 
-  //   });
-  // }, []);
-
   function style_nodes(node) { // nodes are all internal
     if (topNodes && node.data.name in topNodes) { // First condition to ensure nodeData is populated
       element.select("circle").style("fill", "green").attr("r", 5);
     }
   }
 
-  function style_leaves(node) {
-    if (node.data.name === "bilR") {
+  function style_leaves(node) { // leaves are all terminal
+    if (node.data.name === "bilR") { // find input node, change to whatever node you want to highlight
       d3.select(node.labelElement).style("fill", "red").style("font-size", () => {
         const currentSize = d3.select(node.labelElement).style("font-size");
         const sizeNum = parseFloat(currentSize);
@@ -154,7 +140,7 @@ const TestTol = () => {
   }
 
   function style_edges(source, target) {
-    if (target.children) { // Targets only node to node links as leaf nodes have no children property
+    if (asrData && target.children) { // Targets only node to node links as leaf nodes have no children property
       const element = d3.select(target.linkNode);
       element.on('click', async (event, branch) => {
         if (branch.selected) {
@@ -162,26 +148,15 @@ const TestTol = () => {
 
           event.target.classList.remove('link--highlight');
           console.log("removing from compare")
-          // TODO Remove from compare
-          // removeNodeFromLogo(branch.source); // Remove the node from logoContent if already present
-          // removeNodeFromLogo(branch.target);
+          removeNodeFromLogo(source); // Remove the node from logoContent if already present
+          removeNodeFromLogo(target);
         } else {
           branch.selected = true;
           console.log("adding to compare")
           event.target.classList.add('link--highlight');
-
-          var source = branch.source.data.name;
-          var target = branch.target.data.name;
-          console.log("Selected branch:", source, target);
-          // TODO ADD TO COMPARE
-          // if (!faData[source] || !faData[target]) {
-          //     console.log("Missing node data for branch.", faData[source], faData[target]);
-          //     clearRightPanel();
-          //     return;
-          // } else {
-          //     pushNodeToLogo(branch.source);
-          //     pushNodeToLogo(branch.target);
-          // }
+          
+          pushNodeToLogo(source);
+          pushNodeToLogo(target);
         }
       });
     }
@@ -195,11 +170,11 @@ const TestTol = () => {
   const nodeMenu = useMemo(() => [
     { // Compare Descendants Option
       label: function (node) {
-        return node['compare-descendants'] ? "Remove Descendants" : "Compare descendants";
+        return node['compare-descendants'] ? "Remove descendants" : "Compare descendants";
       },
       onClick: function (node) {
-        if (node['compare-node']) {
-          removeNodeFromLogo(node, false);
+        if (node['compare-descendants']) {
+          removeNodeFromLogo(node, true);
           setNodeColor(node.data.name, null);
         } else {
           pushNodeToEntropyLogo(node);
@@ -237,6 +212,11 @@ const TestTol = () => {
   // Deals with tree rendering
   useEffect(() => {
     setTreeKey(prev => prev + 1);
+    setSearchOptions( // Used for the search by name menu, fill with whatever info we have
+      (asrData && leafData) ? Object.keys(asrData).concat(Object.keys(leafData)) :
+        (leafData) ? Object.keys(leafData) :
+          (asrData) ? Object.keys(asrData) : []
+    )
   }, [newickData, asrData, leafData]);
 
   const renderTree = () => {
@@ -415,7 +395,7 @@ const TestTol = () => {
     setIsRightCollapsed(false);
     setColorArr(null);
     setLogoContent({});
-    var desc = selectAllLeaves(treeRef.current.getRoot());
+    var desc = selectAllNodes(treeRef.current.getRoot());
     // Map set node-compare to false over desc
     desc.forEach(node => {
       node['compare-node'] = false;
@@ -461,56 +441,6 @@ const TestTol = () => {
 
   const handleTreeDrop = (event) => { // TODO implement drop to upload tree
     event.preventDefault();
-  };
-
-  const setImportantView = (nodeId) => {
-    d3.selectAll('.internal-node')
-      .each(function () {
-        var node = d3.select(this).data()[0];
-        if (node.data.name === nodeId) {
-          setLogoContent({});
-          var desc = selectAllLeaves(treeObj.getNodes(), false, true);
-          // Map set node-compare to false over desc
-          desc.forEach(node => {
-            node['compare-node'] = false;
-            node['compare-descendants'] = false;
-            setNodeColor(node.data.name, null);
-          });
-          pushNodeToLogo(node)
-          pushNodeToLogo(node.parent);
-          pushNodeToEntropyLogo(node);
-          setImportantResidues(nodeData);
-        }
-      });
-
-    setIsRightCollapsed(false);
-    setPipVisible(true);
-    setTimeout(() => {
-      treeRef.current.findAndZoom(nodeId, treediv);
-    }, 2000);
-  };
-
-  const toggleLeafLabels = () => {
-    d3.selectAll('.leaf-node-label')
-      .each(function () {
-        const label = d3.select(this);
-        if (label.style("display") === "none") {
-          label.style("display", "block");
-        } else {
-          label.style("display", "none");
-        }
-      });
-  };
-  const toggleECLabels = () => {
-    d3.selectAll('.leaf-node-ec-label')
-      .each(function () {
-        const label = d3.select(this);
-        if (label.style("display") === "none") {
-          label.style("display", "block");
-        } else {
-          label.style("display", "none");
-        }
-      });
   };
 
   const toggleLeftCollapse = () => {
@@ -598,7 +528,7 @@ const TestTol = () => {
                 selectOnFocus
                 freeSolo
                 size="small"
-                options={(asrData && leafData) ? Object.keys(asrData).concat(Object.keys(leafData)) : []}
+                options={searchOptions}
                 getOptionLabel={(option) => option}
                 style={{ width: 150 }}
                 renderInput={(params) =>
@@ -660,7 +590,6 @@ const TestTol = () => {
                     fastaToDict(content).then(data => {
                       setLeafData(data);
                       setSeqLength(Object.values(data)[0].length);
-                      console.log("Uploaded data: ", data)
                     });
                     setTreeKey(prev => prev + 1);
                   };
@@ -679,7 +608,7 @@ const TestTol = () => {
             <ButtonGroup variant="contained" aria-label="Basic button group">
               <Tooltip title="Recenter on root" placement="top">
                 <Button onClick={() => {
-                  treeRef.current.findAndZoom("Node1", treediv);
+                  treeRef.current && treeRef.current.findAndZoom("Node1", treediv);
                 }}><FilterCenterFocusIcon /></Button>
               </Tooltip>
               <Tooltip title="Labels" placement="top">
@@ -698,13 +627,13 @@ const TestTol = () => {
                     'aria-labelledby': 'basic-button',
                   }}
                 >
-                  <MenuItem onClick={() => treeRef.current.setVariableLinks(prev => !prev)}>Variable Links</MenuItem>
-                  <MenuItem onClick={() => treeRef.current.setTipAlign(prev => !prev)}>Align Tips</MenuItem>
-                  <MenuItem onClick={() => treeRef.current.setDisplayLeaves(prev => !prev)}>Toggle Labels</MenuItem>
+                  <MenuItem onClick={() => treeRef.current && treeRef.current.setVariableLinks(prev => !prev)}>Variable Links</MenuItem>
+                  <MenuItem onClick={() => treeRef.current && treeRef.current.setTipAlign(prev => !prev)}>Align Tips</MenuItem>
+                  <MenuItem onClick={() => treeRef.current && treeRef.current.setDisplayLeaves(prev => !prev)}>Toggle Labels</MenuItem>
                 </Menu>
               </Tooltip>
               <Tooltip title="Reset tree" placement="top">
-                <Button onClick={() => treeRef.current.refresh()}><RestoreIcon /></Button>
+                <Button onClick={() => treeRef.current && treeRef.current.refresh()}><RestoreIcon /></Button>
               </Tooltip>
               <Button
                 aria-controls={labelMenuOpen ? 'basic-menu' : undefined}
