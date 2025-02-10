@@ -38,6 +38,7 @@ import { selectAllLeaves, selectAllNodes } from '../components/tree3/utils.ts';
 // Styles
 import "../components/phylotree.css";
 import "../components/tol.css";
+import { UnrootedTree } from '../components/tree3/unrooted.tsx';
 
 const TestTol = () => {
   // State to store the tree data and node data
@@ -147,14 +148,12 @@ const TestTol = () => {
           branch.selected = false;
 
           event.target.classList.remove('link--highlight');
-          console.log("removing from compare")
           removeNodeFromLogo(source); // Remove the node from logoContent if already present
           removeNodeFromLogo(target);
         } else {
           branch.selected = true;
-          console.log("adding to compare")
           event.target.classList.add('link--highlight');
-          
+
           pushNodeToLogo(source);
           pushNodeToLogo(target);
         }
@@ -246,7 +245,17 @@ const TestTol = () => {
           onNodeClick={onNodeClick}
         />;
       } else {
-        return <text>Unrooted Not Implemented</text>
+        return <UnrootedTree
+          key={treeKey}
+          ref={treeRef}
+          data={newickData}
+          nodeStyler={style_nodes}
+          customNodeMenuItems={nodeMenu}
+          leafStyler={style_leaves}
+          width={1500}
+          linkStyler={style_edges}
+          onNodeClick={onNodeClick}
+        />;
       }
     }
   };
@@ -291,19 +300,27 @@ const TestTol = () => {
 
   const pushNodeToEntropyLogo = useCallback((node) => {
     setImportantResidues([]);
+    if (!leafData || Object.keys(leafData).length === 0) {
+      console.warn("Leaf data not loaded yet");
+      return;
+    }
+
     setLogoContent(prevLogoContent => {
       const updatedLogoContent = { ...prevLogoContent };
 
-      console.log(leafData);
-      console.log("Node name:", node.data.name);
-
+      const missingSequences = [];
       var descendants = selectAllLeaves(node);
       var desc_fa = "";
       for (var desc of descendants) {
-        desc_fa += `>${desc.data.name}\n${leafData[desc.data.name]}\n`;
+        if (!leafData[desc.data.name]) {
+          missingSequences.push(desc.data.name);
+        } else {
+          desc_fa += `>${desc.data.name}\n${leafData[desc.data.name]}\n`;
+        }
       }
-      if (desc_fa === "") {
-        console.log("No descendants found for node:", node.data.name);
+
+      if (missingSequences.length > 0) {
+        console.warn("Missing sequences for nodes:", missingSequences.join(", "));
         return updatedLogoContent;
       }
 
@@ -576,6 +593,24 @@ const TestTol = () => {
             </button>
             <button style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start' }}>
               <span style={{ fontWeight: 'bold', minWidth: '60px' }}>ASR</span>
+              <input
+                type="file"
+                accept=".zst"
+                onChange={(event) => {
+                  const file = event.target.files[0];
+                  const reader = new FileReader();
+                  reader.onload = (e) => {
+                    const content = e.target?.result;
+                    ZstdInit().then(({ ZstdSimple, ZstdStream }) => {
+                      const decompressedStreamData = ZstdStream.decompress(new Uint8Array(content));
+                      const asrDict = JSON.parse(uint8ArrayToString(decompressedStreamData))
+                      setAsrData(asrDict);
+                      setSeqLength(asrDict[Object.keys(asrDict)[0]].length);
+                    });
+                  };
+                  reader.readAsArrayBuffer(file);
+                }}
+              />
             </button>
             <button style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start' }}>
               <span style={{ fontWeight: 'bold', minWidth: '60px' }}>Sequences</span>
@@ -583,6 +618,7 @@ const TestTol = () => {
                 type="file"
                 accept=".fa,.fasta,.afa,.fna,.mfa,.fas,.faa,.txt"
                 onChange={(event) => {
+                  if (event.target.files.length === 0) return;
                   const file = event.target.files[0];
                   const reader = new FileReader();
                   reader.onload = (e) => {
@@ -608,7 +644,7 @@ const TestTol = () => {
             <ButtonGroup variant="contained" aria-label="Basic button group">
               <Tooltip title="Recenter on root" placement="top">
                 <Button onClick={() => {
-                  treeRef.current && treeRef.current.findAndZoom("Node1", treediv);
+                  treeRef.current && treeRef.current.recenterView();
                 }}><FilterCenterFocusIcon /></Button>
               </Tooltip>
               <Tooltip title="Labels" placement="top">

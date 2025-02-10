@@ -440,7 +440,6 @@ export const RadialTree = forwardRef<RadialTreeRef, RadialTreeProps>(({
         }, 5);
       }
 
-
       onNodeClick?.(event, d);
     }
 
@@ -543,7 +542,7 @@ export const RadialTree = forwardRef<RadialTreeRef, RadialTreeProps>(({
     getContainer: () => containerRef.current,
     findAndZoom: (name: string, container: React.MutableRefObject<HTMLDivElement>) => {
       if (svgRef.current) {
-        findAndZoom(name, d3.select(svgRef.current), container);
+        findAndZoom(name, d3.select(svgRef.current), container, variableLinks);
       }
     },
   }));

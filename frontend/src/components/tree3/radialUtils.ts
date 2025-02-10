@@ -201,7 +201,7 @@ export function reroot(node: RadialNode, data: TreeNode): RadialNode {
   return node;
 }
 
-export function findAndZoom(name: string, svg: d3.Selection<SVGSVGElement, unknown, null, undefined>, container: React.MutableRefObject<HTMLDivElement>): void {
+export function findAndZoom(name: string, svg: d3.Selection<SVGSVGElement, unknown, null, undefined>, container: React.MutableRefObject<HTMLDivElement>, variable: Boolean): void {
   // Find node with name in tree
   const node = svg.select('g.nodes')
     .selectAll<SVGGElement, RadialNode>('g.inner-node')
@@ -211,11 +211,15 @@ export function findAndZoom(name: string, svg: d3.Selection<SVGSVGElement, unkno
     const nodeElement = node.node();
     const nodeData = node.data()[0];
 
-    const radius = nodeData.radius ?? 0;
-    const y = nodeData.y ?? 0;
+    const distance = variable ? (nodeData.radius ?? 0) : (nodeData.y ?? 0);
+    const x = (nodeData.x ?? 0) * Math.PI / 180 ; // Convert degrees to radians
+
+    // Convert polar to cartesian coordinates
+    const cartX = distance * Math.cos(x);
+    const cartY = distance * Math.sin(x);
 
     const centerOffsetX = container.current.clientWidth / 2;
-    const centerOffsetY = container.current.clientHeight / 2;
+    const centerOffsetY = container.current.clientHeight / 2; // This offset is based on #tree-div h/w. This is improper. TODO: Fix centering
 
     const zoom = d3.zoom().on("zoom", (event) => {
       svg.select("g").attr("transform", event.transform);
@@ -224,7 +228,7 @@ export function findAndZoom(name: string, svg: d3.Selection<SVGSVGElement, unkno
     svg.transition()
       .duration(750)
       .call(zoom.transform as any, d3.zoomIdentity
-        .translate(0, -400)
+        .translate(-cartY, cartX - centerOffsetY)
         .scale(1));
 
     const circle = d3.select(nodeElement).select('circle');
@@ -238,15 +242,15 @@ export function findAndZoom(name: string, svg: d3.Selection<SVGSVGElement, unkno
       .style("fill", "red")
       .style("r", newRadius)
       .transition()
-      .duration(500)
+      .duration(750)
       .style("fill", currColor)
       .style("r", currRadius)
       .transition()
-      .duration(500)
+      .duration(750)
       .style("fill", "red")
       .style("r", newRadius)
       .transition()
-      .duration(500)
+      .duration(750)
       .style("fill", currColor)
       .style("r", currRadius);
 

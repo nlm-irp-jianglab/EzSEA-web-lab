@@ -510,7 +510,7 @@ export const RectTree = forwardRef<RectTreeRef, RadialTreeProps>(({
 
     svg.transition()
       .duration(750)
-      .attr('transform', "translate(0,0)");
+      .attr('transform', "translate(50,0)");
   };
 
   useImperativeHandle(ref, () => ({
