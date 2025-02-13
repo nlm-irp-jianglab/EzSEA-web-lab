@@ -126,7 +126,7 @@ const TestTol = () => {
 
   function style_nodes(node) { // nodes are all internal
     if (topNodes && node.data.name in topNodes) { // First condition to ensure nodeData is populated
-      element.select("circle").style("fill", "green").attr("r", 5);
+      element.select("circle").style("fill", "green");
     }
   }
 
@@ -299,12 +299,12 @@ const TestTol = () => {
   };
 
   const pushNodeToEntropyLogo = useCallback((node) => {
-    setImportantResidues([]);
     if (!leafData || Object.keys(leafData).length === 0) {
       console.warn("Leaf data not loaded yet");
       return;
     }
 
+    setImportantResidues([]); // Clear important residues (may cause unnecessary re-renders)
     setLogoContent(prevLogoContent => {
       const updatedLogoContent = { ...prevLogoContent };
 
@@ -381,7 +381,7 @@ const TestTol = () => {
       return;
     }
 
-    d3.selectAll('.internal-node')
+    d3.selectAll('.inner-node')
       .each(function () {
         var node = d3.select(this).data()[0];
         if (node.data.name === nodeId) {
