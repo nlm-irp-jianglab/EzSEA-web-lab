@@ -31,14 +31,12 @@ import { tolContext } from '../components/tolContext.js';
 import { readFastaToDict, parseNodeData, calcEntropyFromMSA, mapEntropyToColors, jsonToFasta, fastaToDict } from '../components/utils.js';
 
 // Tree3
-import { RadialTree } from '../components/tree3/radial.tsx';
-import { RectTree } from '../components/tree3/rect.tsx';
-import { selectAllLeaves, selectAllNodes } from '../components/tree3/utils.ts';
+import { selectAllLeaves, selectAllNodes } from 'tree3-react';
+import { RadialTree, RectTree, UnrootedTree } from 'tree3-react';
 
 // Styles
 import "../components/phylotree.css";
 import "../components/tol.css";
-import { UnrootedTree } from '../components/tree3/unrooted.tsx';
 
 const TestTol = () => {
   // State to store the tree data and node data
