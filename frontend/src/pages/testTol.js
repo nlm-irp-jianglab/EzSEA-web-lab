@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState, useContext, useMemo, useCallback } 
 
 // Third Party Libraries
 import * as d3 from 'd3';
-import { ZstdInit, ZstdDec } from '@oneidentity/zstd-js/decompress';
+import { ZstdInit } from '@oneidentity/zstd-js/decompress';
 
 // Material UI Components
 import Autocomplete from '@mui/material/Autocomplete';
@@ -124,19 +124,61 @@ const TestTol = () => {
 
   function style_nodes(node) { // nodes are all internal
     if (topNodes && node.data.name in topNodes) { // First condition to ensure nodeData is populated
+      const element = d3.select(node.nodeElement);
       element.select("circle").style("fill", "green");
+      element.select("circle").attr("r", 5);
     }
   }
 
-  function style_leaves(node) { // leaves are all terminal
-    if (node.data.name === "bilR") { // find input node, change to whatever node you want to highlight
+  const style_leaves = useMemo(() => (node) => {
+    if (!node) return;
+    if (node.data.name === "bilR") {
       d3.select(node.labelElement).style("fill", "red").style("font-size", () => {
         const currentSize = d3.select(node.labelElement).style("font-size");
         const sizeNum = parseFloat(currentSize);
         return (sizeNum + 2) + "px";
       });
     }
-  }
+
+    if (ecData && ecData[node.data.name]) {
+      const ec = ecData[node.data.name];
+      if (ec.ec_number) {
+        // First create a group element to hold the label
+        // Get parent of labelElement
+        const parentElement = d3.select(node.labelElement.parentNode);
+
+        // Create sibling group next to labelElement
+        const labelGroup = parentElement
+          .append("g")
+          .attr("class", "label-group")
+        const originalTransform = d3.select(node.labelElement).attr("transform");
+        const fontSize = d3.select(node.labelElement).style("font-size");
+
+        const ec_label = labelGroup
+          .append("text")
+          .text(ec.ec_number ? `EC ${ec.ec_number}` : "not found")
+          .attr("transform", originalTransform) // Apply same transform
+          .style("font-size", fontSize)
+          .attr("dy", ".31em")
+          .attr("x", () => {
+            const hasRotate180 = originalTransform?.endsWith("rotate(180)");
+            return hasRotate180 ? "-20em" : "20em";
+          })
+          .attr("class", "ec-label");
+      }
+    }
+  }, [ecData]);
+
+  const style_leaves_unrooted = useMemo(() => (node) => {
+    if (!node) return;
+    if (node.data.name === "bilR") {
+      d3.select(node.labelElement).style("fill", "red").style("font-size", () => {
+        const currentSize = d3.select(node.labelElement).style("font-size");
+        const sizeNum = parseFloat(currentSize);
+        return (sizeNum + 2) + "px";
+      });
+    }
+  }, []);
 
   function style_edges(source, target) {
     if (asrData && target.children) { // Targets only node to node links as leaf nodes have no children property
@@ -172,7 +214,7 @@ const TestTol = () => {
       onClick: function (node) {
         if (node['compare-descendants']) {
           removeNodeFromLogo(node, true);
-          setNodeColor(node.data.name, null);
+          setNodeColor(node, null);
         } else {
           pushNodeToEntropyLogo(node);
         }
@@ -191,7 +233,7 @@ const TestTol = () => {
       onClick: function (node) {
         if (node['compare-node']) {
           removeNodeFromLogo(node, false);
-          setNodeColor(node.data.name, null);
+          setNodeColor(node, null);
         } else {
           pushNodeToLogo(node);
         }
@@ -206,6 +248,62 @@ const TestTol = () => {
     }
   ], [asrData, leafData]);
 
+  const leafMenu = [
+    {
+      label: function (node) {
+        return "Uniref Website"
+      },
+      onClick: function (node) {
+        const url = `https://rest.uniprot.org/uniref/search?query=${node.data.name}&fields=id`;
+
+        fetch(url)
+          .then(response => {
+            if (!response.ok) {
+              alert('UniProt database error.');
+            } else {
+              return response.json();
+            }
+          })
+          .then(data => {
+            if (data && data.results) {
+              const uniref100 = data.results.find(result => result.id.startsWith('UniRef100'));
+              if (uniref100) {
+                const unirefUrl = `https://www.uniprot.org/uniref/${uniref100.id}`;
+                window.open(unirefUrl, '_blank');
+              } else {
+                alert('No UniRef100 ID found.');
+              }
+            }
+          })
+          .catch(error => {
+            console.error('Error checking URL:', error);
+            alert('There was an error checking the URL. Please check your network connection and try again.');
+          });
+      },
+      toShow: async function (node) {
+        try {
+          const url = `https://rest.uniprot.org/uniref/search?query=${node.data.name}&fields=id`;
+          const response = await fetch(url);
+
+          if (!response.ok) {
+            return false;
+          }
+
+          const data = await response.json();
+          if (data && data.results) {
+            const uniref100 = data.results.find(result => result.id.startsWith('UniRef100'));
+            return !!uniref100;
+          }
+
+          return false;
+        } catch (error) {
+          console.error('Error checking URL:', error);
+          return false;
+        }
+      }
+    }
+  ]
+
   // Deals with tree rendering
   useEffect(() => {
     setTreeKey(prev => prev + 1);
@@ -214,7 +312,7 @@ const TestTol = () => {
         (leafData) ? Object.keys(leafData) :
           (asrData) ? Object.keys(asrData) : []
     )
-  }, [newickData, asrData, leafData]);
+  }, [newickData, asrData, faData, leafData]);
 
   const renderTree = () => {
     if (newickData) {
@@ -225,6 +323,7 @@ const TestTol = () => {
           data={newickData}
           nodeStyler={style_nodes}
           customNodeMenuItems={nodeMenu}
+          customLeafMenuItems={leafMenu}
           leafStyler={style_leaves}
           width={1500}
           linkStyler={style_edges}
@@ -237,6 +336,7 @@ const TestTol = () => {
           data={newickData}
           nodeStyler={style_nodes}
           customNodeMenuItems={nodeMenu}
+          customLeafMenuItems={leafMenu}
           leafStyler={style_leaves}
           width={1500}
           linkStyler={style_edges}
@@ -249,7 +349,8 @@ const TestTol = () => {
           data={newickData}
           nodeStyler={style_nodes}
           customNodeMenuItems={nodeMenu}
-          leafStyler={style_leaves}
+          customLeafMenuItems={leafMenu}
+          leafStyler={style_leaves_unrooted}
           width={1500}
           linkStyler={style_edges}
           onNodeClick={onNodeClick}
@@ -270,7 +371,7 @@ const TestTol = () => {
         node['compare-node'] = false;
         delete updatedLogoContent["ASR Probability Logo for " + node.data.name];  // Remove the node
       }
-      setNodeColor(node.data.name, null);
+      setNodeColor(node, null);
 
       return updatedLogoContent;  // Return the new state
     });
@@ -288,7 +389,7 @@ const TestTol = () => {
       // Add or do nothing if node is already in logoContent
       node['compare-node'] = true;
       updatedLogoContent["ASR Probability Logo for " + node.data.name] = asrData[`${node.data.name}`];
-      setNodeColor(node.data.name, "red");
+      setNodeColor(node, "red");
 
       return updatedLogoContent;  // Return the new state
     });
@@ -325,7 +426,7 @@ const TestTol = () => {
       node['compare-descendants'] = true;
 
       updatedLogoContent["Information Logo of Clade " + node.data.name] = desc_fa;
-      setNodeColor(node.data.name, "green");
+      setNodeColor(node, "green");
 
       return updatedLogoContent;
     });
@@ -333,30 +434,30 @@ const TestTol = () => {
     setIsRightCollapsed(false);
   }, [leafData]);
 
-  const setNodeColor = (nodeId, color = null) => {
-    d3.selectAll('.inner-node')
-      .each(function () {
-        var node = d3.select(this).data()[0];
-        if (node.data.name === nodeId) {
-          if (color == null) {
-            const circles = d3.select(this).selectAll('circle');
-            if (circles.size() === 2) {
-              circles.filter(function (d, i) {
-                return i === 0; // Remove the first circle when there are two
-              }).remove();
-            }
-          } else {
-            // Calling push node, results in calling setNodeColor twice (possibly due to react state updates), this check prevents adding a circle twice
-            const circles = d3.select(this).selectAll('circle');
-            if (circles.size() === 2) {
-              console.log("Attempted to add circle to node with existing circle");
-            } else {
-              const currRadius = parseInt(d3.select(this).select("circle").attr("r"));
-              d3.select(this).insert("circle", ":first-child").attr("r", currRadius + 2).style("fill", color);
-            }
-          }
-        }
-      });
+  /*
+  *   Sets the color of a node to the given color
+  *   If color is null, removes the color
+  */
+  const setNodeColor = (node, color = null) => {
+    if (color) console.log("Setting node color for node:", d3.select(node.nodeElement));
+
+    const nodeSelection = d3.select(node.nodeElement);
+    const circles = nodeSelection.selectAll('circle');
+
+    if (color === null) {
+      if (circles.size() === 2) {
+        circles.filter((d, i) => i === 0).remove();
+      }
+      return;
+    }
+
+    if (circles.size() === 1) {
+      const currRadius = parseInt(nodeSelection.select("circle").attr("r"));
+      nodeSelection
+        .insert("circle", ":first-child")
+        .attr("r", currRadius + 2)
+        .style("fill", color);
+    }
   };
 
   useEffect(() => {
@@ -394,7 +495,12 @@ const TestTol = () => {
   }
 
   const applyImportantStructColor = (nodeId, residueList) => {
-    var importantColors = Array(seqLength).fill(0x00FF00);
+    if (!faData) {
+      console.warn("FA data not loaded yet");
+      return;
+    }
+    var fa = faData[nodeId];
+    var importantColors = Array(fa.length).fill(0x00FF00);
 
     for (var res of residueList) {
       importantColors[res] = 0xFF0000;
@@ -415,10 +521,9 @@ const TestTol = () => {
     desc.forEach(node => {
       node['compare-node'] = false;
       node['compare-descendants'] = false;
-      setNodeColor(node.data.name, null);
+      setNodeColor(node, null);
     });
     d3.selectAll('.link--highlight').classed('.link--highlight', false);
-    // treeRef.current.getContainer.style.width = '100%';
   }
 
   const handleColumnHover = (index) => {
@@ -638,7 +743,7 @@ const TestTol = () => {
           </div>
         </div>
         <div className="view">
-          <div className="tree-div" ref={treediv} onDrop={() => handleTreeDrop()} style={{ width: isLeftCollapsed ? '2%' : (pipVisible ? '50%' : '100%'), textAlign: "center" }}>
+          <div className="tree-div" ref={treediv} style={{ width: isLeftCollapsed ? '2%' : (pipVisible ? '50%' : '100%'), textAlign: "center" }}>
             <ButtonGroup variant="contained" aria-label="Basic button group">
               <Tooltip title="Recenter on root" placement="top">
                 <Button onClick={() => {
@@ -669,12 +774,14 @@ const TestTol = () => {
               <Tooltip title="Reset tree" placement="top">
                 <Button onClick={() => treeRef.current && treeRef.current.refresh()}><RestoreIcon /></Button>
               </Tooltip>
-              <Button
-                aria-controls={labelMenuOpen ? 'basic-menu' : undefined}
-                aria-haspopup="true"
-                aria-expanded={labelMenuOpen ? 'true' : undefined}
-                onClick={cycleLayout}
-              >{treeLayout}</Button>
+              <Tooltip title="Cycle layouts" placement="top">
+                <Button
+                  aria-controls={labelMenuOpen ? 'basic-menu' : undefined}
+                  aria-haspopup="true"
+                  aria-expanded={labelMenuOpen ? 'true' : undefined}
+                  onClick={cycleLayout}
+                >{treeLayout}</Button>
+              </Tooltip>
             </ButtonGroup>
             {renderTree()}
           </div>
@@ -758,7 +865,7 @@ const TestTol = () => {
                     valueLabelDisplay="off"
                     min={0}
                     max={seqLength - 1}
-                    value={scrollPosition}
+                    value={scrollPosition || 0}
                     onChange={handleSlider}
                     track={false}
                     style={{ width: '100%', margin: "0px 2em" }}

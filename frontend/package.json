@@ -35,7 +35,7 @@
     "react-router-dom": "^6.25.1",
     "react-scripts": "^5.0.1",
     "sass": "^1.84.0",
-    "tree3-react": "^0.1.9"
+    "tree3-react": "^0.1.12"
   },
   "browserslist": {
     "production": [
