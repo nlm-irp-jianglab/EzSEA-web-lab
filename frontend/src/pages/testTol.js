@@ -39,12 +39,14 @@ import "../components/phylotree.css";
 import "../components/tol.css";
 
 const TestTol = () => {
-  // State to store the tree data and node data
+  // State to store the tree data and node data  
+  const [faData, setFaData] = useState(null);
   const [leafData, setLeafData] = useState({});
   const [newickData, setNewickData] = useState(null);
   const [nodeData, setNodeData] = useState(null);
   const [structData, setStructData] = useState(null); // Structure data
   const [pocketData, setPocketData] = useState({}); // Pocket data
+  const [ecData, setEcData] = useState(null); // EC codes 
 
   const [topNodes, setTopNodes] = useState({}); // Top 10 nodes for the tree
   const [asrData, setAsrData] = useState(null);
@@ -205,6 +207,34 @@ const TestTol = () => {
     console.log(node);
   }
 
+  const linkMenu = [
+    {
+      label: function (source, target) {
+        if (source['compare-node'] || target['compare-node']) {
+          return "Remove comparisons";
+        } else {
+          return "Compare pair";
+        }
+      },
+      onClick: function (source, target) {
+        if (source['compare-node'] || target['compare-node']) {
+          removeNodeFromLogo(source); // Remove the node from logoContent if already present
+          removeNodeFromLogo(target);
+          source['compare-node'] = false;
+          target['compare-node'] = false;
+        } else {
+          pushNodeToLogo(source);
+          pushNodeToLogo(target);
+          source['compare-node'] = true;
+          target['compare-node'] = true;
+        }
+      },
+      toShow: function (source, target) {
+        return true;
+      }
+    }
+  ];
+
   // Custom menu items for nodes
   const nodeMenu = useMemo(() => [
     { // Compare Descendants Option
@@ -350,9 +380,9 @@ const TestTol = () => {
           nodeStyler={style_nodes}
           customNodeMenuItems={nodeMenu}
           customLeafMenuItems={leafMenu}
+          customLinkMenuItems={linkMenu}
           leafStyler={style_leaves_unrooted}
           width={1500}
-          linkStyler={style_edges}
           onNodeClick={onNodeClick}
         />;
       }
@@ -409,6 +439,11 @@ const TestTol = () => {
 
       const missingSequences = [];
       var descendants = selectAllLeaves(node);
+      if (descendants.length === 0) {
+        console.warn("No descendants found for node:", node.data.name);
+        return;
+      }
+
       var desc_fa = "";
       for (var desc of descendants) {
         if (!leafData[desc.data.name]) {
@@ -439,8 +474,6 @@ const TestTol = () => {
   *   If color is null, removes the color
   */
   const setNodeColor = (node, color = null) => {
-    if (color) console.log("Setting node color for node:", d3.select(node.nodeElement));
-
     const nodeSelection = d3.select(node.nodeElement);
     const circles = nodeSelection.selectAll('circle');
 
@@ -516,7 +549,7 @@ const TestTol = () => {
     setIsRightCollapsed(false);
     setColorArr(null);
     setLogoContent({});
-    var desc = selectAllNodes(treeRef.current.getRoot());
+    var desc = d3.selectAll(".inner-node").data();
     // Map set node-compare to false over desc
     desc.forEach(node => {
       node['compare-node'] = false;
