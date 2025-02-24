@@ -96,10 +96,16 @@ export function MolStarWrapper({ structData, pocketData, selectedResidue, hovere
       }, { state: { isGhost: true } });
 
       const trajectory = await window.molstar.builders.structure.parseTrajectory(mainData, "pdb");
-      const structure = await window.molstar.builders.structure.hierarchy.applyPreset( // builds default cartoon
-        trajectory,
-        "default"
-      );
+      let structure;
+      try { // Using try here to silence errors when loading example structures
+        structure = await window.molstar.builders.structure.hierarchy.applyPreset(
+          trajectory,
+          "default"
+        );
+      } catch (error) {
+        console.warn('Failed to load structure:', error);
+        return; 
+      }
 
       // Loading pockets if provided
       if (pocketData) {

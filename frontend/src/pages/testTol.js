@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState, useContext, useMemo, useCallback } 
 // Third Party Libraries
 import * as d3 from 'd3';
 import { ZstdInit } from '@oneidentity/zstd-js/decompress';
+import JSZip from 'jszip';
 
 // Material UI Components
 import Autocomplete from '@mui/material/Autocomplete';
@@ -596,6 +597,61 @@ const TestTol = () => {
     event.preventDefault();
   };
 
+  const readZip = (event) => {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const content = e.target?.result;
+      const zip = new JSZip();
+      zip.loadAsync(content).then((zip) => {
+        zip.forEach((relativePath, zipEntry) => {
+          if (zipEntry.name === 'asr.tree') {
+            zipEntry.async('string').then((content) => {
+              setNewickData(content);
+            });
+          } else if (zipEntry.name === 'seq.state.zst') {
+            zipEntry.async('arraybuffer').then((content) => {
+              ZstdInit().then(({ ZstdSimple, ZstdStream }) => {
+                const decompressedStreamData = ZstdStream.decompress(new Uint8Array(content));
+                const asrDict = JSON.parse(uint8ArrayToString(decompressedStreamData));
+                setAsrData(asrDict);
+                setSeqLength(asrDict[Object.keys(asrDict)[0]].length);
+              });
+            });
+          } else if (zipEntry.name === 'seq_trimmed.afa') {
+            zipEntry.async('string').then((content) => {
+              fastaToDict(content).then(data => {
+                setLeafData(data);
+                setSeqLength(Object.values(data)[0].length);
+              });
+            });
+          } else if (zipEntry.name === 'asr.fa') {
+            zipEntry.async('string').then((content) => {
+              fastaToDict(content).then(data => {
+                setFaData(data);
+              });
+            });
+          } else if (zipEntry.name === 'nodes.json') {
+            zipEntry.async('string').then((content) => {
+              const nodesData = JSON.parse(content);
+              setNodeData(nodesData);
+            });
+          } else if (zipEntry.name === 'ec.json') {
+            zipEntry.async('string').then((content) => {
+              const ecData = JSON.parse(content);
+              setEcData(ecData);
+            });
+          } else if (zipEntry.name === 'seq.pdb') {
+            zipEntry.async('string').then((content) => {
+              setStructData(content);
+            });
+          }
+        });
+      });
+    };
+    reader.readAsArrayBuffer(file);
+  };
+
   const toggleLeftCollapse = () => {
     setIsLeftCollapsed(!isLeftCollapsed);
   };
@@ -633,9 +689,9 @@ const TestTol = () => {
     return (
       <div className="dropdown" onClick={handleSidebarUploadsClick}>
         <button className="dropbtn-nodes dropbtn">
-          <svg fill="#FFFFFF" width="25px" height="25px" xmlns="http://www.w3.org/2000/svg">
+          <svg fill="none" width="25px" height="25px" xmlns="http://www.w3.org/2000/svg">
             <title>Upload files for visualization</title>
-            <path d="M20,9H16a1,1,0,0,0-1,1v1H7V7H8A1,1,0,0,0,9,6V2A1,1,0,0,0,8,1H4A1,1,0,0,0,3,2V6A1,1,0,0,0,4,7H5V20a1,1,0,0,0,1,1h9v1a1,1,0,0,0,1,1h4a1,1,0,0,0,1-1V18a1,1,0,0,0-1-1H16a1,1,0,0,0-1,1v1H7V13h8v1a1,1,0,0,0,1,1h4a1,1,0,0,0,1-1V10A1,1,0,0,0,20,9ZM5,3H7V5H5ZM17,19h2v2H17Zm2-6H17V11h2Z" />
+            <path d="M17 17H17.01M15.6 14H18C18.9319 14 19.3978 14 19.7654 14.1522C20.2554 14.3552 20.6448 14.7446 20.8478 15.2346C21 15.6022 21 16.0681 21 17C21 17.9319 21 18.3978 20.8478 18.7654C20.6448 19.2554 20.2554 19.6448 19.7654 19.8478C19.3978 20 18.9319 20 18 20H6C5.06812 20 4.60218 20 4.23463 19.8478C3.74458 19.6448 3.35523 19.2554 3.15224 18.7654C3 18.3978 3 17.9319 3 17C3 16.0681 3 15.6022 3.15224 15.2346C3.35523 14.7446 3.74458 14.3552 4.23463 14.1522C4.60218 14 5.06812 14 6 14H8.4M12 15V4M12 4L15 7M12 4L9 7" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </button>
         {sidebarExpanded && <span className="sidebar-label">Upload</span>}
@@ -773,14 +829,23 @@ const TestTol = () => {
             <button style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start' }}>
               <span style={{ fontWeight: 'bold', minWidth: '60px' }}>Node Info (JSON)</span>
             </button>
+            <button style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start' }}>
+              <span style={{ fontWeight: 'bold', minWidth: '60px' }}>Zip</span>
+              <input
+                type="file"
+                accept=".zip"
+                onChange={(event) => readZip(event)}
+              />
+
+            </button>
           </div>
         </div>
         <div className="view">
           <div className="tree-div" ref={treediv} style={{ width: isLeftCollapsed ? '2%' : (pipVisible ? '50%' : '100%'), textAlign: "center" }}>
             <ButtonGroup variant="contained" aria-label="Basic button group">
-              <Tooltip title="Recenter on root" placement="top">
+              <Tooltip title="Recenter" placement="top">
                 <Button onClick={() => {
-                  treeRef.current && treeRef.current.recenterView();
+                  treeRef.current && treeRef.current.findAndZoom("Node1", treediv);
                 }}><FilterCenterFocusIcon /></Button>
               </Tooltip>
               <Tooltip title="Labels" placement="top">
@@ -799,8 +864,10 @@ const TestTol = () => {
                     'aria-labelledby': 'basic-button',
                   }}
                 >
-                  <MenuItem onClick={() => treeRef.current && treeRef.current.setVariableLinks(prev => !prev)}>Variable Links</MenuItem>
-                  <MenuItem onClick={() => treeRef.current && treeRef.current.setTipAlign(prev => !prev)}>Align Tips</MenuItem>
+                  {(treeLayout !== "unrooted") && (<>
+                    <MenuItem onClick={() => treeRef.current && treeRef.current.setVariableLinks(prev => !prev)}>Variable Links</MenuItem>
+                    <MenuItem onClick={() => treeRef.current && treeRef.current.setTipAlign(prev => !prev)}>Align Tips</MenuItem>
+                  </>)}
                   <MenuItem onClick={() => treeRef.current && treeRef.current.setDisplayLeaves(prev => !prev)}>Toggle Labels</MenuItem>
                 </Menu>
               </Tooltip>
@@ -992,14 +1059,14 @@ const TestTol = () => {
                 <div style={{ display: "flex", height: "100%", flexGrow: "1", flexDirection: isLeftCollapsed ? "column" : "row" }}>
 
                   <div className="pvdiv" ref={pvdiv} style={{ height: '100%', flexGrow: "1" }}>
-                    {/* <MolstarViewer
-                      structData={structData}
-                      pocketData={pocketData}
-                      selectedResidue={selectedResidue}
-                      colorFile={colorArr}
-                      hoveredResidue={hoveredResidue}
-                      scrollLogosTo={(index) => logoStackRef.current.scrollToHighlightIndex(index)}
-                    /> */}
+                    {structData && (
+                      <MolstarViewer
+                        structData={structData}
+                        selectedResidue={selectedResidue}
+                        colorFile={colorArr}
+                        hoveredResidue={hoveredResidue}
+                        scrollLogosTo={(index) => logoStackRef.current.scrollToHighlightIndex(index)}
+                      />)}
                   </div>
                 </div>
               </div>

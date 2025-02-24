@@ -1,5 +1,5 @@
 {
-  "name": "reactvis",
+  "name": "ezsea-web-lab",
   "version": "1.0.0",
   "homepage": "/ezsea",
   "main": "/src/index.js",
@@ -35,7 +35,7 @@
     "react-router-dom": "^6.25.1",
     "react-scripts": "^5.0.1",
     "sass": "^1.84.0",
-    "tree3-react": "^0.1.19"
+    "tree3-react": "^1.0.0"
   },
   "browserslist": {
     "production": [
