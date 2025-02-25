@@ -104,7 +104,7 @@ export function MolStarWrapper({ structData, pocketData, selectedResidue, hovere
         );
       } catch (error) {
         console.warn('Failed to load structure:', error);
-        return; 
+        return;
       }
 
       // Loading pockets if provided
@@ -146,18 +146,13 @@ export function MolStarWrapper({ structData, pocketData, selectedResidue, hovere
       // await cartoon.createOrUpdate({ ...CartoonRepresentationProvider.defaultValues, quality: 'auto' }, structure).run();
       // this.canvas3d.add(cartoonRepresentation);
 
-
-
       // Scrolls seqlogos to selection position
       window.molstar.behaviors.interaction.click.subscribe(
         (event) => {
           const selections = Array.from(
             window.molstar.managers.structure.selection.entries.values()
           );
-
-          //Remove previous selections by turning selection mode on and off
-
-
+          
           // selections is auto-sorted, lowest residue id first. Therefore, when multiple residues are selected, 
           // the logo will only scroll to the residue with the lowest id.
           var localSelected = [];

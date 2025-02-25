@@ -119,7 +119,7 @@ const Logo = React.forwardRef(
             <svg width="fit-content" height="150" viewBox={'0 0 ' + viewBoxW + ' ' + viewBoxH} ref={ref}>
                 <g transform="translate(80,10)">
                     <RawLogo values={likelihood} glyphWidth={glyphWidth} stackHeight={maxHeight} alphabet={alphabet}
-                        onSymbolMouseOver={onSymbolMouseOver} onSymbolMouseOut={onSymbolMouseOut} onSymbolClick={onSymbolClick} importantResidues={importantResidues.differing_residues} />
+                        onSymbolMouseOver={onSymbolMouseOver} onSymbolMouseOut={onSymbolMouseOut} onSymbolClick={onSymbolClick} importantResidues={importantResidues} />
                 </g>
                 {showGridLines && (
                     <YGridlines

@@ -1,3 +1,14 @@
+/**
+ * logo-stack.js
+ * This file is the component that displays sequence logos
+ * Here is the structure of this component:
+ *  <LogoStack>
+ *     <DndLogo> - This layer ensures that logos are drag and droppable for easy reordering
+ *       <Logo> - This layer is responsible for rendering the logos, and contains most of the logic.
+ *     </DndLogo>
+ *     <DndLogo>... More logos 
+ * </LogoStack>   
+ */
 import React, { useState, useRef, useEffect, useImperativeHandle, useContext } from "react";
 import { EasyScroller } from 'easyscroller';
 import "./logojs.css";
@@ -5,6 +16,7 @@ import { tolContext } from '../components/tolContext';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { DndLogo } from './dndLogo.js';
+import { LogoProvider } from './logoContext.js';
 
 const LogoStack = React.forwardRef(
     /*
@@ -197,7 +209,7 @@ const LogoStack = React.forwardRef(
                 // Pulse the residue number we scrolled to
                 logoRefs.current.forEach((ref, refIndex) => {
                     try {
-                        centerOffset = ref.parentNode.clientWidth / 2; 
+                        centerOffset = ref.parentNode.clientWidth / 2;
 
                         const target = ref.firstChild.firstChild.children[index - 1].lastChild; // Target by class instead. TODO
                         //const originalFill = target.getAttribute("fill");
@@ -245,15 +257,17 @@ const LogoStack = React.forwardRef(
 
         return (
             <div style={{ overflowX: 'hidden' }}>
-                {renderLogos ? (
-                    <DndProvider backend={HTML5Backend}>
-                        <DndLogo fastaContent={fastaContent} applyEntropyStructColor={applyEntropyStructColor}
-                            onSymbolClick={onColumnClick} onSymbolHover={onColumnHover} importantResiduesList={importantResiduesList}
-                            applyImportantStructColor={applyImportantStructColor} removeLogo={removeLogo} findAndZoom={findAndZoom} addLogoRef={addLogoRef} />
-                    </DndProvider>
-                ) : (
-                    <p>Loading...</p>
-                )}
+                <LogoProvider>
+                    {renderLogos ? (
+                        <DndProvider backend={HTML5Backend}>
+                            <DndLogo fastaContent={fastaContent} applyEntropyStructColor={applyEntropyStructColor}
+                                onSymbolClick={onColumnClick} onSymbolHover={onColumnHover} importantResiduesList={importantResiduesList}
+                                applyImportantStructColor={applyImportantStructColor} removeLogo={removeLogo} findAndZoom={findAndZoom} addLogoRef={addLogoRef} />
+                        </DndProvider>
+                    ) : (
+                        <p>Loading...</p>
+                    )}
+                </LogoProvider>
             </div>
         );
     }

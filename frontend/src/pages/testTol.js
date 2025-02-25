@@ -635,6 +635,7 @@ const TestTol = () => {
             zipEntry.async('string').then((content) => {
               const nodesData = JSON.parse(content);
               setNodeData(nodesData);
+              setImportantResidues(nodesData);
             });
           } else if (zipEntry.name === 'ec.json') {
             zipEntry.async('string').then((content) => {
@@ -864,10 +865,12 @@ const TestTol = () => {
                     'aria-labelledby': 'basic-button',
                   }}
                 >
-                  {(treeLayout !== "unrooted") && (<>
-                    <MenuItem onClick={() => treeRef.current && treeRef.current.setVariableLinks(prev => !prev)}>Variable Links</MenuItem>
-                    <MenuItem onClick={() => treeRef.current && treeRef.current.setTipAlign(prev => !prev)}>Align Tips</MenuItem>
-                  </>)}
+                  {(treeLayout !== "unrooted") && (
+                    <div>
+                      <MenuItem onClick={() => treeRef.current && treeRef.current.setVariableLinks(prev => !prev)}>Variable Links</MenuItem>
+                      <MenuItem onClick={() => treeRef.current && treeRef.current.setTipAlign(prev => !prev)}>Align Tips</MenuItem>
+                    </div>
+                  )}
                   <MenuItem onClick={() => treeRef.current && treeRef.current.setDisplayLeaves(prev => !prev)}>Toggle Labels</MenuItem>
                 </Menu>
               </Tooltip>

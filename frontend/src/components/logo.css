@@ -4,9 +4,7 @@
   /*margin: auto;*/
   /*width: 95%;*/
 }
-.logo form {
-  /*margin: 0.3em 55px;*/
-}
+
 .logo_container {
   position: relative;
   height: 300px;
@@ -117,14 +115,6 @@
   left: 50%;
   z-index: 5;
 }
-.logo_col_info {
-  /*float: left;*/
-  /*margin: 0.3em 0.3em 0.3em 1em;*/
-  /*padding: 0.3em;*/
-  /*border: 1px solid #ccc;*/
-  /*display: table;*/
-  /*border-radius: 5px;*/
-}
 .logo_col_hmm {
   width: 70%;
   margin: 0 auto;
@@ -154,18 +144,6 @@
   padding: 0;
   border: 2px solid #ccc;
 }
-.logo_settings_switch {
-}
-.logo_scale {
-}
-.logo_ali_map {
-}
-.logo_zoomout {
-}
-.logo_zoomin {
-}
-.logo_color {
-}
 .logo_form {
   margin-left: 39px;
 }
@@ -188,10 +166,6 @@
   margin: 0 1em 0 0;
 }
 
-.logo_position {
-}
-.logo_change {
-}
 .logo_controls {
   position: absolute;
   left: 3.1em;
