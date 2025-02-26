@@ -26,6 +26,7 @@ import RestoreIcon from '@mui/icons-material/Restore';
 
 // Local Components
 import DownloadDialog from '../components/downloadlogo.tsx';
+import CompareMenu from '../components/compareMenu.tsx';
 import LogoStack from '../components/logo-stack.js';
 import MolstarViewer from "../components/molstar.js";
 import { tolContext } from '../components/tolContext.js';
@@ -359,7 +360,7 @@ const TestTol = () => {
           width={1500}
           linkStyler={style_edges}
           onNodeClick={onNodeClick}
-          state={treeRef && treeRef.current.getState()}
+          state={treeRef.current && treeRef.current.getState()}
         />;
       } else if (treeLayout === 'rectangular') {
         return <RectTree
@@ -373,7 +374,7 @@ const TestTol = () => {
           width={1500}
           linkStyler={style_edges}
           onNodeClick={onNodeClick}
-          state={treeRef && treeRef.current.getState()}
+          state={treeRef.current && treeRef.current.getState()}
         />;
       } else {
         return <UnrootedTree
@@ -387,7 +388,7 @@ const TestTol = () => {
           leafStyler={style_leaves_unrooted}
           width={1500}
           onNodeClick={onNodeClick}
-          state={treeRef && treeRef.current.getState()}
+          state={treeRef.current && treeRef.current.getState()}
         />;
       }
     }
@@ -978,6 +979,15 @@ const TestTol = () => {
                     marks={[{ value: 1, label: '1' }, { value: seqLength - 1, label: `${seqLength}` }]}
                   />
 
+                  <Tooltip title="Compare Menu" placement="bottom">
+                    <button id="compare-menu-btn" className="compare-menu-btn" style={{ borderRadius: "3px", backgroundColor: "#00F", border: "none", cursor: "pointer" }}>
+                      <svg width="25px" height="25px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" version="1.1" fill="none" stroke="#000000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5">
+                        <path d="m3.25 7.25-1.5.75 6.25 3.25 6.25-3.25-1.5-.75m-11 3.75 6.25 3.25 6.25-3.25" />
+                        <path d="m8 8.25v-6.5m-2.25 4.5 2.25 2 2.25-2" />
+                      </svg>
+                    </button>
+                  </Tooltip>
+
                   <Tooltip title="Download Stack" placement="bottom">
                     <button id="download-stack-btn" className="download-stack-btn" style={{ borderRadius: "3px", backgroundColor: "#def2b3", border: "none", cursor: "pointer" }}>
                       <svg width="25px" height="25px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" version="1.1" fill="none" stroke="#000000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5">
@@ -986,7 +996,7 @@ const TestTol = () => {
                       </svg>
                     </button>
                   </Tooltip>
-
+                  <CompareMenu logoContent={logoContent} />
                   <DownloadDialog seqLength={seqLength} />
                   <div style={{ width: "400px" }}>
                     <FormControl fullWidth size="small" >

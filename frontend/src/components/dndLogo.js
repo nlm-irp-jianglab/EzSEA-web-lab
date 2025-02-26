@@ -17,15 +17,16 @@ export const DndLogo = ({ fastaContent, applyEntropyStructColor, applyImportantS
     const [cards, setCards] = useState([]);
     const { logoContent, setLogoContent } = useContext(tolContext); // TODO implement fasta passing using context instead of props
     const { compareQueue, setCompareDiff } = useContext(logoContext);
+    console.log("DndLogo.js: logoContent", logoContent)
 
     useEffect(() => { // Assigns each fasta sequence to a card
-      setCards(Object.keys(fastaContent).map((key, index) => {
+      setCards(Object.keys(logoContent).map((key, index) => {
         return {
           id: index,
           text: key
         }
       }))
-    }, [fastaContent])
+    }, [logoContent])
 
     useEffect(() => { // Updates the compareDiff state when two cards are in the compareQueue
       if (compareQueue && Object.keys(compareQueue).length == 2) {
@@ -81,7 +82,7 @@ export const DndLogo = ({ fastaContent, applyEntropyStructColor, applyImportantS
           id={card.id}
           header={card.text}
           moveCard={moveCard}
-          {...(card.text.includes("ASR") ? { ppm: fastaContent[card.text] } : { fasta: fastaContent[card.text] })}
+          {...(card.text.includes("ASR") ? { ppm: logoContent[card.text] } : { fasta: logoContent[card.text] })}
           applyEntropyStructColor={applyEntropyStructColor}
           applyImportantStructColor={applyImportantStructColor}
           removeLogo={removeLogo}

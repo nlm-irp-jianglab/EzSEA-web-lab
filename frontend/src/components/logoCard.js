@@ -28,7 +28,7 @@ export const LogoCard = ({ id, index, header, moveCard, ppm = null, fasta = null
   removeLogo, onSymbolClick, onSymbolHover, importantResiduesList, findAndZoom, addLogoRef }) => {
   const dragRef = useRef(null);
   const { activeButton, setActiveButton, compareQueue, setCompareQueue, compareDiff } = useContext(logoContext);
-  const { logoContent, setLogoContent, logoAlphabet, setLogoAlphabet } = useContext(tolContext);
+  const { logoContent, setLogoContent, logoAlphabet } = useContext(tolContext);
   const logoRef = useRef(null);
   var nodeId = "";
 
@@ -40,7 +40,7 @@ export const LogoCard = ({ id, index, header, moveCard, ppm = null, fasta = null
 
   const getHighlights = useMemo(() => {
     if (compareDiff) {
-      return compareDiff[nodeId].differing_residues;
+      return compareDiff[nodeId]?.differing_residues ?? [];
     } else if (nodeId in importantResiduesList) {
       return importantResiduesList[nodeId].differing_residues;
     }
@@ -51,6 +51,7 @@ export const LogoCard = ({ id, index, header, moveCard, ppm = null, fasta = null
   const pushToCompareQueue = (id, item) => {
     setCompareQueue(prevQueue => {
       const keys = Object.keys(prevQueue);
+      console.log("pushing to compare queue", id);
       if (keys.length >= 2) {
         const [firstKey, ...restKeys] = keys;
         const newQueue = { ...prevQueue };
@@ -69,6 +70,7 @@ export const LogoCard = ({ id, index, header, moveCard, ppm = null, fasta = null
 
   const removeFromCompareQueue = (id) => {
     setCompareQueue(prevQueue => {
+      console.log("removing from compare queue", id);
       const newQueue = { ...prevQueue };
       delete newQueue[`${id}`];
       return newQueue;
