@@ -204,9 +204,13 @@ const TestTol = () => {
     }
   }
 
-  function onNodeClick(event, node) {
+  const onNodeClick = useMemo(() => (event, node) => {
     console.log(node);
-  }
+
+    if (treeRef.current) {
+      console.log(treeRef.current.getState());
+    }
+  }, [treeRef]);
 
   const linkMenu = [
     {
@@ -359,6 +363,7 @@ const TestTol = () => {
           width={1500}
           linkStyler={style_edges}
           onNodeClick={onNodeClick}
+          state={treeRef && treeRef.current.getState()}
         />;
       } else if (treeLayout === 'rectangular') {
         return <RectTree
@@ -372,6 +377,7 @@ const TestTol = () => {
           width={1500}
           linkStyler={style_edges}
           onNodeClick={onNodeClick}
+          state={treeRef && treeRef.current.getState()}
         />;
       } else {
         return <UnrootedTree
@@ -385,6 +391,7 @@ const TestTol = () => {
           leafStyler={style_leaves_unrooted}
           width={1500}
           onNodeClick={onNodeClick}
+          state={treeRef && treeRef.current.getState()}
         />;
       }
     }
@@ -763,6 +770,14 @@ const TestTol = () => {
               </div>
             )}
           </div>
+          <button onClick={() => {
+            if (treeRef.current) {
+              console.log(treeRef)
+              console.log(treeRef.current.getState());
+            }
+          }}>
+            print state
+          </button>
           <div className="sidebar-item nodes-label">
             {uploadsDropdown()}
           </div>

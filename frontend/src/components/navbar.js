@@ -1,3 +1,7 @@
+/**
+ * navbar.js
+ * This file contains the code for the top navbar
+ */
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import "./navbar.css"; // Make sure to create this file for styling

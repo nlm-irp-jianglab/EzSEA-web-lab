@@ -1,3 +1,7 @@
+/**
+ * molstar.js
+ * This file contains the protein viewer component
+ */
 import React, { useEffect, useState, createRef } from "react";
 import { createPluginUI } from "molstar/lib/mol-plugin-ui";
 import { renderReact18 } from "molstar/lib/mol-plugin-ui/react18";

@@ -1,7 +1,6 @@
 import { useRef, useCallback, useEffect, useState, useContext, useMemo } from 'react'
 import Logo from './logo/logo.jsx';
 import { useDrag, useDrop } from 'react-dnd'
-import { ItemTypes } from './itemTypes.js'
 import { allColors } from './logo/alphabets_protein.jsx';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import { tolContext } from './tolContext';
@@ -19,6 +18,10 @@ const dragHandleStyle = {
   zIndex: 1,
   margin: '.5rem 0rem',
   borderRadius: '.5rem',
+}
+
+const ItemTypes = {
+  CARD: 'card',
 }
 
 export const LogoCard = ({ id, index, header, moveCard, ppm = null, fasta = null, applyEntropyStructColor, applyImportantStructColor,
@@ -241,7 +244,7 @@ export const LogoCard = ({ id, index, header, moveCard, ppm = null, fasta = null
               </Tooltip>
             )}
             {ppm && (
-              <Tooltip title="Color Conservation" placement="top">
+              <Tooltip title="Compare" placement="top">
                 <button
                   className={`logo-color-btn logo-btn ${nodeId in compareQueue ? "active" : ""
                     }`}

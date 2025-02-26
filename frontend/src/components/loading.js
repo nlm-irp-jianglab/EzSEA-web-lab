@@ -1,3 +1,8 @@
+/**
+ * loading.js
+ * This file contains the code for a loading logo
+ * TODO - Animate the logo
+ */
 import "./loading.css";
 
 const Loading = () => {
