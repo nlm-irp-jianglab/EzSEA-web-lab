@@ -204,13 +204,9 @@ const TestTol = () => {
     }
   }
 
-  const onNodeClick = useMemo(() => (event, node) => {
+  const onNodeClick = (event, node) => {
     console.log(node);
-
-    if (treeRef.current) {
-      console.log(treeRef.current.getState());
-    }
-  }, [treeRef]);
+  };
 
   const linkMenu = [
     {
@@ -770,14 +766,6 @@ const TestTol = () => {
               </div>
             )}
           </div>
-          <button onClick={() => {
-            if (treeRef.current) {
-              console.log(treeRef)
-              console.log(treeRef.current.getState());
-            }
-          }}>
-            print state
-          </button>
           <div className="sidebar-item nodes-label">
             {uploadsDropdown()}
           </div>
