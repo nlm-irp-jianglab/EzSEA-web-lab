@@ -27,8 +27,8 @@ const ItemTypes = {
 export const LogoCard = ({ id, index, header, moveCard, ppm = null, fasta = null, applyEntropyStructColor, applyImportantStructColor,
   removeLogo, onSymbolClick, onSymbolHover, importantResiduesList, findAndZoom, addLogoRef }) => {
   const dragRef = useRef(null);
-  const { activeButton, setActiveButton, compareQueue, setCompareQueue, compareDiff } = useContext(logoContext);
-  const { logoContent, setLogoContent, logoAlphabet } = useContext(tolContext);
+  const { activeButton, setActiveButton, compareQueue, setCompareQueue } = useContext(logoContext);
+  const { logoContent, setLogoContent, logoAlphabet, compareDiff } = useContext(tolContext);
   const logoRef = useRef(null);
   var nodeId = "";
 
@@ -40,7 +40,7 @@ export const LogoCard = ({ id, index, header, moveCard, ppm = null, fasta = null
 
   const getHighlights = useMemo(() => {
     if (compareDiff) {
-      return compareDiff[nodeId]?.differing_residues ?? [];
+      return compareDiff[header]?.differing_residues ?? [];
     } else if (nodeId in importantResiduesList) {
       return importantResiduesList[nodeId].differing_residues;
     }

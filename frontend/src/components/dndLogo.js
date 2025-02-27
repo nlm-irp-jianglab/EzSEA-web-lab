@@ -15,9 +15,8 @@ export const DndLogo = ({ fastaContent, applyEntropyStructColor, applyImportantS
   removeLogo, onSymbolClick, onSymbolHover, importantResiduesList, findAndZoom, addLogoRef }) => {
   {
     const [cards, setCards] = useState([]);
-    const { logoContent, setLogoContent } = useContext(tolContext); // TODO implement fasta passing using context instead of props
-    const { compareQueue, setCompareDiff } = useContext(logoContext);
-    console.log("DndLogo.js: logoContent", logoContent)
+    const { logoContent, setLogoContent, setCompareDiff } = useContext(tolContext); // TODO implement fasta passing using context instead of props
+    const { compareQueue } = useContext(logoContext);
 
     useEffect(() => { // Assigns each fasta sequence to a card
       setCards(Object.keys(logoContent).map((key, index) => {
@@ -30,33 +29,31 @@ export const DndLogo = ({ fastaContent, applyEntropyStructColor, applyImportantS
 
     useEffect(() => { // Updates the compareDiff state when two cards are in the compareQueue
       if (compareQueue && Object.keys(compareQueue).length == 2) {
-        if (compareQueue && Object.keys(compareQueue).length === 2) {
-          const [item1, item2] = Object.values(compareQueue);
-          const [node1, node2] = Object.keys(compareQueue);
-          const differences = [];
+        const [item1, item2] = Object.values(compareQueue);
+        const [node1, node2] = Object.keys(compareQueue);
+        const differences = [];
 
-          // Compare each position
-          for (let pos = 0; pos < item1.length; pos++) {
-            // Get max amino acid index for each item at this position
-            const maxIndex1 = item1[pos].indexOf(Math.max(...item1[pos]));
-            const maxIndex2 = item2[pos].indexOf(Math.max(...item2[pos]));
+        // Compare each position
+        for (let pos = 0; pos < item1.length; pos++) {
+          // Get max amino acid index for each item at this position
+          const maxIndex1 = item1[pos].indexOf(Math.max(...item1[pos]));
+          const maxIndex2 = item2[pos].indexOf(Math.max(...item2[pos]));
 
-            // If different max amino acids, record position
-            if (maxIndex1 !== maxIndex2) {
-              differences.push(pos);
-            }
+          // If different max amino acids, record position
+          if (maxIndex1 !== maxIndex2) {
+            differences.push(pos);
           }
-          const diff_dict = {
-            [node1]: {
-              "differing_residues": differences 
-            },
-            [node2]: {
-              "differing_residues": differences 
-            },
-          }
-
-          setCompareDiff(diff_dict);
         }
+        const diff_dict = {
+          [node1]: {
+            "differing_residues": differences
+          },
+          [node2]: {
+            "differing_residues": differences
+          },
+        }
+
+        setCompareDiff(diff_dict);
       } else {
         setCompareDiff(null)
       }
@@ -96,8 +93,8 @@ export const DndLogo = ({ fastaContent, applyEntropyStructColor, applyImportantS
     }, [cards])
 
     return (
-      <> 
-        <div style={style}>{cards.map((card, i) => renderCard(card, i))}</div> 
+      <>
+        <div style={style}>{cards.map((card, i) => renderCard(card, i))}</div>
       </>
     )
   }

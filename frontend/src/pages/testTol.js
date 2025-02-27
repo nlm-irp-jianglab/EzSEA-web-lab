@@ -980,7 +980,7 @@ const TestTol = () => {
                   />
 
                   <Tooltip title="Compare Menu" placement="bottom">
-                    <button id="compare-menu-btn" className="compare-menu-btn" style={{ borderRadius: "3px", backgroundColor: "#00F", border: "none", cursor: "pointer" }}>
+                    <button id="compare-menu-btn" className="compare-menu-btn" style={{ borderRadius: "3px", backgroundColor: "rgb(99, 159, 199)", border: "none", cursor: "pointer" }}>
                       <svg width="25px" height="25px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" version="1.1" fill="none" stroke="#000000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5">
                         <path d="m3.25 7.25-1.5.75 6.25 3.25 6.25-3.25-1.5-.75m-11 3.75 6.25 3.25 6.25-3.25" />
                         <path d="m8 8.25v-6.5m-2.25 4.5 2.25 2 2.25-2" />
