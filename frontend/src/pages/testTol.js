@@ -23,6 +23,7 @@ import Tooltip from '@mui/material/Tooltip';
 import FilterCenterFocusIcon from '@mui/icons-material/FilterCenterFocus';
 import LabelIcon from '@mui/icons-material/Label';
 import RestoreIcon from '@mui/icons-material/Restore';
+import DifferenceIcon from '@mui/icons-material/Difference';
 
 // Local Components
 import DownloadDialog from '../components/downloadlogo.tsx';
@@ -105,26 +106,6 @@ const TestTol = () => {
     const decoder = new TextDecoder('utf-8');
     return decoder.decode(uint8Array);
   };
-
-  //   // Node info, ask Angela about JSON format
-  //   fetch(`${process.env.PUBLIC_URL}/example/nodes.json`)
-  //     .then(response => response.json())
-  //     .then((json) => {
-  //       parseNodeData(json).then((parsedData) => setNodeData(parsedData));
-  //     });
-
-  //   // ASR data
-  //   ZstdInit().then(({ ZstdSimple, ZstdStream }) => {
-  //     // Load the compressed data
-  //     fetch(`${process.env.PUBLIC_URL}/example/seq.state.zst`).then(response => {
-  //       response.arrayBuffer().then(compressedData => {
-  //         // Decompress the compressed simple data
-  //         const decompressedStreamData = ZstdStream.decompress(new Uint8Array(compressedData));
-  //         const asrDict = JSON.parse(uint8ArrayToString(decompressedStreamData))
-  //         setAsrData(asrDict);
-  //         setSeqLength(asrDict[Object.keys(asrDict)[0]].length);
-  //       });
-  //     });
 
   function style_nodes(node) { // nodes are all internal
     if (topNodes && node.data.name in topNodes) { // First condition to ensure nodeData is populated
@@ -981,10 +962,7 @@ const TestTol = () => {
 
                   <Tooltip title="Compare Menu" placement="bottom">
                     <button id="compare-menu-btn" className="compare-menu-btn" style={{ borderRadius: "3px", backgroundColor: "rgb(99, 159, 199)", border: "none", cursor: "pointer" }}>
-                      <svg width="25px" height="25px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" version="1.1" fill="none" stroke="#000000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5">
-                        <path d="m3.25 7.25-1.5.75 6.25 3.25 6.25-3.25-1.5-.75m-11 3.75 6.25 3.25 6.25-3.25" />
-                        <path d="m8 8.25v-6.5m-2.25 4.5 2.25 2 2.25-2" />
-                      </svg>
+                      <DifferenceIcon />
                     </button>
                   </Tooltip>
 

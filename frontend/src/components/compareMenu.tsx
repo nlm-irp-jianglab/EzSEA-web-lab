@@ -110,6 +110,7 @@ function SimpleDialog(props: SimpleDialogProps) {
                 </Button>
               ))}
               <Button
+                variant="outlined"
                 onClick={() => setSelections(prev => ({
                   ...prev,
                   [colIndex]: {
@@ -128,7 +129,11 @@ function SimpleDialog(props: SimpleDialogProps) {
       <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', padding: '20px' }}>
         <Button
           variant="outlined"
-          onClick={() => setSelections({})}
+          onClick={() => {
+            setSelections({});
+            onClose('');
+            setCompareDiff({});
+          }}
           color="error"
         >
           Clear All
@@ -136,7 +141,7 @@ function SimpleDialog(props: SimpleDialogProps) {
         <Button
           variant="contained"
           onClick={handleCompare}
-          disabled={Object.values(selections).some(col => col.items.length !== 2)}
+          disabled={Object.values(selections).some(col => col.items.length !== 2) || Object.keys(selections).length === 0}
         >
           Compare
         </Button>

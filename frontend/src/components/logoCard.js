@@ -51,7 +51,6 @@ export const LogoCard = ({ id, index, header, moveCard, ppm = null, fasta = null
   const pushToCompareQueue = (id, item) => {
     setCompareQueue(prevQueue => {
       const keys = Object.keys(prevQueue);
-      console.log("pushing to compare queue", id);
       if (keys.length >= 2) {
         const [firstKey, ...restKeys] = keys;
         const newQueue = { ...prevQueue };
@@ -70,7 +69,6 @@ export const LogoCard = ({ id, index, header, moveCard, ppm = null, fasta = null
 
   const removeFromCompareQueue = (id) => {
     setCompareQueue(prevQueue => {
-      console.log("removing from compare queue", id);
       const newQueue = { ...prevQueue };
       delete newQueue[`${id}`];
       return newQueue;
@@ -245,7 +243,7 @@ export const LogoCard = ({ id, index, header, moveCard, ppm = null, fasta = null
                 </button>
               </Tooltip>
             )}
-            {ppm && (
+            {ppm && false && ( // Disabled for now
               <Tooltip title="Compare" placement="top">
                 <button
                   className={`logo-color-btn logo-btn ${nodeId in compareQueue ? "active" : ""
