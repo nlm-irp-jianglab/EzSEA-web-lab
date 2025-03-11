@@ -1,6 +1,6 @@
 {
   "name": "ezsea-web-lab",
-  "version": "1.0.0",
+  "version": "1.1.2",
   "homepage": "/ezsea",
   "main": "/src/index.js",
   "scripts": {
@@ -35,7 +35,7 @@
     "react-router-dom": "^6.25.1",
     "react-scripts": "^5.0.1",
     "sass": "^1.84.0",
-    "tree3-react": "^1.0.42"
+    "tree3-react": "^1.1.2"
   },
   "browserslist": {
     "production": [
