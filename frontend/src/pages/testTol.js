@@ -317,6 +317,12 @@ const TestTol = () => {
     }
   ]
 
+  const toolTip = useMemo(() => (node) => {
+    if (nodeData && nodeData[node.data.name]) {
+      return `Score: ${nodeData[node.data.name].score.toFixed(2)}`;
+    }
+  }, [nodeData]);
+
   // Deals with tree rendering
   useEffect(() => {
     setTreeKey(prev => prev + 1);
@@ -337,6 +343,7 @@ const TestTol = () => {
           nodeStyler={style_nodes}
           customNodeMenuItems={nodeMenu}
           customLeafMenuItems={leafMenu}
+          customTooltip={toolTip}
           leafStyler={style_leaves}
           width={1500}
           linkStyler={style_edges}
@@ -351,6 +358,7 @@ const TestTol = () => {
           nodeStyler={style_nodes}
           customNodeMenuItems={nodeMenu}
           customLeafMenuItems={leafMenu}
+          customTooltip={toolTip}
           leafStyler={style_leaves}
           width={1500}
           linkStyler={style_edges}
@@ -366,6 +374,7 @@ const TestTol = () => {
           customNodeMenuItems={nodeMenu}
           customLeafMenuItems={leafMenu}
           customLinkMenuItems={linkMenu}
+          customTooltip={toolTip}
           leafStyler={style_leaves_unrooted}
           width={1500}
           onNodeClick={onNodeClick}
@@ -618,9 +627,14 @@ const TestTol = () => {
             });
           } else if (zipEntry.name === 'nodes.json') {
             zipEntry.async('string').then((content) => {
-              const nodesData = JSON.parse(content);
-              setNodeData(nodesData);
-              setImportantResidues(nodesData);
+              const json = JSON.parse(content);
+              const entries = Object.entries(json);
+              const first10Entries = entries.slice(0, 10);
+              // Convert back to object
+              const first10Objects = Object.fromEntries(first10Entries);
+
+              setNodeData(json);
+              setTopNodes(first10Objects);
             });
           } else if (zipEntry.name === 'ec.json') {
             zipEntry.async('string').then((content) => {
@@ -752,7 +766,7 @@ const TestTol = () => {
             {uploadsDropdown()}
           </div>
           <div className="nodes-dropdown-content dropdown-content transition-element">
-            <button style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start' }}>
+            <button style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
               <span style={{ fontWeight: 'bold', minWidth: '60px' }}>Tree</span>
               <input
                 type="file"
@@ -769,7 +783,7 @@ const TestTol = () => {
                 }}
               />
             </button>
-            <button style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start' }}>
+            <button style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
               <span style={{ fontWeight: 'bold', minWidth: '60px' }}>ASR</span>
               <input
                 type="file"
@@ -790,7 +804,7 @@ const TestTol = () => {
                 }}
               />
             </button>
-            <button style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start' }}>
+            <button style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
               <span style={{ fontWeight: 'bold', minWidth: '60px' }}>Sequences</span>
               <input
                 type="file"
@@ -810,12 +824,32 @@ const TestTol = () => {
                   reader.readAsText(file);
                 }}
               />
-
             </button>
-            <button style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start' }}>
+            <button style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
               <span style={{ fontWeight: 'bold', minWidth: '60px' }}>Node Info (JSON)</span>
+              <input
+                type="file"
+                accept=".json"
+                onChange={(event) => {
+                  if (event.target.files.length === 0) return;
+                  const file = event.target.files[0];
+                  const reader = new FileReader();
+                  reader.onload = (e) => {
+                    const content = e.target?.result;
+                    const json = JSON.parse(content);
+                    const entries = Object.entries(json);
+                    const first10Entries = entries.slice(0, 10);
+                    // Convert back to object
+                    const first10Objects = Object.fromEntries(first10Entries);
+
+                    setNodeData(json);
+                    setTopNodes(first10Objects);
+                  };
+                  reader.readAsText(file);
+                }}
+              />
             </button>
-            <button style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start' }}>
+            <button style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
               <span style={{ fontWeight: 'bold', minWidth: '60px' }}>Zip</span>
               <input
                 type="file"
@@ -857,6 +891,7 @@ const TestTol = () => {
                     </div>
                   )}
                   <MenuItem onClick={() => treeRef.current && treeRef.current.setDisplayLeaves(prev => !prev)}>Toggle Labels</MenuItem>
+                  <MenuItem onClick={() => treeRef.current && treeRef.current.setDisplayNodes(prev => !prev)}>Toggle Nodes</MenuItem>
                 </Menu>
               </Tooltip>
               <Tooltip title="Reset tree" placement="top">
