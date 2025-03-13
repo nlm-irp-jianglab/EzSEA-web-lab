@@ -79,7 +79,7 @@ function SimpleDialog(props: SimpleDialogProps) {
               {Object.keys(logoContent).map((key) => (
                 <Button
                   key={key}
-                  variant={selections[colIndex]?.items.includes(key) ? "contained" : "outlined"}
+                  variant={selections[colIndex]?.items?.includes(key) ? "contained" : "outlined"}
                   onClick={() => {
                     setSelections(prev => {
                       const current = prev[colIndex]?.items || [];
@@ -141,7 +141,10 @@ function SimpleDialog(props: SimpleDialogProps) {
         <Button
           variant="contained"
           onClick={handleCompare}
-          disabled={Object.values(selections).some(col => col.items.length !== 2) || Object.keys(selections).length === 0}
+          disabled={
+            Object.keys(selections).length === 0 ||
+            !Object.values(selections).every(col => col.items?.length === 2)
+          }
         >
           Compare
         </Button>

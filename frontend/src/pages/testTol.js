@@ -321,6 +321,7 @@ const TestTol = () => {
     if (nodeData && nodeData[node.data.name]) {
       return `Score: ${nodeData[node.data.name].score.toFixed(2)}`;
     }
+    return '';
   }, [nodeData]);
 
   // Deals with tree rendering
@@ -727,8 +728,9 @@ const TestTol = () => {
           width: (sidebarExpanded ? "220px" : "50px"),
           flexGrow: '0',
         }}>
+            {/* Search tab */}
           <div className="sidebar-item nodes-label">
-            {zoomToElem()}
+            {zoomToElem()} 
             {sidebarExpanded &&
               <Autocomplete
                 className="zoomInput"
@@ -762,6 +764,7 @@ const TestTol = () => {
               </div>
             )}
           </div>
+          {/* Uploads tab */}
           <div className="sidebar-item nodes-label">
             {uploadsDropdown()}
           </div>
@@ -850,6 +853,10 @@ const TestTol = () => {
               />
             </button>
             <button style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+              <span style={{ fontWeight: 'bold', minWidth: '60px' }}>Pockets</span>
+
+            </button>
+            <button style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
               <span style={{ fontWeight: 'bold', minWidth: '60px' }}>Zip</span>
               <input
                 type="file"
@@ -860,8 +867,10 @@ const TestTol = () => {
             </button>
           </div>
         </div>
+        {/* Main view, everything but the sidebar */}
         <div className="view">
           <div className="tree-div" ref={treediv} style={{ width: isLeftCollapsed ? '2%' : (pipVisible ? '50%' : '100%'), textAlign: "center" }}>
+            {/* Top button bar */}
             <ButtonGroup variant="contained" aria-label="Basic button group">
               <Tooltip title="Recenter" placement="top">
                 <Button onClick={() => {
@@ -909,6 +918,7 @@ const TestTol = () => {
             {renderTree()}
           </div>
 
+          {/* The two arrow buttons in the middle */}
           {Object.keys(logoContent).length > 0 && (
             <div className="center-console">
               {!isRightCollapsed && (
@@ -960,6 +970,7 @@ const TestTol = () => {
                 flexDirection: isLeftCollapsed ? 'row' : 'column', // Side by side if left is collapsed
               }}
             >
+              {/* Sequence logos */}
               <div className="expandedRight" style={{ width: isLeftCollapsed ? '50%' : '100%', display: 'flex', flexDirection: 'column' }}>
                 <div style={{ display: "flex", overflowY: "show", alignItems: "center", justifyContent: "space-between" }}>
                   <input
@@ -1066,6 +1077,7 @@ const TestTol = () => {
                   />
                 </div>
               </div>
+              {/* Horizontal divider bar */}
               <div
                 style={{
                   width: isLeftCollapsed ? '1px' : '100%',
@@ -1074,6 +1086,7 @@ const TestTol = () => {
                   margin: '3px 3px'
                 }}
               ></div>
+              {/* Structure viewer */}
               <div style={{ flex: '1', display: 'flex', flexDirection: 'column' }}>
                 {colorArr && <img
                   src={process.env.PUBLIC_URL + "/gradient.png"}
@@ -1086,7 +1099,6 @@ const TestTol = () => {
                   }}
                 />}
                 <div style={{ display: "flex", height: "100%", flexGrow: "1", flexDirection: isLeftCollapsed ? "column" : "row" }}>
-
                   <div className="pvdiv" ref={pvdiv} style={{ height: '100%', flexGrow: "1" }}>
                     {structData && (
                       <MolstarViewer
