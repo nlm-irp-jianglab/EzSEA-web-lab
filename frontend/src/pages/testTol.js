@@ -31,10 +31,13 @@ import CompareMenu from '../components/compareMenu.tsx';
 import LogoStack from '../components/logo-stack.js';
 import MolstarViewer from "../components/molstar.js";
 import { tolContext } from '../components/tolContext.js';
-import { readFastaToDict, parseNodeData, calcEntropyFromMSA, mapEntropyToColors, jsonToFasta, fastaToDict } from '../components/utils.js';
+import {
+  calcEntropyFromMSA, mapEntropyToColors, fastaToDict,
+  calcStructToLogoMap, calcGapOffsetArr
+} from '../components/utils.js';
 
 // Tree3
-import { selectAllLeaves, selectAllNodes } from 'tree3-react';
+import { selectAllLeaves } from 'tree3-react';
 import { RadialTree, RectTree, UnrootedTree } from 'tree3-react';
 
 // Styles
@@ -48,7 +51,6 @@ const TestTol = () => {
   const [newickData, setNewickData] = useState(null);
   const [nodeData, setNodeData] = useState(null);
   const [structData, setStructData] = useState(null); // Structure data
-  const [pocketData, setPocketData] = useState({}); // Pocket data
   const [ecData, setEcData] = useState(null); // EC codes 
 
   const [topNodes, setTopNodes] = useState({}); // Top 10 nodes for the tree
@@ -90,6 +92,7 @@ const TestTol = () => {
   const pvdiv = useRef(null);
   const logoStackRef = useRef(null);
   const scrollInputRef = useRef(null);
+  const gapScrollInputRef = useRef(null);
   const [importantResidues, setImportantResidues] = useState([]);
 
   // Add state for tree key
@@ -332,6 +335,12 @@ const TestTol = () => {
         (leafData) ? Object.keys(leafData) :
           (asrData) ? Object.keys(asrData) : []
     )
+    try {
+      setGapOffsetArr(calcGapOffsetArr(leafData[header])); // Setting precalculated offsets for coloring important residues
+      setStructLogoMapArr(calcStructToLogoMap(leafData[header]));
+    } catch (e) {
+      console.error("Error calculating gap offset array:", e);
+    }
   }, [newickData, asrData, faData, leafData]);
 
   const renderTree = () => {
@@ -728,9 +737,9 @@ const TestTol = () => {
           width: (sidebarExpanded ? "220px" : "50px"),
           flexGrow: '0',
         }}>
-            {/* Search tab */}
+          {/* Search tab */}
           <div className="sidebar-item nodes-label">
-            {zoomToElem()} 
+            {zoomToElem()}
             {sidebarExpanded &&
               <Autocomplete
                 className="zoomInput"
@@ -973,6 +982,53 @@ const TestTol = () => {
               {/* Sequence logos */}
               <div className="expandedRight" style={{ width: isLeftCollapsed ? '50%' : '100%', display: 'flex', flexDirection: 'column' }}>
                 <div style={{ display: "flex", overflowY: "show", alignItems: "center", justifyContent: "space-between" }}>
+                  <input
+                    className="gapScrollInput zoomInput"
+                    ref={gapScrollInputRef}
+                    placeholder='gene:position'
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        try {
+                          const [gene, position] = gapScrollInputRef.current.value.split(':');
+                          if (!gene || !position || !leafData[gene]) {
+                            throw new Error('Invalid input format or gene not found');
+                          }
+
+                          const sequence = leafData[gene];
+                          const targetPos = parseInt(position);
+
+                          // Find the position of the nth non-gap character
+                          let nonGapCount = 0;
+                          let actualPosition = 0;
+
+                          for (let i = 0; i < sequence.length; i++) {
+                            if (sequence[i] !== '-') {
+                              nonGapCount++;
+                              if (nonGapCount === targetPos) {
+                                actualPosition = i;
+                                break;
+                              }
+                            }
+                          }
+
+                          if (nonGapCount < targetPos) {
+                            throw new Error('Position exceeds number of non-gap characters');
+                          }
+
+                          logoStackRef.current.scrollToHighlightIndex(actualPosition);
+
+                        } catch (e) {
+                          setNotification('Invalid input or position not found');
+                          setTimeout(() => {
+                            setNotification('');
+                          }, 2000);
+                        }
+
+                        gapScrollInputRef.current.value = '';
+                      }
+                    }}
+                    style={{ width: "80px" }}
+                  />
                   <input
                     className="scrollInput zoomInput"
                     ref={scrollInputRef}
