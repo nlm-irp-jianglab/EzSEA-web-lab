@@ -1015,7 +1015,7 @@ const TestTol = () => {
                             throw new Error('Position exceeds number of non-gap characters');
                           }
 
-                          logoStackRef.current.scrollToHighlightIndex(actualPosition);
+                          logoStackRef.current.scrollToHighlightIndex(actualPosition + 1); // +1 for 1-based index
 
                         } catch (e) {
                           setNotification('Invalid input or position not found');
