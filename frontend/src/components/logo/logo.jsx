@@ -116,7 +116,7 @@ const Logo = React.forwardRef(
 
         // EDIT: hardcoded width and height 
         return (
-            <svg width="fit-content" height="150" viewBox={'0 0 ' + viewBoxW + ' ' + viewBoxH} ref={ref}>
+            <svg height="150" viewBox={'0 0 ' + viewBoxW + ' ' + viewBoxH} ref={ref} style={{ width: 'auto'}}>
                 <g transform="translate(80,10)">
                     <RawLogo values={likelihood} glyphWidth={glyphWidth} stackHeight={maxHeight} alphabet={alphabet}
                         onSymbolMouseOver={onSymbolMouseOver} onSymbolMouseOut={onSymbolMouseOut} onSymbolClick={onSymbolClick} importantResidues={importantResidues} />
