@@ -20,35 +20,17 @@ import { LogoProvider } from './logoContext.js';
 
 const LogoStack = React.forwardRef(
     /*
-        data: A json object containing entries {nodeName: fasta_data}
         onColumnClick (optional): A function to handle click events on the logo
         onColumnHover (optional): A function to handle hover events on the logo
     */
-    ({ data, onColumnClick, onColumnHover, importantResiduesList, removeNodeHandle, applyEntropyStructColor, applyImportantStructColor, findAndZoom }, ref) => {
-        const [fastaContent, setFastaContent] = useState({});
+    ({ onColumnClick, onColumnHover, importantResiduesList, removeNodeHandle, applyEntropyStructColor, applyImportantStructColor, findAndZoom }, ref) => {
+
         const logoRefs = useRef([]);
         const backScrollers = useRef([]);
         const frontScrollers = useRef([]);
         const [logoRefsChanged, setLogoRefsChanged] = useState(false);
         const [renderLogos, setRenderLogos] = useState(false);
         const { scrollPosition, setScrollPosition, seqLength, setSeqLength, logoContent, setLogoContent } = useContext(tolContext);
-
-        const fetchFastaFiles = async (data) => {
-            let fastaData = {};
-
-            const fetchPromises = Object.keys(data).map(async (key) => {
-                try {
-                    const response = await fetch(data[key]);
-                    const content = await response.text();
-                    fastaData[key] = content;
-                } catch (error) {
-                    console.error(`Error fetching file for ${key}:`, error);
-                }
-            });
-
-            await Promise.all(fetchPromises);
-            return fastaData;
-        };
 
         // Helper function to add logo refs
         const addLogoRef = (ref) => {
@@ -59,20 +41,17 @@ const LogoStack = React.forwardRef(
         };
 
         useEffect(() => {
-            if (!data) {
-                console.error('No data provided to render Logo');
+            if (!logoContent) {
+                console.error('No logoContent provided to render Logo');
                 return;
             }
             // Clear logoRefs
             logoRefs.current = []; // TODO test for bugs on this
 
-            setFastaContent(data);
-        }, [data]);
-
-        useEffect(() => {
             setRenderLogos(true);
-        }, [fastaContent]);
+        }, [logoContent]);
 
+        // Function to scroll to a specific index in the logo stack
         const scrollToIndex = (index) => {
             var rectSize = seqLength > 999 ? 20 : 21.5;
 
@@ -87,16 +66,14 @@ const LogoStack = React.forwardRef(
         };
 
         useEffect(() => {
-            backScrollers.current.forEach((scroller) => {
-                scroller.destroy(); // Destroy back scrollers
-            });
-            frontScrollers.current.forEach((scroller) => {
-                scroller.destroy(); // Destroy front scrollers
-            });
+            // Cleanup previous scrollers
+            [...backScrollers.current, ...frontScrollers.current].forEach(scroller => scroller.destroy());
+            backScrollers.current = [];
+            frontScrollers.current = [];
 
-            // Initialize scrollers and add event listeners
+            // Initialize new scrollers
             logoRefs.current.forEach((ref) => {
-                const frontScroller = new EasyScroller(ref, {
+                const scrollerConfig = {
                     scrollingX: true,
                     scrollingY: false,
                     animating: false,
@@ -104,20 +81,10 @@ const LogoStack = React.forwardRef(
                     minZoom: 1,
                     maxZoom: 1,
                     bouncing: false,
-                });
+                };
 
-                const backScroller = new EasyScroller(ref, {
-                    scrollingX: true,
-                    scrollingY: false,
-                    animating: false,
-                    zooming: 0,
-                    minZoom: 1,
-                    maxZoom: 1,
-                    bouncing: false,
-                });
-
-                backScrollers.current.push(backScroller);
-                frontScrollers.current.push(frontScroller);
+                backScrollers.current.push(new EasyScroller(ref, scrollerConfig));
+                frontScrollers.current.push(new EasyScroller(ref, scrollerConfig));
             });
 
             // Connect back and front layers of scrollers
@@ -147,56 +114,22 @@ const LogoStack = React.forwardRef(
 
             // Cleanup function to remove listeners and destroy scrollers
             return () => {
-                backScrollers.current.forEach((scroller) => {
-                    scroller.destroy();
-                });
-                frontScrollers.current.forEach((scroller) => {
-                    scroller.destroy();
-                });
-
+                [...backScrollers.current, ...frontScrollers.current].forEach(scroller => scroller.destroy());
                 backScrollers.current = [];
                 frontScrollers.current = [];
             };
-        }, [fastaContent, logoRefsChanged]); // Add handleWheel as a dependency
-
-
-        // Function to download SVG
-        const downloadLogoSVG = (logoIndex, fileName) => {
-            if (!logoRefs.current[logoIndex]) {
-                console.error('Logo not found');
-                return;
-            }
-            const svgElement = logoRefs.current[logoIndex].querySelector('svg');
-            const serializer = new XMLSerializer();
-            let source = serializer.serializeToString(svgElement);
-            const styleString = `
-                <style>
-                    .glyphrect {
-                        fill-opacity: 0.0;
-                    }
-                </style>`;
-            source = source.replace('</svg>', `${styleString}</svg>`);
-            const svgBlob = new Blob([source], { type: 'image/svg+xml;charset=utf-8' });
-            const svgUrl = URL.createObjectURL(svgBlob);
-
-            const downloadLink = document.createElement('a');
-            downloadLink.href = svgUrl;
-            downloadLink.download = fileName;
-            document.body.appendChild(downloadLink);
-            downloadLink.click();
-            document.body.removeChild(downloadLink);
-        };
+        }, [logoContent, logoRefsChanged]); // Add handleWheel as a dependency
 
         const removeLogo = (logoHeader) => {
             // Remove the logo from the list
-            const newFastaContent = { ...fastaContent };
+            const newFastaContent = { ...logoContent };
             delete newFastaContent[logoHeader];
 
             const newLogoRefs = [...logoRefs.current];
             //newLogoRefs.splice(logoHeader, 1);
             logoRefs.current = newLogoRefs;
 
-            setFastaContent(newFastaContent);
+            setLogoContent(newFastaContent);
 
             removeNodeHandle(logoHeader); // Call the parent function to remove the node from list in Results.js
         };
@@ -244,15 +177,7 @@ const LogoStack = React.forwardRef(
                     frontScrollers.current[0].scroller.__publish(index * rectSize - centerOffset, 1, 1, true);
                 }
             },
-            scrollToIndex,
-            appendLogo: (key, path) => {
-                // Fetch the fasta file and append to the list
-                fetchFastaFiles({ [key]: path })
-                    .then(fetchedContent => {
-                        setFastaContent({ ...fastaContent, ...fetchedContent });
-                    })
-                    .catch(error => console.error('Error fetching data:', error));
-            }
+            scrollToIndex
         }));
 
         return (
@@ -260,7 +185,7 @@ const LogoStack = React.forwardRef(
                 <LogoProvider>
                     {renderLogos ? (
                         <DndProvider backend={HTML5Backend}>
-                            <DndLogo fastaContent={fastaContent} applyEntropyStructColor={applyEntropyStructColor}
+                            <DndLogo logoContent={logoContent} applyEntropyStructColor={applyEntropyStructColor}
                                 onSymbolClick={onColumnClick} onSymbolHover={onColumnHover} importantResiduesList={importantResiduesList}
                                 applyImportantStructColor={applyImportantStructColor} removeLogo={removeLogo} findAndZoom={findAndZoom} addLogoRef={addLogoRef} />
                         </DndProvider>

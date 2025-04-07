@@ -11,11 +11,11 @@ const style = {
   overflowX: "hidden",
 }
 
-export const DndLogo = ({ fastaContent, applyEntropyStructColor, applyImportantStructColor,
+export const DndLogo = ({ applyEntropyStructColor, applyImportantStructColor,
   removeLogo, onSymbolClick, onSymbolHover, importantResiduesList, findAndZoom, addLogoRef }) => {
   {
     const [cards, setCards] = useState([]);
-    const { logoContent, setLogoContent, setCompareDiff } = useContext(tolContext); // TODO implement fasta passing using context instead of props
+    const { logoContent, setCompareDiff } = useContext(tolContext); // TODO implement fasta passing using context instead of props
     const { compareQueue } = useContext(logoContext);
 
     useEffect(() => { // Assigns each fasta sequence to a card

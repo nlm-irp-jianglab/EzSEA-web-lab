@@ -32,8 +32,7 @@ import LogoStack from '../components/logo-stack.js';
 import MolstarViewer from "../components/molstar.js";
 import { tolContext } from '../components/tolContext.js';
 import {
-  calcEntropyFromMSA, mapEntropyToColors, fastaToDict,
-  calcStructToLogoMap, calcGapOffsetArr
+  calcEntropyFromMSA, mapEntropyToColors, fastaToDict
 } from '../components/utils.js';
 
 // Tree3
@@ -862,8 +861,21 @@ const TestTol = () => {
               />
             </button>
             <button style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-              <span style={{ fontWeight: 'bold', minWidth: '60px' }}>Pockets</span>
-
+              <span style={{ fontWeight: 'bold', minWidth: '60px' }}>Structure</span>
+              <input
+                type="file"
+                accept=".pdb"
+                onChange={(event) => {
+                  if (event.target.files.length === 0) return;
+                  const file = event.target.files[0];
+                  const reader = new FileReader();
+                  reader.onload = (e) => {
+                    const content = e.target?.result;
+                    setStructData(content);
+                  };
+                  reader.readAsText(file);
+                }}
+              />
             </button>
             <button style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
               <span style={{ fontWeight: 'bold', minWidth: '60px' }}>Zip</span>
@@ -1121,7 +1133,6 @@ const TestTol = () => {
                     </button>
                   </Tooltip>
                   <LogoStack
-                    data={logoContent}
                     onColumnClick={handleColumnClick}
                     onColumnHover={handleColumnHover}
                     importantResiduesList={importantResidues}
