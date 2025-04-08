@@ -298,7 +298,7 @@ export const LogoCard = ({ id, index, header, moveCard, ppm = null, fasta = null
                 </svg>
               </button>
             </Tooltip>
-            <Tooltip title="Download Individual" placement="top">
+            <Tooltip title="Remove" placement="top">
               <button
                 className="logo-remove-btn logo-btn"
                 style={styles.removeBtn}

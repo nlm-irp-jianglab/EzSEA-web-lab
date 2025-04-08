@@ -565,6 +565,48 @@ const Tol = () => {
     logoStackRef.current.scrollToIndex(value);
   };
 
+  const handleGapScroll = (e, value) => {
+    if (e.key === 'Enter') {
+      try {
+        const [gene, position] = gapScrollInputRef.current.value.split(':');
+        if (!gene || !position || !leafData[gene]) {
+          throw new Error('Invalid input format or gene not found');
+        }
+
+        const sequence = leafData[gene];
+        const targetPos = parseInt(position);
+
+        // Find the position of the nth non-gap character
+        let nonGapCount = 0;
+        let actualPosition = 0;
+
+        for (let i = 0; i < sequence.length; i++) {
+          if (sequence[i] !== '-') {
+            nonGapCount++;
+            if (nonGapCount === targetPos) {
+              actualPosition = i;
+              break;
+            }
+          }
+        }
+
+        if (nonGapCount < targetPos) {
+          throw new Error('Position exceeds number of non-gap characters');
+        }
+
+        logoStackRef.current.scrollToHighlightIndex(actualPosition + 1); // +1 for 1-based index
+
+      } catch (e) {
+        setNotification('Invalid input or position not found');
+        setTimeout(() => {
+          setNotification('');
+        }, 2000);
+      }
+
+      gapScrollInputRef.current.value = '';
+    }
+  }
+
   const handleNodeRemove = (header) => {
     // Remove node from logoContent
     const newLogoContent = { ...logoContent };
@@ -587,10 +629,6 @@ const Tol = () => {
           }
         }
       });
-  };
-
-  const handleTreeDrop = (event) => { // TODO implement drop to upload tree
-    event.preventDefault();
   };
 
   const readZip = (event) => {
@@ -865,6 +903,7 @@ const Tol = () => {
                   reader.onload = (e) => {
                     const content = e.target?.result;
                     setStructData(content);
+                    console.log("Uploaded structure data");
                   };
                   reader.readAsText(file);
                 }}
@@ -985,53 +1024,13 @@ const Tol = () => {
               }}
             >
               {/* Sequence logos */}
-              <div className="expandedRight" style={{ width: isLeftCollapsed ? '50%' : '100%', display: 'flex', flexDirection: 'column' }}>
+              <div className="expandedRight" style={{ width: isLeftCollapsed ? '50%' : '100%', display: 'flex', flexDirection: 'column', overflow: 'scroll' }}>
                 <div style={{ display: "flex", overflowY: "show", alignItems: "center", justifyContent: "space-between" }}>
                   <input
                     className="gapScrollInput zoomInput"
                     ref={gapScrollInputRef}
                     placeholder='gene:position'
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        try {
-                          const [gene, position] = gapScrollInputRef.current.value.split(':');
-                          if (!gene || !position || !leafData[gene]) {
-                            throw new Error('Invalid input format or gene not found');
-                          }
-
-                          const sequence = leafData[gene];
-                          const targetPos = parseInt(position);
-
-                          // Find the position of the nth non-gap character
-                          let nonGapCount = 0;
-                          let actualPosition = 0;
-
-                          for (let i = 0; i < sequence.length; i++) {
-                            if (sequence[i] !== '-') {
-                              nonGapCount++;
-                              if (nonGapCount === targetPos) {
-                                actualPosition = i;
-                                break;
-                              }
-                            }
-                          }
-
-                          if (nonGapCount < targetPos) {
-                            throw new Error('Position exceeds number of non-gap characters');
-                          }
-
-                          logoStackRef.current.scrollToHighlightIndex(actualPosition + 1); // +1 for 1-based index
-
-                        } catch (e) {
-                          setNotification('Invalid input or position not found');
-                          setTimeout(() => {
-                            setNotification('');
-                          }, 2000);
-                        }
-
-                        gapScrollInputRef.current.value = '';
-                      }
-                    }}
+                    onKeyDown={(e) => { handleGapScroll(e) }}
                     style={{ width: "80px" }}
                   />
                   <input
@@ -1112,7 +1111,7 @@ const Tol = () => {
                     </FormControl>
                   </div>
                 </div>
-                <div className="logodiv" style={{ flexGrow: '1', width: '100%', height: isLeftCollapsed ? '100%' : (Object.keys(logoContent).length > 2 ? '570px' : (Object.keys(logoContent).length > 1 ? '380px' : '190px')) }}>
+                <div className="logodiv" style={{ flexGrow: '1', width: '100%', height: '100%' }}>
                   <Tooltip title="Clear All" placement="top">
                     <button
                       className="logo-close-btn"
@@ -1120,9 +1119,7 @@ const Tol = () => {
                         clearRightPanel();
                       }}
                     >
-                      <svg fill="#000000" width="25px" height="25px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M16 29c-7.18 0-13-5.82-13-13s5.82-13 13-13 13 5.82 13 13-5.82 13-13 13zM21.961 12.209c0.244-0.244 0.244-0.641 0-0.885l-1.328-1.327c-0.244-0.244-0.641-0.244-0.885 0l-3.761 3.761-3.761-3.761c-0.244-0.244-0.641-0.244-0.885 0l-1.328 1.327c-0.244 0.244-0.244 0.641 0 0.885l3.762 3.762-3.762 3.76c-0.244 0.244-0.244 0.641 0 0.885l1.328 1.328c0.244 0.244 0.641 0.244 0.885 0l3.761-3.762 3.761 3.762c0.244 0.244 0.641 0.244 0.885 0l1.328-1.328c0.244-0.244 0.244-0.641 0-0.885l-3.762-3.76 3.762-3.762z"></path>
-                      </svg>
+                      X
                     </button>
                   </Tooltip>
                   <LogoStack
@@ -1137,40 +1134,36 @@ const Tol = () => {
                   />
                 </div>
               </div>
-              {/* Horizontal divider bar */}
-              <div
-                style={{
-                  width: isLeftCollapsed ? '1px' : '100%',
-                  height: isLeftCollapsed ? '100%' : '1px',
-                  backgroundColor: '#ccc',
-                  margin: '3px 3px'
-                }}
-              ></div>
+
               {/* Structure viewer */}
-              <div style={{ flex: '1', display: 'flex', flexDirection: 'column' }}>
-                {colorArr && <img
-                  src={process.env.PUBLIC_URL + "/gradient.png"}
-                  alt="Gradient Legend"
-                  style={{
-                    width: '100%',
-                    height: '20px',
-                    marginTop: '10px',
-                    borderRadius: '4px'
-                  }}
-                />}
-                <div style={{ display: "flex", height: "100%", flexGrow: "1", flexDirection: isLeftCollapsed ? "column" : "row" }}>
-                  <div className="pvdiv" ref={pvdiv} style={{ height: '100%', flexGrow: "1" }}>
-                    {structData && (
-                      <MolstarViewer
-                        structData={structData}
-                        selectedResidue={selectedResidue}
-                        colorFile={colorArr}
-                        hoveredResidue={hoveredResidue}
-                        scrollLogosTo={(index) => logoStackRef.current.scrollToHighlightIndex(index)}
-                      />)}
+              {isLeftCollapsed && (
+                <div style={{ flex: '1', display: 'flex', flexDirection: 'column' }}>
+                  {colorArr && <img
+                    src={process.env.PUBLIC_URL + "/gradient.png"}
+                    alt="Gradient Legend"
+                    style={{
+                      width: '100%',
+                      height: '20px',
+                      marginTop: '10px',
+                      borderRadius: '4px'
+                    }}
+                  />}
+                  <div style={{ display: "flex", height: "100%", flexGrow: "1", flexDirection: "column" }}>
+                    <div className="pvdiv" ref={pvdiv} style={{ height: '100%', flexGrow: "1" }}>
+                      {structData && (
+                        <MolstarViewer
+                          key={structData}
+                          structData={structData}
+                          selectedResidue={selectedResidue}
+                          colorFile={colorArr}
+                          hoveredResidue={hoveredResidue}
+                          scrollLogosTo={(index) => logoStackRef.current.scrollToHighlightIndex(index)}
+                        />
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
             </div>
           )}
         </div>
