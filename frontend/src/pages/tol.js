@@ -777,7 +777,7 @@ const Tol = () => {
     );
   };
 
-  const scrollLogosTo = (index) => {
+  const scrollLogosTo = useCallback((index) => {
     if (inputSequence) {
       // Count non-gap characters until we reach the target index
       let nonGapCount = 0;
@@ -800,7 +800,7 @@ const Tol = () => {
       // If no input sequence, scroll to raw index
       logoStackRef.current.scrollToHighlightIndex(index);
     }
-  };
+  }, [inputSequence]);
 
   return (
     <div style={{ height: '100%', display: 'flex', flexDirection: 'column', maxWidth: '100vw', flexGrow: '1' }}>
@@ -945,7 +945,6 @@ const Tol = () => {
                   reader.onload = (e) => {
                     const content = e.target?.result;
                     setStructData(content);
-                    console.log("Uploaded structure data");
                   };
                   reader.readAsText(file);
                 }}
@@ -1180,6 +1179,44 @@ const Tol = () => {
               {/* Structure viewer */}
               {isLeftCollapsed && (
                 <div style={{ flex: '1', display: 'flex', flexDirection: 'column' }}>
+                  {/* Button bar */}
+                  <div style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    padding: '8px',
+                    gap: '8px',
+                    borderBottom: '1px solid #ccc'
+                  }}>
+                    <ButtonGroup variant="contained" size="small">
+                      <Tooltip title="Reset View" placement="top">
+                        <Button>
+                          <RestoreIcon />
+                        </Button>
+                      </Tooltip>
+                      <Tooltip title="Set Reference Sequence" placement="top">
+                        <Autocomplete
+                          size="small"
+                          options={Object.keys(leafData)}
+                          style={{ width: 200 }}
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              placeholder="Set reference sequence"
+                              variant="outlined"
+                              size="small"
+                            />
+                          )}
+                          onChange={(event, newValue) => {
+                            if (newValue && leafData[newValue]) {
+                              setInputSequence(leafData[newValue]);
+                            } else {
+                              setNotification('Reference sequence not found');
+                            }
+                          }}
+                        />
+                      </Tooltip>
+                    </ButtonGroup>
+                  </div>
                   {colorArr && <img
                     src={process.env.PUBLIC_URL + "/gradient.png"}
                     alt="Gradient Legend"
@@ -1199,7 +1236,7 @@ const Tol = () => {
                           selectedResidue={selectedResidue}
                           colorFile={colorArr}
                           hoveredResidue={hoveredResidue}
-                          scrollLogosTo={scrollLogosTo}
+                          scrollLogosToRef={{ current: scrollLogosTo }}
                         />
                       )}
                     </div>

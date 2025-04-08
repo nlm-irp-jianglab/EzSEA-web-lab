@@ -15,39 +15,10 @@ import { Color } from 'molstar/lib/mol-util/color';
 import { setSubtreeVisibility } from 'molstar/lib/mol-plugin/behavior/static/state';
 import "./molstar/skin/light.scss";
 
-export function MolStarWrapper({ structData, pocketData, selectedResidue, hoveredResidue, colorFile, scrollLogosTo, example }) {
+export function MolStarWrapper({ structData, pocketData, selectedResidue, hoveredResidue, colorFile, scrollLogosToRef, example }) {
   const parent = createRef();
   const [isStructureLoaded, setIsStructureLoaded] = useState(false);
 
-  async function renderPocket(plugin, pocketData, pocketNumber, hide = false) {
-    try {
-      const pocketKey = `pocket${pocketNumber}`;
-      const secData = await plugin.builders.data.rawData({
-        data: pocketData[pocketKey]
-      }, { state: { isGhost: true } });
-
-      const pocketTraj = await plugin.builders.structure.parseTrajectory(secData, "pdb");
-      const model = await plugin.builders.structure.createModel(pocketTraj);
-      const structure_add = await plugin.builders.structure.createStructure(model);
-      const components = {
-        polymer: await plugin.builders.structure.tryCreateComponentStatic(structure_add, "polymer"),
-      }
-
-      const builder = plugin.builders.structure.representation;
-      const update = plugin.build();
-
-      const pocketModel = await builder.buildRepresentation(update, components.polymer, { type: "orientation", typeParams: { alpha: 0.51 } },
-        { tag: "polymer" });
-
-      await update.commit();
-
-      if (hide) {
-        setSubtreeVisibility(plugin.state.data, plugin.managers.structure.hierarchy.current.structures[pocketNumber].components[0].cell.transform.ref, true);
-      }
-    } catch (error) {
-      console.error("Error rendering pocket:", error);
-    }
-  }
 
   useEffect(() => {
     async function init() {
@@ -66,34 +37,6 @@ export function MolStarWrapper({ structData, pocketData, selectedResidue, hovere
         },
       });
 
-      // Set the background color of the viewer to gray
-      const renderer = window.molstar.canvas3d.props.renderer;
-      if (renderer) {
-        PluginCommands.Canvas3D.SetSettings(window.molstar, {
-          settings: {
-            renderer: {
-              ...renderer,
-              backgroundColor: ColorNames.white,
-            },
-          },
-        });
-      }
-
-      // Set default spin
-      // window.molstar.canvas3d.setProps({
-      //   trackball: { animate: { name: 'spin', params: { speed: .5 } } } // or { name: 'off', params: { }}
-      // });
-
-      // Loading the default pdb file
-      if (structData == null) {
-        await fetch(`${process.env.PUBLIC_URL}/example/bilR.pdb`)
-          .then((response) => response.text())
-          .then((text) => {
-            structData = text;
-          })
-          .catch((error) => console.error("Error fetching struct data:", error));
-      }
-
       // Rendering main structure
       const mainData = await window.molstar.builders.data.rawData({
         data: structData
@@ -109,13 +52,6 @@ export function MolStarWrapper({ structData, pocketData, selectedResidue, hovere
       } catch (error) {
         console.warn('Failed to load structure:', error);
         return;
-      }
-
-      // Loading pockets if provided
-      if (pocketData) {
-        for (let i = 1; i <= 5; i++) {
-          await renderPocket(window.molstar, pocketData, i, i !== 1);
-        }
       }
 
       const cartoon = structure.representation.representations.polymer.data.repr;
@@ -147,8 +83,6 @@ export function MolStarWrapper({ structData, pocketData, selectedResidue, hovere
           "description": "Gives everything the same, uniform size."
         }
       });
-      // await cartoon.createOrUpdate({ ...CartoonRepresentationProvider.defaultValues, quality: 'auto' }, structure).run();
-      // this.canvas3d.add(cartoonRepresentation);
 
       // Scrolls seqlogos to selection position
       window.molstar.behaviors.interaction.click.subscribe(
@@ -172,7 +106,7 @@ export function MolStarWrapper({ structData, pocketData, selectedResidue, hovere
             });
           }
           if (localSelected[0]) {
-            scrollLogosTo(localSelected[0].position);
+            scrollLogosToRef.current(localSelected[0].position);
             window.molstar.selectionMode = !window.molstar.selectionMode;
             window.molstar.selectionMode = !window.molstar.selectionMode;
           }
