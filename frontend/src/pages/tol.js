@@ -53,6 +53,7 @@ const Tol = () => {
 
   const [topNodes, setTopNodes] = useState({}); // Top 10 nodes for the tree
   const [asrData, setAsrData] = useState(null);
+  const [inputSequence, setInputSequence] = useState(null); // Input sequence for the structure
 
   // State to store the logo content (formatted for logoJS) and color file
   const [colorArr, setColorArr] = useState(null);
@@ -314,6 +315,22 @@ const Tol = () => {
           console.error('Error checking URL:', error);
           return false;
         }
+      }
+    },
+    {
+      label: function (node) {
+        return "Set Structure Sequence"
+      },
+      onClick: function (node) {
+        try {
+          const fa = leafData[node.data.name];
+          setInputSequence(fa);
+        } catch (e) {
+          console.error("Error setting structure sequence:", e);
+        }
+      },
+      toShow: function (node) {
+        return true;
       }
     }
   ]
@@ -760,6 +777,31 @@ const Tol = () => {
     );
   };
 
+  const scrollLogosTo = (index) => {
+    if (inputSequence) {
+      // Count non-gap characters until we reach the target index
+      let nonGapCount = 0;
+      let gappedIndex = 0;
+
+      // Iterate through sequence until we find the index'th non-gap character
+      for (let i = 0; i < inputSequence.length; i++) {
+        if (inputSequence[i] !== '-') {
+          nonGapCount++;
+          if (nonGapCount === index) {
+            gappedIndex = i;
+            break;
+          }
+        }
+      }
+
+      // Scroll to the position in the gapped sequence
+      logoStackRef.current.scrollToHighlightIndex(gappedIndex + 1);
+    } else {
+      // If no input sequence, scroll to raw index
+      logoStackRef.current.scrollToHighlightIndex(index);
+    }
+  };
+
   return (
     <div style={{ height: '100%', display: 'flex', flexDirection: 'column', maxWidth: '100vw', flexGrow: '1' }}>
       <div style={{ display: 'flex', flexGrow: '1' }}>
@@ -1157,7 +1199,7 @@ const Tol = () => {
                           selectedResidue={selectedResidue}
                           colorFile={colorArr}
                           hoveredResidue={hoveredResidue}
-                          scrollLogosTo={(index) => logoStackRef.current.scrollToHighlightIndex(index)}
+                          scrollLogosTo={scrollLogosTo}
                         />
                       )}
                     </div>
