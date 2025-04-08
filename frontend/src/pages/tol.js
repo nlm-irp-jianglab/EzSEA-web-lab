@@ -65,6 +65,7 @@ const Tol = () => {
   // For live updates linking sequence logo and structure viewer
   const [selectedResidue, setSelectedResidue] = useState(null);
   const [hoveredResidue, setHoveredResidue] = useState(null); // Currently not in use
+  const scrollLogosToRef = useRef(null);
 
   // States for rendering control
   const [treeLayout, setTreeLayout] = useState('radial');
@@ -802,6 +803,11 @@ const Tol = () => {
     }
   }, [inputSequence]);
 
+  // Update the ref when scrollLogosTo changes
+  useEffect(() => {
+    scrollLogosToRef.current = scrollLogosTo;
+  }, [scrollLogosTo]);
+
   return (
     <div style={{ height: '100%', display: 'flex', flexDirection: 'column', maxWidth: '100vw', flexGrow: '1' }}>
       <div style={{ display: 'flex', flexGrow: '1' }}>
@@ -1236,7 +1242,7 @@ const Tol = () => {
                           selectedResidue={selectedResidue}
                           colorFile={colorArr}
                           hoveredResidue={hoveredResidue}
-                          scrollLogosToRef={{ current: scrollLogosTo }}
+                          scrollLogosToRef={scrollLogosToRef}
                         />
                       )}
                     </div>
