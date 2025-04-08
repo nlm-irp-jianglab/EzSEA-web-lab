@@ -40,10 +40,9 @@ import { selectAllLeaves } from 'tree3-react';
 import { RadialTree, RectTree, UnrootedTree } from 'tree3-react';
 
 // Styles
-import "../components/phylotree.css";
 import "../components/tol.css";
 
-const TestTol = () => {
+const Tol = () => {
   // State to store the tree data and node data  
   const [faData, setFaData] = useState(null);
   const [leafData, setLeafData] = useState({});
@@ -334,12 +333,6 @@ const TestTol = () => {
         (leafData) ? Object.keys(leafData) :
           (asrData) ? Object.keys(asrData) : []
     )
-    try {
-      setGapOffsetArr(calcGapOffsetArr(leafData[header])); // Setting precalculated offsets for coloring important residues
-      setStructLogoMapArr(calcStructToLogoMap(leafData[header]));
-    } catch (e) {
-      console.error("Error calculating gap offset array:", e);
-    }
   }, [newickData, asrData, faData, leafData]);
 
   const renderTree = () => {
@@ -1186,4 +1179,4 @@ const TestTol = () => {
   );
 };
 
-export default TestTol;
+export default Tol;

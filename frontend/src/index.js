@@ -2,7 +2,7 @@ import React, { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./styles.css";
 
-import TestApp from "./pages/testApp";
+import TolApp from "./pages/tolApp";
 import NotFoundPage from "./pages/notfoundpage";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
@@ -13,8 +13,8 @@ const DualPathRoutes = () => (
         {/* Base paths used in local testing */} 
         <Route path="/*" element={
             <Routes>
-                <Route exact path="/" element={<TestApp />} />
-                <Route path="/test" element={<TestApp />} />
+                <Route exact path="/" element={<TolApp />} />
+                <Route path="/test" element={<TolApp />} />
                 <Route path="*" element={<NotFoundPage />} />
             </Routes>
         } />
