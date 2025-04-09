@@ -23,7 +23,7 @@ const DualPathRoutes = () => (
 
 root.render(
     <React.StrictMode>
-        <Router basename="/ezsea">
+        <Router basename={"/EzSEA-web-lab"}>
             <DualPathRoutes />
         </Router>
     </React.StrictMode>

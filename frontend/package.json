@@ -1,8 +1,8 @@
 {
   "name": "ezsea-web-lab",
   "version": "1.1.2",
-  "homepage": "/ezsea",
-  "main": "/src/index.js",
+  "private": true,
+  "homepage": "/EzSEA-web-lab",
   "scripts": {
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build",

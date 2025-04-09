@@ -1078,7 +1078,7 @@ const Tol = () => {
                     ref={gapScrollInputRef}
                     placeholder='gene:position'
                     onKeyDown={(e) => { handleGapScroll(e) }}
-                    style={{ width: "80px" }}
+                    style={{ width: "120px" }}
                   />
                   <input
                     className="scrollInput zoomInput"
