@@ -626,11 +626,6 @@ const Tol = () => {
   }
 
   const handleNodeRemove = (header) => {
-    // Remove node from logoContent
-    const newLogoContent = { ...logoContent };
-    delete newLogoContent[header];
-    setLogoContent(newLogoContent);
-
     // Below syncs highlights on TOL with remove action in logo stack
     d3.selectAll('.inner-node')
       .each(function () {
