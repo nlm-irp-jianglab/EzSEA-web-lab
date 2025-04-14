@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/EzSEA-web-lab/static/css/main.0038c950.css",
-    "main.js": "/EzSEA-web-lab/static/js/main.da6d3ff9.js",
+    "main.js": "/EzSEA-web-lab/static/js/main.78f2fcd3.js",
     "index.html": "/EzSEA-web-lab/index.html",
     "main.0038c950.css.map": "/EzSEA-web-lab/static/css/main.0038c950.css.map",
-    "main.da6d3ff9.js.map": "/EzSEA-web-lab/static/js/main.da6d3ff9.js.map"
+    "main.78f2fcd3.js.map": "/EzSEA-web-lab/static/js/main.78f2fcd3.js.map"
   },
   "entrypoints": [
     "static/css/main.0038c950.css",
-    "static/js/main.da6d3ff9.js"
+    "static/js/main.78f2fcd3.js"
   ]
 }
