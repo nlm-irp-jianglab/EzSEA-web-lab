@@ -18,34 +18,34 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import { DndLogo } from './dndLogo.js';
 import { LogoProvider } from './logoContext.js';
 
-const LogoStack = React.forwardRef(({ 
-  onColumnClick, 
-  onColumnHover, 
-  importantResiduesList, 
-  removeNodeHandle, 
-  applyEntropyStructColor, 
-  applyImportantStructColor, 
-  findAndZoom 
+const LogoStack = React.forwardRef(({
+  onColumnClick,
+  onColumnHover,
+  importantResiduesList,
+  removeNodeHandle,
+  applyEntropyStructColor,
+  applyImportantStructColor,
+  findAndZoom
 }, ref) => {
   const logoRefs = useRef([]);
   const scrollersRef = useRef({
     back: [],
     front: []
   });
-  
+
   const [renderLogos, setRenderLogos] = useState(false);
-  const { 
-    scrollPosition, 
-    setScrollPosition, 
-    seqLength, 
-    logoContent, 
-    setLogoContent 
+  const {
+    scrollPosition,
+    setScrollPosition,
+    seqLength,
+    logoContent,
+    setLogoContent
   } = useContext(tolContext);
 
   // Memoize rect size calculation
-  const rectSize = useMemo(() => 
+  const rectSize = useMemo(() =>
     seqLength > 999 ? 20 : 21.5
-  , [seqLength]);
+    , [seqLength]);
 
   // Optimize logo ref management
   const addLogoRef = useCallback((ref) => {
@@ -74,7 +74,7 @@ const LogoStack = React.forwardRef(({
     logoRefs.current.forEach((ref) => {
       const backScroller = new EasyScroller(ref, scrollerConfig);
       const frontScroller = new EasyScroller(ref, scrollerConfig);
-      
+
       scrollersRef.current.back.push(backScroller);
       scrollersRef.current.front.push(frontScroller);
     });
@@ -86,6 +86,23 @@ const LogoStack = React.forwardRef(({
       };
     });
   }, [scrollerConfig]);
+
+  // Add debounce utility to optimize scrolling performance
+  const debounce = (func, wait) => {
+    let timeout;
+    return (...args) => {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => func(...args), wait);
+    };
+  };
+
+  // Add the debounced function
+  const debouncedSetScrollPosition = useMemo(
+    () => debounce((position) => {
+      setScrollPosition(position);
+    }, 150), // Adjust timeout as needed
+    [setScrollPosition]
+  );
 
   // Optimize scroll synchronization
   const synchronizeScroll = useCallback((left, sourceIndex) => {
@@ -112,8 +129,9 @@ const LogoStack = React.forwardRef(({
       });
     });
 
-    setScrollPosition(Math.floor(left / rectSize));
-  }, [rectSize, setScrollPosition]);
+    // Debounce the scroll position update
+    debouncedSetScrollPosition(Math.floor(left / rectSize));
+  }, [rectSize]);
 
   // Efficient cleanup
   const cleanupScrollers = useCallback(() => {
@@ -139,12 +157,28 @@ const LogoStack = React.forwardRef(({
       console.error('No logoContent provided to render Logo');
       return;
     }
-    
+
     logoRefs.current = [];
     setRenderLogos(true);
 
     return cleanupScrollers;
   }, [logoContent, cleanupScrollers]);
+
+  // Handles scrolling from the Slider component
+  const scrollToIndex = useCallback((index) => {
+    // Update context scroll position
+    setScrollPosition(index);
+
+    // Update scrollers
+    scrollersRef.current.back.forEach((scroller) => {
+      scroller.scroller.__publish(index * rectSize, 1, 1, true);
+    });
+
+    // Update front scroller when only one back scroller exists
+    if (scrollersRef.current.back.length === 1) {
+      scrollersRef.current.front[0].scroller.__publish(index * rectSize, 1, 1, true);
+    }
+  }, [rectSize, setScrollPosition]);
 
   // Expose scroll methods through ref
   useImperativeHandle(ref, () => ({
@@ -160,7 +194,7 @@ const LogoStack = React.forwardRef(({
 
           target.style.transition = "fill-opacity 0.3s ease";
           let pulseCount = 0;
-          
+
           const pulseInterval = setInterval(() => {
             target.style.fillOpacity = target.style.fillOpacity === "0.3" ? "0" : "0.3";
             if (++pulseCount >= 6) {
@@ -181,7 +215,8 @@ const LogoStack = React.forwardRef(({
       if (scrollersRef.current.back.length === 1) {
         scrollersRef.current.front[0]?.scroller.__publish(targetPosition, 1, 1, true);
       }
-    }
+    },
+    scrollToIndex,
   }), [rectSize]);
 
   return (
@@ -189,7 +224,7 @@ const LogoStack = React.forwardRef(({
       <LogoProvider>
         {renderLogos ? (
           <DndProvider backend={HTML5Backend}>
-            <DndLogo 
+            <DndLogo
               logoContent={logoContent}
               applyEntropyStructColor={applyEntropyStructColor}
               onSymbolClick={onColumnClick}

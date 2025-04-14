@@ -193,7 +193,8 @@ const Tol = () => {
   }
 
   const onNodeClick = (event, node) => {
-    console.log(node);
+    // console.log("Node clicked:", node.data.name);
+    return
   };
 
   const linkMenu = [
@@ -597,8 +598,8 @@ const Tol = () => {
   };
 
   const handleSlider = (e, value) => {
-    setScrollPosition(value + 1);
     logoStackRef.current.scrollToIndex(value);
+    setScrollPosition(value);
   };
 
   const handleGapScroll = (e) => {
@@ -697,6 +698,9 @@ const Tol = () => {
         else if (fileName === 'asr.fa') {
           const content = await zipEntry.async('string');
           newFileData.faData = await fastaToDict(content);
+          const firstSequence = Object.values(newFileData.faData)[0];
+          newFileData.seqLength = firstSequence.length;
+          setSeqLength(firstSequence.length);
         }
         else if (fileName === 'nodes.json') {
           const content = await zipEntry.async('string');
@@ -1115,11 +1119,14 @@ const Tol = () => {
                     valueLabelDisplay="off"
                     min={0}
                     max={seqLength - 1}
-                    value={scrollPosition || 0}
+                    value={scrollPosition}
                     onChange={handleSlider}
                     track={false}
                     style={{ width: '100%', margin: "0px 2em" }}
-                    marks={[{ value: 1, label: '1' }, { value: seqLength - 1, label: `${seqLength}` }]}
+                    marks={[
+                      { value: 0, label: '1' },
+                      { value: seqLength - 1, label: `${seqLength}` }
+                    ]}
                   />
 
                   <Tooltip title="Compare Menu" placement="bottom">
