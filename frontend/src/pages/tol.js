@@ -44,15 +44,18 @@ import "../components/tol.css";
 
 const Tol = () => {
   // State to store the tree data and node data  
-  const [faData, setFaData] = useState(null);
-  const [leafData, setLeafData] = useState({});
-  const [newickData, setNewickData] = useState(null);
-  const [nodeData, setNodeData] = useState(null);
-  const [structData, setStructData] = useState(null); // Structure data
-  const [ecData, setEcData] = useState(null); // EC codes 
+  const [fileData, setFileData] = useState({
+    newickData: null,
+    asrData: null,
+    leafData: null,
+    faData: null,
+    nodeData: null,
+    topNodes: null,
+    ecData: null,
+    structData: null,
+    seqLength: 0
+  });
 
-  const [topNodes, setTopNodes] = useState({}); // Top 10 nodes for the tree
-  const [asrData, setAsrData] = useState(null);
   const [inputSequence, setInputSequence] = useState(null); // Input sequence for the structure
 
   // State to store the logo content (formatted for logoJS) and color file
@@ -111,7 +114,7 @@ const Tol = () => {
   };
 
   function style_nodes(node) { // nodes are all internal
-    if (topNodes && node.data.name in topNodes) { // First condition to ensure nodeData is populated
+    if (fileData.topNodes && node.data.name in fileData.topNodes) { // First condition to ensure nodeData is populated
       const element = d3.select(node.nodeElement);
       element.select("circle").style("fill", "green");
       element.select("circle").attr("r", 5);
@@ -128,8 +131,8 @@ const Tol = () => {
       });
     }
 
-    if (ecData && ecData[node.data.name]) {
-      const ec = ecData[node.data.name];
+    if (fileData.ecData && fileData.ecData[node.data.name]) {
+      const ec = fileData.ecData[node.data.name];
       if (ec.ec_number) {
         // First create a group element to hold the label
         // Get parent of labelElement
@@ -155,7 +158,7 @@ const Tol = () => {
           .attr("class", "ec-label");
       }
     }
-  }, [ecData]);
+  }, [fileData.ecData]);
 
   const style_leaves_unrooted = useMemo(() => (node) => {
     if (!node) return;
@@ -169,7 +172,7 @@ const Tol = () => {
   }, []);
 
   function style_edges(source, target) {
-    if (asrData && target.children) { // Targets only node to node links as leaf nodes have no children property
+    if (fileData.asrData && target.children) { // Targets only node to node links as leaf nodes have no children property
       const element = d3.select(target.linkNode);
       element.on('click', async (event, branch) => {
         if (branch.selected) {
@@ -262,7 +265,7 @@ const Tol = () => {
         }
       }
     }
-  ], [asrData, leafData]);
+  ], [fileData.asrData, fileData.leafData]);
 
   const leafMenu = [
     {
@@ -324,7 +327,7 @@ const Tol = () => {
       },
       onClick: function (node) {
         try {
-          const fa = leafData[node.data.name];
+          const fa = fileData.leafData[node.data.name];
           setInputSequence(fa);
         } catch (e) {
           console.error("Error setting structure sequence:", e);
@@ -337,29 +340,44 @@ const Tol = () => {
   ]
 
   const toolTip = useMemo(() => (node) => {
-    if (nodeData && nodeData[node.data.name]) {
-      return `Score: ${nodeData[node.data.name].score.toFixed(2)}`;
+    if (fileData.nodeData && fileData.nodeData[node.data.name]) {
+      return `Score: ${fileData.nodeData[node.data.name].score.toFixed(2)}`;
     }
     return '';
-  }, [nodeData]);
+  }, [fileData.nodeData]);
 
   // Deals with tree rendering
   useEffect(() => {
     setTreeKey(prev => prev + 1);
     setSearchOptions( // Used for the search by name menu, fill with whatever info we have
-      (asrData && leafData) ? Object.keys(asrData).concat(Object.keys(leafData)) :
-        (leafData) ? Object.keys(leafData) :
-          (asrData) ? Object.keys(asrData) : []
+      (fileData.asrData && fileData.leafData) ? Object.keys(fileData.asrData).concat(Object.keys(fileData.leafData)) :
+        (fileData.leafData) ? Object.keys(fileData.leafData) :
+          (fileData.asrData) ? Object.keys(fileData.asrData) : []
     )
-  }, [newickData, asrData, faData, leafData]);
+  }, [fileData.newickData, fileData.asrData, fileData.faData, fileData.leafData]);
+
+  useEffect(() => {
+    if (fileData.newickData || fileData.asrData || fileData.leafData) {
+      setTreeKey(prev => prev + 1);
+      setSearchOptions(
+        (fileData.asrData && fileData.leafData)
+          ? [...Object.keys(fileData.asrData), ...Object.keys(fileData.leafData)]
+          : fileData.leafData
+            ? Object.keys(fileData.leafData)
+            : fileData.asrData
+              ? Object.keys(fileData.asrData)
+              : []
+      );
+    }
+  }, [fileData]);
 
   const renderTree = () => {
-    if (newickData) {
+    if (fileData.newickData) {
       if (treeLayout === 'radial') {
         return <RadialTree
           key={treeKey}
           ref={treeRef}
-          data={newickData}
+          data={fileData.newickData}
           nodeStyler={style_nodes}
           customNodeMenuItems={nodeMenu}
           customLeafMenuItems={leafMenu}
@@ -374,7 +392,7 @@ const Tol = () => {
         return <RectTree
           key={treeKey}
           ref={treeRef}
-          data={newickData}
+          data={fileData.newickData}
           nodeStyler={style_nodes}
           customNodeMenuItems={nodeMenu}
           customLeafMenuItems={leafMenu}
@@ -389,7 +407,7 @@ const Tol = () => {
         return <UnrootedTree
           key={treeKey}
           ref={treeRef}
-          data={newickData}
+          data={fileData.newickData}
           nodeStyler={style_nodes}
           customNodeMenuItems={nodeMenu}
           customLeafMenuItems={leafMenu}
@@ -423,7 +441,7 @@ const Tol = () => {
   };
 
   const pushNodeToLogo = (node) => {
-    if (!asrData) {
+    if (!fileData.asrData) {
       console.warn("ASR data not loaded yet");
       return;
     }
@@ -433,7 +451,7 @@ const Tol = () => {
       const updatedLogoContent = { ...prevLogoContent };
       // Add or do nothing if node is already in logoContent
       node['compare-node'] = true;
-      updatedLogoContent["ASR Probability Logo for " + node.data.name] = asrData[`${node.data.name}`];
+      updatedLogoContent["ASR Probability Logo for " + node.data.name] = fileData.asrData[`${node.data.name}`];
       setNodeColor(node, "red");
 
       return updatedLogoContent;  // Return the new state
@@ -443,7 +461,7 @@ const Tol = () => {
   };
 
   const pushNodeToEntropyLogo = useCallback((node) => {
-    if (!leafData || Object.keys(leafData).length === 0) {
+    if (!fileData.leafData || Object.keys(fileData.leafData).length === 0) {
       console.warn("Leaf data not loaded yet");
       return;
     }
@@ -461,10 +479,10 @@ const Tol = () => {
 
       var desc_fa = "";
       for (var desc of descendants) {
-        if (!leafData[desc.data.name]) {
+        if (!fileData.leafData[desc.data.name]) {
           missingSequences.push(desc.data.name);
         } else {
-          desc_fa += `>${desc.data.name}\n${leafData[desc.data.name]}\n`;
+          desc_fa += `>${desc.data.name}\n${fileData.leafData[desc.data.name]}\n`;
         }
       }
 
@@ -482,7 +500,7 @@ const Tol = () => {
     });
     setPipVisible(true);
     setIsRightCollapsed(false);
-  }, [leafData]);
+  }, [fileData.leafData]);
 
   /*
   *   Sets the color of a node to the given color
@@ -535,7 +553,7 @@ const Tol = () => {
           var descendants = selectAllLeaves(node, true, false); // Get all terminal descendants
           var desc_fa = "";
           for (var desc of descendants) {
-            desc_fa += `>${desc.data.name}\n${leafData[desc.data.name]}\n`;
+            desc_fa += `>${desc.data.name}\n${fileData.leafData[desc.data.name]}\n`;
           }
           calcEntropyFromMSA(desc_fa).then((entropy) => mapEntropyToColors(entropy)).then((colors) => { setColorArr(colors) });
         }
@@ -543,11 +561,11 @@ const Tol = () => {
   }
 
   const applyImportantStructColor = (nodeId, residueList) => {
-    if (!faData) {
+    if (!fileData.faData) {
       console.warn("FA data not loaded yet");
       return;
     }
-    var fa = faData[nodeId];
+    var fa = fileData.faData[nodeId];
     var importantColors = Array(fa.length).fill(0x00FF00);
 
     for (var res of residueList) {
@@ -583,15 +601,15 @@ const Tol = () => {
     logoStackRef.current.scrollToIndex(value);
   };
 
-  const handleGapScroll = (e, value) => {
+  const handleGapScroll = (e) => {
     if (e.key === 'Enter') {
       try {
         const [gene, position] = gapScrollInputRef.current.value.split(':');
-        if (!gene || !position || !leafData[gene]) {
+        if (!gene || !position || !fileData.leafData[gene]) {
           throw new Error('Invalid input format or gene not found');
         }
 
-        const sequence = leafData[gene];
+        const sequence = fileData.leafData[gene];
         const targetPos = parseInt(position);
 
         // Find the position of the nth non-gap character
@@ -647,60 +665,59 @@ const Tol = () => {
   const readZip = (event) => {
     const file = event.target.files[0];
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = async (e) => {
       const content = e.target?.result;
       const zip = new JSZip();
-      zip.loadAsync(content).then((zip) => {
-        zip.forEach((relativePath, zipEntry) => {
-          if (zipEntry.name === 'asr.tree') {
-            zipEntry.async('string').then((content) => {
-              setNewickData(content);
-            });
-          } else if (zipEntry.name === 'seq.state.zst') {
-            zipEntry.async('arraybuffer').then((content) => {
-              ZstdInit().then(({ ZstdSimple, ZstdStream }) => {
-                const decompressedStreamData = ZstdStream.decompress(new Uint8Array(content));
-                const asrDict = JSON.parse(uint8ArrayToString(decompressedStreamData));
-                setAsrData(asrDict);
-                setSeqLength(asrDict[Object.keys(asrDict)[0]].length);
-              });
-            });
-          } else if (zipEntry.name === 'seq_trimmed.afa') {
-            zipEntry.async('string').then((content) => {
-              fastaToDict(content).then(data => {
-                setLeafData(data);
-                setSeqLength(Object.values(data)[0].length);
-              });
-            });
-          } else if (zipEntry.name === 'asr.fa') {
-            zipEntry.async('string').then((content) => {
-              fastaToDict(content).then(data => {
-                setFaData(data);
-              });
-            });
-          } else if (zipEntry.name === 'nodes.json') {
-            zipEntry.async('string').then((content) => {
-              const json = JSON.parse(content);
-              const entries = Object.entries(json);
-              const first10Entries = entries.slice(0, 10);
-              // Convert back to object
-              const first10Objects = Object.fromEntries(first10Entries);
+      const zipContent = await zip.loadAsync(content);
 
-              setNodeData(json);
-              setTopNodes(first10Objects);
-            });
-          } else if (zipEntry.name === 'ec.json') {
-            zipEntry.async('string').then((content) => {
-              const ecData = JSON.parse(content);
-              setEcData(ecData);
-            });
-          } else if (zipEntry.name === 'seq.pdb') {
-            zipEntry.async('string').then((content) => {
-              setStructData(content);
-            });
-          }
-        });
-      });
+      // Create an object to store all file data
+      const newFileData = { ...fileData };
+
+      // Process all files in parallel
+      await Promise.all(Object.entries(zipContent.files).map(async ([_, zipEntry]) => {
+        const fileName = zipEntry.name;
+
+        if (fileName === 'asr.tree') {
+          newFileData.newickData = await zipEntry.async('string');
+        }
+        else if (fileName === 'seq.state.zst') {
+          const content = await zipEntry.async('arraybuffer');
+          const { ZstdStream } = await ZstdInit();
+          const decompressedData = ZstdStream.decompress(new Uint8Array(content));
+          const asrDict = JSON.parse(uint8ArrayToString(decompressedData));
+          newFileData.asrData = asrDict;
+          newFileData.seqLength = asrDict[Object.keys(asrDict)[0]].length;
+        }
+        else if (fileName === 'seq_trimmed.afa') {
+          const content = await zipEntry.async('string');
+          const data = await fastaToDict(content);
+          newFileData.leafData = data;
+          newFileData.seqLength = Object.values(data)[0].length;
+        }
+        else if (fileName === 'asr.fa') {
+          const content = await zipEntry.async('string');
+          newFileData.faData = await fastaToDict(content);
+        }
+        else if (fileName === 'nodes.json') {
+          const content = await zipEntry.async('string');
+          const json = JSON.parse(content);
+          const first10Objects = Object.fromEntries(
+            Object.entries(json).slice(0, 10)
+          );
+          newFileData.nodeData = json;
+          newFileData.topNodes = first10Objects;
+        }
+        else if (fileName === 'ec.json') {
+          const content = await zipEntry.async('string');
+          newFileData.ecData = JSON.parse(content);
+        }
+        else if (fileName === 'seq.pdb') {
+          newFileData.structData = await zipEntry.async('string');
+        }
+      }));
+
+      // Update all state at once
+      setFileData(newFileData);
     };
     reader.readAsArrayBuffer(file);
   };
@@ -861,7 +878,7 @@ const Tol = () => {
                   const reader = new FileReader();
                   reader.onload = (e) => {
                     const content = e.target?.result;
-                    setNewickData(content);
+                    setFileData(prev => ({ ...prev, newickData: content }));
                     setTreeKey(prev => prev + 1);
                   };
                   reader.readAsText(file);
@@ -881,8 +898,7 @@ const Tol = () => {
                     ZstdInit().then(({ ZstdSimple, ZstdStream }) => {
                       const decompressedStreamData = ZstdStream.decompress(new Uint8Array(content));
                       const asrDict = JSON.parse(uint8ArrayToString(decompressedStreamData))
-                      setAsrData(asrDict);
-                      setSeqLength(asrDict[Object.keys(asrDict)[0]].length);
+                      setFileData(prev => ({ ...prev, asrData: asrDict, seqLength: asrDict[Object.keys(asrDict)[0]].length }));
                     });
                   };
                   reader.readAsArrayBuffer(file);
@@ -901,8 +917,7 @@ const Tol = () => {
                   reader.onload = (e) => {
                     const content = e.target?.result;
                     fastaToDict(content).then(data => {
-                      setLeafData(data);
-                      setSeqLength(Object.values(data)[0].length);
+                      setFileData(prev => ({ ...prev, leafData: data, seqLength: Object.values(data)[0].length }));
                     });
                     setTreeKey(prev => prev + 1);
                   };
@@ -927,8 +942,7 @@ const Tol = () => {
                     // Convert back to object
                     const first10Objects = Object.fromEntries(first10Entries);
 
-                    setNodeData(json);
-                    setTopNodes(first10Objects);
+                    setFileData(prev => ({ ...prev, nodeData: json, topNodes: first10Objects }));
                   };
                   reader.readAsText(file);
                 }}
@@ -945,7 +959,7 @@ const Tol = () => {
                   const reader = new FileReader();
                   reader.onload = (e) => {
                     const content = e.target?.result;
-                    setStructData(content);
+                    setFileData(prev => ({ ...prev, structData: content }));
                   };
                   reader.readAsText(file);
                 }}
@@ -1197,7 +1211,7 @@ const Tol = () => {
                       <Tooltip title="Set Reference Sequence" placement="top">
                         <Autocomplete
                           size="small"
-                          options={Object.keys(leafData)}
+                          options={Object.keys(fileData.leafData)}
                           style={{ width: 200 }}
                           renderInput={(params) => (
                             <TextField
@@ -1208,8 +1222,8 @@ const Tol = () => {
                             />
                           )}
                           onChange={(event, newValue) => {
-                            if (newValue && leafData[newValue]) {
-                              setInputSequence(leafData[newValue]);
+                            if (newValue && fileData.leafData[newValue]) {
+                              setInputSequence(fileData.leafData[newValue]);
                             } else {
                               setNotification('Reference sequence not found');
                             }
@@ -1230,16 +1244,14 @@ const Tol = () => {
                   />}
                   <div style={{ display: "flex", height: "100%", flexGrow: "1", flexDirection: "column" }}>
                     <div className="pvdiv" ref={pvdiv} style={{ height: '100%', flexGrow: "1" }}>
-                      {structData && (
-                        <MolstarViewer
-                          key={structData}
-                          structData={structData}
-                          selectedResidue={selectedResidue}
-                          colorFile={colorArr}
-                          hoveredResidue={hoveredResidue}
-                          scrollLogosToRef={scrollLogosToRef}
-                        />
-                      )}
+                      <MolstarViewer
+                        key={fileData.structData || 'empty'}
+                        structData={fileData.structData || null}
+                        selectedResidue={selectedResidue}
+                        colorFile={colorArr}
+                        hoveredResidue={hoveredResidue}
+                        scrollLogosToRef={scrollLogosToRef}
+                      />
                     </div>
                   </div>
                 </div>

@@ -16,7 +16,6 @@ export function MolStarWrapper({ structData, pocketData, selectedResidue, hovere
   const parent = createRef();
   const [isStructureLoaded, setIsStructureLoaded] = useState(false);
 
-
   useEffect(() => {
     async function init() {
       // Initialize the Mol* plugin
@@ -34,87 +33,69 @@ export function MolStarWrapper({ structData, pocketData, selectedResidue, hovere
         },
       });
 
-      // Rendering main structure
-      const mainData = await window.molstar.builders.data.rawData({
-        data: structData
-      }, { state: { isGhost: true } });
+      // Only try to render if structData is provided
+      if (structData) {
+        // Rendering main structure
+        const mainData = await window.molstar.builders.data.rawData({
+          data: structData
+        }, { state: { isGhost: true } });
 
-      const trajectory = await window.molstar.builders.structure.parseTrajectory(mainData, "pdb");
-      let structure;
-      try { // Using try here to silence errors when loading example structures
-        structure = await window.molstar.builders.structure.hierarchy.applyPreset(
-          trajectory,
-          "default"
-        );
-      } catch (error) {
-        console.warn('Failed to load structure:', error);
-        return;
-      }
-
-      const cartoon = structure.representation.representations.polymer.data.repr;
-
-      cartoon.setTheme({
-        "color": {
-          "granularity": "uniform",
-          "props": {
-            "value": 13421772,
-            "saturation": 0,
-            "lightness": 0
-          },
-          "description": "Gives everything the same, uniform color.",
-          "legend": {
-            "kind": "table-legend",
-            "table": [
-              [
-                "uniform",
-                13421772
-              ]
-            ]
-          }
-        },
-        "size": {
-          "granularity": "uniform",
-          "props": {
-            "value": 1
-          },
-          "description": "Gives everything the same, uniform size."
-        }
-      });
-
-      // Scrolls seqlogos to selection position
-      window.molstar.behaviors.interaction.click.subscribe(
-        (event) => {
-          const selections = Array.from(
-            window.molstar.managers.structure.selection.entries.values()
+        const trajectory = await window.molstar.builders.structure.parseTrajectory(mainData, "pdb");
+        try {
+          const structure = await window.molstar.builders.structure.hierarchy.applyPreset(
+            trajectory,
+            "default"
           );
-          
-          // selections is auto-sorted, lowest residue id first. Therefore, when multiple residues are selected, 
-          // the logo will only scroll to the residue with the lowest id.
-          var localSelected = [];
-          localSelected.length = 0;
 
-          for (const { structure } of selections) {
-            if (!structure) continue;
-            Structure.eachAtomicHierarchyElement(structure, {
-              residue: (loc) => {
-                const position = StructureProperties.residue.label_seq_id(loc);
-                localSelected.push({ position });
-              },
+          // Scrolls seqlogos to selection position
+          window.molstar.behaviors.interaction.click.subscribe(
+            (event) => {
+              const selections = Array.from(
+                window.molstar.managers.structure.selection.entries.values()
+              );
+
+              // selections is auto-sorted, lowest residue id first. Therefore, when multiple residues are selected, 
+              // the logo will only scroll to the residue with the lowest id.
+              var localSelected = [];
+              localSelected.length = 0;
+
+              for (const { structure } of selections) {
+                if (!structure) continue;
+                Structure.eachAtomicHierarchyElement(structure, {
+                  residue: (loc) => {
+                    const position = StructureProperties.residue.label_seq_id(loc);
+                    localSelected.push({ position });
+                  },
+                });
+              }
+              if (localSelected[0]) {
+                scrollLogosToRef.current(localSelected[0].position);
+                window.molstar.selectionMode = !window.molstar.selectionMode;
+                window.molstar.selectionMode = !window.molstar.selectionMode;
+              }
             });
-          }
-          if (localSelected[0]) {
-            scrollLogosToRef.current(localSelected[0].position);
-            window.molstar.selectionMode = !window.molstar.selectionMode;
-            window.molstar.selectionMode = !window.molstar.selectionMode;
-          }
-        });
-
-      // Set the structure as loaded
-      setIsStructureLoaded(true);
+            
+          setIsStructureLoaded(true);
+        } catch (error) {
+          console.warn('Failed to load structure:', error);
+          setIsStructureLoaded(false);
+          return;
+        }
+      } else {
+        // If no structData, just show empty viewer
+        setIsStructureLoaded(false);
+      }
     }
 
     init();
-  }, []);
+
+    // Cleanup function
+    return () => {
+      if (window.molstar) {
+        window.molstar.dispose();
+      }
+    };
+  }, [structData]); // Add structData as dependency
 
   useEffect(() => {
     if (isStructureLoaded) {
