@@ -42,3 +42,33 @@ This will:
 - Build and serve the frontend at port 443 (HTTPS)
 - Start the backend server at port 5000
 - Configure the proxy server at port 80
+
+# Prerequisites
++ biopython
++ treeswift
++ muscle
++ goalign
++ seqtk
++ diamond
++ cd-hit
++ zstandard
+
+The supported MSA tools are:
++ MAFFT
++ FAMSA
++ MUSCLE
+
+The supported tree inference tools are:
++ Veryfasttree
++ fasttree
++ iqtree
++ raxml-ng
+
+The supported ancestral state reconstruction tools are:
++ raxml-ng
++ iqtree
++ GRASP
+
+Folding tools supported on the web server:
++ ESMfold
++ fpocket
