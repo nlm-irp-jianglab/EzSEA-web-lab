@@ -1,10 +1,7 @@
 # Visualization tools
-Phylogenetic Tree: PhyloTree.js
+Phylogenetic Tree: tree3-react
 Protein Viewer: Mol*
 Sequence Logos: LogoJS
-
-# TODO:
-Use tree3-react instead of Phylotree.js
 
 Pages:
 1. results.js (and it's sister page, tol)

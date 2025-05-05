@@ -4,7 +4,6 @@ import "./styles.css";
 
 import About from "./pages/about";
 import TestApp from "./pages/testApp";
-import Playground from "./pages/playground";
 import NotFoundPage from "./pages/notfoundpage";
 import Submit from "./pages/submit";
 import Status from "./pages/status";
@@ -26,7 +25,6 @@ const DualPathRoutes = () => (
                 <Route path="/status/:jobId" element={<Status />} />
                 <Route path="/tol" element={<TestApp />} />
                 <Route path="/test" element={<TestApp />} />
-                <Route exact path="/playground" element={<Playground />} />
                 <Route exact path="/about" element={<About />} />
                 <Route exact path="/help" element={<Help />} />
                 <Route path="*" element={<NotFoundPage />} />
