@@ -1,8 +1,16 @@
+/**
+ * dndLogo.js
+ *  <LogoStack>
+ *     <DndLogo> - This layer ensures that logos are drag and droppable for easy reordering
+ *       <LogoCard> - This layer is responsible for rendering the logos, and contains most of the logic.
+ *     </DndLogo>
+ *     <DndLogo>... More logos 
+ * </LogoStack>   
+ */
 import update from 'immutability-helper'
 import { useCallback, useEffect, useState, useContext } from 'react'
 import { LogoCard } from './logoCard.js'
 import { logoContext } from './logoContext';
-import { tolContext } from './tolContext';
 
 const style = {
   display: "flex",
@@ -15,7 +23,6 @@ export const DndLogo = ({ fastaContent, applyEntropyStructColor, applyImportantS
   removeLogo, onSymbolClick, onSymbolHover, importantResiduesList, findAndZoom, addLogoRef }) => {
   {
     const [cards, setCards] = useState([]);
-    const { logoContent, setLogoContent } = useContext(tolContext); // TODO implement fasta passing using context instead of props
     const { compareQueue, setCompareDiff } = useContext(logoContext);
 
     useEffect(() => { // Assigns each fasta sequence to a card

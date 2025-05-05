@@ -1,3 +1,8 @@
+/**
+ * consolelog.js
+ * Shows a console-like output of logs and status messages. Used in status page.
+ */
+
 import React, { useEffect, useRef } from 'react';
 
 const ConsoleLogs = React.forwardRef(({ logs = [''], status = 'Unknown' }, ref) => {

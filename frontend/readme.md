@@ -13,3 +13,6 @@ Pages:
 Components:
 1. logo-stack.js - generates a group of sequence logo svgs
 2. molstar.js - a react component containing the molstar viewer
+
+Note to future maintainers:
+Start at index.js. This file contains the react router. 

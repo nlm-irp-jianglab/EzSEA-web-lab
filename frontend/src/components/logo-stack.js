@@ -4,7 +4,7 @@
  * Here is the structure of this component:
  *  <LogoStack>
  *     <DndLogo> - This layer ensures that logos are drag and droppable for easy reordering
- *       <Logo> - This layer is responsible for rendering the logos, and contains most of the logic.
+ *       <LogoCard> - This layer is responsible for rendering the logos, and contains most of the logic.
  *     </DndLogo>
  *     <DndLogo>... More logos 
  * </LogoStack>   

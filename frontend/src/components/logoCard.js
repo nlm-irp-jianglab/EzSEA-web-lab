@@ -1,3 +1,14 @@
+/**
+ * logoCard.js
+ *  <LogoStack>
+ *     <DndLogo> - This layer ensures that logos are drag and droppable for easy reordering
+ *       <LogoCard> - This layer is responsible for rendering the logos, and contains most of the logic.
+ *         <Logo> - The sequence logo rendering component.
+ *       </LogoCard>
+ *     </DndLogo>
+ *     <DndLogo>... More logos 
+ * </LogoStack>   
+ */
 import { useRef, useCallback, useEffect, useState, useContext, useMemo } from 'react'
 import Logo from './logo/logo.jsx';
 import { useDrag, useDrop } from 'react-dnd'
@@ -28,7 +39,7 @@ export const LogoCard = ({ id, index, header, moveCard, ppm = null, fasta = null
   removeLogo, onSymbolClick, onSymbolHover, importantResiduesList, findAndZoom, addLogoRef }) => {
   const dragRef = useRef(null);
   const { activeButton, setActiveButton, compareQueue, setCompareQueue, compareDiff } = useContext(logoContext);
-  const { logoContent, setLogoContent, logoAlphabet, setLogoAlphabet } = useContext(tolContext);
+  const { logoAlphabet } = useContext(tolContext);
   const logoRef = useRef(null);
   var nodeId = "";
 
