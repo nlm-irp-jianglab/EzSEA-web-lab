@@ -378,10 +378,6 @@ const Results = () => {
     }
   ];
 
-  function onNodeClick(event, node) {
-    console.log(node);
-  }
-
   // Custom menu items for nodes
   const nodeMenu = useMemo(() => [
     { // Compare Descendants Option
@@ -504,7 +500,6 @@ const Results = () => {
           leafStyler={style_leaves}
           width={1500}
           linkStyler={style_edges}
-          onNodeClick={onNodeClick}
           homeNode={inputHeader || ''}
           state={treeRef.current && treeRef.current.getState()}
         />;
@@ -519,7 +514,6 @@ const Results = () => {
           leafStyler={style_leaves}
           width={1500}
           linkStyler={style_edges}
-          onNodeClick={onNodeClick}
           homeNode={inputHeader || ''}
           state={treeRef.current && treeRef.current.getState()}
         />;
@@ -535,7 +529,6 @@ const Results = () => {
           leafStyler={style_leaves_unrooted}
           width={1500}
           //linkStyler={style_edges}
-          onNodeClick={onNodeClick}
           homeNode={inputHeader || ''}
           state={treeRef.current && treeRef.current.getState()}
         />;
@@ -1153,6 +1146,7 @@ const Results = () => {
                   {(treeLayout !== "unrooted") && (<>
                     <MenuItem onClick={() => treeRef.current && treeRef.current.setVariableLinks(prev => !prev)}>Variable Links</MenuItem>
                     <MenuItem onClick={() => treeRef.current && treeRef.current.setTipAlign(prev => !prev)}>Align Tips</MenuItem>
+                    <MenuItem onClick={() => toggleECLabels()}>EC Labels</MenuItem>
                   </>)}
                   <MenuItem onClick={() => treeRef.current && treeRef.current.setDisplayLeaves(prev => !prev)}>Toggle Labels</MenuItem>
                 </Menu>
