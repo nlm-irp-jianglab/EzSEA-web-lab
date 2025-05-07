@@ -109,14 +109,6 @@ const Results = () => {
     setTreeLayout(layouts[nextIndex]);
   };
 
-  const showErrorPopup = () => {
-    setErrorPopupVisible(true);
-  };
-
-  const closeErrorPopup = () => {
-    setErrorPopupVisible(false);
-  };
-
   // Fetch the tree data and node data on component mount, store data into states
   useEffect(() => {
     try {

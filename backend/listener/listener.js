@@ -14,7 +14,11 @@ const kc = new k8s.KubeConfig();
 kc.loadFromDefault();
 const k8sApi = kc.makeApiClient(k8s.CoreV1Api);
 
-// Multer configuration for file uploads
+/**
+ * Multer configuration for file uploads
+ * This functionality was added so the user can upload a .pdb or .fasta file
+ * */ 
+
 const storage = multer.diskStorage({
     destination: (req, file, cb) => cb(null, '/output/input/'),
     filename: (req, file, cb) => {
@@ -40,9 +44,9 @@ app.use(bodyParser.urlencoded({ extended: false, limit: '50mb' }));
 app.use(express.static(path.join(__dirname, 'build')));
 
 // Monitor for job completion
-function monitorJob(jobId, jobType, recipient) { // Need to handle failure case, and maybe timeout case better
+function monitorJob(jobId, jobType, recipient) {
     logger.info("Monitoring job: " + jobId);
-    const completionCmd = `kubectl wait --for=condition=complete job/${jobId} --timeout=12h`;
+    const completionCmd = `kubectl wait --for=condition=complete job/${jobId} --timeout=12h`; // Hopefully no job will take longer than 12 hours
     const failureCmd = `kubectl wait --for=condition=failed job/${jobId} --timeout=12h`;
 
     const completionProcess = exec(completionCmd);
@@ -72,6 +76,11 @@ function monitorJob(jobId, jobType, recipient) { // Need to handle failure case,
     });
 }
 
+
+/**
+ * Email sending functions
+ * These functions use EmailJS API keys
+ */
 const sendSuccessEmail = async (recipient, jobId) => {
     try {
         const response = await emailjs.send("service_key", "template_key", {
@@ -154,7 +163,7 @@ app.post("/submit", upload.single('input_file'), (req, res) => {
                 return res.status(500).json({ error: "There was an error copying the input pdb file." });
             }
         });
-    } else { // Else, run ESM 
+    } else { // Else, run ESM structure prediction on fasta file 
         // Read header from input file
         fs.readFile(input_file.path, 'utf8', (err, data) => {
             if (err) {
@@ -334,7 +343,7 @@ app.post("/submit", upload.single('input_file'), (req, res) => {
         }
     });
 
-    setTimeout(function () {
+    setTimeout(function () { // Delay response to allow job to start. Largely unnecessary
         res.status(200).json({ body: "Job submitted successfully", error: error });
     }, 3000);
 });
@@ -348,10 +357,12 @@ app.get("/results/:id", async (req, res) => {
     const ancestralPath = path.join(folderPath, 'asr.fa');
     const nodesPath = path.join(folderPath, 'nodes.json');
     const pocketPath = path.join(folderPath, 'pockets');
+    const inputPath = `/output/EzSEA_${id}/input.fasta`;
+    const ecPath = path.join(folderPath, 'ec.json');
+    const asrPath = path.join(folderPath, 'seq.state.zst');
 
-    const pocketFiles = ['pocket1_atm.pdb', 'pocket2_atm.pdb', 'pocket3_atm.pdb', 'pocket4_atm.pdb', 'pocket5_atm.pdb'];
     // Read all pocket files
-
+    const pocketFiles = ['pocket1_atm.pdb', 'pocket2_atm.pdb', 'pocket3_atm.pdb', 'pocket4_atm.pdb', 'pocket5_atm.pdb'];
     const pocketPromises = pocketFiles.map((pocketFile) => {
         return fs.promises.readFile(path.join(pocketPath, pocketFile), 'utf8') // Read each pocket file
             .then(data => ({ pocket: data }))
@@ -361,7 +372,16 @@ app.get("/results/:id", async (req, res) => {
             });
     });
 
-    var structPath = ""; // TODO: UPDATE TO HARDCODED ../seq.pdb
+    /**
+     * Attempt to read the structure file
+     * TODO: UPDATE TO HARDCODED ../seq.pdb
+     * 
+     * Previously, ESMfold output was formatted as [header].pdb, 
+     * this can be an issue for fpocket if the header length is too long.
+     * It is now moved to generic name seq.pdb. I'm holding off on updating
+     * this in for legacy support.
+     *  */ 
+    var structPath = ""; 
 
     try {
         var pdbFiles = fs.readdirSync(folderPath).filter(fn => fn.endsWith('.pdb')); // Returns an array of pdb files
@@ -375,10 +395,6 @@ app.get("/results/:id", async (req, res) => {
         logger.error("Failed to find pdb files: " + e);
 
     }
-
-    const inputPath = `/output/EzSEA_${id}/input.fasta`;
-    const ecPath = path.join(folderPath, 'ec.json');
-    const asrPath = path.join(folderPath, 'seq.state.zst');
 
     logger.info("Serving results for job: " + id);
 
@@ -439,7 +455,7 @@ app.get("/results/:id", async (req, res) => {
             return { asrError: "Error reading asr probability file." };
         });
 
-    // Run all the promises concurrently and gather the results
+    // Run all the promises and gather the results
     const results = await Promise.allSettled([treePromise, leafPromise, ancestralPromise, nodesPromise, structPromise, inputPromise, ecPromise, asrPromise]);
 
     const pocketResults = await Promise.all(pocketPromises)
@@ -493,6 +509,7 @@ app.get("/status/:id", (req, res) => {
     const id = req.params.id;
     const filePath = `/output/EzSEA_${id}/EzSEA.log`;
     logger.info("Serving status for job: " + id);
+    // listener_statuses_flowchart.jpg traces the below logic
     try {
         k8sApi.listNamespacedPod('default', undefined, undefined, undefined, undefined, `id=${id},type=run`).then((podsRes) => {
             if (podsRes.body.items.length < 1) { // Kubectl no longer tracking job or job not present, read log file for status

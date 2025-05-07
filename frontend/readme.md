@@ -3,6 +3,9 @@ Phylogenetic Tree: tree3-react
 Protein Viewer: Mol*
 Sequence Logos: LogoJS
 
+# TODO:
+Downloaded node.json is parsed into a dict, not a json object, therefore it cannot be directly used as in the example page. However, EzSEA-web-lab expects the dict format.
+
 Pages:
 1. results.js (and it's sister page, tol)
 2. submit.js - Sends requests to backend for queuing jobs
