@@ -693,14 +693,13 @@ const Tol = () => {
           const content = await zipEntry.async('string');
           const data = await fastaToDict(content);
           newFileData.leafData = data;
-          newFileData.seqLength = Object.values(data)[0].length;
+          const trimmedSeqLength = Object.values(data)[0].length;
+          newFileData.seqLength = trimmedSeqLength;
+          setSeqLength(trimmedSeqLength);
         }
         else if (fileName === 'asr.fa') {
           const content = await zipEntry.async('string');
           newFileData.faData = await fastaToDict(content);
-          const firstSequence = Object.values(newFileData.faData)[0];
-          newFileData.seqLength = firstSequence.length;
-          setSeqLength(firstSequence.length);
         }
         else if (fileName === 'nodes.json') {
           const content = await zipEntry.async('string');
@@ -921,7 +920,9 @@ const Tol = () => {
                   reader.onload = (e) => {
                     const content = e.target?.result;
                     fastaToDict(content).then(data => {
-                      setFileData(prev => ({ ...prev, leafData: data, seqLength: Object.values(data)[0].length }));
+                      const length = Object.values(data)[0].length;
+                      setFileData(prev => ({ ...prev, leafData: data }));
+                      setSeqLength(length);
                     });
                     setTreeKey(prev => prev + 1);
                   };
