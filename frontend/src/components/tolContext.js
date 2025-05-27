@@ -9,6 +9,7 @@ export const TolProvider = ({ children }) => {
     const [logoAlphabet, setLogoAlphabet] = useState(11);
     const [compareSelections, setCompareSelections] = useState({});
     const [compareDiff, setCompareDiff] = useState(null); // stores the differences between the two logos
+    const [inputSequence, setInputSequence] = useState(null); // stores the input sequence for referencing gaps between logos and pdb viewer
 
     return (
         <tolContext.Provider value={{

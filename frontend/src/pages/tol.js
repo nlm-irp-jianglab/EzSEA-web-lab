@@ -537,9 +537,25 @@ const Tol = () => {
     }
   }, [logoContent]);
 
-  const handleColumnClick = (index) => {
-    setSelectedResidue(index + 1);
-  };
+  const handleColumnClick = useMemo(() => (index) => {
+    console.log("Input sequence:", inputSequence);
+    if (inputSequence) {
+      // Count gaps between position 0 and index in the input sequence
+      let gapCount = 0;
+      for (let i = 0; i < index; i++) {
+        if (inputSequence[i] === '-') {
+          gapCount++;
+        }
+      }
+
+      // Adjust index by subtracting the number of gaps encountered
+      const adjustedIndex = index - gapCount;
+      console.log("Scrolling to adjusted index:", adjustedIndex + 1);
+      setSelectedResidue(adjustedIndex + 1);
+    } else {
+      setSelectedResidue(index + 1);
+    }
+  }, [inputSequence]);
 
   const applyEntropyStructColor = (nodeId, clear = false) => {
     if (clear) {
@@ -593,9 +609,23 @@ const Tol = () => {
     d3.selectAll('.link--highlight').classed('.link--highlight', false);
   }
 
-  const handleColumnHover = (index) => {
-    setHoveredResidue(index + 1);
-  };
+  const handleColumnHover = useMemo(() => (index) => {
+    if (inputSequence) {
+      // Count gaps between position 0 and index in the input sequence
+      let gapCount = 0;
+      for (let i = 0; i < index; i++) {
+        if (inputSequence[i] === '-') {
+          gapCount++;
+        }
+      }
+
+      // Adjust index by subtracting the number of gaps encountered
+      const adjustedIndex = index - gapCount;
+      setHoveredResidue(adjustedIndex + 1);
+    } else {
+      setHoveredResidue(index + 1);
+    }
+  }, [inputSequence]);
 
   const handleSlider = (e, value) => {
     logoStackRef.current.scrollToIndex(value);
@@ -1187,6 +1217,7 @@ const Tol = () => {
                     </button>
                   </Tooltip>
                   <LogoStack
+                    key={inputSequence || 'default'} // Force re-render when inputSequence changes
                     onColumnClick={handleColumnClick}
                     onColumnHover={handleColumnHover}
                     importantResiduesList={importantResidues}
