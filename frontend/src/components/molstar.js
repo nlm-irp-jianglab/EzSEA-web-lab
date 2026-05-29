@@ -2,7 +2,7 @@
  * molstar.js
  * This file contains the protein viewer component
  */
-import React, { useEffect, useState, createRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { createPluginUI } from "molstar/lib/mol-plugin-ui";
 import { renderReact18 } from "molstar/lib/mol-plugin-ui/react18";
 import { DefaultPluginUISpec } from 'molstar/lib/mol-plugin-ui/spec';
@@ -13,7 +13,7 @@ import { Color } from 'molstar/lib/mol-util/color';
 import "./molstar/skin/light.scss";
 
 export function MolStarWrapper({ structData, pocketData, selectedResidue, hoveredResidue, colorFile, scrollLogosToRef }) {
-  const parent = createRef();
+  const parent = useRef(null);
   const [isStructureLoaded, setIsStructureLoaded] = useState(false);
 
   useEffect(() => {
@@ -148,6 +148,7 @@ export function MolStarWrapper({ structData, pocketData, selectedResidue, hovere
   }
 
   async function applyColorFile(colorFile) {
+    if (!window.molstar?.managers?.structure?.hierarchy?.current?.structures?.length) return;
     if (!colorFile) {
       clearStructureOverpaint(window.molstar, window.molstar.managers.structure.hierarchy.current.structures[0].components);
       return;

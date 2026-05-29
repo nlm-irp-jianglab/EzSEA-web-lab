@@ -53,7 +53,7 @@ const LogoStack = React.forwardRef(({
       logoRefs.current = [...logoRefs.current, ref];
       initializeScrollers();
     }
-  }, []);
+  }, []); // initializeScrollers declared below this line — cannot list in deps (TDZ)
 
   // Memoize scroller configuration
   const scrollerConfig = useMemo(() => ({
@@ -131,7 +131,7 @@ const LogoStack = React.forwardRef(({
 
     // Debounce the scroll position update
     debouncedSetScrollPosition(Math.floor(left / rectSize));
-  }, [rectSize]);
+  }, [rectSize, debouncedSetScrollPosition]);
 
   // Efficient cleanup
   const cleanupScrollers = useCallback(() => {
@@ -217,7 +217,7 @@ const LogoStack = React.forwardRef(({
       }
     },
     scrollToIndex,
-  }), [rectSize]);
+  }), [rectSize, scrollToIndex]);
 
   return (
     <div style={{ overflowX: 'hidden' }}>

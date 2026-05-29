@@ -1,339 +1,427 @@
+/* ── Design tokens ─────────────────────────────── */
+:root {
+  /* Surfaces */
+  --bg:       #f0f4f8;
+  --surface:  #ffffff;
+  --surface2: #f8fafc;
+
+  /* Sidebar */
+  --sidebar-bg:     #ffffff;
+  --sidebar-border: #e8edf2;
+  --sidebar-hover:  #f1f5f9;
+  --sidebar-active: #e8f0fe;
+
+  /* Accent – calm sky blue */
+  --accent:      #3b82f6;
+  --accent-dark: #2563eb;
+  --accent-soft: rgba(59,130,246,.10);
+  --accent-text: #1d4ed8;
+
+  /* Borders & text */
+  --border:  #e2e8f0;
+  --border2: #cbd5e1;
+  --text:    #1e293b;
+  --text2:   #475569;
+  --text3:   #94a3b8;
+
+  /* Semantic */
+  --green:  #16a34a;
+  --red:    #dc2626;
+  --amber:  #d97706;
+
+  /* Geometry */
+  --r-sm:  6px;
+  --r-md: 10px;
+  --r-lg: 14px;
+
+  /* Shadow */
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+  --shadow-md: 0 4px 12px rgba(0,0,0,.08), 0 2px 4px rgba(0,0,0,.04);
+}
+
+/* ── Global reset ──────────────────────────────── */
+* { box-sizing: border-box; }
+
+/* ── App shell ─────────────────────────────────── */
 .view {
-    display: flex;
-    flex-grow: 1;
-    overflow: hidden;
-    align-items: center;
-    width: 100vw;
-    height: 100vh;
+  display: flex;
+  flex-grow: 1;
+  overflow: hidden;
+  width: 100%;
+  height: 100vh;
+  background: var(--bg);
 }
 
-.center-console {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    margin: 0 2px;
-}
-
-.triangle-button {
-    background-color: #333;
-    color: #fff;
-    border: 2px solid #555;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    font-size: 18px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-.triangle-button:hover {
-    background-color: #444;
-    color: #00bfff;
-}
-
-/* Sidebar */
-.dropbtn {
-    background-color: transparent;
-    padding: 10px;
-    border: none;
-    cursor: pointer;
-    border-radius: 5px;
-}
-
-.dropbtn.selected {
-    background-color: rgba(173, 216, 230, 0.3);
-    /* Light blue background with transparency */
-    border-radius: 50%;
-    /* Make it a circle */
-}
-
-.dropbtn-nodes:hover svg path {
-    fill: #007AFF;
-    filter: drop-shadow(0 0 8px rgba(0, 122, 255, 0.8));
-}
-
-.dropbtn-nodes svg path {
-    transition: fill 0.3s ease;
-}
-
-.dropbtn-downloads:hover svg path {
-    stroke: #28A745;
-    filter: drop-shadow(0 0 8px rgba(0, 255, 34, 0.8));
-    /* Change the line color to blue on hover */
-}
-
-.dropbtn-downloads svg path {
-    stroke: #FFFFFF;
-    transition: stroke 0.3s ease;
-    /* Smooth color transition */
-}
-
-.dropbtn-search:hover svg path {
-    stroke: #007AFF;
-    filter: drop-shadow(0 0 8px rgba(0, 122, 255, 0.8));
-    /* Change the line color to blue on hover */
-}
-
-.dropbtn-search svg path {
-    stroke: #FFFFFF;
-    transition: stroke 0.3s ease;
-    /* Smooth color transition */
-}
-
-/* Dropdown container */
-.dropdown {
-    position: relative;
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-    flex-grow: 1;
-}
-
-.dropdown:hover .dropbtn-nodes svg path {
-    fill: #007AFF;
-    filter: drop-shadow(0 0 8px rgba(0, 122, 255, 0.8));
-}
-
-.dropdown:hover .dropbtn-downloads svg path {
-    stroke: #28A745;
-    filter: drop-shadow(0 0 8px rgba(0, 255, 34, 0.8));
-}
-
-.sidebar-label {
-    color: #fff;
-    font-size: 14px;
-    margin: 0px 10px;
-    font-weight: 700;
-}
-
-.dropdown-content {
-    min-width: 160px;
-    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-}
-
-.dropdown-content button {
-    color: white;
-    padding: 12px 16px;
-    text-decoration: none;
-    display: block;
-    width: 100%;
-    background: none;
-    border: none;
-    text-align: left;
-    cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    font-size: 12px;
-    border-radius: 5px;
-    /* Slightly round corners for a softer look */
-}
-
-.dropdown-content button:hover {
-    background-color: #518ca3;
-    transform: scale(1.05);
-    /* Slightly increase size on hover */
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15);
-}
-
+/* ── Sidebar ───────────────────────────────────── */
 .sidebar {
-    display: flex;
-    flex-grow: 1;
-    width: 50px;
-    transition: width 0.3s ease;
-    flex-direction: column;
-    background-color: #666769;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  background: var(--sidebar-bg);
+  border-right: 1px solid var(--sidebar-border);
+  transition: width 0.22s ease;
+  overflow: hidden;
+  box-shadow: 1px 0 0 var(--sidebar-border);
 }
 
 .sidebar-item {
-    display: flex;
-    align-items: center;
-    transition: background-color 0.2s ease;
-    transition: cubic-bezier(0.075, 0.82, 0.165, 1);
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  min-height: 48px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--sidebar-border);
+  transition: background 0.15s ease;
 }
 
-.sidebar-item:hover {
-    background-color: #929396;
+.sidebar-item:hover  { background: var(--sidebar-hover); }
+.sidebar-item:active { background: var(--sidebar-active); }
+
+.sidebar-label {
+  color: var(--text2);
+  font-size: 13px;
+  font-weight: 500;
+  margin: 0 8px;
+  white-space: nowrap;
 }
 
-.zoomInput {
-    border-radius: 4px;
-    margin: 10px 10px;
+/* ── Sidebar icon buttons ──────────────────────── */
+.dropbtn {
+  background: #f1f5f9;           /* visible resting state */
+  border: 1px solid #e2e8f0;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: var(--r-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease, border-color 0.15s ease;
+  color: var(--text2);           /* darker — readable on white */
 }
 
-.zoomInput::placeholder {
-    color: #999;
+.dropbtn:hover {
+  background: var(--accent-soft);
+  border-color: #bfdbfe;
+  color: var(--accent);
+}
+.dropbtn.selected {
+  background: var(--accent-soft);
+  border-color: #bfdbfe;
+  color: var(--accent);
 }
 
-/* Hidden state of dropdown content */
+/* icon path colors */
+.dropbtn-nodes svg path    { fill:   var(--text2); transition: fill   0.15s; }
+.dropbtn-downloads svg path{ stroke: var(--text2); transition: stroke 0.15s; }
+.dropbtn-search svg path   { stroke: var(--text2); transition: stroke 0.15s; }
+
+.dropbtn-nodes:hover svg path     { fill:   var(--accent); }
+.dropbtn-downloads:hover svg path { stroke: var(--green);  }
+.dropbtn-search:hover svg path    { stroke: var(--accent); }
+
+/* ── Small icon buttons (logo panel, toolbar) ──── */
+.icon-btn,
+.ibtn {
+  background: #f1f5f9;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  color: var(--text2);
+  cursor: pointer;
+  font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.icon-btn:hover,
+.ibtn:hover {
+  background: var(--accent-soft);
+  border-color: #bfdbfe;
+  color: var(--accent);
+}
+
+/* ── Upload panel ──────────────────────────────── */
+.dropdown {
+  position: relative;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  flex-grow: 1;
+}
+
+.dropdown-content { min-width: 210px; }
+
+.nodes-dropdown-content.dropdown-content {
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  padding: 8px;
+}
+
+/* File upload buttons */
+.dropdown-content button {
+  color: var(--text2);
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  font-size: 13px;
+  transition: background 0.12s ease, border-color 0.12s ease;
+  gap: 3px;
+}
+
+.dropdown-content button:hover {
+  background: var(--surface2);
+  border-color: var(--border);
+}
+
+.dropdown-content button span {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.dropdown-content button input[type="file"] {
+  font-size: 12px;
+  color: var(--text3);
+  max-width: 185px;
+}
+
+/* file hint */
+.file-hint {
+  font-size: 11px;
+  color: var(--text3);
+  padding: 4px 10px 8px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 4px;
+  line-height: 1.6;
+}
+
+/* ── Dropdown animation ────────────────────────── */
 .transition-element {
-    opacity: 0;
-    max-height: 0;
-    overflow: hidden;
-    transition: opacity 0.5s ease, max-height 0.5s ease;
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: opacity 0.25s ease, max-height 0.3s ease;
 }
 
-/* Visible state */
 .transition-element.visible {
-    opacity: 1;
-    max-height: 500px;
-    /* Adjust based on content height */
+  opacity: 1;
+  max-height: 600px;
 }
 
-/* Main view */
+/* ── Collapse arrows ───────────────────────────── */
+.center-console {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 0 3px;
+  gap: 4px;
+}
 
+.triangle-button {
+  background: var(--surface);
+  color: var(--text3);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  width: 26px;
+  height: 26px;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+  box-shadow: var(--shadow-sm);
+}
+
+.triangle-button:hover {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+/* ── Tree panel ────────────────────────────────── */
+.tree-div {
+  overflow: hidden;
+  transition: width 0.22s ease;
+  margin: 8px 4px 8px 4px;
+  height: calc(100% - 16px);
+  border-radius: var(--r-lg);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ── Right panel ───────────────────────────────── */
+.right-div {
+  margin: 4px 4px 4px 0;
+  height: calc(100% - 8px);
+  overflow: hidden;
+  transition: width 0.22s ease, opacity 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--r-lg);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ── Logo stack ────────────────────────────────── */
 .logodiv {
-    background-color: white;
-    overflow-x: auto;
-    overflow-y: auto;
-    position: relative;
-    height: 500px;
-    width: 100%;
-    min-height: 10px;
-    transition: height 300ms ease;
-}
-
-.logodiv::-webkit-scrollbar {}
-
-/* CHROME */
-::-webkit-scrollbar {
-    width: 0.5rem;
-}
-
-::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-    background: rgba(0, 0, 0, 0.3);
-    border-radius: 30px;
+  background: var(--surface);
+  overflow-x: auto;
+  overflow-y: auto;
+  position: relative;
+  height: 500px;
+  width: 100%;
+  min-height: 10px;
+  transition: height 280ms ease;
 }
 
 .logodiv2 {
-    border: 3px solid black;
-    background-color: white;
-    overflow-x: auto;
-    overflow-y: auto;
-    height: 100%;
-    position: relative;
-    width: 100%;
-    border-radius: 25px;
-    margin-right: 10px
+  background: var(--surface);
+  overflow-x: auto;
+  overflow-y: auto;
+  height: 100%;
+  position: relative;
+  width: 100%;
+  border-radius: var(--r-md);
 }
 
+/* ── Structure viewer ──────────────────────────── */
 .pvdiv {
-    margin-top: 2px;
-    height: calc(90vh - 250px);
-    overflow: hidden;
-    transition: height 300ms ease;
+  height: 100%;
+  overflow: hidden;
+  transition: height 280ms ease;
+  border-radius: 0 0 var(--r-lg) var(--r-lg);
 }
 
-.msp-plugin .msp-layout-standard {
-    border: 0px solid #313645;
-}
+.msp-plugin .msp-layout-standard { border: 0; }
 
-
-.tree-div {
-    overflow: hidden;
-    transition: 300ms linear;
-    margin-top: 10px;
-    margin-left: 2px;
-    margin-right: 2px;
-    width: 100%;
-    height: 100%;
-    border-radius: 25px;
-    border: 1px solid black;
-}
-
-.right-div {
-    float: right;
-    right: 0;
-    margin-left: 2px;
-    margin-right: 2px;
-    margin-top: 2px;
-    width: 50%;
-    height: 100%;
-    overflow: hidden;
-    transition: opacity 0.5s ease;
-    transition: 300ms linear;
-}
-
+/* ── Close button ──────────────────────────────── */
 .logo-close-btn {
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    border-radius: 50%;
-    background-color: #ff5c5c;
-    color: #fff;
-    border: none;
-    width: 20px;
-    height: 20px;
-    cursor: pointer;
-    text-align: center;
-    line-height: 20px;
-    z-index: 1;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    vertical-align: middle;
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  border-radius: 50%;
+  background: #f1f5f9;
+  color: var(--text2);
+  border: 1px solid var(--border);
+  width: 22px;
+  height: 22px;
+  cursor: pointer;
+  font-size: 12px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
 }
 
 .logo-close-btn:hover {
-    transform: scale(1.1);
-    transition: transform 0.2s ease-in-out;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+  background: var(--red);
+  color: #fff;
+  border-color: var(--red);
 }
 
-.tree-div text {
-    -webkit-user-select: all;
-    -moz-user-select: all;
-    -ms-user-select: all;
-    user-select: all;
-}
-
+/* ── Notification toast ────────────────────────── */
 .notification {
-    position: absolute;
-    top: 60px;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: rgba(255, 0, 0, 0.9);
-    /* Red background for error */
-    color: white;
-    padding: 8px 12px;
-    border-radius: 5px;
-    font-size: 14px;
-    animation: fadeOut 2s ease-in-out forwards;
-    z-index: 1;
-}
-
-.MuiOutlinedInput-root {
-    height: 30px;
+  position: absolute;
+  top: 52px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--text);
+  color: #fff;
+  padding: 7px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  box-shadow: var(--shadow-md);
+  animation: fadeOut 3s ease forwards;
+  z-index: 10;
+  white-space: nowrap;
 }
 
 @keyframes fadeOut {
-    0% {
-        opacity: 1;
-    }
-
-    80% {
-        opacity: .5;
-    }
-
-    100% {
-        opacity: 0;
-    }
+  0%  { opacity: 1; }
+  70% { opacity: 1; }
+  100%{ opacity: 0; }
 }
 
+/* ── Inputs ────────────────────────────────────── */
+.zoomInput {
+  border-radius: var(--r-sm);
+  margin: 8px;
+}
+.zoomInput::placeholder { color: var(--text3); }
+.MuiOutlinedInput-root  { height: 32px; }
+
+/* ── Scrollbars ────────────────────────────────── */
+::-webkit-scrollbar       { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(0,0,0,.14); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,.24); }
+
+/* ── Tree text ─────────────────────────────────── */
+.tree-div text { -webkit-user-select: all; -moz-user-select: all; user-select: all; }
+
+/* ── Buttons ───────────────────────────────────── */
 .download-stack-btn:hover {
-    transform: scale(1.1) !important;
-    transition: transform 0.2s ease-in-out !important; 
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3) !important;
+  transform: scale(1.06) !important;
+  transition: transform 0.15s ease !important;
 }
 
-.menu-node {
-    z-index: 10;
+.compare-menu-btn {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--r-sm) !important;
+  background: var(--accent) !important;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  box-shadow: 0 1px 3px rgba(59,130,246,.3);
+}
+
+.compare-menu-btn:hover { background: var(--accent-dark) !important; }
+
+/* ── Right-panel header ────────────────────────── */
+.expandedRight { border-bottom: 1px solid var(--border); }
+
+/* ── Menu node ─────────────────────────────────── */
+.menu-node { z-index: 10; }
+
+/* ── Empty state ───────────────────────────────── */
+.tree-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 14px;
+  padding: 40px;
+  text-align: center;
+  color: var(--text3);
+}
+
+.tree-empty-state h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text2);
+  margin: 0;
+}
+
+.tree-empty-state p {
+  font-size: 13px;
+  line-height: 1.7;
+  max-width: 280px;
+  margin: 0;
 }
