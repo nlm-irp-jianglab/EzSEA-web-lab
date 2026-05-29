@@ -1,1 +1,4 @@
 node_modules
+.DS_Store
+frontend/.DS_Store
+frontend/public/.DS_Store

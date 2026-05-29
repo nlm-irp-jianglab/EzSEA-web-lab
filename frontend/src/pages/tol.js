@@ -80,10 +80,11 @@ const Tol = () => {
    * intended to have a small window)
    * 
    * */
+  const [zipLoading, setZipLoading] = useState(false);
   const [pipVisible, setPipVisible] = useState(false);
   const [isLeftCollapsed, setIsLeftCollapsed] = useState(false);
   const [isRightCollapsed, setIsRightCollapsed] = useState(false);
-  const [sidebarExpanded, setSidebarExpanded] = useState(false);
+  const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const [notification, setNotification] = useState('');
   const [labelMenuAnchor, setLabelMenuAnchor] = useState(null);
   const labelMenuOpen = Boolean(labelMenuAnchor);
@@ -137,8 +138,7 @@ const Tol = () => {
         // First create a group element to hold the label
         // Get parent of labelElement
         const parentElement = d3.select(node.labelElement.parentNode);
-
-        // Create sibling group next to labelElement
+        if (!parentElement.select('.label-group').empty()) return;
         const labelGroup = parentElement
           .append("g")
           .attr("class", "label-group")
@@ -347,32 +347,54 @@ const Tol = () => {
     return '';
   }, [fileData.nodeData]);
 
-  // Deals with tree rendering
+  // Open upload panel on first load
+  useEffect(() => {
+    const dropdownContent = document.querySelector('.nodes-dropdown-content');
+    const btn = document.querySelector('.dropbtn-nodes');
+    if (dropdownContent) dropdownContent.classList.add('visible');
+    if (btn) btn.classList.add('selected');
+  }, []);
+
+  // Deals with tree rendering — single effect to avoid double remount
   useEffect(() => {
     setTreeKey(prev => prev + 1);
-    setSearchOptions( // Used for the search by name menu, fill with whatever info we have
-      (fileData.asrData && fileData.leafData) ? Object.keys(fileData.asrData).concat(Object.keys(fileData.leafData)) :
-        (fileData.leafData) ? Object.keys(fileData.leafData) :
-          (fileData.asrData) ? Object.keys(fileData.asrData) : []
-    )
+    setSearchOptions(
+      (fileData.asrData && fileData.leafData)
+        ? [...Object.keys(fileData.asrData), ...Object.keys(fileData.leafData)]
+        : fileData.leafData
+          ? Object.keys(fileData.leafData)
+          : fileData.asrData
+            ? Object.keys(fileData.asrData)
+            : []
+    );
   }, [fileData.newickData, fileData.asrData, fileData.faData, fileData.leafData]);
 
-  useEffect(() => {
-    if (fileData.newickData || fileData.asrData || fileData.leafData) {
-      setTreeKey(prev => prev + 1);
-      setSearchOptions(
-        (fileData.asrData && fileData.leafData)
-          ? [...Object.keys(fileData.asrData), ...Object.keys(fileData.leafData)]
-          : fileData.leafData
-            ? Object.keys(fileData.leafData)
-            : fileData.asrData
-              ? Object.keys(fileData.asrData)
-              : []
+  const renderTree = () => {
+    if (!fileData.newickData) {
+      return (
+        <div style={{
+          display: 'flex', flexDirection: 'column', alignItems: 'center',
+          justifyContent: 'center', height: '100%', gap: '16px',
+          color: '#94a3b8', textAlign: 'center', padding: '40px'
+        }}>
+          <svg width="64" height="64" viewBox="0 0 64 64" fill="none" stroke="#cbd5e1" strokeWidth="1.5" strokeLinecap="round">
+            <path d="M32 58V42M32 42Q22 36 14 26M32 42Q42 36 50 26M14 26Q8 18 4 10M14 26Q16 16 18 8M50 26Q56 18 60 10M50 26Q48 16 46 8"/>
+            <circle cx="4"  cy="10" r="3" fill="#e2e8f0"/>
+            <circle cx="18" cy="8"  r="3" fill="#e2e8f0"/>
+            <circle cx="32" cy="58" r="3" fill="#e2e8f0"/>
+            <circle cx="46" cy="8"  r="3" fill="#e2e8f0"/>
+            <circle cx="60" cy="10" r="3" fill="#e2e8f0"/>
+          </svg>
+          <div style={{ fontWeight: 600, fontSize: '16px', color: '#475569' }}>
+            Load your files to get started
+          </div>
+          <div style={{ fontSize: '13px', lineHeight: 1.7, maxWidth: '260px', color: '#94a3b8' }}>
+            Upload a <strong style={{color:'#475569'}}>.tree</strong> file using the panel on the left.
+            Optionally add sequences, node info, and a structure for full visualization.
+          </div>
+        </div>
       );
     }
-  }, [fileData]);
-
-  const renderTree = () => {
     if (fileData.newickData) {
       if (treeLayout === 'radial') {
         return <RadialTree
@@ -423,47 +445,49 @@ const Tol = () => {
     }
   };
 
-  const removeNodeFromLogo = (node, clade = false) => {
-    // Remove node from logoContent
+  const removeNodeFromLogo = useCallback((node, clade = false) => {
     setLogoContent(prevLogoContent => {
       const updatedLogoContent = { ...prevLogoContent };
-
       if (clade) {
         node['compare-descendants'] = false;
-        delete updatedLogoContent["Information Logo of Clade " + node.data.name];  // Remove the node
+        delete updatedLogoContent["Information Logo of Clade " + node.data.name];
       } else {
         node['compare-node'] = false;
-        delete updatedLogoContent["ASR Probability Logo for " + node.data.name];  // Remove the node
+        delete updatedLogoContent["ASR Probability Logo for " + node.data.name];
       }
-      setNodeColor(node, null);
-
-      return updatedLogoContent;  // Return the new state
+      return updatedLogoContent;
     });
-  };
+    setNodeColor(node, null); // DOM side-effect outside the state updater
+  }, []);
 
-  const pushNodeToLogo = (node) => {
+  const pushNodeToLogo = useCallback((node) => {
     if (!fileData.asrData) {
-      console.warn("ASR data not loaded yet");
+      setNotification("Load ASR data (.zst) first");
+      setTimeout(() => setNotification(''), 3000);
       return;
     }
-
-    setImportantResidues([]); // Clear important residues (may cause unnecessary re-renders)
+    setImportantResidues([]);
+    const asrEntry = fileData.asrData[`${node.data.name}`];
+    if (!asrEntry) {
+      setNotification(`No ASR data for ${node.data.name}`);
+      setTimeout(() => setNotification(''), 3000);
+      return;
+    }
     setLogoContent(prevLogoContent => {
       const updatedLogoContent = { ...prevLogoContent };
-      // Add or do nothing if node is already in logoContent
       node['compare-node'] = true;
-      updatedLogoContent["ASR Probability Logo for " + node.data.name] = fileData.asrData[`${node.data.name}`];
-      setNodeColor(node, "red");
-
-      return updatedLogoContent;  // Return the new state
+      updatedLogoContent["ASR Probability Logo for " + node.data.name] = asrEntry;
+      return updatedLogoContent;
     });
+    setNodeColor(node, "red"); // DOM side-effect outside the state updater
     setPipVisible(true);
     setIsRightCollapsed(false);
-  };
+  }, [fileData.asrData]);
 
   const pushNodeToEntropyLogo = useCallback((node) => {
     if (!fileData.leafData || Object.keys(fileData.leafData).length === 0) {
-      console.warn("Leaf data not loaded yet");
+      setNotification("Load sequence alignment first");
+      setTimeout(() => setNotification(''), 3000);
       return;
     }
 
@@ -475,7 +499,7 @@ const Tol = () => {
       var descendants = selectAllLeaves(node);
       if (descendants.length === 0) {
         console.warn("No descendants found for node:", node.data.name);
-        return;
+        return updatedLogoContent;
       }
 
       var desc_fa = "";
@@ -537,7 +561,7 @@ const Tol = () => {
     }
   }, [logoContent]);
 
-  const handleColumnClick = useMemo(() => (index) => {
+  const handleColumnClick = useCallback((index) => {
     console.log("Input sequence:", inputSequence);
     if (inputSequence) {
       // Count gaps between position 0 and index in the input sequence
@@ -570,9 +594,11 @@ const Tol = () => {
           var descendants = selectAllLeaves(node, true, false); // Get all terminal descendants
           var desc_fa = "";
           for (var desc of descendants) {
-            desc_fa += `>${desc.data.name}\n${fileData.leafData[desc.data.name]}\n`;
+            const seq = fileData.leafData?.[desc.data.name];
+            if (!seq) continue;
+            desc_fa += `>${desc.data.name}\n${seq}\n`;
           }
-          calcEntropyFromMSA(desc_fa).then((entropy) => mapEntropyToColors(entropy)).then((colors) => { setColorArr(colors) });
+          calcEntropyFromMSA(desc_fa).then((entropy) => mapEntropyToColors(entropy)).then((colors) => { setColorArr(colors) }).catch(err => console.error('Entropy color error:', err));
         }
       });
   }
@@ -606,10 +632,10 @@ const Tol = () => {
       node['compare-descendants'] = false;
       setNodeColor(node, null);
     });
-    d3.selectAll('.link--highlight').classed('.link--highlight', false);
+    d3.selectAll('.link--highlight').classed('link--highlight', false);
   }
 
-  const handleColumnHover = useMemo(() => (index) => {
+  const handleColumnHover = useCallback((index) => {
     if (inputSequence) {
       // Count gaps between position 0 and index in the input sequence
       let gapCount = 0;
@@ -695,62 +721,58 @@ const Tol = () => {
 
   const readZip = (event) => {
     const file = event.target.files[0];
+    if (!file) return;
     const reader = new FileReader();
+    setZipLoading(true);
     reader.onload = async (e) => {
-      const content = e.target?.result;
-      const zip = new JSZip();
-      const zipContent = await zip.loadAsync(content);
+      try {
+        const content = e.target?.result;
+        const zip = new JSZip();
+        const zipContent = await zip.loadAsync(content);
+        const newFileData = {};
 
-      // Create an object to store all file data
-      const newFileData = { ...fileData };
+        await Promise.all(Object.entries(zipContent.files).map(async ([_, zipEntry]) => {
+          const fileName = zipEntry.name;
+          if (fileName === 'asr.tree') {
+            newFileData.newickData = await zipEntry.async('string');
+          } else if (fileName === 'seq.state.zst') {
+            const buf = await zipEntry.async('arraybuffer');
+            const { ZstdStream } = await ZstdInit();
+            const asrDict = JSON.parse(uint8ArrayToString(ZstdStream.decompress(new Uint8Array(buf))));
+            newFileData.asrData = asrDict;
+            newFileData.seqLength = asrDict[Object.keys(asrDict)[0]].length;
+          } else if (fileName === 'seq_trimmed.afa') {
+            const data = await fastaToDict(await zipEntry.async('string'));
+            newFileData.leafData = data;
+            newFileData.seqLength = Object.values(data)[0].length; // leaf length takes priority
+          } else if (fileName === 'asr.fa') {
+            newFileData.faData = await fastaToDict(await zipEntry.async('string'));
+          } else if (fileName === 'nodes.json') {
+            const json = JSON.parse(await zipEntry.async('string'));
+            newFileData.nodeData = json;
+            newFileData.topNodes = Object.fromEntries(Object.entries(json).slice(0, 10));
+          } else if (fileName === 'ec.json') {
+            newFileData.ecData = JSON.parse(await zipEntry.async('string'));
+          } else if (fileName === 'seq.pdb') {
+            newFileData.structData = await zipEntry.async('string');
+          }
+        }));
 
-      // Process all files in parallel
-      await Promise.all(Object.entries(zipContent.files).map(async ([_, zipEntry]) => {
-        const fileName = zipEntry.name;
-
-        if (fileName === 'asr.tree') {
-          newFileData.newickData = await zipEntry.async('string');
-        }
-        else if (fileName === 'seq.state.zst') {
-          const content = await zipEntry.async('arraybuffer');
-          const { ZstdStream } = await ZstdInit();
-          const decompressedData = ZstdStream.decompress(new Uint8Array(content));
-          const asrDict = JSON.parse(uint8ArrayToString(decompressedData));
-          newFileData.asrData = asrDict;
-          newFileData.seqLength = asrDict[Object.keys(asrDict)[0]].length;
-        }
-        else if (fileName === 'seq_trimmed.afa') {
-          const content = await zipEntry.async('string');
-          const data = await fastaToDict(content);
-          newFileData.leafData = data;
-          const trimmedSeqLength = Object.values(data)[0].length;
-          newFileData.seqLength = trimmedSeqLength;
-          setSeqLength(trimmedSeqLength);
-        }
-        else if (fileName === 'asr.fa') {
-          const content = await zipEntry.async('string');
-          newFileData.faData = await fastaToDict(content);
-        }
-        else if (fileName === 'nodes.json') {
-          const content = await zipEntry.async('string');
-          const json = JSON.parse(content);
-          const first10Objects = Object.fromEntries(
-            Object.entries(json).slice(0, 10)
-          );
-          newFileData.nodeData = json;
-          newFileData.topNodes = first10Objects;
-        }
-        else if (fileName === 'ec.json') {
-          const content = await zipEntry.async('string');
-          newFileData.ecData = JSON.parse(content);
-        }
-        else if (fileName === 'seq.pdb') {
-          newFileData.structData = await zipEntry.async('string');
-        }
-      }));
-
-      // Update all state at once
-      setFileData(newFileData);
+        // leaf seqLength wins over ASR length (set after Promise.all to guarantee order)
+        if (newFileData.leafData) setSeqLength(newFileData.seqLength);
+        setFileData(prev => ({ ...prev, ...newFileData }));
+      } catch (err) {
+        console.error('Zip load error:', err);
+        setNotification('Failed to load zip — check the file format.');
+        setTimeout(() => setNotification(''), 4000);
+      } finally {
+        setZipLoading(false);
+      }
+    };
+    reader.onerror = () => {
+      setNotification('File read error');
+      setTimeout(() => setNotification(''), 3000);
+      setZipLoading(false);
     };
     reader.readAsArrayBuffer(file);
   };
@@ -794,7 +816,7 @@ const Tol = () => {
         <button className="dropbtn-nodes dropbtn">
           <svg fill="none" width="25px" height="25px" xmlns="http://www.w3.org/2000/svg">
             <title>Upload files for visualization</title>
-            <path d="M17 17H17.01M15.6 14H18C18.9319 14 19.3978 14 19.7654 14.1522C20.2554 14.3552 20.6448 14.7446 20.8478 15.2346C21 15.6022 21 16.0681 21 17C21 17.9319 21 18.3978 20.8478 18.7654C20.6448 19.2554 20.2554 19.6448 19.7654 19.8478C19.3978 20 18.9319 20 18 20H6C5.06812 20 4.60218 20 4.23463 19.8478C3.74458 19.6448 3.35523 19.2554 3.15224 18.7654C3 18.3978 3 17.9319 3 17C3 16.0681 3 15.6022 3.15224 15.2346C3.35523 14.7446 3.74458 14.3552 4.23463 14.1522C4.60218 14 5.06812 14 6 14H8.4M12 15V4M12 4L15 7M12 4L9 7" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M17 17H17.01M15.6 14H18C18.9319 14 19.3978 14 19.7654 14.1522C20.2554 14.3552 20.6448 14.7446 20.8478 15.2346C21 15.6022 21 16.0681 21 17C21 17.9319 21 18.3978 20.8478 18.7654C20.6448 19.2554 20.2554 19.6448 19.7654 19.8478C19.3978 20 18.9319 20 18 20H6C5.06812 20 4.60218 20 4.23463 19.8478C3.74458 19.6448 3.35523 19.2554 3.15224 18.7654C3 18.3978 3 17.9319 3 17C3 16.0681 3 15.6022 3.15224 15.2346C3.35523 14.7446 3.74458 14.3552 4.23463 14.1522C4.60218 14 5.06812 14 6 14H8.4M12 15V4M12 4L15 7M12 4L9 7" stroke="#475569" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </button>
         {sidebarExpanded && <span className="sidebar-label">Upload</span>}
@@ -816,7 +838,7 @@ const Tol = () => {
         <button className="dropbtn-search dropbtn" onClick={handleSidebarSearchClick}>
           <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <title>Search for node</title>
-            <path d="M11 6C13.7614 6 16 8.23858 16 11M16.6588 16.6549L21 21M19 11C19 15.4183 15.4183 19 11 19C6.58172 19 3 15.4183 3 11C3 6.58172 6.58172 3 11 3C15.4183 3 19 6.58172 19 11Z" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M11 6C13.7614 6 16 8.23858 16 11M16.6588 16.6549L21 21M19 11C19 15.4183 15.4183 19 11 19C6.58172 19 3 15.4183 3 11C3 6.58172 6.58172 3 11 3C15.4183 3 19 6.58172 19 11Z" stroke="#475569" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </button>
       </div>
@@ -901,8 +923,11 @@ const Tol = () => {
             {uploadsDropdown()}
           </div>
           <div className="nodes-dropdown-content dropdown-content transition-element">
+            <div className="file-hint">
+              <strong style={{color:'#2563eb'}}>Required:</strong> Tree &nbsp;·&nbsp; <strong style={{color:'#16a34a'}}>Optional:</strong> ASR · Sequences · Node Info · Structure &nbsp;·&nbsp; <em>or upload a Zip</em>
+            </div>
             <button style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-              <span style={{ fontWeight: 'bold', minWidth: '60px' }}>Tree</span>
+              <span style={{ fontWeight: 'bold', minWidth: '60px' }}>Tree <span style={{color:'#c00'}}>*</span></span>
               <input
                 type="file"
                 accept=".nwk,.newick,.tree"
@@ -995,19 +1020,23 @@ const Tol = () => {
                   reader.onload = (e) => {
                     const content = e.target?.result;
                     setFileData(prev => ({ ...prev, structData: content }));
+                    setPipVisible(true);
+                    setIsRightCollapsed(false);
                   };
                   reader.readAsText(file);
                 }}
               />
             </button>
             <button style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-              <span style={{ fontWeight: 'bold', minWidth: '60px' }}>Zip</span>
+              <span style={{ fontWeight: 'bold', minWidth: '60px' }}>
+                Zip {zipLoading && <span style={{ color: '#666', fontWeight: 'normal' }}>(loading…)</span>}
+              </span>
               <input
                 type="file"
                 accept=".zip"
+                disabled={zipLoading}
                 onChange={(event) => readZip(event)}
               />
-
             </button>
           </div>
         </div>
@@ -1018,7 +1047,7 @@ const Tol = () => {
             <ButtonGroup variant="contained" aria-label="Basic button group">
               <Tooltip title="Recenter" placement="top">
                 <Button onClick={() => {
-                  treeRef.current && treeRef.current.findAndZoom("Node1", treediv);
+                  if (treeRef.current) treeRef.current.recenterTree ? treeRef.current.recenterTree() : treeRef.current.findAndZoom(fileData.newickData?.match(/\(([^,)]+)/)?.[1] ?? "Node1", treediv);
                 }}><FilterCenterFocusIcon /></Button>
               </Tooltip>
               <Tooltip title="Labels" placement="top">
@@ -1051,12 +1080,7 @@ const Tol = () => {
                 <Button onClick={() => treeRef.current && treeRef.current.refresh()}><RestoreIcon /></Button>
               </Tooltip>
               <Tooltip title="Cycle layouts" placement="top">
-                <Button
-                  aria-controls={labelMenuOpen ? 'basic-menu' : undefined}
-                  aria-haspopup="true"
-                  aria-expanded={labelMenuOpen ? 'true' : undefined}
-                  onClick={cycleLayout}
-                >{treeLayout}</Button>
+                <Button onClick={cycleLayout}>{treeLayout}</Button>
               </Tooltip>
             </ButtonGroup>
             {renderTree()}
@@ -1072,12 +1096,12 @@ const Tol = () => {
                       {isLeftCollapsed ?
                         <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                           <title>Expand Left</title>
-                          <path d="M21 6H13M9 6V18M21 10H13M21 14H13M21 18H13M3 10L5 12L3 14" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                          <path d="M21 6H13M9 6V18M21 10H13M21 14H13M21 18H13M3 10L5 12L3 14" stroke="#475569" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                         </svg>
                         :
                         <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" transform='rotate(180)'>
                           <title>Collapse Left</title>
-                          <path d="M21 6H13M9 6V18M21 10H13M21 14H13M21 18H13M3 10L5 12L3 14" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                          <path d="M21 6H13M9 6V18M21 10H13M21 14H13M21 18H13M3 10L5 12L3 14" stroke="#475569" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                         </svg>
                       }
                     </button>
@@ -1090,12 +1114,12 @@ const Tol = () => {
                     {isRightCollapsed ?
                       <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" transform='rotate(180)'>
                         <title>Expand Right</title>
-                        <path d="M21 6H13M9 6V18M21 10H13M21 14H13M21 18H13M3 10L5 12L3 14" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M21 6H13M9 6V18M21 10H13M21 14H13M21 18H13M3 10L5 12L3 14" stroke="#475569" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                       :
                       <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <title>Collapse Right</title>
-                        <path d="M21 6H13M9 6V18M21 10H13M21 14H13M21 18H13M3 10L5 12L3 14" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M21 6H13M9 6V18M21 10H13M21 14H13M21 18H13M3 10L5 12L3 14" stroke="#475569" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                     }
                   </button>
@@ -1110,65 +1134,64 @@ const Tol = () => {
               style={{
                 display: 'flex',
                 width: isRightCollapsed ? '2%' : (isLeftCollapsed ? '100%' : '50%'),
+                height: '100%',
                 userSelect: 'none',
-                flexDirection: isLeftCollapsed ? 'row' : 'column', // Side by side if left is collapsed
+                flexDirection: isLeftCollapsed ? 'row' : 'column',
               }}
             >
               {/* Sequence logos */}
-              <div className="expandedRight" style={{ width: isLeftCollapsed ? '50%' : '100%', display: 'flex', flexDirection: 'column', overflow: 'scroll' }}>
-                <div style={{ display: "flex", overflowY: "show", alignItems: "center", justifyContent: "space-between" }}>
-                  <input
-                    className="gapScrollInput zoomInput"
-                    ref={gapScrollInputRef}
-                    placeholder='gene:position'
-                    onKeyDown={(e) => { handleGapScroll(e) }}
-                    style={{ width: "120px" }}
-                  />
-                  <input
-                    className="scrollInput zoomInput"
-                    ref={scrollInputRef}
-                    placeholder={scrollPosition + 1}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        try {
-                          logoStackRef.current.scrollToHighlightIndex(scrollInputRef.current.value);
-                        } catch (e) {
-                          setNotification('Position not found');
-                          setTimeout(() => {
-                            setNotification('');
-                          }, 2000);
-                        }
+              <div className="expandedRight" style={{ width: isLeftCollapsed ? '50%' : '100%', flex: 1, display: 'flex', flexDirection: 'column', overflow: 'scroll' }}>
+                <div style={{ display: "flex", overflowY: "visible", alignItems: "center", justifyContent: "space-between" }}>
+                  <Tooltip title="Jump to a residue by sequence position. Format: geneName:residueNumber (e.g. bilR:42). Press Enter to jump." placement="bottom">
+                    <input
+                      className="gapScrollInput zoomInput"
+                      ref={gapScrollInputRef}
+                      placeholder='gene:position'
+                      onKeyDown={(e) => { handleGapScroll(e) }}
+                      style={{ width: "120px" }}
+                    />
+                  </Tooltip>
+                  <Tooltip title="Jump to alignment column by position number. Press Enter to jump." placement="bottom">
+                    <input
+                      className="scrollInput zoomInput"
+                      ref={scrollInputRef}
+                      placeholder={scrollPosition + 1}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          try {
+                            logoStackRef.current.scrollToHighlightIndex(parseInt(scrollInputRef.current.value, 10));
+                          } catch (e) {
+                            setNotification('Position not found');
+                            setTimeout(() => {
+                              setNotification('');
+                            }, 2000);
+                          }
 
-                        scrollInputRef.current.value = '';
-                      }
-                    }}
-                    style={{ width: "40px" }}
-                  />
+                          scrollInputRef.current.value = '';
+                        }
+                      }}
+                      style={{ width: "40px" }}
+                    />
+                  </Tooltip>
                   <Slider
                     size="small"
                     aria-label="default"
                     valueLabelDisplay="off"
                     min={0}
-                    max={seqLength - 1}
-                    value={scrollPosition}
+                    max={Math.max(seqLength - 1, 1)}
+                    value={typeof scrollPosition === 'number' ? scrollPosition : 0}
                     onChange={handleSlider}
                     track={false}
                     style={{ width: '100%', margin: "0px 2em" }}
                     marks={[
                       { value: 0, label: '1' },
-                      { value: seqLength - 1, label: `${seqLength}` }
+                      { value: Math.max(seqLength - 1, 1), label: `${seqLength || 1}` }
                     ]}
                   />
 
-                  <Tooltip title="Compare Menu" placement="bottom">
-                    <button id="compare-menu-btn" className="compare-menu-btn" style={{ borderRadius: "3px", backgroundColor: "rgb(99, 159, 199)", border: "none", cursor: "pointer" }}>
-                      <DifferenceIcon />
-                    </button>
-                  </Tooltip>
-
                   <Tooltip title="Download Stack" placement="bottom">
-                    <button id="download-stack-btn" className="download-stack-btn" style={{ borderRadius: "3px", backgroundColor: "#def2b3", border: "none", cursor: "pointer" }}>
-                      <svg width="25px" height="25px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" version="1.1" fill="none" stroke="#000000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5">
+                    <button id="download-stack-btn" className="download-stack-btn" style={{ borderRadius: "6px", backgroundColor: "#3b82f6", border: "none", cursor: "pointer", padding: "4px 6px" }}>
+                      <svg width="25px" height="25px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" version="1.1" fill="none" stroke="#ffffff" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5">
                         <path d="m3.25 7.25-1.5.75 6.25 3.25 6.25-3.25-1.5-.75m-11 3.75 6.25 3.25 6.25-3.25" />
                         <path d="m8 8.25v-6.5m-2.25 4.5 2.25 2 2.25-2" />
                       </svg>
@@ -1209,6 +1232,7 @@ const Tol = () => {
                   <Tooltip title="Clear All" placement="top">
                     <button
                       className="logo-close-btn"
+                      aria-label="Clear all logos"
                       onClick={() => {
                         clearRightPanel();
                       }}
@@ -1231,7 +1255,7 @@ const Tol = () => {
               </div>
 
               {/* Structure viewer */}
-              {isLeftCollapsed && (
+              {fileData.structData && Object.keys(logoContent).length > 0 && (
                 <div style={{ flex: '1', display: 'flex', flexDirection: 'column' }}>
                   {/* Button bar */}
                   <div style={{
@@ -1239,7 +1263,7 @@ const Tol = () => {
                     justifyContent: 'center',
                     padding: '8px',
                     gap: '8px',
-                    borderBottom: '1px solid #ccc'
+                    borderBottom: '1px solid var(--border)'
                   }}>
                     <ButtonGroup variant="contained" size="small">
                       <Tooltip title="Reset View" placement="top">
@@ -1250,7 +1274,7 @@ const Tol = () => {
                       <Tooltip title="Set Reference Sequence" placement="top">
                         <Autocomplete
                           size="small"
-                          options={Object.keys(fileData.leafData)}
+                          options={fileData.leafData ? Object.keys(fileData.leafData) : []}
                           style={{ width: 200 }}
                           renderInput={(params) => (
                             <TextField

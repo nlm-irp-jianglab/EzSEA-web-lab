@@ -4,7 +4,6 @@ import Dialog from '@mui/material/Dialog';
 import Slider from '@mui/material/Slider';
 import Button from '@mui/material/Button';
 
-const emails = ['username@gmail.com', 'user02@gmail.com'];
 
 export interface SimpleDialogProps {
   open: boolean;
@@ -135,7 +134,10 @@ function SimpleDialog(props: SimpleDialogProps) {
 
   return (
     <Dialog onClose={handleClose} open={open} fullWidth={true}>
-      <DialogTitle>Download Range:</DialogTitle>
+      <DialogTitle>Download Sequence Logos</DialogTitle>
+      <p style={{ padding: '0 30px 8px', margin: 0, fontSize: '13px', color: '#555' }}>
+        Select the residue position range to include in the combined SVG export.
+      </p>
       <div style={{ padding: '30px' }}>
         <Slider
           value={value}
@@ -146,10 +148,11 @@ function SimpleDialog(props: SimpleDialogProps) {
           min={1}
         />
       </div>
-      <br />
-      <Button variant="outlined" onClick={handleDownloadClick}>
-        Download
-      </Button>
+      <div style={{ display: 'flex', justifyContent: 'center', padding: '0 0 20px' }}>
+        <Button variant="contained" onClick={handleDownloadClick}>
+          Download
+        </Button>
+      </div>
     </Dialog>
   );
 }
