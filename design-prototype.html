@@ -1,0 +1,1038 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>EzSEA — Phosphor Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+/* ── TOKENS ──────────────────────────────────────── */
+:root {
+  --bg:       #07100c;
+  --bg-2:     #0c1a14;
+  --bg-3:     #111f18;
+  --surf:     #0f1f17;
+  --surf-2:   #152a1f;
+  --bdr:      #1c3328;
+  --bdr-2:    #264738;
+
+  --p:        #00ff88;   /* phosphor green */
+  --p2:       #00cc6e;
+  --p3:       #009950;
+  --pd:       rgba(0,255,136,.08);
+  --pglow:    0 0 12px rgba(0,255,136,.35), 0 0 32px rgba(0,255,136,.12);
+
+  --amber:    #ffb547;
+  --amberd:   rgba(255,181,71,.12);
+  --red:      #ff4d6a;
+  --blue:     #4eb8ff;
+
+  --t1:       #ddf0e8;
+  --t2:       #8ab89e;
+  --t3:       #4a7a61;
+
+  --sans:     'DM Sans', system-ui, sans-serif;
+  --disp:     'Syne', sans-serif;
+  --mono:     'JetBrains Mono', monospace;
+
+  --r:        4px;
+  --r2:       8px;
+  --r3:       12px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--t1);
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.5;
+  overflow: hidden;
+}
+
+/* scanlines */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  background-image: repeating-linear-gradient(
+    0deg, transparent, transparent 2px,
+    rgba(0,0,0,.04) 2px, rgba(0,0,0,.04) 4px
+  );
+}
+
+/* ── LAYOUT ──────────────────────────────────────── */
+.app { display: flex; height: 100vh; overflow: hidden; animation: fadeUp .3s ease; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── SIDEBAR ─────────────────────────────────────── */
+.sidebar {
+  width: 52px;
+  background: var(--bg-2);
+  border-right: 1px solid var(--bdr);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 14px 0;
+  gap: 4px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 10;
+}
+
+.sidebar::after {
+  content: '';
+  position: absolute;
+  top: 0; right: 0;
+  width: 1px; height: 100%;
+  background: linear-gradient(180deg, transparent, var(--p2) 40%, transparent);
+  opacity: .25;
+}
+
+.wordmark {
+  font-family: var(--disp);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .16em;
+  color: var(--p);
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  transform: rotate(180deg);
+  margin-bottom: 14px;
+  text-shadow: var(--pglow);
+}
+
+.sb-sep { width: 24px; height: 1px; background: var(--bdr); margin: 4px 0; }
+
+.sb-btn {
+  width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: var(--r2);
+  border: none;
+  background: transparent;
+  color: var(--t3);
+  cursor: pointer;
+  position: relative;
+  transition: color .15s, background .15s;
+}
+
+.sb-btn:hover  { background: var(--pd); color: var(--p); }
+.sb-btn.active { background: var(--pd); color: var(--p); box-shadow: inset 0 0 0 1px rgba(0,255,136,.2); }
+.sb-btn svg    { width: 16px; height: 16px; }
+
+/* tooltip */
+.sb-btn[data-tip]::after {
+  content: attr(data-tip);
+  position: absolute;
+  left: calc(100% + 8px);
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--surf-2);
+  border: 1px solid var(--bdr-2);
+  color: var(--t1);
+  font-family: var(--mono);
+  font-size: 10px;
+  padding: 4px 8px;
+  border-radius: var(--r);
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .15s;
+  z-index: 100;
+}
+.sb-btn[data-tip]:hover::after { opacity: 1; }
+
+/* ── UPLOAD FLYOUT ───────────────────────────────── */
+.upload-panel {
+  position: absolute;
+  left: 52px; top: 0; bottom: 0;
+  width: 258px;
+  background: var(--bg-2);
+  border-right: 1px solid var(--bdr);
+  z-index: 9;
+  transform: translateX(-100%);
+  transition: transform .25s cubic-bezier(.4,0,.2,1);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+.upload-panel.open { transform: translateX(0); }
+
+.panel-hd {
+  padding: 14px 14px 10px;
+  border-bottom: 1px solid var(--bdr);
+  flex-shrink: 0;
+}
+.panel-title {
+  font-family: var(--disp);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--p);
+  margin-bottom: 4px;
+}
+.panel-hint {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--t3);
+  line-height: 1.6;
+}
+.panel-hint strong { color: var(--blue); font-weight: 400; }
+.panel-hint em     { color: var(--p3); font-style: normal; }
+
+.slots { padding: 8px 10px; display: flex; flex-direction: column; gap: 4px; }
+
+.slot {
+  border: 1px dashed var(--bdr-2);
+  border-radius: var(--r2);
+  padding: 9px 10px;
+  cursor: pointer;
+  transition: border-color .15s, background .15s;
+  position: relative;
+}
+.slot:hover   { border-color: var(--p3); background: var(--pd); }
+.slot.loaded  { border-style: solid; border-color: var(--p3); background: var(--pd); }
+
+.slot-name {
+  display: flex; align-items: center; gap: 6px;
+  font-family: var(--disp);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--t2);
+}
+.slot.loaded .slot-name { color: var(--p); }
+
+.slot-tag {
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: .04em;
+}
+.slot-tag.req { color: var(--red); }
+.slot-tag.opt { color: var(--t3); }
+
+.slot-ext  { font-family: var(--mono); font-size: 10px; color: var(--t3); margin-top: 1px; }
+.slot-file { font-family: var(--mono); font-size: 10px; color: var(--p2); margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.slot input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+
+.dot { width: 7px; height: 7px; border-radius: 50%; background: var(--p); box-shadow: 0 0 5px var(--p); flex-shrink: 0; }
+
+.zip-row {
+  margin: 4px 10px 10px;
+  border: 1px solid var(--bdr-2);
+  border-radius: var(--r2);
+  padding: 9px 10px;
+  display: flex; align-items: center; gap: 8px;
+  cursor: pointer;
+  transition: border-color .15s, background .15s;
+  position: relative;
+}
+.zip-row:hover { border-color: var(--amber); background: var(--amberd); }
+.zip-row input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+.zip-label { font-family: var(--disp); font-size: 11px; font-weight: 600; color: var(--amber); }
+.zip-sub   { font-family: var(--mono); font-size: 10px; color: var(--t3); margin-top: 1px; }
+
+/* key nodes mini list */
+.knodes {
+  margin-top: auto;
+  padding: 0 10px 10px;
+}
+.kn-title {
+  font-family: var(--disp);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--t3);
+  margin-bottom: 5px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--bdr);
+}
+.kn-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 4px 0;
+  cursor: pointer;
+  transition: color .15s;
+}
+.kn-row:hover { color: var(--p); }
+.kn-name  { font-family: var(--mono); font-size: 11px; color: var(--p2); }
+.kn-score { font-family: var(--mono); font-size: 10px; color: var(--t3); }
+
+/* ── MAIN ────────────────────────────────────────── */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* ── TOP BAR ─────────────────────────────────────── */
+.topbar {
+  height: 44px;
+  background: var(--bg-2);
+  border-bottom: 1px solid var(--bdr);
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+  gap: 8px;
+  flex-shrink: 0;
+  position: relative;
+}
+.topbar::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--p3), transparent);
+  opacity: .35;
+}
+
+.brand {
+  font-family: var(--disp);
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -.02em;
+  color: var(--p);
+  text-shadow: var(--pglow);
+}
+.brand span { color: var(--t2); }
+
+.tb-sep { width: 1px; height: 20px; background: var(--bdr); margin: 0 2px; }
+
+.tb-job {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--t3);
+}
+.tb-job strong { color: var(--t2); font-weight: 400; }
+
+.tb-space { flex: 1; }
+
+.layout-set {
+  display: flex; gap: 2px;
+  background: var(--bg);
+  border: 1px solid var(--bdr);
+  border-radius: var(--r2);
+  padding: 2px;
+}
+.lay-btn {
+  padding: 3px 9px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: var(--t3);
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all .15s;
+}
+.lay-btn.act { background: var(--surf-2); color: var(--p); box-shadow: inset 0 0 0 1px rgba(0,255,136,.15); }
+.lay-btn:hover:not(.act) { color: var(--t2); }
+
+.tb-btn {
+  display: flex; align-items: center; gap: 5px;
+  padding: 0 9px;
+  height: 28px;
+  border-radius: var(--r2);
+  border: 1px solid var(--bdr-2);
+  background: var(--surf);
+  color: var(--t2);
+  font-family: var(--mono);
+  font-size: 10px;
+  cursor: pointer;
+  transition: all .15s;
+}
+.tb-btn:hover { border-color: var(--p3); color: var(--p); background: var(--pd); }
+.tb-btn svg   { width: 11px; height: 11px; }
+
+/* ── PANELS AREA ─────────────────────────────────── */
+.panels {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  padding: 8px;
+  gap: 8px;
+}
+
+/* ── TREE PANEL ──────────────────────────────────── */
+.tree-pnl {
+  flex: 1;
+  min-width: 0;
+  background: var(--surf);
+  border: 1px solid var(--bdr);
+  border-radius: var(--r3);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+/* center glow */
+.tree-pnl::before {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+  width: 65%; height: 65%;
+  background: radial-gradient(circle, rgba(0,255,136,.035) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.tree-bar {
+  display: flex; align-items: center; gap: 6px;
+  padding: 7px 10px;
+  border-bottom: 1px solid var(--bdr);
+  background: var(--bg-2);
+  flex-shrink: 0;
+}
+.t-btn {
+  width: 26px; height: 26px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: var(--r);
+  border: 1px solid var(--bdr);
+  background: var(--surf);
+  color: var(--t3);
+  cursor: pointer;
+  transition: all .15s;
+}
+.t-btn:hover { border-color: var(--p3); color: var(--p); background: var(--pd); }
+.t-btn svg   { width: 12px; height: 12px; }
+
+.t-search {
+  flex: 1; max-width: 170px;
+  height: 26px;
+  background: var(--bg);
+  border: 1px solid var(--bdr);
+  border-radius: var(--r);
+  padding: 0 9px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--t1);
+  outline: none;
+  transition: border-color .15s;
+}
+.t-search::placeholder { color: var(--t3); }
+.t-search:focus { border-color: var(--p3); box-shadow: 0 0 0 2px rgba(0,255,136,.08); }
+
+.t-space { flex: 1; }
+.t-count { font-family: var(--mono); font-size: 10px; color: var(--t3); }
+
+.tree-canvas {
+  flex: 1;
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* empty state */
+.empty {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 14px; text-align: center; padding: 40px;
+}
+.empty-icon { width: 76px; height: 76px; color: var(--p3); filter: drop-shadow(0 0 8px rgba(0,255,136,.25)); }
+.empty-h { font-family: var(--disp); font-size: 17px; font-weight: 700; }
+.empty-p { font-family: var(--mono); font-size: 11px; color: var(--t3); line-height: 1.8; max-width: 280px; }
+.empty-p code { color: var(--p3); background: var(--pd); padding: 1px 5px; border-radius: 3px; }
+
+.cta {
+  display: flex; align-items: center; gap: 7px;
+  padding: 7px 16px;
+  background: var(--pd);
+  border: 1px solid rgba(0,255,136,.28);
+  border-radius: var(--r2);
+  color: var(--p);
+  font-family: var(--disp);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .2s;
+}
+.cta:hover { background: rgba(0,255,136,.14); box-shadow: var(--pglow); }
+.cta svg   { width: 13px; height: 13px; }
+
+/* tree SVG */
+.tree-svg { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; transition: opacity .5s; }
+.tree-svg.vis { opacity: 1; }
+
+@keyframes nodePulse {
+  0%,100% { r: 4; }
+  50%      { r: 5.5; }
+}
+.key-node { animation: nodePulse 2.5s ease-in-out infinite; }
+
+/* ── RIGHT COLUMN ────────────────────────────────── */
+.right-col {
+  width: 310px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow: hidden;
+  transition: width .25s cubic-bezier(.4,0,.2,1);
+}
+.right-col.gone { width: 0; }
+
+/* ── LOGO PANEL ──────────────────────────────────── */
+.logo-pnl {
+  flex: 1;
+  min-height: 0;
+  background: var(--surf);
+  border: 1px solid var(--bdr);
+  border-radius: var(--r3);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.logo-hd {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 7px 10px;
+  border-bottom: 1px solid var(--bdr);
+  background: var(--bg-2);
+  flex-shrink: 0;
+}
+.logo-hd-title {
+  font-family: var(--disp);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--p);
+}
+.logo-body { flex: 1; overflow-y: auto; padding: 8px; }
+
+.logo-empty {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--t3);
+  text-align: center;
+  padding: 28px 16px;
+  line-height: 1.8;
+}
+
+/* logo card */
+.lcard {
+  background: var(--bg-2);
+  border: 1px solid var(--bdr);
+  border-radius: var(--r2);
+  margin-bottom: 7px;
+  overflow: hidden;
+  transition: border-color .15s;
+}
+.lcard:hover { border-color: var(--bdr-2); }
+.lcard-hd {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 6px 9px;
+  border-bottom: 1px solid var(--bdr);
+}
+.lcard-title { font-family: var(--mono); font-size: 10px; color: var(--t2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 185px; }
+.lcard-title strong { color: var(--p2); font-weight: 400; }
+.lcard-acts { display: flex; gap: 2px; }
+
+.ibtn {
+  width: 18px; height: 18px;
+  border-radius: 3px;
+  border: none;
+  background: transparent;
+  color: var(--t3);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px;
+  transition: color .15s, background .15s;
+}
+.ibtn:hover { background: var(--pd); color: var(--p); }
+
+.logo-render {
+  height: 58px;
+  display: flex; align-items: flex-end;
+  padding: 4px 7px 0;
+  gap: 1px;
+  overflow: hidden;
+  background: var(--bg);
+}
+.glyph {
+  width: 11px;
+  font-family: var(--mono);
+  font-weight: 700;
+  text-align: center;
+  line-height: 1;
+  display: flex; align-items: flex-end; justify-content: center;
+  opacity: .88;
+  transition: opacity .15s;
+}
+.glyph:hover { opacity: 1; }
+
+.logo-axis { display: flex; padding: 2px 7px; gap: 1px; overflow: hidden; }
+.logo-axis span { width: 11px; text-align: center; font-family: var(--mono); font-size: 7px; color: var(--t3); }
+
+/* ── STRUCT PANEL ────────────────────────────────── */
+.struct-pnl {
+  height: 210px;
+  flex-shrink: 0;
+  background: var(--bg);
+  border: 1px solid var(--bdr);
+  border-radius: var(--r3);
+  overflow: hidden;
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+}
+.struct-ph {
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+}
+.struct-ph svg { width: 60px; height: 60px; opacity: .35; }
+.struct-ph-lbl { font-family: var(--mono); font-size: 10px; color: var(--t3); letter-spacing: .05em; }
+.struct-tb {
+  position: absolute;
+  top: 8px; right: 8px;
+  display: flex; flex-direction: column; gap: 3px;
+}
+
+/* ── STATUS BAR ──────────────────────────────────── */
+.statusbar {
+  height: 23px;
+  background: var(--bg-2);
+  border-top: 1px solid var(--bdr);
+  display: flex; align-items: center;
+  padding: 0 12px; gap: 16px;
+  flex-shrink: 0;
+}
+.st-item { display: flex; align-items: center; gap: 5px; font-family: var(--mono); font-size: 10px; color: var(--t3); }
+.st-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--bdr-2); }
+.st-dot.on { background: var(--p); box-shadow: 0 0 4px var(--p); animation: blink 2.5s ease-in-out infinite; }
+.st-dot.warn { background: var(--amber); }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.35} }
+
+/* ── NOTIF ───────────────────────────────────────── */
+.notif {
+  position: fixed;
+  bottom: 34px; left: 50%;
+  transform: translateX(-50%) translateY(8px);
+  background: var(--surf-2);
+  border: 1px solid var(--bdr-2);
+  color: var(--t1);
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 7px 14px;
+  border-radius: 9999px;
+  box-shadow: 0 4px 20px rgba(0,0,0,.55);
+  opacity: 0;
+  transition: opacity .2s, transform .2s;
+  pointer-events: none;
+  z-index: 200;
+  white-space: nowrap;
+}
+.notif.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar">
+    <div class="wordmark">EzSEA</div>
+
+    <button class="sb-btn active" id="btn-up" data-tip="Upload files" onclick="toggleUp()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+        <polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+      </svg>
+    </button>
+
+    <button class="sb-btn" data-tip="Search nodes" onclick="toast('Load a tree to enable search')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <circle cx="11" cy="11" r="7"/><path d="m20 20-3-3"/>
+      </svg>
+    </button>
+
+    <button class="sb-btn" data-tip="Downloads" onclick="toast('Load data to enable downloads')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+        <polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+      </svg>
+    </button>
+
+    <div class="sb-sep"></div>
+
+    <button class="sb-btn" data-tip="Help" onclick="toast('Documentation — coming soon')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <circle cx="12" cy="12" r="10"/>
+        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+      </svg>
+    </button>
+  </nav>
+
+  <!-- UPLOAD FLYOUT -->
+  <div class="upload-panel open" id="up-panel">
+    <div class="panel-hd">
+      <div class="panel-title">Load data</div>
+      <div class="panel-hint">
+        <strong>Required:</strong> Tree &nbsp;·&nbsp;
+        <em>Optional:</em> ASR · Sequences · Nodes · Structure
+      </div>
+    </div>
+
+    <div class="slots">
+      <label class="slot" id="s-tree">
+        <div class="slot-name">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22v-8M12 14Q8 11 5 8M12 14Q16 11 19 8"/><circle cx="5" cy="8" r="2" fill="currentColor"/><circle cx="19" cy="8" r="2" fill="currentColor"/><circle cx="12" cy="22" r="2" fill="currentColor"/></svg>
+          Tree
+          <span class="slot-tag req">required</span>
+        </div>
+        <div class="slot-ext">.nwk · .newick · .tree</div>
+        <input type="file" accept=".nwk,.newick,.tree" onchange="onFile(this,'tree','s-tree')"/>
+      </label>
+
+      <label class="slot" id="s-asr">
+        <div class="slot-name">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+          ASR Probabilities
+          <span class="slot-tag opt">optional</span>
+        </div>
+        <div class="slot-ext">.zst</div>
+        <input type="file" accept=".zst" onchange="onFile(this,'asr','s-asr')"/>
+      </label>
+
+      <label class="slot" id="s-seq">
+        <div class="slot-name">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+          Sequences
+          <span class="slot-tag opt">optional</span>
+        </div>
+        <div class="slot-ext">.fa · .fasta · .afa</div>
+        <input type="file" accept=".fa,.fasta,.afa" onchange="onFile(this,'seq','s-seq')"/>
+      </label>
+
+      <label class="slot" id="s-nodes">
+        <div class="slot-name">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Node Info
+          <span class="slot-tag opt">optional</span>
+        </div>
+        <div class="slot-ext">.json</div>
+        <input type="file" accept=".json" onchange="onFile(this,'nodes','s-nodes')"/>
+      </label>
+
+      <label class="slot" id="s-struct">
+        <div class="slot-name">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"/></svg>
+          Structure
+          <span class="slot-tag opt">optional</span>
+        </div>
+        <div class="slot-ext">.pdb</div>
+        <input type="file" accept=".pdb" onchange="onFile(this,'struct','s-struct')"/>
+      </label>
+    </div>
+
+    <label class="zip-row">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#ffb547" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      <div>
+        <div class="zip-label">Load ZIP bundle</div>
+        <div class="zip-sub">all files at once</div>
+      </div>
+      <input type="file" accept=".zip" onchange="onZip()"/>
+    </label>
+
+    <div class="knodes" id="knodes" style="display:none">
+      <div class="kn-title">Key Nodes</div>
+      <div class="kn-row"><span class="kn-name">Node4</span><span class="kn-score">8.61</span></div>
+      <div class="kn-row"><span class="kn-name">Node75</span><span class="kn-score">7.17</span></div>
+      <div class="kn-row"><span class="kn-name">Node77</span><span class="kn-score">6.86</span></div>
+      <div class="kn-row"><span class="kn-name">Node171</span><span class="kn-score">5.90</span></div>
+      <div class="kn-row"><span class="kn-name">Node167</span><span class="kn-score">5.28</span></div>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+    <!-- topbar -->
+    <div class="topbar">
+      <div class="brand">Ez<span>SEA</span></div>
+      <div class="tb-sep"></div>
+      <div class="tb-job">job: <strong id="joblbl">no data</strong></div>
+      <div class="tb-space"></div>
+
+      <div class="layout-set">
+        <button class="lay-btn act" onclick="setLay('radial',this)">radial</button>
+        <button class="lay-btn" onclick="setLay('rect',this)">rect</button>
+        <button class="lay-btn" onclick="setLay('unrooted',this)">unrooted</button>
+      </div>
+
+      <button class="tb-btn" onclick="toast('Tree recentered')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M3 12h3m12 0h3M12 3v3m0 12v3"/></svg>
+        center
+      </button>
+
+      <button class="tb-btn" onclick="toggleRight()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="15" y1="3" x2="15" y2="21"/></svg>
+        panel
+      </button>
+    </div>
+
+    <!-- panels -->
+    <div class="panels">
+
+      <!-- tree -->
+      <div class="tree-pnl">
+        <div class="tree-bar">
+          <button class="t-btn" onclick="toast('Recentered')" title="Center">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M3 12h3m12 0h3M12 3v3m0 12v3"/></svg>
+          </button>
+          <button class="t-btn" onclick="toast('Labels toggled')" title="Labels">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20.59 13.41 11 22H9v-2l9-9z"/><path d="M2 2h11v11"/></svg>
+          </button>
+          <input class="t-search" placeholder="search node…"/>
+          <div class="t-space"></div>
+          <span class="t-count" id="ncnt">— nodes</span>
+        </div>
+
+        <div class="tree-canvas" id="tcanvas">
+          <!-- empty state -->
+          <div class="empty" id="empty">
+            <svg class="empty-icon" viewBox="0 0 76 76" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+              <path d="M38 72V50M38 50Q26 42 16 30M38 50Q50 42 60 30M38 50Q38 40 38 28"/>
+              <path d="M16 30Q10 22 4 14M16 30Q18 20 20 10"/>
+              <path d="M60 30Q66 22 72 14M60 30Q58 20 56 10"/>
+              <circle cx="4"  cy="14" r="3.5" fill="currentColor" opacity=".5"/>
+              <circle cx="20" cy="10" r="3.5" fill="currentColor" opacity=".5"/>
+              <circle cx="38" cy="28" r="3.5" fill="currentColor" opacity=".5"/>
+              <circle cx="56" cy="10" r="3.5" fill="currentColor" opacity=".5"/>
+              <circle cx="72" cy="14" r="3.5" fill="currentColor" opacity=".5"/>
+            </svg>
+            <div class="empty-h">No tree loaded</div>
+            <div class="empty-p">
+              Upload a <code>.tree</code> or <code>.nwk</code> file to visualize.<br/>
+              Add sequences, node info, and structure for full analysis.
+            </div>
+            <button class="cta" onclick="toggleUp()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              Open upload panel
+            </button>
+            <div style="font-family:var(--mono);font-size:10px;color:var(--t3);margin-top:4px">
+              or press <kbd style="background:var(--surf-2);border:1px solid var(--bdr-2);border-radius:3px;padding:1px 5px;font-size:9px">E</kbd> to load example data
+            </div>
+          </div>
+
+          <!-- tree SVG -->
+          <svg class="tree-svg" id="tsvg" viewBox="-200 -200 400 400" preserveAspectRatio="xMidYMid meet">
+            <defs>
+              <radialGradient id="cg" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#00ff88" stop-opacity=".05"/>
+                <stop offset="100%" stop-color="#00ff88" stop-opacity="0"/>
+              </radialGradient>
+            </defs>
+            <circle cx="0" cy="0" r="200" fill="url(#cg)"/>
+            <g id="brs" stroke="#1c3328" stroke-width=".7" fill="none" stroke-linecap="round"></g>
+            <g id="nds"></g>
+          </svg>
+        </div>
+      </div>
+
+      <!-- right -->
+      <div class="right-col" id="rc">
+
+        <div class="logo-pnl">
+          <div class="logo-hd">
+            <div class="logo-hd-title">Sequence Logos</div>
+            <button class="ibtn" onclick="clearLogos()" title="Clear all" aria-label="Clear all logos">✕</button>
+          </div>
+          <div class="logo-body" id="lbody">
+            <div class="logo-empty">Right-click a tree node<br/>to compare ancestral states</div>
+          </div>
+        </div>
+
+        <div class="struct-pnl">
+          <div class="struct-ph" id="sph">
+            <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" color="#009950">
+              <path d="M8 48Q18 36 32 40Q46 44 56 32"/>
+              <path d="M12 24Q20 20 28 24" stroke-width="2.5"/>
+              <path d="M36 40Q44 36 52 40" stroke-width="2.5"/>
+              <circle cx="32" cy="28" r="6" fill="#ffb547" fill-opacity=".4" stroke="#ffb547"/>
+            </svg>
+            <div class="struct-ph-lbl">molstar viewer · load .pdb</div>
+          </div>
+          <div class="struct-tb">
+            <button class="ibtn" title="Reset view">↻</button>
+            <button class="ibtn" title="Fullscreen">⛶</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- status -->
+    <div class="statusbar">
+      <div class="st-item"><div class="st-dot" id="d-tree"></div><span id="s-tree2">no tree</span></div>
+      <div class="st-item"><div class="st-dot" id="d-asr"></div><span id="s-asr2">no asr</span></div>
+      <div class="st-item"><div class="st-dot" id="d-seq"></div><span id="s-seq2">no sequences</span></div>
+      <div class="st-item"><div class="st-dot" id="d-struct"></div><span id="s-struct2">no structure</span></div>
+      <div style="margin-left:auto">
+        <span style="font-family:var(--mono);font-size:10px;color:var(--t3)">EzSEA-web-lab &nbsp;·&nbsp; v1.1.2</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="notif" id="notif-el"></div>
+
+<script>
+const S = { tree:false, asr:false, seq:false, nodes:false, struct:false };
+let upOpen = true, rightVis = true, ntTimer;
+
+/* Upload panel */
+function toggleUp() {
+  upOpen = !upOpen;
+  document.getElementById('up-panel').classList.toggle('open', upOpen);
+  document.getElementById('btn-up').classList.toggle('active', upOpen);
+}
+
+/* File load */
+function onFile(inp, type, slotId) {
+  const f = inp.files[0]; if (!f) return;
+  const sl = document.getElementById(slotId);
+  sl.classList.add('loaded');
+  const nm = sl.querySelector('.slot-name');
+  nm.querySelectorAll('.slot-tag').forEach(x => x.remove());
+  nm.insertAdjacentHTML('beforeend','<span class="dot"></span>');
+  let fl = sl.querySelector('.slot-file');
+  if (!fl) { fl = document.createElement('div'); fl.className = 'slot-file'; sl.appendChild(fl); }
+  fl.textContent = f.name;
+  S[type] = true;
+  updateSt();
+  if (type === 'tree') renderTree(f.name);
+  if (type === 'nodes') { document.getElementById('knodes').style.display = ''; }
+  if (type === 'struct') { document.getElementById('sph').style.display = 'none'; toast('Structure loaded — ' + f.name); }
+}
+
+function onZip() {
+  toast('Loading ZIP bundle…');
+  setTimeout(() => {
+    Object.keys(S).forEach(k => S[k] = true);
+    updateSt();
+    renderTree('bilR-example');
+    document.getElementById('knodes').style.display = '';
+    document.getElementById('sph').style.display = 'none';
+    renderLogos();
+    toast('All files loaded from ZIP ✓');
+    document.getElementById('joblbl').textContent = 'bilR-example';
+  }, 900);
+}
+
+/* Tree render */
+function renderTree(name) {
+  document.getElementById('empty').style.display = 'none';
+  const svg = document.getElementById('tsvg');
+  svg.classList.add('vis');
+  const brs = document.getElementById('brs'), nds = document.getElementById('nds');
+  brs.innerHTML = ''; nds.innerHTML = '';
+  const N = 115, inn = 26, mid = 86, out = 160;
+  const keys = [8,21,45,68,92,107];
+  for (let i = 0; i < N; i++) {
+    const a = (i/N)*Math.PI*2;
+    const jit = (Math.sin(i*1.85)+Math.cos(i*0.72))*9;
+    const x1=Math.cos(a)*inn, y1=Math.sin(a)*inn;
+    const x2=Math.cos(a)*(mid+jit), y2=Math.sin(a)*(mid+jit);
+    const x3=Math.cos(a)*out, y3=Math.sin(a)*out;
+    brs.insertAdjacentHTML('beforeend',
+      `<path d="M${x1.toFixed(1)} ${y1.toFixed(1)} L${x2.toFixed(1)} ${y2.toFixed(1)} L${x3.toFixed(1)} ${y3.toFixed(1)}"/>`);
+    const key = keys.includes(i);
+    nds.insertAdjacentHTML('beforeend',
+      `<circle cx="${x2.toFixed(1)}" cy="${y2.toFixed(1)}" r="${key?4:1.6}"
+       fill="${key?'#00ff88':'#1c3328'}" stroke="${key?'#00cc6e':'none'}"
+       ${key?'class="key-node" style="filter:drop-shadow(0 0 4px #00ff88)"':''}
+       onclick="${key?`toast('Node selected — loading logos...');renderLogos()`:''}"/>`);
+  }
+  document.getElementById('ncnt').textContent = N + ' leaves · ' + keys.length + ' key';
+  document.getElementById('joblbl').textContent = typeof name === 'string' ? name.replace(/\.[^.]+$/,'') : name;
+  toast('Tree rendered');
+}
+
+/* Logos */
+const PAL = {A:'#00d4aa',R:'#4eb8ff',N:'#00cc6e',D:'#ff4d6a',C:'#ffb547',E:'#ff4d6a',Q:'#00cc6e',G:'#8ab89e',H:'#4eb8ff',I:'#00d4aa',L:'#00d4aa',K:'#4eb8ff',M:'#00d4aa',F:'#ffb547',P:'#c084fc',S:'#00cc6e',T:'#00cc6e',W:'#c084fc',Y:'#ffb547',V:'#00d4aa'};
+const SEQS = [{n:'Node74',s:'MYQKLFEPIKIGNMELKNRIVFAPM'},{n:'Node75',s:'NYQKLFEPIKIGNMELKNRIVEAPM'}];
+
+function renderLogos() {
+  const body = document.getElementById('lbody');
+  body.innerHTML = '';
+  SEQS.forEach(({n,s}) => {
+    let gl='', ax='';
+    for(let i=0;i<s.length;i++){
+      const c=s[i], col=PAL[c]||'#8ab89e', h=16+Math.random()*36;
+      gl+=`<div class="glyph" style="color:${col};height:${h}px;font-size:${Math.max(8,h-8)}px">${c}</div>`;
+      ax+=`<span>${i+1}</span>`;
+    }
+    body.insertAdjacentHTML('beforeend',`
+      <div class="lcard">
+        <div class="lcard-hd">
+          <div class="lcard-title">ASR · <strong>${n}</strong></div>
+          <div class="lcard-acts">
+            <button class="ibtn" title="Download" aria-label="Download logo">↓</button>
+            <button class="ibtn" onclick="this.closest('.lcard').remove()" aria-label="Remove logo">✕</button>
+          </div>
+        </div>
+        <div class="logo-render">${gl}</div>
+        <div class="logo-axis">${ax}</div>
+      </div>`);
+  });
+}
+
+function clearLogos() {
+  document.getElementById('lbody').innerHTML = '<div class="logo-empty">Right-click a tree node<br/>to compare ancestral states</div>';
+}
+
+/* Status */
+function updateSt() {
+  const m = {tree:['d-tree','s-tree2','Tree'],asr:['d-asr','s-asr2','ASR'],seq:['d-seq','s-seq2','Sequences'],struct:['d-struct','s-struct2','Structure']};
+  for(const [k,[d,s,lbl]] of Object.entries(m)){
+    if(S[k]){document.getElementById(d).classList.add('on');document.getElementById(s).textContent=lbl+' loaded';}
+  }
+}
+
+/* Toast */
+function toast(msg) {
+  const el = document.getElementById('notif-el');
+  el.textContent = msg; el.classList.add('show');
+  clearTimeout(ntTimer);
+  ntTimer = setTimeout(()=>el.classList.remove('show'), 2800);
+}
+
+/* Layout */
+function setLay(t,btn){
+  document.querySelectorAll('.lay-btn').forEach(b=>b.classList.remove('act'));
+  btn.classList.add('act'); toast('Layout: ' + t);
+  if(S.tree) renderTree(document.getElementById('joblbl').textContent);
+}
+
+/* Toggle right */
+function toggleRight(){
+  rightVis = !rightVis;
+  document.getElementById('rc').classList.toggle('gone', !rightVis);
+}
+
+/* Example shortcut */
+document.addEventListener('keydown', e => {
+  if (e.key==='e'&&!e.ctrlKey&&!e.metaKey&&!e.target.matches('input')) {
+    toast('Loading BilR example…');
+    setTimeout(()=>{
+      Object.keys(S).forEach(k=>S[k]=true);
+      updateSt();
+      renderTree('bilR-example');
+      document.getElementById('knodes').style.display='';
+      document.getElementById('sph').style.display='none';
+      renderLogos();
+    },400);
+  }
+});
+</script>
+</body>
+</html>
