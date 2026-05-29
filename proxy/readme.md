@@ -1,0 +1,1 @@
+This proxy routes API calls to the backend, and serves the frontend otherwise.

@@ -1,3 +1,7 @@
+/**
+ * notfoundpage.js
+ * This file renders the 404 page.
+ */
 import React from 'react';
 
 const NotFoundPage = () => {
