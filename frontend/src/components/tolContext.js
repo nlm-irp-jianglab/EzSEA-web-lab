@@ -7,7 +7,6 @@ export const TolProvider = ({ children }) => {
     const [seqLength, setSeqLength] = useState(0);
     const [logoContent, setLogoContent] = useState({});
     const [logoAlphabet, setLogoAlphabet] = useState(11);
-    const [compareSelections, setCompareSelections] = useState({});
     const [compareDiff, setCompareDiff] = useState(null); // stores the differences between the two logos
     const [inputSequence, setInputSequence] = useState(null); // stores the input sequence for referencing gaps between logos and pdb viewer
 
@@ -15,7 +14,7 @@ export const TolProvider = ({ children }) => {
         <tolContext.Provider value={{
             scrollPosition, setScrollPosition, seqLength, setSeqLength,
             logoContent, setLogoContent, logoAlphabet, setLogoAlphabet,
-            compareSelections, setCompareSelections, compareDiff, setCompareDiff
+            compareDiff, setCompareDiff, inputSequence, setInputSequence
         }}>
             {children}
         </tolContext.Provider>

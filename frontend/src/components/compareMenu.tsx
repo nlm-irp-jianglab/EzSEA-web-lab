@@ -19,7 +19,7 @@ function SimpleDialog(props: SimpleDialogProps) {
   const [selections, setSelections] = useState<{ [key: string]: { items: string[], isEqual: boolean } }>({});
   const numEntries = Object.keys(logoContent).length;
   const numColumns = Math.max(0, numEntries - 1);
-  const { compareSelections, setCompareSelections, setCompareDiff } = useContext(tolContext);
+  const { setCompareDiff } = useContext(tolContext);
 
   const handleClose = () => {
     setSelections({});
@@ -40,6 +40,8 @@ function SimpleDialog(props: SimpleDialogProps) {
       const sequence2 = typeof logoContent[item2Key] === 'string'
         ? parseFASTA(ProteinAlphabet, logoContent[item2Key] as string).pfm
         : logoContent[item2Key] as number[][];
+
+      if (sequence1.length !== sequence2.length) return;
 
       const differences: number[] = [];
 

@@ -69,7 +69,7 @@ export const DndLogo = ({ applyEntropyStructColor, applyImportantStructColor,
           ],
         }),
       )
-    }, [cards])
+    }, [])
 
     const renderCard = useCallback((card, index) => {
       return (
@@ -90,7 +90,7 @@ export const DndLogo = ({ applyEntropyStructColor, applyImportantStructColor,
           addLogoRef={addLogoRef}
         />
       )
-    }, [cards])
+    }, [moveCard, logoContent, applyEntropyStructColor, applyImportantStructColor, removeLogo, onSymbolClick, onSymbolHover, importantResiduesList, findAndZoom, addLogoRef])
 
     return (
       <>

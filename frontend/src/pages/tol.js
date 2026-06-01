@@ -67,8 +67,9 @@ const Tol = () => {
 
   // For live updates linking sequence logo and structure viewer
   const [selectedResidue, setSelectedResidue] = useState(null);
-  const [hoveredResidue, setHoveredResidue] = useState(null); // Currently not in use
+  const [hoveredResidue, setHoveredResidue] = useState(null);
   const scrollLogosToRef = useRef(null);
+  const downloadDialogRef = useRef(null);
 
   // States for rendering control
   const [treeLayout, setTreeLayout] = useState('radial');
@@ -192,10 +193,7 @@ const Tol = () => {
     }
   }
 
-  const onNodeClick = (event, node) => {
-    // console.log("Node clicked:", node.data.name);
-    return
-  };
+  const onNodeClick = () => {};
 
   const linkMenu = [
     {
@@ -266,7 +264,7 @@ const Tol = () => {
         }
       }
     }
-  ], [fileData.asrData, fileData.leafData]);
+  ], [fileData.asrData, fileData.leafData, pushNodeToLogo, pushNodeToEntropyLogo, removeNodeFromLogo]);
 
   const leafMenu = [
     {
@@ -395,53 +393,51 @@ const Tol = () => {
         </div>
       );
     }
-    if (fileData.newickData) {
-      if (treeLayout === 'radial') {
-        return <RadialTree
-          key={treeKey}
-          ref={treeRef}
-          data={fileData.newickData}
-          nodeStyler={style_nodes}
-          customNodeMenuItems={nodeMenu}
-          customLeafMenuItems={leafMenu}
-          customTooltip={toolTip}
-          leafStyler={style_leaves}
-          width={1500}
-          linkStyler={style_edges}
-          onNodeClick={onNodeClick}
-          state={treeRef.current && treeRef.current.getState()}
-        />;
-      } else if (treeLayout === 'rectangular') {
-        return <RectTree
-          key={treeKey}
-          ref={treeRef}
-          data={fileData.newickData}
-          nodeStyler={style_nodes}
-          customNodeMenuItems={nodeMenu}
-          customLeafMenuItems={leafMenu}
-          customTooltip={toolTip}
-          leafStyler={style_leaves}
-          width={1500}
-          linkStyler={style_edges}
-          onNodeClick={onNodeClick}
-          state={treeRef.current && treeRef.current.getState()}
-        />;
-      } else {
-        return <UnrootedTree
-          key={treeKey}
-          ref={treeRef}
-          data={fileData.newickData}
-          nodeStyler={style_nodes}
-          customNodeMenuItems={nodeMenu}
-          customLeafMenuItems={leafMenu}
-          customLinkMenuItems={linkMenu}
-          customTooltip={toolTip}
-          leafStyler={style_leaves_unrooted}
-          width={1500}
-          onNodeClick={onNodeClick}
-          state={treeRef.current && treeRef.current.getState()}
-        />;
-      }
+    if (treeLayout === 'radial') {
+      return <RadialTree
+        key={treeKey}
+        ref={treeRef}
+        data={fileData.newickData}
+        nodeStyler={style_nodes}
+        customNodeMenuItems={nodeMenu}
+        customLeafMenuItems={leafMenu}
+        customTooltip={toolTip}
+        leafStyler={style_leaves}
+        width={1500}
+        linkStyler={style_edges}
+        onNodeClick={onNodeClick}
+        state={treeRef.current && treeRef.current.getState()}
+      />;
+    } else if (treeLayout === 'rectangular') {
+      return <RectTree
+        key={treeKey}
+        ref={treeRef}
+        data={fileData.newickData}
+        nodeStyler={style_nodes}
+        customNodeMenuItems={nodeMenu}
+        customLeafMenuItems={leafMenu}
+        customTooltip={toolTip}
+        leafStyler={style_leaves}
+        width={1500}
+        linkStyler={style_edges}
+        onNodeClick={onNodeClick}
+        state={treeRef.current && treeRef.current.getState()}
+      />;
+    } else {
+      return <UnrootedTree
+        key={treeKey}
+        ref={treeRef}
+        data={fileData.newickData}
+        nodeStyler={style_nodes}
+        customNodeMenuItems={nodeMenu}
+        customLeafMenuItems={leafMenu}
+        customLinkMenuItems={linkMenu}
+        customTooltip={toolTip}
+        leafStyler={style_leaves_unrooted}
+        width={1500}
+        onNodeClick={onNodeClick}
+        state={treeRef.current && treeRef.current.getState()}
+      />;
     }
   };
 
@@ -491,38 +487,36 @@ const Tol = () => {
       return;
     }
 
-    setImportantResidues([]); // Clear important residues (may cause unnecessary re-renders)
+    const descendants = selectAllLeaves(node);
+    if (descendants.length === 0) {
+      console.warn("No descendants found for node:", node.data.name);
+      return;
+    }
+
+    const missingSequences = [];
+    var desc_fa = "";
+    for (var desc of descendants) {
+      if (!fileData.leafData[desc.data.name]) {
+        missingSequences.push(desc.data.name);
+      } else {
+        desc_fa += `>${desc.data.name}\n${fileData.leafData[desc.data.name]}\n`;
+      }
+    }
+
+    if (missingSequences.length > 0) {
+      setNotification(`Missing sequences: ${missingSequences.join(", ")}`);
+      setTimeout(() => setNotification(''), 3000);
+      return;
+    }
+
+    setImportantResidues([]);
     setLogoContent(prevLogoContent => {
       const updatedLogoContent = { ...prevLogoContent };
-
-      const missingSequences = [];
-      var descendants = selectAllLeaves(node);
-      if (descendants.length === 0) {
-        console.warn("No descendants found for node:", node.data.name);
-        return updatedLogoContent;
-      }
-
-      var desc_fa = "";
-      for (var desc of descendants) {
-        if (!fileData.leafData[desc.data.name]) {
-          missingSequences.push(desc.data.name);
-        } else {
-          desc_fa += `>${desc.data.name}\n${fileData.leafData[desc.data.name]}\n`;
-        }
-      }
-
-      if (missingSequences.length > 0) {
-        console.warn("Missing sequences for nodes:", missingSequences.join(", "));
-        return updatedLogoContent;
-      }
-
       node['compare-descendants'] = true;
-
       updatedLogoContent["Information Logo of Clade " + node.data.name] = desc_fa;
-      setNodeColor(node, "green");
-
       return updatedLogoContent;
     });
+    setNodeColor(node, "green");
     setPipVisible(true);
     setIsRightCollapsed(false);
   }, [fileData.leafData]);
@@ -562,7 +556,6 @@ const Tol = () => {
   }, [logoContent]);
 
   const handleColumnClick = useCallback((index) => {
-    console.log("Input sequence:", inputSequence);
     if (inputSequence) {
       // Count gaps between position 0 and index in the input sequence
       let gapCount = 0;
@@ -574,7 +567,6 @@ const Tol = () => {
 
       // Adjust index by subtracting the number of gaps encountered
       const adjustedIndex = index - gapCount;
-      console.log("Scrolling to adjusted index:", adjustedIndex + 1);
       setSelectedResidue(adjustedIndex + 1);
     } else {
       setSelectedResidue(index + 1);
@@ -1190,7 +1182,7 @@ const Tol = () => {
                   />
 
                   <Tooltip title="Download Stack" placement="bottom">
-                    <button id="download-stack-btn" className="download-stack-btn" style={{ borderRadius: "6px", backgroundColor: "#3b82f6", border: "none", cursor: "pointer", padding: "4px 6px" }}>
+                    <button id="download-stack-btn" className="download-stack-btn" onClick={() => downloadDialogRef.current?.()} style={{ borderRadius: "6px", backgroundColor: "#3b82f6", border: "none", cursor: "pointer", padding: "4px 6px" }}>
                       <svg width="25px" height="25px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" version="1.1" fill="none" stroke="#ffffff" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5">
                         <path d="m3.25 7.25-1.5.75 6.25 3.25 6.25-3.25-1.5-.75m-11 3.75 6.25 3.25 6.25-3.25" />
                         <path d="m8 8.25v-6.5m-2.25 4.5 2.25 2 2.25-2" />
@@ -1198,7 +1190,7 @@ const Tol = () => {
                     </button>
                   </Tooltip>
                   <CompareMenu logoContent={logoContent} />
-                  <DownloadDialog seqLength={seqLength} />
+                  <DownloadDialog seqLength={seqLength} onRegisterOpen={(fn) => { downloadDialogRef.current = fn; }} />
                   <div style={{ width: "400px" }}>
                     <FormControl fullWidth size="small" >
                       <InputLabel>Color Scheme</InputLabel>

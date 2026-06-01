@@ -47,14 +47,6 @@ const LogoStack = React.forwardRef(({
     seqLength > 999 ? 20 : 21.5
     , [seqLength]);
 
-  // Optimize logo ref management
-  const addLogoRef = useCallback((ref) => {
-    if (ref && !logoRefs.current.includes(ref)) {
-      logoRefs.current = [...logoRefs.current, ref];
-      initializeScrollers();
-    }
-  }, []); // initializeScrollers declared below this line — cannot list in deps (TDZ)
-
   // Memoize scroller configuration
   const scrollerConfig = useMemo(() => ({
     scrollingX: true,
@@ -86,6 +78,14 @@ const LogoStack = React.forwardRef(({
       };
     });
   }, [scrollerConfig]);
+
+  // Optimize logo ref management
+  const addLogoRef = useCallback((ref) => {
+    if (ref && !logoRefs.current.includes(ref)) {
+      logoRefs.current = [...logoRefs.current, ref];
+      initializeScrollers();
+    }
+  }, [initializeScrollers]);
 
   // Add debounce utility to optimize scrolling performance
   const debounce = (func, wait) => {

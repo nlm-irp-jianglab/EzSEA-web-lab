@@ -27,7 +27,7 @@ const ItemTypes = {
 export const LogoCard = ({ id, index, header, moveCard, ppm = null, fasta = null, applyEntropyStructColor, applyImportantStructColor,
   removeLogo, onSymbolClick, onSymbolHover, importantResiduesList, findAndZoom, addLogoRef }) => {
   const dragRef = useRef(null);
-  const { activeButton, setActiveButton, compareQueue, setCompareQueue } = useContext(logoContext);
+  const { activeButton, setActiveButton } = useContext(logoContext);
   const { logoContent, setLogoContent, logoAlphabet, compareDiff } = useContext(tolContext);
   const logoRef = useRef(null);
   var nodeId = "";
@@ -45,35 +45,8 @@ export const LogoCard = ({ id, index, header, moveCard, ppm = null, fasta = null
       return importantResiduesList[nodeId].differing_residues;
     }
     return [];
-  }, [compareDiff, importantResiduesList]);
+  }, [compareDiff, importantResiduesList, header, nodeId]);
 
-
-  const pushToCompareQueue = (id, item) => {
-    setCompareQueue(prevQueue => {
-      const keys = Object.keys(prevQueue);
-      if (keys.length >= 2) {
-        const [firstKey, ...restKeys] = keys;
-        const newQueue = { ...prevQueue };
-        delete newQueue[firstKey];
-        return {
-          ...newQueue,
-          [`${id}`]: item
-        };
-      }
-      return {
-        ...prevQueue,
-        [`${id}`]: item
-      };
-    });
-  };
-
-  const removeFromCompareQueue = (id) => {
-    setCompareQueue(prevQueue => {
-      const newQueue = { ...prevQueue };
-      delete newQueue[`${id}`];
-      return newQueue;
-    });
-  };
 
   const [{ handlerId }, drop] = useDrop({
     accept: ItemTypes.CARD,
@@ -137,7 +110,7 @@ export const LogoCard = ({ id, index, header, moveCard, ppm = null, fasta = null
 
   useEffect(() => {
     preview(getEmptyImage());
-  });
+  }, [preview]);
 
   // Function to download SVG
   const downloadLogoSVG = (logoIndex, fileName) => {
@@ -243,39 +216,6 @@ export const LogoCard = ({ id, index, header, moveCard, ppm = null, fasta = null
                 </button>
               </Tooltip>
             )}
-            {ppm && false && ( // Disabled for now
-              <Tooltip title="Compare" placement="top">
-                <button
-                  className={`logo-color-btn logo-btn ${nodeId in compareQueue ? "active" : ""
-                    }`}
-                  style={{
-                    ...styles.colorBtn,
-                    backgroundColor: nodeId in compareQueue ? "#639fc7" : "#95bee8", // Depressed style
-                    boxShadow: nodeId in compareQueue ? "inset 0px 4px 6px rgba(0, 0, 0, 0.4)" : "none", // Inset shadow
-                    transform: nodeId in compareQueue ? "translateY(2px)" : "none", // Lowered position
-                    border: nodeId in compareQueue ? "2px solid #4a7fa5" : "1px solid #95bee8", // Emphasized border
-                  }}
-                  onClick={() => {
-                    if (nodeId in compareQueue) {
-                      removeFromCompareQueue(nodeId);
-                    } else {
-                      pushToCompareQueue(nodeId, ppm);
-                    }
-                  }}
-                >
-                  <svg
-                    fill="#000000"
-                    width="23px"
-                    height="25px"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path d="M1,8A1,1,0,0,1,2,7H9.586L7.293,4.707A1,1,0,1,1,8.707,3.293l4,4a1,1,0,0,1,0,1.414l-4,4a1,1,0,1,1-1.414-1.414L9.586,9H2A1,1,0,0,1,1,8Zm21,7H14.414l2.293-2.293a1,1,0,0,0-1.414-1.414l-4,4a1,1,0,0,0,0,1.414l4,4a1,1,0,0,0,1.414-1.414L14.414,17H22a1,1,0,0,0,0-2Z" />
-
-                  </svg>
-                </button>
-              </Tooltip>
-            )}
             <Tooltip title="Download Individual" placement="top">
               <button
                 className="logo-download-btn logo-btn"
@@ -358,13 +298,11 @@ const styles = {
     cursor: "pointer",
     fontSize: "14px",
     justifyContent: "center",
-    padding: "5px 10px",
     textAlign: "center",
     verticalAlign: "middle",
     height: "30px",
     padding: "5px",
     backgroundColor: "#def2b3",
-    alignItems: "center",
   },
   removeBtn: {
     display: "inline-flex",
@@ -375,7 +313,6 @@ const styles = {
     cursor: "pointer",
     fontSize: "14px",
     justifyContent: "center",
-    padding: "5px 10px",
     textAlign: "left",
     verticalAlign: "middle",
     height: "30px",
@@ -391,12 +328,10 @@ const styles = {
     cursor: "pointer",
     fontSize: "14px",
     justifyContent: "center",
-    padding: "5px 10px",
     textAlign: "center",
     verticalAlign: "middle",
     height: "30px",
     padding: "5px",
     backgroundColor: "#95bee8",
-    alignItems: "center",
   },
 }

@@ -58,18 +58,17 @@ function downloadCombinedSVG(left: number = 0, right: number = 10): void {
     });
 
     // Get the translation for the first glyph
-    const transformMatch = glyphs[left].getAttribute('transform')!.match(/translate\(([^,]+),/);
-    if (!transformMatch) {
-      console.error("Transform attribute is missing or does not match the expected pattern.");
-      return;
-    }
+    if (!glyphs[left] || !xlab[left]) return;
+    const transformMatch = glyphs[left].getAttribute('transform')?.match(/translate\(([^,]+),/);
+    if (!transformMatch) return;
     const glyphXTranslation = transformMatch[1];
-    const xlabXTranslation = xlab[left].getAttribute('y')!;
+    const xlabY = xlab[left].getAttribute('y');
+    if (!xlabY) return;
 
     // Apply xtransform to glyph container, xlab
     if (left !== 0) { // if left is 0, no need to adjust
       clonedSVG.children[0].setAttribute('transform', `translate(-${parseFloat(glyphXTranslation) - 80}, 0)`);
-      clonedSVG.children[1].setAttribute('transform', `translate(-${parseFloat(xlabXTranslation) - 130}, 452.2)`);
+      clonedSVG.children[1].setAttribute('transform', `translate(-${parseFloat(xlabY) - 130}, 452.2)`);
     }
 
     // Append the group element into the combined SVG
@@ -157,7 +156,7 @@ function SimpleDialog(props: SimpleDialogProps) {
   );
 }
 
-export default function DownloadDialog({ seqLength }: { seqLength: number }) {
+export default function DownloadDialog({ seqLength, onRegisterOpen }: { seqLength: number, onRegisterOpen?: (fn: () => void) => void }) {
   const [open, setOpen] = React.useState(false);
   const handleClickOpen = () => {
     setOpen(true);
@@ -168,15 +167,7 @@ export default function DownloadDialog({ seqLength }: { seqLength: number }) {
   };
 
   React.useEffect(() => {
-    const button = document.getElementById('download-stack-btn');
-    if (button) {
-      button.addEventListener('click', handleClickOpen);
-    }
-    return () => {
-      if (button) {
-        button.removeEventListener('click', handleClickOpen);
-      }
-    };
+    onRegisterOpen?.(handleClickOpen);
   }, []);
 
   return (

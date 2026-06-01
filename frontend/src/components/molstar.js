@@ -14,12 +14,13 @@ import "./molstar/skin/light.scss";
 
 export function MolStarWrapper({ structData, pocketData, selectedResidue, hoveredResidue, colorFile, scrollLogosToRef }) {
   const parent = useRef(null);
+  const pluginRef = useRef(null);
   const [isStructureLoaded, setIsStructureLoaded] = useState(false);
 
   useEffect(() => {
     async function init() {
       // Initialize the Mol* plugin
-      window.molstar = await createPluginUI({
+      pluginRef.current = await createPluginUI({
         target: parent.current,
         render: renderReact18,
         spec: {
@@ -36,22 +37,22 @@ export function MolStarWrapper({ structData, pocketData, selectedResidue, hovere
       // Only try to render if structData is provided
       if (structData) {
         // Rendering main structure
-        const mainData = await window.molstar.builders.data.rawData({
+        const mainData = await pluginRef.current.builders.data.rawData({
           data: structData
         }, { state: { isGhost: true } });
 
-        const trajectory = await window.molstar.builders.structure.parseTrajectory(mainData, "pdb");
+        const trajectory = await pluginRef.current.builders.structure.parseTrajectory(mainData, "pdb");
         try {
-          const structure = await window.molstar.builders.structure.hierarchy.applyPreset(
+          const structure = await pluginRef.current.builders.structure.hierarchy.applyPreset(
             trajectory,
             "default"
           );
 
           // Scrolls seqlogos to selection position
-          window.molstar.behaviors.interaction.click.subscribe(
+          pluginRef.current.behaviors.interaction.click.subscribe(
             (event) => {
               const selections = Array.from(
-                window.molstar.managers.structure.selection.entries.values()
+                pluginRef.current.managers.structure.selection.entries.values()
               );
 
               // selections is auto-sorted, lowest residue id first. Therefore, when multiple residues are selected, 
@@ -70,8 +71,8 @@ export function MolStarWrapper({ structData, pocketData, selectedResidue, hovere
               }
               if (localSelected[0]) {
                 scrollLogosToRef.current(localSelected[0].position);
-                window.molstar.selectionMode = !window.molstar.selectionMode;
-                window.molstar.selectionMode = !window.molstar.selectionMode;
+                pluginRef.current.selectionMode = !pluginRef.current.selectionMode;
+                pluginRef.current.selectionMode = !pluginRef.current.selectionMode;
               }
             });
             
@@ -91,8 +92,8 @@ export function MolStarWrapper({ structData, pocketData, selectedResidue, hovere
 
     // Cleanup function
     return () => {
-      if (window.molstar) {
-        window.molstar.dispose();
+      if (pluginRef.current) {
+        pluginRef.current.dispose();
       }
     };
   }, [structData]); // Add structData as dependency
@@ -119,12 +120,12 @@ export function MolStarWrapper({ structData, pocketData, selectedResidue, hovere
     if (residueNumber == null) return;
     const seq_id = residueNumber;
 
-    if (!window.molstar || !window.molstar.managers.structure.hierarchy.current.structures.length) {
+    if (!pluginRef.current || !pluginRef.current.managers.structure.hierarchy.current.structures.length) {
       console.error("Mol* plugin or structure data is not initialized.");
       return;
     }
 
-    const structure = window.molstar.managers.structure.hierarchy.current.structures[0]?.cell?.obj?.data;
+    const structure = pluginRef.current.managers.structure.hierarchy.current.structures[0]?.cell?.obj?.data;
     if (!structure) {
       console.error("Structure data is not available.");
       return;
@@ -137,46 +138,37 @@ export function MolStarWrapper({ structData, pocketData, selectedResidue, hovere
     const loci = StructureSelection.toLociWithSourceUnits(sel);
 
     if (hovered) {
-      window.molstar.managers.interactivity.lociHighlights.highlightOnly({ loci }); // Highlight the residue
+      pluginRef.current.managers.interactivity.lociHighlights.highlightOnly({ loci }); // Highlight the residue
       return;
     }
     // Clear previous selections
-    window.molstar.managers.interactivity.lociSelects.deselectAll();
+    pluginRef.current.managers.interactivity.lociSelects.deselectAll();
 
-    window.molstar.managers.interactivity.lociSelects.select({ loci }); // Select the residue
-    window.molstar.managers.camera.focusLoci(loci); // Focus on the residue
+    pluginRef.current.managers.interactivity.lociSelects.select({ loci }); // Select the residue
+    pluginRef.current.managers.camera.focusLoci(loci); // Focus on the residue
   }
 
   async function applyColorFile(colorFile) {
-    if (!window.molstar?.managers?.structure?.hierarchy?.current?.structures?.length) return;
+    const plugin = pluginRef.current;
+    if (!plugin?.managers?.structure?.hierarchy?.current?.structures?.length) return;
     if (!colorFile) {
-      clearStructureOverpaint(window.molstar, window.molstar.managers.structure.hierarchy.current.structures[0].components);
-      return;
-    };
-
-    if (!window.molstar || !window.molstar.managers.structure.hierarchy.current.structures.length) {
-      console.error("Mol* plugin or structure data is not initialized.");
+      clearStructureOverpaint(plugin, plugin.managers.structure.hierarchy.current.structures[0].components);
       return;
     }
-
-    for (let i = 0; i < colorFile.length; i++) { // Default for loop, because forEach is async and setStructureOverpaint doesn't like that
-      const color = colorFile[i];
-
-      await setStructureOverpaint(
-        window.molstar,
-        window.molstar.managers.structure.hierarchy.current.structures[0].components,
-        Color(color),
-        (s) => {
+    const components = plugin.managers.structure.hierarchy.current.structures[0].components;
+    await plugin.dataTransaction(async () => {
+      for (let i = 0; i < colorFile.length; i++) {
+        await setStructureOverpaint(plugin, components, Color(colorFile[i]), (s) => {
           const sel = Script.getStructureSelection(Q =>
             Q.struct.generator.atomGroups({
-              'residue-test': Q.core.rel.eq([Q.struct.atomProperty.macromolecular.label_seq_id(), i + 1]), // Adjusted to match sequence number
+              'residue-test': Q.core.rel.eq([Q.struct.atomProperty.macromolecular.label_seq_id(), i + 1]),
               'group-by': Q.struct.atomProperty.macromolecular.residueKey(),
             }), s
           );
           return StructureSelection.toLociWithSourceUnits(sel);
-        }
-      );
-    }
+        });
+      }
+    });
   }
 
   return (
